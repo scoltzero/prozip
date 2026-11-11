@@ -1,0 +1,333 @@
+Selected-entry password validation
+压缩包中没有可解压的内容
+基准只支持原生 per-entry ZIP writer
+XPC Broker 不公开进程内引擎实例
+压缩包包含无法单独定位的同名记录
+所选条目与压缩包目录不一致：
+按文件系统项目导出仅适用于磁盘映像
+Too many active member reads
+缩略图批次目标必须是本地目录
+解压基准必须直接运行本地引擎
+所选项目已不存在：
+ISO 不支持 DMG 密码
+正在准备应用程序
+拼接 ZIP 暂不支持编辑保存；请先解压后重新创建压缩包
+此 ZIP 的压缩方法或目录元数据需要使用兼容引擎解压
+此预览版尚未接入 ZIP AES 解密
+Lzip 单文件流不支持归档式编辑
+Lzip 创建尚未开放
+修改磁盘映像
+创建磁盘映像
+单文件压缩流不支持归档式编辑
+单文件压缩流创建尚未开放
+为避免密码暴露在进程参数中，预览版不通过 bsdtar 创建加密包
+无法读取压缩包
+解压暂存目录必须是本地目录
+ArchiveEngines/ArchiveEngine.swift
+特殊文件默认不解压：
+Incomplete member output
+Member output exceeds budget
+produce(url:entry:source:stream:sink:)
+open(_:entry:source:maximumByteCount:completeFile:)
+com.maczhang.ArcZip.zip-member
+ZIP member CRC mismatch
+解压路由格式与已验证目录不一致
+未生成缩略图源文件：
+缩略图物化结果不是普通文件：
+缩略图物化结果超过安全限制
+缩略图批次实际写入量超过安全限制
+缩略图批次包含过多项目
+缩略图批次只允许普通文件
+缩略图批次大小溢出
+缩略图源文件过大：
+缩略图批次预计解压量过大
+XPC 协议版本不兼容：客户端 
+ArchiveEngines/ArchiveWorkerRequestExecutor.swift
+磁盘映像应用启动交接不存在或已释放
+磁盘映像应用启动交接不存在或已完成
+XPC 磁盘映像会话不存在或已释放
+解压请求格式与已验证目录不一致
+归档辅助进程输出超过 16 MiB 上限，任务已停止
+归档辅助进程错误输出超过 4 MiB 上限，任务已停止
+--no-same-permissions
+加密宽格式读取等待安全密码通道
+加密包测试等待安全密码通道
+TAR 编辑仅支持单文件压缩包
+--no-mac-metadata
+已预处理的压缩来源必须位于同一个私有暂存目录
+无法初始化系统 libarchive
+无法初始化系统 libarchive 写入器
+zip:hdrcharset=CP437,zip:!mac-ext
+libarchive 无法解压 ZIP
+ bytes, compression 
+,zip:hdrcharset=
+Invalid read size
+readNext(maximumByteCount:)
+Archive member was truncated
+Archive member exceeded its declared byte count
+com.maczhang.ArcZip.member-pull
+单文件压缩流只能提取一个虚拟文件
+未找到内置压缩流引擎
+正在解码压缩流
+-p__ARCZIP_NO_PASSWORD__
+单文件压缩流不支持密码
+cannot open the file as archive
+压缩流引擎退出码 
+压缩流已损坏或格式不正确
+无法创建解压输出：
+/usr/bin:/bin:/usr/sbin:/sbin
+无法创建实时进度通道：
+readAll(from:limit:endOnPseudoTerminalClose:onLimitExceeded:chunkHandler:outputFilter:contentHandler:)
+yyyy-MM-dd HH:mm:ss.SSSSSSS
+yyyy-MM-dd HH:mm:ss
+.uncompressed.swf
+completeNegative
+completePositive
+fourPositive
+incomplete
+磁盘映像中包含暂不支持解压的特殊项目
+ISO 无法挂载，且没有可用的完整性测试回退引擎
+磁盘映像中找不到 
+正在从磁盘映像复制应用程序
+应用程序已从磁盘映像复制到临时目录
+”实际解析为“
+ISO 回退引擎缺少所需能力：
+ISO 无法挂载，且没有可用的归档解析回退引擎
+所选项目与当前磁盘映像内容不一致：
+正在从磁盘映像复制项目
+磁盘映像项目复制完成
+ISO 回退引擎不支持应用程序提取
+ISO 中找不到可导出的项目：
+ISO 回退引擎不支持提取
+ISO 回退引擎未生成所选项目：
+正在复制 ISO 项目
+ISO 项目复制完成
+磁盘映像中找不到可导出的项目：
+Contents/Info.plist
+Contents/Resources
+CFBundleIconFile
+无法初始化磁盘映像复制器
+无法配置磁盘映像复制进度
+无法读取磁盘映像项目路径
+无法读取解压目标路径
+incorrect password
+password required
+requires a password
+attach cancelled
+permission denied
+operation not permitted
+no such file or directory
+image file not found
+image not recognized
+not a recognized disk image
+unsupported image format
+unsupported disk image
+invalid checksum
+image data corrupted
+磁盘映像校验失败
+macOS 不支持此磁盘映像格式：
+macOS 不支持此磁盘映像格式
+找不到磁盘映像，请确认文件仍然存在
+没有权限读取此磁盘映像：
+没有权限读取此磁盘映像
+。系统返回：
+macOS 多次尝试后仍无法挂载此磁盘映像，可能受到磁盘工具、安全软件或系统服务干扰
+macOS 仍在处理此磁盘映像，请稍后重试。
+磁盘映像读取会话不存在或已释放
+磁盘映像中找不到有效的应用程序包
+releaseRequested
+无法读取压缩包文件状态
+.arczip-entry-rename-
+原位保存不能要求压缩包不存在
+不支持的来源项目类型
+无法枚举目录内容。
+该名称无法转换为安全、可移植的归档路径。
+归档路径包含父目录跳转（..）。
+归档路径是绝对路径。
+名称包含无法写入文件系统或压缩包的 NUL 字符。
+归档路径为空。
+解压暂存目录不存在
+解压暂存目录必须为空
+无法检查解压目标“
+无法检查解压目标目录“
+解压目标的父路径不是文件夹：“
+解压目标包含符号链接目录：“
+backgroundColorRed
+backgroundColorGreen
+backgroundColorBlue
+backgroundImageAlias
+backgroundImageBookmark
+backgroundImagePath
+Quick Look 缩略图提取内容超过安全上限
+系统 libarchive 缺少压缩流解码器
+系统 libarchive 不支持 
+libarchive 无法读取压缩包
+passphrase required for this entry
+passphrase required for this archive
+the archive header is encrypted, but currently not supported
+the file content is encrypted, but currently not supported
+Quick Look 不提取链接或特殊文件
+无法创建 Quick Look 缩略图暂存文件
+压缩包条目缺少文件路径
+目录包含无法无损读取的文件名编码
+目录包含无法无损读取的链接目标编码
+Lzip 单文件流不支持密码
+系统 libarchive 不包含 Lzip 解码器
+libarchive 无法读取 Lzip 数据
+正在解码 Lzip 压缩流
+无法创建 Lzip 解压输出
+Lzip 只能提取其单一虚拟文件
+Lzip 文件头无效
+ZIP 输出文件已关闭
+正在打包无需压缩的文件
+ZIP 项目路径过长：
+ZIP writer 不支持来源类型：
+ArchiveEngines/NativeStreamingZIPWriter.swift
+原生 ZIP writer 仅处理非加密、非分卷 ZIP
+正在启动压缩引擎
+ZIP 写入计划缺少项目：
+正在压缩可压缩文件
+无法初始化 Deflate writer
+无法创建 ZIP 压缩暂存文件
+1.2.12
+Deflate 写入失败：
+无法配置 Deflate writer
+ZIP 结构验证与 Creation Manifest 不一致
+ZIP 中央目录项目数不一致
+ZIP 结构验证发现计划外项目：
+ZIP 结构验证发现项目类型不一致：
+ZIP 结构验证发现项目大小不一致：
+ZIP Deflate 项目没有净收益：
+ZIP 方法验证不一致，应为 Store：
+无法创建 ZIP 输出文件
+读取归档进程输出失败：
+com.maczhang.ArcZip.process-output
+归档辅助进程单行输出超过 4 MiB 上限，任务已停止
+未找到内置 7-Zip 引擎
+正在准备解压缩
+正在核对压缩包目录
+原生增量修改仅支持 ZIP 和 7Z
+分卷压缩包暂不支持原位编辑
+.arczip-update-work-
+正在准备压缩
+正在分析压缩包修改
+需要兼容旧编码或目录路径的 ZIP 暂不支持编辑保存；请先解压后重新创建压缩包
+Selected entry was not tested
+增量修改结果的项目数量与计划不一致
+增量修改结果缺少计划项目：
+增量修改结果的加密状态不一致：
+增量修改结果的符号链接“
+”目标不一致；
+增量修改结果大小不一致：
+7-Zip 创建归档时报告了警告，未发布可能不完整的压缩包
+ArchiveCreationPerformance
+压缩包目录包含重复路径：
+正在删除压缩包项目
+正在重命名压缩包项目
+压缩包中不存在“
+修改后的压缩包包含重复路径：
+正在写入修改内容
+正在替换旧项目
+ archive_wide_method=
+ probe_candidates=
+ probe_fallbacks=
+ single_read_candidates=
+manifest_and_write_plan
+7-Zip 未生成有效的压缩包文件
+正在打包文件
+7zip-deflate-level-
+原生 ZIP writer 缺少写入计划
+ZIP 密码字符编码没有统一标准；为保证跨平台可解压，创建 ZIP 时密码仅支持 ASCII。中文密码请使用 7Z
+分卷输出不连续或包含空卷，未发布压缩包
+分卷大小超过指定上限，未发布压缩包
+分卷压缩完成后未找到输出卷
+分卷数量超过支持范围，未发布压缩包
+7Z 创建缺少压缩策略
+application-extract-
+7-Zip 未生成应用程序包：
+Listing archive: 
+cannot open encrypted archive. wrong password?
+headers error in encrypted archive. wrong password?
+data error in encrypted file. wrong password?
+crc failed in encrypted file. wrong password?
+unsupported method
+unexpected end of archive
+archive is corrupted
+dangerous link path was ignored
+dangerous link via another link was ignored
+7-Zip 退出码 
+当前解压引擎无法还原此链接：
+压缩包数据损坏或格式不正确
+分卷不完整或压缩包头损坏
+open error: cannot open the file as [
+Cannot open encrypted archive. Wrong password?
+ERROR: Cannot open encrypted archive. Wrong password?
+压缩包头信息超过 4 MiB 上限，任务已停止
+ArcZip.EncryptionGroup
+官方 ZIP 查询名称无法唯一匹配所选条目
+官方 ZIP 后端无法保留所选条目的名称
+7-Zip 解压时报告了警告，未接受可能不完整的结果
+Member metadata is too large
+Alternate Stream
+压缩包内容与识别格式不一致
+无法读取 RPM 的有效载荷目录
+RPM 压缩流的文件名无法确定
+writePassword(_:to:)
+无法写入安全密码通道
+无法创建安全密码通道：
+包含换行的 ZIP 选择超出后端参数容量
+ZIP 选择未匹配任何条目
+ZIPCompatibility
+ERROR: There are some data after the end of the payload data : 
+ZIP 内容流不完整
+ZIP 内容流校验失败：
+ZIP 内容流超出声明大小
+ZIP 内容流大小溢出
+There are some data after the end of the payload data
+Unsupported Method
+CRC Failed in encrypted file. Wrong password?
+Data Error in encrypted file. Wrong password?
+Unavailable data
+Unexpected end of data
+Cannot read TAR member
+Archive member identity changed
+无法准备 ZIP 兼容副本
+ZIP 中央目录偏移不完整
+ZIP64 偏移不完整
+ZIP 偏移超出兼容区段
+ZIP 偏移溢出
+ZIP 兼容结构不完整
+ArchiveEngines/ZIPDeflatePolicy.swift
+无法读取 ZIP 文件大小
+ZIP 目录包含无法解码的文件名
+ArchiveEngines.ZIPFoundationProgress
+init(parent:userInfo:)
+ZIP 符号链接目标超出提取范围
+ZIP 大小或偏移超出当前引擎范围
+ZIP 引擎缓冲区配置无效
+ZIP 文件名或链接目标无法解码
+ZIP 压缩方法
+无法写入 ZIP 压缩包
+无法读取 ZIP 压缩包
+所选项目已存在，未生成新的解压内容
+ZIP 目录中没有匹配的解压项目
+ZIP 目录中找不到所选文件夹：
+ZIP 目录中找不到所选文件：
+同一 ZIP 项目存在歧义文件名编码：
+所选项目与 ZIP 目录类型不一致：
+没有选择要解压的项目
+原生 ZIP 读取需要有效的 ZIP 尾记录
+ZIP 分卷需要使用兼容引擎读取
+此 ZIP 的压缩方法或目录元数据需要使用兼容引擎测试
+加密 ZIP 测试尚未启用
+安全增量修改 ZIP 需要内置 7-Zip 引擎
+ZIP AES 写入将在授权加密引擎接入后启用；不会回退到泄露命令行密码的实现
+ZIPFoundation fallback 无法执行当前统一压缩计划
+准备解压缩应用
+应用程序包缺少 
+应用程序解压缩完成
+所选条目与 ZIP 目录不一致：
+ZIP 目录范围无效
+ZIP 卷号无效
+ZIP 分卷提前结束
+ZIP 分卷大小无效

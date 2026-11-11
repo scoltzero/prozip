@@ -1,0 +1,1641 @@
+key	en	zh-Hans	zh-Hant
+ · 后台索引中	 · indexing in background	 · 后台索引中	 · 背景索引中
+ · 已过滤 	 · filtered 	 · 已过滤 	 · 已過濾 
+ · 正在完成 	 · finishing 	 · 正在完成 	 · 正在完成 
+ 个辅助项目	 auxiliary items	 个辅助项目	 個輔助項目
+ 个问题项目：	 problem items:	 个问题项目：	 個問題項目：
+ 个问题项目？	 problematic items?	 个问题项目？	 個問題項目？
+ 个项目	 items	 个项目	 個項目
+ 个项目的索引	 items	 个项目的索引	 個項目的索引
+ 压缩包	 archive	 压缩包	 壓縮檔
+ 层	 levels	 层	 層
+ 已恢复原打开方式	 restored its previous default app	 已恢复原打开方式	 已恢復原開啟方式
+ 已设为使用 ArcZip 打开	 is now set to open with ArcZip	 已设为使用 ArcZip 打开	 已設為使用 ArcZip 開啟
+ 文件夹	 folder	 文件夹	 資料夾
+ 条记录，但不会删除任何压缩包文件。	 records; archive files will not be deleted.	 条记录，但不会删除任何压缩包文件。	 條記錄，但不會刪除任何壓縮檔檔案。
+ 磁盘映像	 disk image	 磁盘映像	 磁碟映像檔
+ 项	 items	 项	 項
+%@ / %@	%1$@ / %2$@	%1$@ / %2$@	%1$@ / %2$@
+%@ 个核心	%@ Cores	%@ 个核心	%@ 個核心
+%@+	%@+	%@+	%@+
+%lld	%lld	%lld	%lld
+1 个文件	1 file	1 个文件	1 個檔案
+7Z 压缩包	7Z archives	7Z 压缩包	7Z 壓縮檔
+Android 应用软件包	Android application package	Android 应用软件包	Android 應用程式套件
+ArcZip	ArcZip	ArcZip	ArcZip
+ArcZip %@	ArcZip %@	ArcZip %@	ArcZip %@
+ArcZip Box	ArcZip Box	ArcZip文件盒	ArcZip 檔案盒
+ArcZip Box：拖入文件，集中处理	ArcZip Box: drop files and work with them together	ArcZip文件盒：拖入文件，集中处理	ArcZip 檔案盒：拖入檔案，集中處理
+ArcZip Mini	ArcZip Mini	ArcZip Mini	ArcZip Mini
+ArcZip Mini 窗口截图	ArcZip Mini window screenshot	ArcZip Mini 窗口截图	ArcZip Mini 視窗截圖
+ArcZip Preview	ArcZip Preview	ArcZip Preview	ArcZip Preview
+ArcZip Pro	ArcZip Pro	ArcZip Pro	ArcZip Pro
+ArcZip Pro 功能	ArcZip Pro	ArcZip Pro 功能	ArcZip Pro 功能
+ArcZip 不会覆盖目标文件夹中的现有项目。	ArcZip will not overwrite existing items in the destination folder.	ArcZip 不会覆盖目标文件夹中的现有项目。	ArcZip 不會覆蓋目標資料夾中的現有項目。
+ArcZip 不直接操作链接或特殊项目	ArcZip does not directly operate on links or special items	ArcZip 不直接操作链接或特殊项目	ArcZip 不直接操作連結或特殊項目
+ArcZip 仍有任务正在进行	Unfinished Tasks	ArcZip 仍有任务正在进行	ArcZip 仍有作業正在進行
+ArcZip 压缩服务不可用。请重试；如果仍然失败，请重新打开 ArcZip。	The ArcZip archive service is unavailable. Try again; if the problem continues, reopen ArcZip.	ArcZip 压缩服务不可用。请重试；如果仍然失败，请重新打开 ArcZip。	ArcZip 壓縮服務無法使用。請重試；如果仍然失敗，請重新開啟 ArcZip。
+ArcZip 压缩服务连接已中断。请重试；如果仍然失败，请重新打开 ArcZip。	The connection to the ArcZip archive service was interrupted. Try again; if the problem continues, reopen ArcZip.	ArcZip 压缩服务连接已中断。请重试；如果仍然失败，请重新打开 ArcZip。	ArcZip 壓縮服務連線已中斷。請重試；如果仍然失敗，請重新開啟 ArcZip。
+ArcZip 在扫描时已无法找到或检查该项目；它可能刚被移动、删除，或所在磁盘已断开。将一个未知状态的项目写入压缩包可能造成内容缺失。	Item unavailable. The archive could be incomplete.	ArcZip 在扫描时已无法找到或检查该项目；它可能刚被移动、删除，或所在磁盘已断开。将一个未知状态的项目写入压缩包可能造成内容缺失。	ArcZip 在掃描時已無法找到或檢查該項目；它可能剛被移動、刪除，或所在磁碟已斷開。將一個未知狀態的項目寫入壓縮檔可能造成內容缺失。
+ArcZip 已准备好，现在就从一个压缩包开始。	ArcZip is ready. Start with an archive.	ArcZip 已准备好，现在就从一个压缩包开始。	ArcZip 已準備好，現在就從一個壓縮檔開始。
+ArcZip 当前没有读取该项目所需的权限，继续处理可能得到不完整或损坏的压缩内容。	Cannot read this item. The archive could be incomplete or damaged.	ArcZip 当前没有读取该项目所需的权限，继续处理可能得到不完整或损坏的压缩内容。	ArcZip 目前沒有讀取該項目所需的權限，繼續處理可能得到不完整或損壞的壓縮內容。
+ArcZip 暂存架	ArcZip Shelf	ArcZip文件盒	ArcZip 檔案盒
+ArcZip 暂存架：拖入文件，集中处理	ArcZip Shelf: collect files and work with them together	ArcZip文件盒：拖入文件，集中处理	ArcZip 檔案盒：拖入檔案，集中處理
+ArcZip 检测到不安全或有歧义的文件路径。	ArcZip detected an unsafe or ambiguous file path.	ArcZip 检测到不安全或有歧义的文件路径。	ArcZip 偵測到不安全或有歧義的檔案路徑。
+ArcZip 正在等待你的操作	Action required	ArcZip 正在等待你的操作	ArcZip 正在等待你的操作
+ArcZip 没有读取这个文件的权限，请检查文件权限后重试。	File access denied. Check permissions.	ArcZip 没有读取这个文件的权限，请检查文件权限后重试。	ArcZip 沒有讀取這個檔案的權限，請檢查檔案權限後再試一次。
+ArcZip：快速压缩（使用默认设置）	ArcZip: Quick Compress (Default Settings)	ArcZip：快速压缩（使用默认设置）	ArcZip：快速壓縮（使用預設設定）
+EXE 与 SWF 仍可通过“打开方式 → ArcZip”尝试打开，但不会提供默认应用开关。	Try EXE or SWF files using Open With → ArcZip. Default-app switches aren’t available for these formats.	EXE 与 SWF 仍可通过“打开方式 → ArcZip”尝试打开，但不会提供默认应用开关。	EXE 與 SWF 仍可透過「開啟方式 → ArcZip」嘗試開啟，但不會提供預設應用程式開關。
+Extensible Archive 容器	Extensible Archive container	Extensible Archive 容器	Extensible Archive 容器
+Finder 中的 ArcZip 右键菜单截图	ArcZip Finder context menu screenshot	访达 中的 ArcZip 右键菜单截图	Finder 中的 ArcZip 快捷選單截圖
+Finder 右键菜单	Finder Context Menu	访达 右键菜单	Finder 快捷選單
+Finder 后台任务不会检查软件更新	Finder background tasks do not check for updates	访达 后台任务不会检查软件更新	Finder 背景作業不會檢查軟體更新
+Flow	Flow	Flow	Flow
+Flow 会根据压缩包内容，推荐此刻最合适的操作。	Flows recommend the most useful action for the current archive.	Flow 会根据压缩包内容，推荐此刻最合适的操作。	Flow 會根據壓縮檔內容，推薦此刻最合適的操作。
+Flow 快捷操作	Flow Actions	Flow 快捷操作	Flow 快速操作
+ISO 项目复制完成	Copied	ISO 项目复制完成	ISO 項目複製完成
+Linux RPM 软件包容器	Linux RPM package container	Linux RPM 软件包容器	Linux RPM 套件容器
+Linux 与服务器	Linux and Servers	Linux 与服务器	Linux 與伺服器
+Mac 之间传递	Share Between Macs	Mac 之间传递	Mac 之間傳遞
+Microsoft Cabinet 压缩包	Microsoft Cabinet archive	Microsoft Cabinet 压缩包	Microsoft Cabinet 壓縮檔
+Mini	Mini	Mini	Mini
+Mini 窗口	Mini window	ArcZip Mini 窗口	ArcZip Mini 視窗
+Mini 窗口独立出现，不会打断主窗口中的工作。	The Mini window appears independently without interrupting work in the main window.	ArcZip Mini 窗口独立出现，不会打断主窗口中的工作。	ArcZip Mini 視窗獨立出現，不會打斷主視窗中的工作。
+Preview	Preview	预览	預覽
+Pro	Pro	Pro	Pro
+Quick Look 只能预览普通文件	Quick Look can preview regular files only	快速查看 只能预览普通文件	快速查看 只能預覽一般檔案
+RAR 压缩包	RAR archives	RAR 压缩包	RAR 壓縮檔
+RPM 压缩流的文件名无法确定	The RPM payload filename is missing or ambiguous.	RPM 压缩流的文件名无法确定	無法確定 RPM 壓縮串流的檔案名稱
+Synology 软件包	Synology package	Synology 软件包	Synology 套件
+TAR 不支持内置加密	TAR does not support built-in encryption	TAR 不支持内置加密	TAR 不支援內建加密
+TAR 不支持分卷压缩	TAR does not support split volumes	TAR 不支持分卷压缩	TAR 不支援分卷壓縮
+TAR 及其短扩展名变体	TAR archives and compressed variants	TAR 及其短扩展名变体	TAR 及其短副檔名變體
+TAR 用于归档目录结构与 Unix 文件信息	TAR preserves directory structure and Unix file metadata	TAR 用于归档目录结构与 Unix 文件信息	TAR 用於封存目錄結構與 Unix 檔案資訊
+Touch ID 不可用，请使用独立的密码本密码。	Touch ID is unavailable. Use your separate Password Book password.	Touch ID 不可用，请使用独立的密码本密码。	Touch ID 無法使用，請使用獨立的密碼本密碼。
+Touch ID 或 Apple Watch 不可用，请使用独立的密码本密码。	Touch ID or Apple Watch is unavailable. Use your separate Password Book password.	Touch ID 或 Apple Watch 不可用，请使用独立的密码本密码。	Touch ID 或 Apple Watch 無法使用，請使用獨立的密碼本密碼。
+Unix CPIO 归档	Unix CPIO archive	Unix CPIO 归档	Unix CPIO 封存
+Unix 套接字	Unix socket	Unix 套接字	Unix 通訊端
+Windows Installer 软件包	Windows Installer package	Windows Installer 软件包	Windows Installer 套件
+Windows 用户	For Windows Users	Windows 用户	Windows 使用者
+Windows 项目	Windows item	Windows 项目	Windows 項目
+ZIP 与 ZIPX 压缩包	ZIP and ZIPX archives	ZIP 与 ZIPX 压缩包	ZIP 與 ZIPX 壓縮檔
+ZIP 压缩、文件 Probe 与 7Z 共用此限制	Shared by ZIP, 7Z, and file analysis.	ZIP 压缩、文件 Probe 与 7Z 共用此限制	ZIP 壓縮、檔案 Probe 與 7Z 共用此限制
+ZIP 密码仅支持 ASCII；中文密码请使用 7Z	ZIP passwords support ASCII only; use 7Z for Chinese passwords	ZIP 密码请使用英文字母、数字或英文符号；中文密码请选择 7Z。	ZIP 密碼請使用英文字母、數字或英文符號；中文密碼請選擇 7Z。
+ZIP、7Z 等以 .001 开始的数字分卷	Numbered ZIP, 7Z, and other archive volumes starting with .001	ZIP、7Z 等以 .001 开始的数字分卷	ZIP、7Z 等以 .001 開始的數字分卷
+app.name	ArcZip	ArcZip	ArcZip
+application.install.completion.close_detail	Close the window after installation completes and the archive is kept	应用安装完成并保留压缩包后，自动关闭窗口	應用程式安裝完成並保留壓縮檔後，自動關閉視窗
+application.install.completion.source_detail	Keep the archive or move it to Trash after installation	应用安装完成后，选择保留或移入废纸篓	應用程式安裝完成後，選擇保留或移入垃圾桶
+application.install.completion.title	Installation Complete	安装完成	安裝完成
+application.install.completion.trash_failed	Installation completed, but the original archive could not be moved to Trash: %@	安装已完成，但无法将原压缩包移入废纸篓：%@	安裝已完成，但無法將原壓縮檔移入垃圾桶：%@
+application.install.failure_details	Installation stage: %@ [%@]\nSource: %@\nDestination: %@\nSystem: %@\nError details:\n%@	安装阶段：%@ [%@]\n来源：%@\n目标：%@\n系统：%@\n错误详情：\n%@	安裝階段：%@ [%@]\n來源：%@\n目標：%@\n系統：%@\n錯誤詳細資訊：\n%@
+application.install.replace.message	Replace “%@” in Applications with the archived version?	“%@”已经存在于“应用程序”文件夹。继续安装会使用压缩包中的版本替换它。	「%@」已經存在於「應用程式」資料夾。繼續安裝會使用壓縮檔中的版本取代它。
+application.install.stage.copy-application	Copy to installation directory	复制到安装目录	複製到安裝目錄
+application.install.stage.extract-application	Extract application	解压应用	解壓縮應用程式
+application.install.stage.finalize-metadata	Finalize installation metadata	完成安装元数据	完成安裝中繼資料
+application.install.stage.move-application	Move to installation directory	移入安装目录	移入安裝目錄
+application.install.stage.prepare-destination	Prepare installation directory	准备安装目录	準備安裝目錄
+application.install.stage.prepare-publication	Prepare publication record	准备发布记录	準備發佈記錄
+application.install.stage.prepare-stage	Prepare temporary directory	准备临时目录	準備暫存目錄
+application.install.stage.publish-application	Publish new application	发布新应用	發佈新應用程式
+application.install.stage.read-quarantine	Read source quarantine attributes	读取来源隔离属性	讀取來源隔離屬性
+application.install.stage.record-installation	Record installation state	记录安装状态	記錄安裝狀態
+application.install.stage.remove-quarantine	Remove application root quarantine	移除应用根目录隔离标记	移除應用程式根目錄隔離標記
+application.install.stage.replace-application	Replace existing application	替换现有应用	取代現有應用程式
+application.install.stage.validate-application	Validate application bundle	验证应用包	驗證應用程式套件
+application.install.stage.write-quarantine	Write application quarantine attributes	写入应用隔离属性	寫入應用程式隔離屬性
+archive.browsing.action_wait	Wait for the file list to finish loading to use “%@”.	请等待文件列表读取完成，再%@。	請等待檔案列表讀取完成，再%@。
+archive.browsing.preliminary_help	You can browse and extract the whole archive. Search, preview, drag-out, and selected extraction become available when the file list is ready.	可以浏览和全部解压。文件列表读取完成后可搜索、预览、拖出或解压所选文件。	可以瀏覽和全部解壓縮。檔案列表讀取完成後可搜尋、預覽、拖出或解壓縮所選檔案。
+archive.completion.active_work	The archive still has an operation in progress. Wait for it to finish before moving the archive to Trash.	压缩包仍有正在进行的操作。请等待操作完成，再将压缩包移入废纸篓。	壓縮檔仍有正在進行的操作。請等待操作完成，再將壓縮檔移入垃圾桶。
+archive.completion.auto_close	Automatically Close Archive	自动关闭压缩包	自動關閉壓縮檔
+archive.completion.unsaved_changes	The archive has unsaved changes. Save or discard them before moving the archive to Trash.	压缩包有未保存的修改。请先保存或放弃修改，再将压缩包移入废纸篓。	壓縮檔有未儲存的修改。請先儲存或放棄修改，再將壓縮檔移入垃圾桶。
+archive.create	Create Archive	创建压缩包	建立壓縮檔
+archive.default_filename	Archive.zip	归档.zip	封存.zip
+archive.default_stem	Archive	归档	封存
+archive.delete_selection	Delete Selected Items	删除所选项目	刪除所選項目
+archive.encryption_notice.do_not_show_again	Don't Show Again	不再提示	不再提示
+archive.extract_all	Extract All	全部解压	全部解壓縮
+archive.extract_selection	Extract Selected Items…	解压所选项目…	解壓縮所選項目…
+archive.no_items	No Items	没有项目	沒有項目
+archive.open	Open Archive…	打开压缩包…	開啟壓縮檔…
+archive.open.preparing.icloud.detail	Opens after downloading.	下载完成后将自动继续打开	下載完成後將自動繼續開啟
+archive.open.preparing.provider.detail	Opens when ready.	正在等待文件内容可用，完成后将自动继续	正在等待檔案內容可用，完成後將自動繼續
+archive.password.finder.message	%@\n%@	%@\n%@	%@\n%@
+archive.password_required	Password Required	需要密码	需要密碼
+archive.preview_selection	Preview Selected Items	预览所选项目	預覽所選項目
+archive.progress.calculating_total	%@ / Calculating	%@ / 正在计算总大小	%@ / 正在計算總大小
+archive.quit.wait.message	ArcZip will quit when the tasks finish. You can cancel quitting to continue managing them.	任务完成后将自动退出。也可以取消退出，继续处理任务。	作業完成後將自動結束。也可以取消結束，繼續處理作業。
+archive.save	Save Archive	保存	儲存
+archive.save.source_changed.message	The original archive has not been overwritten. You can try merging your changes into the latest file; saving will stop if there is a conflict. Reloading discards your unsaved changes.	尚未覆盖原压缩包。可尝试将你的修改合并到最新文件；如有冲突，将停止保存。重新载入会丢失当前未保存的修改。	尚未覆蓋原壓縮檔。可嘗試將你的修改合併到最新檔案；如有衝突，將停止儲存。重新載入會遺失目前未儲存的修改。
+archive.source.waiting_content	Waiting for file contents to become available	正在等待文件内容可用	正在等待檔案內容可用
+archive.source.waiting_download	Waiting for the file to finish downloading	正在等待文件下载完成	正在等待檔案下載完成
+archive.type.archive	%@ archive	%@ 压缩包	%@ 壓縮檔
+archive.type.disk_image	%@ disk image	%@ 磁盘映像	%@ 磁碟映像檔
+archive.untitled_name	Untitled Archive	未命名压缩包	未命名壓縮檔
+archive.window.active_close.message	Finish or cancel the tasks in the progress panel before closing this window.	请先在进度面板中完成或取消任务，再关闭窗口。	請先在進度面板中完成或取消作業，再關閉視窗。
+archive.window.active_close.title	This window still has active tasks	此窗口仍有任务正在进行	此視窗仍有作業正在進行
+archive.window.already_open	“%@” is open in another window. Continue there.	“%@”已在另一个窗口打开，请在那个窗口中操作。	「%@」已在另一個視窗開啟，請在那個視窗中操作。
+archive.window.save_changes.message	Changes will be lost if you don’t save.	不保存将丢失这些修改。	不儲存將遺失這些修改。
+archive.window.save_changes.title	Save changes to “%@”?	是否保存对“%@”的修改？	是否儲存對「%@」的修改？
+archive.wrong_password	Incorrect Password	密码错误	密碼錯誤
+association.incomplete.message	The following formats were not associated with ArcZip:\n%@	以下格式未成功关联 ArcZip：\n%@	以下格式未成功關聯 ArcZip：\n%@
+association.incomplete.title	File associations incomplete	格式关联未完成	格式關聯未完成
+association.open_with.notice	PKG files open with Installer by default; ArcZip can view and extract them. Try EXE and SWF files using Open With → ArcZip.	PKG 默认由系统安装器打开，仍可用 ArcZip 查看和解压。EXE、SWF 可通过“打开方式 → ArcZip”尝试打开。	PKG 預設由系統安裝程式開啟，仍可用 ArcZip 檢視和解壓縮。EXE、SWF 可透過「開啟方式 → ArcZip」嘗試開啟。
+batch.cancel	Cancel Batch	取消本批次	取消這批作業
+batch.open.browse	Browse	浏览	瀏覽
+batch.open.extract	Batch Extract…	批量解压…	批次解壓縮…
+batch.open.message	Opening many archives at once may use significant system resources. Choose to browse them or extract them one at a time.	同时浏览大量压缩包可能占用较多系统资源。你可以继续浏览，或选择逐个批量解压。	同時瀏覽大量壓縮檔可能佔用較多系統資源。你可以繼續瀏覽，或選擇逐一批次解壓縮。
+batch.open.title	Open %d archives?	打开 %d 个压缩包？	打開 %d 個壓縮檔？
+batch.password.notice	This password will also be tried for other encrypted archives in this group.	此密码也会用于尝试解锁本组中的其他加密压缩包。	此密碼也會用來嘗試解鎖這組中的其他加密壓縮檔。
+batch.skip	Skip This Archive	跳过此压缩包	略過此壓縮檔
+batch.sources.message	Extraction finished. Move the %d successfully extracted archives to the Trash? Failed and skipped archives will be kept.	本批次已解压完成。是否将成功解压的 %d 个原压缩包移到废纸篓？失败和跳过的压缩包将保留。	這批已解壓縮完成。是否將成功解壓縮的 %d 個原始壓縮檔移到垃圾桶？失敗和略過的壓縮檔將保留。
+batch.sources.title	How should the original archives be handled?	如何处理本批次的原压缩包？	如何處理這批原始壓縮檔？
+batch.summary	%d extracted, %d errors, %d skipped.	已解压 %d 个，遇到 %d 个错误，跳过 %d 个。	已解壓縮 %d 個，遇到 %d 個錯誤，略過 %d 個。
+batch.title	Batch Extraction	批量解压	批次解壓縮
+box.brand.subtitle	Box	文件盒	檔案盒
+box.browser.back	Go Back	返回上一层	返回上一層
+box.browser.empty	This folder is empty	文件夹为空	資料夾為空
+box.browser.exit	Return to All Files	返回总文件列表	返回完整檔案列表
+box.browser.unavailable	Unable to read this folder	无法读取文件夹	無法讀取資料夾
+box.clipboard.copied	Copied	已拷贝	已拷貝
+box.color.blue	Blue	蓝色	藍色
+box.color.gray	Gray	灰色	灰色
+box.color.green	Green	绿色	綠色
+box.color.lavender	Lavender	淡紫	淡紫
+box.color.orange	Orange	橙色	橙色
+box.color.pink	Pink	粉色	粉色
+box.color.red	Red	红色	紅色
+box.color.yellow	Yellow	黄色	黃色
+box.menu.open_app	Open ArcZip	打开 ArcZip	開啟 ArcZip
+box.menu.quit	Quit	退出	結束
+box.save.action	Save To…	保存到…	儲存到…
+box.save.completed	Saved	保存完成	儲存完成
+box.save.confirm	Save	保存	儲存
+box.save.in_use	Close windows using these results, or wait for extraction to finish before saving.	请先关闭使用这些结果的窗口，或等待解压完成后再保存	請先關閉使用這些結果的視窗，或等待解壓完成後再儲存
+box.save.inside_source	Choose a location outside the result folder.	保存位置不能位于产物文件夹内	儲存位置不能位於產物資料夾內
+box.save.progress	Saving	正在保存	正在儲存
+box.save.sharing	Wait for sharing to finish before saving.	文件正在分享，请完成后再保存	檔案正在分享，請完成後再儲存
+box.save.temporary_destination	Choose a save location outside the Box temporary folder.	请选择文件盒临时目录以外的保存位置	請選擇檔案盒暫存目錄以外的儲存位置
+box.settings.appearance	Appearance	外观	外觀
+box.settings.behavior	Behavior	使用方式	使用方式
+box.settings.color	Color	颜色	顏色
+box.settings.color_intensity	Color Intensity	色彩浓度	色彩濃度
+box.settings.enabled	Enable ArcZip Box	启用 ArcZip文件盒	啟用 ArcZip 檔案盒
+box.settings.enabled_detail	Show the menu bar icon and accept files in Box.	显示菜单栏图标，并允许向文件盒拖入文件。	顯示選單欄圖示，並允許向檔案盒拖入檔案。
+box.settings.idle_delay	Hide after inactivity	闲置后自动收起	閒置後自動收合
+box.settings.idle_detail	Keep Box open with the pin button. Dragging and processing pause the countdown.	使用图钉可让文件盒保持显示；拖放和处理文件时会暂停计时。	使用圖釘可讓檔案盒保持顯示；拖放和處理檔案時會暫停計時。
+box.settings.preview	ArcZip Box appearance preview	ArcZip文件盒外观预览	ArcZip 檔案盒外觀預覽
+box.settings.seconds	%lld seconds	%lld 秒	%lld 秒
+box.settings.subtitle	Collect files and process them from the menu bar	在菜单栏中暂存文件，集中整理与处理	在選單欄中暫存檔案，集中整理與處理
+box.source_access.message	ArcZip cannot read the source file you dropped. In System Settings → Privacy & Security → Files & Folders, expand ArcZip and enable access to the source app, such as WeChat. Then drop the file again.	ArcZip 无法读取这次拖入的来源文件。请在系统设置的“隐私与安全性 → 文件与文件夹”中展开 ArcZip，并开启对应来源应用（例如微信）的访问权限，然后重新拖入文件。	ArcZip 無法讀取這次拖入的來源檔案。請在系統設定的「隱私權與安全性 → 檔案與檔案夾」中展開 ArcZip，並開啟對應來源應用程式（例如 WeChat）的存取權限，然後重新拖入檔案。
+box.source_access.open_settings	Open Files & Folders	打开文件与文件夹	開啟「檔案與檔案夾」
+box.source_access.title	Allow access to the source file	需要访问来源文件的权限	需要存取來源檔案的權限
+commercial.pro.about_prompt	What is ArcZip Pro?	什么是ArcZip Pro？	什麼是 ArcZip Pro？
+commercial.pro.activate	Activate ArcZip Pro	激活 ArcZip Pro	啟用 ArcZip Pro
+commercial.pro.activate_license	Activate License	激活许可证	啟用授權
+commercial.pro.activating	Verifying activation code…	正在验证激活码…	正在驗證啟用碼…
+commercial.pro.activating_button	Activating…	正在激活…	正在啟用…
+commercial.pro.activation_placeholder	XXXX-XXXX-XXXX-XXXX	XXXX-XXXX-XXXX-XXXX	XXXX-XXXX-XXXX-XXXX
+commercial.pro.activation_privacy	The code is used only to verify your license	激活码仅用于验证授权	啟用碼僅用於驗證授權
+commercial.pro.activation_purchased_prompt	Already have a license?	已购买许可证？	已購買授權？
+commercial.pro.activation_subtitle	Enter your activation code.	输入购买后收到的激活码	輸入購買後收到的啟用碼
+commercial.pro.activation_success	ArcZip Pro is now active.	激活成功，ArcZip Pro 已解锁。	啟用成功，ArcZip Pro 已解鎖。
+commercial.pro.activation_success_title	ArcZip Pro is activated	ArcZip Pro 已激活	ArcZip Pro 已啟用
+commercial.pro.activation_support	Your support helps ArcZip keep getting better.	你的支持，让 ArcZip 持续变得更好。	你的支持，讓 ArcZip 持續變得更好。
+commercial.pro.activation_thanks	Thank you for purchasing ArcZip Pro.	感谢你购买 ArcZip Pro。	感謝你購買 ArcZip Pro。
+commercial.pro.activation_title	Activate ArcZip Pro	激活 ArcZip Pro	啟用 ArcZip Pro
+commercial.pro.already_purchased	Already purchased?	已经购买？	已經購買？
+commercial.pro.back_to_purchase	Back to Plans	返回购买介绍	返回購買介紹
+commercial.pro.brand_tagline	A complete, professional archive experience	完整、专业的压缩体验	完整、專業的壓縮體驗
+commercial.pro.buy	Buy ArcZip Pro	购买 ArcZip Pro	購買 ArcZip Pro
+commercial.pro.buy_now	Buy Now	立即购买	立即購買
+commercial.pro.choose_plan	Choose Your Plan	选择你的方案	選擇你的方案
+commercial.pro.current_device	This Mac	本机	本機
+commercial.pro.current_device_name	This Mac’s name	这台 Mac 的名称	這台 Mac 的名稱
+commercial.pro.deactivate_confirm_message	This Mac will switch to Free immediately, freeing a device slot. You can reactivate this or another Mac with the same code.	此 Mac 将立即回到免费版，并释放一个设备名额。之后可在这台或其他 Mac 上使用同一激活码重新激活。	此 Mac 將立即回到免費版，並釋放一個裝置名額。之後可在這台或其他 Mac 上使用同一啟用碼重新啟用。
+commercial.pro.deactivate_confirm_title	Deactivate This Mac?	停用当前 Mac？	停用目前 Mac？
+commercial.pro.deactivate_current_mac	Deactivate This Mac	停用当前 Mac	停用目前 Mac
+commercial.pro.deactivate_device	Deactivate	停用	停用
+commercial.pro.deactivate_device_confirm_title	Deactivate This Device?	停用此设备？	停用此裝置？
+commercial.pro.deactivate_named_device_confirm_title	Deactivate “%@”?	停用“%@”？	停用「%@」？
+commercial.pro.deactivate_remote_confirm_message	This frees a device slot. The device will switch to Free after its next online license check.	此设备将从许可证中停用并释放一个设备名额。设备下次联网验证授权后将回到免费版。	此裝置將從授權中停用並釋放一個裝置名額。裝置下次連線驗證授權後將回到免費版。
+commercial.pro.deactivate_remote_success	Device deactivated. A device slot is now available.	设备已停用，激活名额已释放。	裝置已停用，啟用名額已釋放。
+commercial.pro.deactivate_success	This Mac was deactivated and the device seat was released.	当前 Mac 已停用，设备名额已释放。	目前 Mac 已停用，裝置名額已釋放。
+commercial.pro.device_activation_date_format	Activated on %@	激活于 %@	啟用日期：%@
+commercial.pro.device_available_format	Available device slots: %lld	还可激活 %lld 台	還可啟用 %lld 台
+commercial.pro.device_dates_format	Activated %@ · Last verified %@	激活于 %@ · 最近验证 %@	啟用日期：%@ · 最近驗證：%@
+commercial.pro.device_management_title	Devices	设备管理	裝置管理
+commercial.pro.device_name_detail	Uses this Mac’s computer name by default. You can set a custom name of up to 100 characters.	默认使用这台 Mac 的计算机名，也可以自定义，最多 100 个字符。	預設使用這台 Mac 的電腦名稱，也可以自訂，最多 100 個字元。
+commercial.pro.device_name_placeholder	Device name	设备名称	裝置名稱
+commercial.pro.device_name_save	Save	保存	儲存
+commercial.pro.device_name_saved	This Mac’s name was updated.	这台 Mac 的名称已更新。	這台 Mac 的名稱已更新。
+commercial.pro.device_name_saving	Saving…	正在保存…	正在儲存…
+commercial.pro.device_rename	Rename	改名	改名
+commercial.pro.device_rename_title	Rename This Mac	重命名这台 Mac	重新命名這台 Mac
+commercial.pro.device_usage_format	%1$lld of %2$lld devices activated	已使用 %lld / %lld 台	已使用 %lld / %lld 台
+commercial.pro.device_usage_single_format	%1$lld of %2$lld device activated	已使用 %lld / %lld 台	已使用 %lld / %lld 台
+commercial.pro.device_version_format	ArcZip %@	ArcZip %@	ArcZip %@
+commercial.pro.enter_activation_code	Enter Activation Code	输入激活码	輸入啟用碼
+commercial.pro.error_activation_limit	The activation limit has been reached. Try again or contact support.	可激活设备数量已达上限，请重试或联系支持。	可啟用的裝置數量已達上限，請再試一次或聯絡支援人員。
+commercial.pro.error_authorization_rejected	The license credential is no longer valid. Activate ArcZip Pro again.	激活信息已失效，请重新激活 ArcZip Pro。	啟用資訊已失效，請重新啟用 ArcZip Pro。
+commercial.pro.error_current_device_remote	Use “Deactivate This Mac” to remove the license safely from this Mac.	请使用“停用当前 Mac”安全移除本机授权。	請使用「停用目前 Mac」安全移除本機授權。
+commercial.pro.error_device_not_found	This device no longer exists or is already deactivated. Refresh the device list.	该设备已不存在或已被停用，请刷新设备列表。	該裝置已不存在或已被停用，請重新整理裝置列表。
+commercial.pro.error_email_mismatch	No active license was found for this email. Check the email used for your purchase and try again.	未找到使用该邮箱购买的有效许可证，请检查购买邮箱后重试。	找不到使用此電子郵件地址購買的有效授權，請確認購買時使用的地址後再試一次。
+commercial.pro.error_invalid_device_name	Enter a device name of 1–100 characters without control characters.	请输入 1–100 个字符的设备名称，不包含控制字符。	請輸入 1–100 個字元的裝置名稱，不包含控制字元。
+commercial.pro.error_invalid_email	Enter a valid purchase email address.	请输入有效的购买邮箱地址。	請輸入有效的購買電子郵件地址。
+commercial.pro.error_invalid_key	The activation code is invalid. Check it and try again.	激活码无效，请检查后重试。	啟用碼無效，請檢查後再試一次。
+commercial.pro.error_network	ArcZip could not reach the license service. Check your network and try again.	无法连接授权服务，请检查网络后重试。	無法連線至授權服務，請檢查網路後再試一次。
+commercial.pro.error_no_stored_license	There is no local license to manage on this Mac.	此 Mac 没有可管理的本地授权。	此 Mac 沒有可管理的本地授權。
+commercial.pro.error_operation_in_progress	Another license operation is in progress. Please wait.	另一项授权操作正在进行，请稍候。	另一項授權操作正在進行，請稍候。
+commercial.pro.error_rate_limited	Too many attempts. Try again later.	尝试次数过多，请稍后再试。	嘗試次數過多，請稍後再試。
+commercial.pro.error_refunded	This license was refunded and cannot be activated.	此授权已退款，无法激活。	此授權已退款，無法啟用。
+commercial.pro.error_revoked	This license was revoked and cannot be activated.	此授权已被撤销，无法激活。	此授權已撤銷，無法啟用。
+commercial.pro.error_secure_storage	ArcZip could not securely save the license. Check Keychain access and try again.	无法保存授权，请检查钥匙串访问后重试。	無法儲存授權，請檢查「鑰匙圈存取」後再試一次。
+commercial.pro.error_service	The activation code could not be verified. Try again later.	暂时无法验证激活码，请稍后重试。	暫時無法驗證啟用碼，請稍後再試一次。
+commercial.pro.error_unavailable_build	This preview build is not connected to the license service yet.	当前预览版本尚未连接授权服务。	目前預覽版本尚未連線至授權服務。
+commercial.pro.error_version_not_covered	This activation code does not cover the current ArcZip major version.	此激活码不适用于当前 ArcZip 主版本。	此啟用碼不適用於目前 ArcZip 主版本。
+commercial.pro.feature_creation_title	More Formats & Presets	更多格式与创建预设	更多格式與壓縮預設
+commercial.pro.feature_edit_title	Edit Existing Archives	自由修改现有压缩包	自由修改現有壓縮檔
+commercial.pro.feature_flows_title	All Pro Flows	全部专业 Flow	全部專業 Flow
+commercial.pro.feature_requires_pro	“%@” requires ArcZip Pro. Free includes opening, browsing, previewing, full extraction, and basic ZIP creation with the General purpose and Balanced compression.	“%@”属于 ArcZip Pro。免费版仍可使用打开、浏览、预览、完整解压，以及通用分享 + ZIP + 均衡强度的基础压缩。	「%@」屬於 ArcZip Pro。免費版仍可開啟、瀏覽、預覽及完整解壓縮，並使用「一般分享 + ZIP + 均衡強度」進行基本壓縮。
+commercial.pro.feature_security_title	Advanced Compression & Security	高级压缩与安全选项	進階壓縮與安全選項
+commercial.pro.last_verified	Last Verified	上次验证	上次驗證
+commercial.pro.learn_more	Learn About ArcZip Pro	了解 ArcZip Pro	瞭解 ArcZip Pro
+commercial.pro.learn_more_action	Learn More	点击了解	按一下瞭解
+commercial.pro.learn_more_subtitle	Learn about ArcZip Pro features, purchasing, and activation	了解 ArcZip Pro 的功能、购买方式与激活流程	瞭解 ArcZip Pro 的功能、購買方式與啟用流程
+commercial.pro.license_management	License and Device Management	授权与设备管理	授權與裝置管理
+commercial.pro.license_management_detail	Deactivate this Mac, or remotely release an old device before activating a new Mac	在当前 Mac 停用授权，或远程释放旧设备后在新 Mac 重新激活	在此 Mac 停用授權，或遠端釋放舊裝置的名額後，在新 Mac 重新啟用
+commercial.pro.license_unavailable	Your license %@. “%@” is unavailable.	当前 Pro 授权%@，暂时不能使用“%@”。请检查授权状态后重试。	目前 Pro 授權%@，暫時不能使用「%@」。請檢查授權狀態後再試一次。
+commercial.pro.loading_devices	Loading activated devices…	正在读取已激活设备…	正在讀取已啟用裝置…
+commercial.pro.lost_license_key	Lost Activation Code?	找回激活码	找回啟用碼
+commercial.pro.manage_license	Manage License	管理许可证	管理授權
+commercial.pro.manage_other_devices	Manage Devices	管理设备	管理裝置
+commercial.pro.paste	Paste	粘贴	貼上
+commercial.pro.plan_single_user_summary	1 user	1 位用户	1 位使用者
+commercial.pro.plan_single_user_title	Single User	单用户	單人版
+commercial.pro.plan_three_users_summary	Up to 3 users	最多 3 位用户	最多 3 位使用者
+commercial.pro.plan_three_users_title	3 Users	三用户	三人版
+commercial.pro.price_single	¥68	¥68	¥68
+commercial.pro.price_three	¥99	¥99	¥99
+commercial.pro.purchase_learn_more	Learn More	了解更多	瞭解更多
+commercial.pro.purchase_subtitle	Unlock archive search, all Flows, advanced compression options, and archive editing.	解锁包内搜索、完整 Flow、高级压缩选项与压缩包编辑。	解鎖壓縮檔內搜尋、完整 Flow、進階壓縮選項與壓縮檔編輯。
+commercial.pro.purchase_title	Unlock ArcZip Pro	解锁 ArcZip Pro	解鎖 ArcZip Pro
+commercial.pro.recovery_detail	Enter the email used for your purchase. If support approves your request, a new activation code will be sent to that address.	请输入购买 ArcZip Pro 时填写的邮箱地址，客服审核后新激活码会发送至购买邮箱。	請輸入購買 ArcZip Pro 時使用的電子郵件地址。客服審核通過後，新的啟用碼會寄到該地址。
+commercial.pro.recovery_email_placeholder	Email used for purchase	购买时填写的邮箱	購買時使用的電子郵件地址
+commercial.pro.recovery_submitted_button	Request Submitted	申请已提交	申請已送出
+commercial.pro.recovery_success	Request submitted. Review is expected within 24 hours. If approved, a new activation code will be sent to your purchase email.	申请已提交，预计将在 24 小时内审核。审核通过后，新激活码将发送至购买邮箱。	申請已送出，預計在 24 小時內完成審核。審核通過後，新的啟用碼會寄到購買時使用的電子郵件地址。
+commercial.pro.recovery_title	Lost Activation Code?	找回激活码	找回啟用碼
+commercial.pro.refresh_license	Refresh License	刷新激活状态	重新整理啟用狀態
+commercial.pro.refresh_success	License status updated.	激活状态已更新。	啟用狀態已更新。
+commercial.pro.remove_local_license	Remove Local License	移除本地授权	移除本地授權
+commercial.pro.remove_local_success	The local license was removed. The server device seat was not changed.	本地授权已移除。服务器设备名额未发生变化。	本地授權已移除。伺服器裝置名額未發生變化。
+commercial.pro.replacement_changed	The device list has changed. Choose a device again.	设备状态已发生变化，请重新选择要替换的设备。	裝置狀態已發生變化，請重新選擇要取代的裝置。
+commercial.pro.replacement_confirm	Replace and activate this Mac	替换并激活此 Mac	取代並啟用此 Mac
+commercial.pro.replacement_message	Choose an old Mac to transfer its activation to this Mac.	选择一台旧 Mac，将它的激活名额转移到此 Mac。	選擇一台舊 Mac，將它的啟用名額轉移到此 Mac。
+commercial.pro.replacement_progress	Transferring activation…	正在转移激活名额…	正在轉移啟用名額…
+commercial.pro.replacement_title	Choose a device to replace	选择要替换的设备	選擇要取代的裝置
+commercial.pro.retry	Retry	重试	再試一次
+commercial.pro.search_requires_pro	Search by filename or path across your archive with ArcZip Pro, without opening each folder.	包内搜索属于 ArcZip Pro。按文件名或路径查找压缩包内的文件，无需逐层打开文件夹。	壓縮檔內搜尋屬於 ArcZip Pro。依檔名或路徑尋找壓縮檔內的檔案，無需逐層開啟資料夾。
+commercial.pro.settings_subtitle	Manage your license and activated Macs.	查看激活状态，管理已激活的设备。	查看啟用狀態，管理已啟用的裝置。
+commercial.pro.settings_trial_active	Trial Active	ArcZip Pro 试用中	ArcZip Pro 試用中
+commercial.pro.settings_trial_ended	Trial Ended	ArcZip Pro 试用已结束	ArcZip Pro 試用已結束
+commercial.pro.settings_trial_remaining	Trial · %@	试用中 · %@	試用中 · %@
+commercial.pro.start_using	Start Using ArcZip	开始使用	開始使用
+commercial.pro.status.invalid	could not be verified	无法验证	無法驗證
+commercial.pro.status.refunded	was refunded	已退款	已退款
+commercial.pro.status.revoked	is revoked	已被撤销	已撤銷
+commercial.pro.status_active	Activated	ArcZip Pro 已激活	ArcZip Pro 已啟用
+commercial.pro.status_active_detail	This Mac can use all ArcZip Pro features.	此 Mac 当前可以使用全部 ArcZip Pro 功能。	此 Mac 目前可以使用全部 ArcZip Pro 功能。
+commercial.pro.status_free	ArcZip Free	ArcZip Free	ArcZip Free
+commercial.pro.status_free_detail	Enter an activation code to unlock Pro features on this Mac.	输入激活码即可在此 Mac 解锁 Pro 功能。	輸入啟用碼即可在此 Mac 解鎖 Pro 功能。
+commercial.pro.status_inactive	Not Activated	ArcZip Pro 未激活	ArcZip Pro 未啟用
+commercial.pro.status_invalid	Local License Invalid	本地授权无效	本地授權無效
+commercial.pro.status_invalid_detail	ArcZip cannot verify the local license. Remove it and activate again.	ArcZip 无法验证本地许可证，请移除后重新激活。	ArcZip 無法驗證本地授權，請移除後重新啟用。
+commercial.pro.status_preview_detail	This internal preview build is not connected to the license service.	当前内部预览构建未连接授权服务。	目前內部預覽建置版本未連線至授權服務。
+commercial.pro.status_refunded	License Refunded	授权已退款	授權已退款
+commercial.pro.status_refunded_detail	This license no longer grants Pro features.	此许可证不再授予 Pro 功能。	此授權不再授予 Pro 功能。
+commercial.pro.status_revoked	License Deactivated on This Mac	此 Mac 的授权已停用	此 Mac 的授權已停用
+commercial.pro.status_revoked_detail	The device seat is released and this Mac has returned to Free.	设备名额已释放；此 Mac 已回到免费版。	裝置名額已釋放；此 Mac 已回到免費版。
+commercial.pro.submit_recovery	Submit Request	提交申请	送出申請
+commercial.pro.transfer_explanation	When changing Macs, deactivate the old Mac first. If it is unavailable, open Device Management in ArcZip, deactivate it remotely, then enter the same activation code on the new Mac.	更换 Mac 时，先在旧 Mac 点击“停用当前 Mac”；如果旧 Mac 已不可用，请在 ArcZip 的“设备管理”中远程停用，再在新 Mac 输入同一激活码。	更換 Mac 時，先在舊 Mac 按一下「停用目前 Mac」；如果舊 Mac 已不可用，請在 ArcZip 的「裝置管理」中遠端停用，再在新 Mac 輸入同一啟用碼。
+commercial.pro.trial_days_remaining	%lld days remaining	剩余 %lld 天	剩餘 %lld 天
+commercial.pro.trial_ended	Trial ended	试用已结束	試用已結束
+commercial.pro.trial_ended_purchase_message	Your 7-day trial has ended. Purchase ArcZip Pro to keep all Pro features, or continue using the free features.	7天免费试用已结束。购买 ArcZip Pro 以继续使用全部专业功能，或继续使用免费功能。	7 天免費試用已結束。購買 ArcZip Pro 以繼續使用全部專業功能，或繼續使用免費功能。
+commercial.pro.trial_error_network	Check your network connection	请检查网络	請檢查網路
+commercial.pro.trial_error_service	The service is temporarily unavailable. Try again later.	服务暂不可用，请稍后再试	服務暫不可用，請稍後再試
+commercial.pro.trial_error_time	Check your system date and time	请检查系统时间	請檢查系統時間
+commercial.pro.trial_error_used	You have already used the trial	你已进行过试用	你已進行過試用
+commercial.pro.trial_less_than_one_day	Less than 1 day remaining	剩余不足1天	剩餘不足 1 天
+commercial.pro.trial_one_day_remaining	%lld day remaining	剩余 %lld 天	剩餘 %lld 天
+commercial.pro.trial_start	Start Trial	开始试用	開始試用
+commercial.pro.trial_start_failed_title	Unable to Start Trial	开始试用失败	開始試用失敗
+commercial.pro.trial_title	7-Day Free Trial	7天免费试用	7 天免費試用
+commercial.pro.unnamed_device	Unnamed Mac	未命名 Mac	未命名 Mac
+commercial.pro.upgrade_required	Your license covers ArcZip %lld.x and earlier. Upgrade for “%@”.	当前授权适用于 ArcZip %lld.x 及更早版本。使用“%@”需要升级授权。	目前授權適用於 ArcZip %lld.x 及更早版本。使用「%@」需要升級授權。
+commercial.pro.use_activation_code	Use activation code	使用激活码	使用啟用碼
+commercial.pro.version_coverage	Version Coverage	版本范围	版本範圍
+common.cancel	Cancel	取消	取消
+common.close	Close	关闭	關閉
+common.details	Details	详情	詳細資訊
+common.done	Done	完成	完成
+common.loading	Loading…	正在载入…	正在載入…
+common.name	Name	名称	名稱
+common.ok	OK	好	好
+common.retry	Try Again	重试	再試一次
+common.search	Search	搜索	搜尋
+common.settings	Settings	设置	設定
+common.size	Size	大小	大小
+creation.external_entry.issue.continuing	Skipping problem items and continuing	正在跳过问题项目并继续	正在略過問題項目並繼續
+creation.external_entry.issue.message	ArcZip can skip items that cannot be represented or read safely and continue with the remaining content. Your source files will not be modified.	以下项目无法加入压缩包。跳过后将继续压缩其余文件。	以下項目無法加入壓縮檔。略過後將繼續壓縮其餘檔案。
+creation.external_entry.issue.more	…and %lld more items	…另外还有 %lld 个项目	…另外還有 %lld 個項目
+creation.external_entry.issue.title	Some items cannot be added to the archive	有些项目无法加入压缩包	有些項目無法加入壓縮檔
+creation.external_entry.issue.waiting	Waiting for a decision on problem items	等待确认问题项目	等待確認問題項目
+creation.metadata.support_files.detail	Keep existing files such as .DS_Store and __MACOSX	保留 .DS_Store、__MACOSX 等已有文件	保留 .DS_Store、__MACOSX 等已有檔案
+creation.metadata.support_files.title	Keep Mac support files	保留 macOS 辅助文件	保留 macOS 輔助檔案
+creation.smallest.formats	Smallest Size supports ZIP and 7Z only.	尽可能小仅支持 ZIP 和 7Z 格式	盡可能小僅支援 ZIP 和 7Z 格式
+creation.smallest.maximum_only	Smallest Size uses the maximum compression level and cannot be adjusted.	尽可能小的压缩强度固定为极限，不可调整	盡可能小的壓縮強度固定為極限，無法調整
+creation.split.by_count	Number of volumes	按数量	依數量
+creation.split.by_size	Volume size	按大小	依大小
+creation.split.count	Volumes	分卷数量	分卷數量
+creation.split.count_detail	Split the completed archive evenly into the selected number of volumes.	压缩完成后均分为指定份数	壓縮完成後均分為指定份數
+creation.split.custom	Custom	自定义	自訂
+creation.split.custom_size	Target size	目标大小	目標大小
+creation.split.decrease	Decrease volume count	减少分卷数量	減少分卷數量
+creation.split.increase	Increase volume count	增加分卷数量	增加分卷數量
+creation.split.invalid_count	Enter a whole number from 2 to 999.	请输入 2 至 999 之间的整数	請輸入 2 至 999 之間的整數
+creation.split.invalid_size	Enter a valid size of at least 1 KB.	请输入至少 1 KB 的有效大小	請輸入至少 1 KB 的有效大小
+creation.split.maximum	Maximum per volume	每卷最多	每卷最多
+creation.split.mode	Split by	分卷方式	分卷方式
+creation.split.size_detail	A smaller archive produces one volume. The last volume may be smaller.	成品不足上限时只生成一卷，最后一卷可能较小	壓縮結果未達上限時只產生一卷，最後一卷可能較小
+creation.split.unit	Size unit	大小单位	大小單位
+creation.tar.no_compression	TAR only bundles files; the compression level cannot be adjusted.	TAR 仅打包，不支持调整压缩强度	TAR 僅封裝檔案，不支援調整壓縮強度
+creation.unix.tar_only	Linux & Servers supports TAR only.	Linux 与服务器仅支持 TAR 格式	Linux 與伺服器僅支援 TAR 格式
+creation.windows_filename_repair.item_count	Names to review: %d	待确认：%d 个文件名	待確認：%d 個檔名
+creation.windows_filename_repair.list_label	Filenames to review	待确认的文件名	待確認的檔名
+creation.windows_filename_repair.message	These filenames may not work correctly on Windows. Review or edit the suggested names.	以下文件名在 Windows 中可能无法正常使用。请检查或修改建议名称。	以下檔名在 Windows 中可能無法正常使用。請檢查或修改建議名稱。
+creation.windows_filename_repair.new_name	New name	新名称	新名稱
+creation.windows_filename_repair.source_note	Only names inside the archive will change; source files remain unchanged.	只会修改压缩包内的名称，源文件不受影响。	只會修改壓縮檔內的名稱，來源檔案不受影響。
+creation.windows_filename_repair.title	Fix Windows-incompatible names	修正不兼容文件名	修正不相容檔名
+dialog.archive_replacement.message	Replace overwrites the existing archive. Keep Both creates the new archive with a different name.	替换会覆盖现有版本；同时保留会以新名称创建。	取代會覆蓋現有版本；同時保留會以新名稱建立。
+dialog.confirmation.problem_items	Problem items	问题项目	問題項目
+dialog.confirmation.skip_items.message	These items cannot be safely added to the archive. You can skip them and continue, or cancel compression.	以下项目无法加入压缩包。跳过后将继续压缩其余文件。	以下項目無法加入壓縮檔。略過後將繼續壓縮其餘檔案。
+dialog.entry_index.close_window	Close Window	关闭窗口	關閉視窗
+dialog.entry_index.recovery	Free up disk space or check the system temporary folder, then try again.	请释放磁盘空间，或检查系统临时目录后重试。	請釋放磁碟空間，或檢查系統暫存目錄後再試一次。
+dialog.entry_index.source_safe	The source archive was not modified.	源压缩包未被修改。	來源壓縮檔未被修改。
+dialog.error.affected_item	Affected file	发生错误的文件	發生錯誤的檔案
+dialog.error.code	Error code	错误代码	錯誤代碼
+dialog.error.details	Error details	错误详情	錯誤詳細資訊
+dialog.error.long.follow_up	The source archive was not modified. Try reopening the archive. If the problem persists, send the file path, error code, and request ID shown in Error Details to support so they can investigate this read failure.	源压缩包没有被修改。你可以重新打开压缩包后再试。如果问题持续出现，请把错误详情中的文件路径、错误代码和请求编码提供给支持人员，以便定位这次读取失败。	來源壓縮檔未被修改。你可以重新開啟壓縮檔後再試。如果問題持續，請將錯誤詳細資訊中的檔案路徑、錯誤代碼和請求識別碼提供給支援人員，以便查明這次讀取失敗的原因。
+dialog.error.long.summary	Unable to read the file. The archive returned data that does not match its directory index. This item cannot be previewed or exported, but you can continue browsing other items.	无法读取文件。压缩包返回的数据与目录索引不一致。当前项目无法预览或导出，但其他项目仍可继续浏览。	無法讀取檔案。壓縮檔返回的資料與目錄索引不一致。目前項目無法預覽或匯出，但其他項目仍可繼續瀏覽。
+dialog.error.request_id	Request ID	请求编码	請求識別碼
+dialog.password.required.message	This archive is password-protected.	此压缩包受密码保护。	此壓縮檔受密碼保護。
+disk_image.application.open_failed	Unable to open this application: %@	无法打开此应用：%@	無法開啟此應用程式：%@
+disk_image.application.warning.applications	The developer recommends dragging “%@” to Applications first, or using ArcZip Quick Install (Pro), and then opening it from Applications.	开发者建议先将“%@”拖到“应用程序”文件夹，或使用 ArcZip 的快速安装（Pro），再从“应用程序”文件夹打开。	開發者建議先將「%@」拖到「應用程式」資料夾，或使用 ArcZip 的快速安裝（Pro），再從「應用程式」資料夾開啟。
+disk_image.application.warning.custom_destination	The developer specified “%@” as the installation location. Follow the image's instructions and drag “%@” there first.	开发者为此应用指定了安装位置“%@”。建议先按照映像中的指引将“%@”拖到该位置。	開發者為此應用程式指定了安裝位置「%@」。建議先按照映像中的指引將「%@」拖到該位置。
+disk_image.application.warning.destination_unavailable	ArcZip couldn't determine the installation location prepared by the developer for “%@”. Continuing will open the application directly.	ArcZip 无法确认开发者为“%@”准备的安装位置。继续将直接打开此应用。	ArcZip 無法確認開發者為「%@」準備的安裝位置。繼續將直接開啟此應用程式。
+disk_image.application.warning.multiple_destinations	The developer provided multiple installation locations. Follow the drag instructions shown in the image before opening the application.	开发者为此应用提供了多个安装位置。建议先按照映像中的拖动指引完成安装。	開發者為此應用程式提供了多個安裝位置。建議先按照映像中的拖動指引完成安裝。
+disk_image.drop.confirm.conflicts	The following items already exist and will be replaced: %@	以下项目已经存在，将被替换：%@	以下項目已經存在，將被取代：%@
+disk_image.drop.confirm.continue	Continue	继续	繼續
+disk_image.drop.confirm.custom_title	Extract to This Folder?	解压到这个文件夹？	解壓縮到這個資料夾？
+disk_image.drop.confirm.destination	Destination: %@	目标位置：%@	目標位置：%@
+disk_image.drop.confirm.replace	Replace	替换	取代
+disk_image.drop.confirm.replace_title	Replace Existing Items?	替换现有项目？	取代現有項目？
+disk_image.drop.error.destination_changed	The drop destination changed. Drag the items again.	拖放目标已经发生变化，请重新拖动	拖放目標已經發生變化，請重新拖動
+disk_image.drop.error.destination_missing	The drop destination no longer exists or is not a folder	拖放目标已不存在或不是文件夹	拖放目標已不存在或不是資料夾
+disk_image.drop.error.developer_target_changed	The developer-specified drop destination has changed	开发者指定的拖放目标已经发生变化	開發者指定的拖放目標已經發生變化
+disk_image.drop.error.developer_target_unavailable	The developer-specified drop destination is currently unavailable	开发者指定的拖放目标当前不可用	開發者指定的拖放目標目前不可用
+disk_image.drop.error.image_unavailable	This disk image can no longer accept the drop	当前磁盘映像已无法接受拖放	目前磁碟映像檔已無法接受拖放
+disk_image.drop.error.invalid_names	The dropped items contain invalid or conflicting names	拖放项目包含无效或冲突的名称	拖放項目包含無效或衝突的名稱
+disk_image.drop.error.item_exists	An item named “%@” already exists at the destination	目标位置已存在“%@”	目標位置已存在「%@」
+disk_image.drop.error.items_changed	The dragged items have changed. Drag them again.	拖放项目已发生变化，请重新拖动	拖放項目已發生變化，請重新拖動
+disk_image.drop.error.missing_extracted_item	Extraction did not produce “%@”	解压任务未生成“%@”	解壓縮作業未產生「%@」
+disk_image.drop.error.new_conflict	A new item with the same name appeared at the destination. Drag again and confirm replacement.	目标位置出现了新的同名项目，请重新拖动并确认替换	目標位置出現了新的同名項目，請重新拖動並確認取代
+disk_image.drop.error.no_items	There are no items to publish	没有可发布的项目	沒有可發佈的項目
+disk_image.drop.target_unavailable	Destination unavailable	目标不可用	目標不可用
+disk_image.view.icon.accessibility	Disk image icon view	磁盘映像图标视图	磁碟映像檔圖示顯示方式
+disk_image.view.mode.accessibility	Disk image view mode	磁盘映像显示方式	磁碟映像檔顯示方式
+disk_image.view.other_items	Other Items	其他项目	其他項目
+disk_image.view.other_items_description	Items without a usable position appear here	未提供可用位置的项目会显示在这里	未提供可用位置的項目會顯示在此處
+edit.action.add	Add Files	添加文件	加入檔案
+edit.action.delete	Delete	删除	刪除
+edit.action.rename	Rename	重命名	重新命名
+edit.redo	Redo	重做	重做
+edit.redo_action	Redo %@	重做%@	重做%@
+edit.undo	Undo	撤销	復原
+edit.undo_action	Undo %@	撤销%@	復原%@
+extraction.completion.action_detail	Applies to the original archive only after Extract All succeeds. Defaults to Ask Every Time.	仅在全部解压成功后处理原压缩包，默认每次均询问。	僅在全部解壓縮成功後處理原壓縮檔，預設每次均詢問。
+extraction.completion.always_ask	Ask Every Time	每次均询问	每次均詢問
+extraction.completion.always_keep	Always Keep File	始终保留文件	一律保留檔案
+extraction.completion.always_trash	Always Move to Trash	始终移入废纸篓	一律移入垃圾桶
+extraction.completion.close_detail	Close the window after extraction completes and the archive is kept	全部解压完成并保留压缩包后，自动关闭窗口	全部解壓縮完成並保留壓縮檔後，自動關閉視窗
+extraction.completion.detail	Choose how extracted items are shown and how archives are handled after Extract All.	设置解压结果的显示方式，以及全部解压后的压缩包动作	設定解壓縮結果的顯示方式，以及全部解壓縮後的壓縮檔動作
+extraction.completion.reveal_results	Automatically Select Extracted Items	自动选中解压结果	自動選取解壓縮結果
+extraction.completion.reveal_results_detail	Show the output location in Finder and select the extracted items when extraction finishes.	解压完成后在访达中显示输出位置，并选中解压结果。	解壓縮完成後在 Finder 中顯示輸出位置，並選取解壓縮結果。
+extraction.completion.row_detail	Keep the archive or move it to Trash after extraction	全部解压完成后，选择保留或移入废纸篓	全部解壓縮完成後，選擇保留或移入垃圾桶
+extraction.completion.source_action	Handle Archive	如何处理压缩包	如何處理壓縮檔
+extraction.completion.title	After Extraction	解压完成后	解壓縮完成後
+extraction.opening.browse_formats	Formats such as DMG and ISO are unaffected by this setting and always open for browsing.	DMG、ISO 等格式不受此设置影响，始终以浏览方式打开。	DMG、ISO 等格式不受此設定影響，一律開啟供瀏覽。
+extraction.opening.browse_menu	You can also choose “Browse with ArcZip” from the context menu or Services menu to view an archive’s contents.	也可通过右键菜单或“服务”菜单中的“用 ArcZip 浏览”，查看压缩包内容。	也可透過快捷選單或「服務」選單中的「使用 ArcZip 瀏覽」，查看壓縮檔內容。
+extraction.opening.browse_shift	Hold Shift, then double-click an archive to temporarily browse it in ArcZip Mini or the full window.	按住 Shift 键，再双击压缩包，即可临时使用 ArcZip Mini 或完整窗口浏览。	按住 Shift 鍵，再按兩下壓縮檔，即可暫時使用 ArcZip Mini 或完整視窗瀏覽。
+extraction.opening.detail	Only Always Move to Trash removes the original after direct extraction. Other completion choices keep it silently.	直接解压完成后，仅“始终移入废纸篓”会处理原包；其他选项均静默保留。	直接解壓縮完成後，僅「一律移到垃圾桶」會處理原始壓縮檔；其他選項均保留且不提示。
+extraction.opening.direct	Quick extract on double-click	双击时快速解压	按兩下時快速解壓縮
+extraction.opening.direct_detail	When enabled, double-clicking an archive immediately extracts it to the folder containing it, skipping browsing.	开启此选项后，双击压缩包会将它立刻解压到所在文件夹，跳过浏览步骤。	啟用此選項後，按兩下壓縮檔會立即將其解壓縮到所在資料夾，略過瀏覽步驟。
+extraction.opening.title	Opening Archives	打开压缩包	開啟壓縮檔
+extraction.trash.confirm	Move to Trash	移入废纸篓	移入垃圾桶
+extraction.trash.failed	Extraction completed, but the original archive could not be moved to Trash: %@	解压已完成，但无法将原压缩包移入废纸篓：%@	解壓縮已完成，但無法將原壓縮檔移入垃圾桶：%@
+extraction.trash.keep	Keep Archive	保留压缩包	保留壓縮檔
+extraction.trash.message	Move the original archive to Trash?	是否将原压缩包移入废纸篓？	是否將原壓縮檔移入垃圾桶？
+extraction.trash.title	Extraction complete	解压完成	解壓縮完成
+finder.batch_extract_here	Extract %@ Files Here	将 %@ 个文件解压到当前目录	將 %@ 個檔案解壓縮到目前目錄
+finder.batch_extract_to	Extract %@ Files to…	将 %@ 个文件解压到指定目录	將 %@ 個檔案解壓縮到指定目錄
+finder.browse_archive	Browse with ArcZip	用 ArcZip 浏览	使用 ArcZip 瀏覽
+finder.compress_advanced	Compress As…	压缩为…	壓縮為…
+finder.compress_named	Compress as “%@”	压缩为“%@”	壓縮為「%@」
+finder.extensions	Finder Extensions	访达扩展	Finder 延伸功能
+finder.extract_here	Extract Here	快速解压到当前目录	快速解壓縮到目前目錄
+finder.extract_to	Extract to…	快速解压到指定目录…	快速解壓縮到指定目錄…
+finder.menu_repair	Repair Finder Menu	修复访达菜单项	修復 Finder 選單項目
+finder.menu_repair_confirm	Repair	修复	修復
+finder.menu_repair_confirmation_message	ArcZip will remove stale Finder Sync and Quick Look registrations, keep only the extensions inside Applications, and restart Finder.	将修复 ArcZip 扩展，并重新启动访达。	將修復 ArcZip 延伸功能，並重新啟動 Finder。
+finder.menu_repair_confirmation_title	Repair Finder Menu?	修复访达菜单项？	修復 Finder 選單項目？
+finder.menu_repair_description	Repair ArcZip’s extensions if its Finder menu is missing.	修复访达中缺失的 ArcZip 右键菜单。	修復 Finder 中缺失的 ArcZip 快捷選單。
+finder.menu_repair_failure	Repair failed. Confirm that ArcZip is installed in Applications and try again.	修复失败，请确认 ArcZip 已安装到“应用程序”文件夹后重试。	修復失敗，請確認 ArcZip 已安裝到「應用程式」資料夾後再試一次。
+finder.menu_repair_missing_application	The current ArcZip was not found in Applications. Install it there first.	未在“应用程序”文件夹中找到当前 ArcZip，请先完成安装。	未在「應用程式」資料夾中找到目前 ArcZip，請先完成安裝。
+finder.menu_repair_ready	Finder will restart during repair.	如果访达右键菜单中没有 ArcZip，可以尝试修复。	如果 Finder 快捷選單中沒有 ArcZip，可以嘗試修復。
+finder.menu_repair_row_title	Finder Context Menu	访达右键菜单	Finder 快捷選單
+finder.menu_repair_running	Repairing Finder Menu…	正在修复访达菜单项…	正在修復 Finder 選單項目…
+finder.menu_repair_success	Finder menu repaired. Finder has restarted.	访达菜单项已修复，访达 已重新启动。	Finder 選單項目已修復，Finder 已重新啟動。
+finder.repair.command_failed	Finder repair failed: %@.	无法完成 ArcZip 访达扩展修复：%@。	無法完成 ArcZip Finder 延伸功能修復：%@。
+finder.repair.enable_extension	Enable %@	启用 %@ 扩展	啟用 %@ 延伸功能
+finder.repair.invalid_signature	Untrusted signature for %@.	应用程序文件夹中的 %@ 不是 ArcZip 的正式签名版本。	應用程式資料夾中的 %@ 不是 ArcZip 的正式簽章版本。
+finder.repair.missing_application	%@ not found. Install ArcZip in Applications.	未找到 %@。请先将当前 ArcZip 安装到应用程序文件夹。	未找到 %@。請先將目前 ArcZip 安裝到應用程式資料夾。
+finder.repair.missing_extension	Missing %@ extension. Reinstall ArcZip.	当前 ArcZip 缺少 %@ 扩展。请重新打包并安装 ArcZip。	目前 ArcZip 缺少 %@ 延伸功能。請重新打包並安裝 ArcZip。
+finder.repair.read_registration	Check %@	读取 %@ 注册状态	讀取 %@ 註冊狀態
+finder.repair.register_extension	Register %@	注册 %@ 扩展	註冊 %@ 延伸功能
+finder.repair.remove_registration	Remove %@ registration	清理 %@ 注册	清理 %@ 註冊
+finder.repair.verification_failed	Registration incomplete: %@.	ArcZip 扩展注册未完成：%@。	ArcZip 延伸功能註冊未完成：%@。
+flow.alternative_count	Alternative Flows: %lld	另有 %lld 个备选 Flow	另有 %lld 個 Flow 可選
+flow.extract_selection.help	Extract selected items	解压所选内容	解壓縮所選內容
+flow.install_application.inferred.help	Install “%@” in the Applications folder	将 %@ 安装到“应用程序”文件夹	將 %@ 安裝到「應用程式」資料夾
+flow.open_file.no_default_application	No default application can open “%@”	系统找不到可以打开“%@”的默认应用	系統找不到可以開啟「%@」的預設應用程式
+flow.open_file.selected_format_count	Selected formats: %lld	已选择 %lld 种格式	已選擇 %lld 種格式
+hover.audio.play	Play audio	播放音频	播放音訊
+inspector.file_type	%@ file	%@ 文件	%@ 檔案
+install.confirm.unnotarized.message	“%@” has not been notarized by Apple. Install only if you trust its source.	“%@”尚未通过 Apple 公证。仅在信任来源时安装。	「%@」尚未通過 Apple 公證。僅在信任來源時安裝。
+install.confirm.unverified.message	The developer of “%@” could not be verified. Install only if you trust its source.	无法确认“%@”的开发者。仅在信任来源时安装。	無法確認「%@」的開發者。僅在信任來源時安裝。
+install.confirm.unverified.title	Install this app anyway?	仍要安装此应用？	仍要安裝此應用程式？
+item.menu.copy_file	Copy	拷贝	拷貝
+item.menu.copy_path	Copy Path	拷贝路径	拷貝路徑
+item.menu.remove_archive_entry	Remove from Archive	从压缩包移除	從壓縮檔移除
+item.menu.remove_draft_entry	Remove from Draft	从待打包内容中移除	從待壓縮內容移除
+item.menu.remove_reference	Remove from Box	从文件盒移除	從檔案盒移除
+item.menu.rename_busy	This file is in use. Finish or close its workspace before renaming.	文件正在使用中，请先完成或关闭相关工作区后再重命名。	檔案正在使用中，請先完成或關閉相關工作區再重新命名。
+item.menu.rename_in_workspace	Rename in Workspace…	在主工作区中重命名…	在主工作區中重新命名⋯
+item.menu.rename_split	Split archive volumes must keep their family names and cannot be renamed here.	分卷压缩包需要保持整组文件名，暂不支持在这里重命名。	分割壓縮檔需保留整組檔名，暫不支援在此重新命名。
+item.menu.reveal_source	Show Source in Finder	在访达中显示源文件	在 Finder 中顯示來源檔案
+macOS 不支持此磁盘映像格式	Unsupported disk image format.	macOS 不支持此磁盘映像格式	macOS 不支援此磁碟映像檔格式
+macOS 仍在处理此磁盘映像，请稍后重试。	macOS is still processing this disk image. Try again shortly.	macOS 仍在处理此磁盘映像，请稍后重试。	macOS 仍在處理此磁碟映像檔，請稍後再試一次。
+macOS 多次尝试后仍无法挂载此磁盘映像，可能受到磁盘工具、安全软件或系统服务干扰	macOS could not mount this disk image after several attempts. Disk utilities, security software, or system services may be interfering	macOS 多次尝试后仍无法挂载此磁盘映像，可能受到磁盘工具、安全软件或系统服务干扰	macOS 多次嘗試後仍無法掛載此磁碟映像檔，可能受到「磁碟工具程式」、安全軟體或系統服務影響
+macOS 按末尾扩展名关联，.gz 同时覆盖 .tar.gz	Also applies to .tar.gz; macOS uses the final extension.	macOS 按末尾扩展名关联，.gz 同时覆盖 .tar.gz	macOS 依最後一段副檔名建立關聯，.gz 也會套用至 .tar.gz
+macOS 未返回已启动的应用	macOS did not return the launched application	macOS 未返回已启动的应用	macOS 未返回已啟動的應用程式
+menu.archive	Archive	压缩包	壓縮檔
+menu.check_updates	Check for Updates…	检查更新…	檢查更新…
+menu.clear	Clear Menu	清除菜单	清除選單
+menu.no_recent_archives	No Recent Archives	没有最近打开的压缩包	沒有最近開啟的壓縮檔
+menu.recent_open	Open Recent	最近打开	最近開啟
+menu.view	View	显示	顯示
+menuBarShelf.item_count	%lld files	%lld 个文件	%lld 個檔案
+mini.switch.busy	This archive’s Mini window still has an active task or pending interaction. Finish it before switching.	此压缩包的 Mini 窗口仍有任务或待处理的操作，请完成后再切换。	此壓縮檔的 Mini 視窗仍有作業或待處理的操作，請完成後再切換。
+mini.switch.discard	Discard and Switch	放弃更改并切换	放棄更改並切換
+mini.switch.failed	The Mini window could not be prepared. Your current workspace has been kept. Please try again later.	暂时无法准备 Mini 窗口，当前工作区已保留。请稍后重试。	暫時無法準備 Mini 視窗，目前工作區已保留。請稍後再試一次。
+mini.switch.save	Save and Switch	保存并切换	儲存並切換
+mini.switch.save.message	Mini is for browsing. Save or discard your changes to switch.	Mini 仅用于浏览。保存更改或放弃更改后即可切换。	Mini 僅用於瀏覽。儲存更改或放棄更改後即可切換。
+mini.switch.save.title	Save changes to “%@” before switching to Mini?	切换到 Mini 前，是否保存对“%@”的更改？	切換到 Mini 前，是否儲存對「%@」的更改？
+mini.switch.title	Switch to Mini	切换到 Mini	切換到 Mini
+mini.window.pin	Keep Window on Top	置顶窗口	置頂視窗
+mini.window.unpin	Stop Keeping Window on Top	取消置顶	取消置頂
+onboarding.v2.access.confirm	I have completed setup	我已完成设置	我已完成設定
+onboarding.v2.access.confirmed	Setup confirmed	已确认完成设置	已確認完成設定
+onboarding.v2.access.detail	Enable Full Disk Access so ArcZip can get files from more locations, such as WeChat.	开启完全磁盘访问权限，以便ArcZip能从更多位置获取文件，例如微信	開啟「完整磁碟存取權」，讓 ArcZip 能從更多位置讀取檔案，例如 WeChat。
+onboarding.v2.access.drag_hint	Drag ArcZip into the list above, then turn it on	将 ArcZip 拖到上方列表，然后打开开关	將 ArcZip 拖到上方列表，然後開啟開關
+onboarding.v2.access.open	Open Settings	打开设置	開啟設定
+onboarding.v2.access.optional	This setup is optional. You can open and extract ordinary archives right away.	这是可选设置，普通压缩包的打开与解压可以直接使用。	此設定可自由選擇，一般壓縮檔可直接開啟與解壓縮。
+onboarding.v2.access.step1	Click “Open Settings” in the bottom-right corner.	点击右下角的“打开设置”按钮	按一下右下角的「開啟設定」按鈕
+onboarding.v2.access.step2	Drag ArcZip from the guide into the app list, or use the + button to add it.	将引导栏里的 ArcZip 图标拖到应用列表，也可以点“＋”添加。	將引導列中的 ArcZip 圖示拖到應用程式列表，也可以按「＋」加入。
+onboarding.v2.access.step3	Turn on ArcZip. If macOS asks to reopen the app, this guide resumes here.	打开 ArcZip 的开关；如果系统要求重新打开，流程会从这一页继续。	開啟 ArcZip 的開關；如果系統要求重新開啟，流程會從這一頁繼續。
+onboarding.v2.access.title	Let ArcZip access your files smoothly	让ArcZip能够顺畅访问你的文件	讓 ArcZip 順暢存取你的檔案
+onboarding.v2.associations.all	Show all formats	查看全部格式	查看全部格式
+onboarding.v2.associations.common	Show common formats	只看常用格式	只看常用格式
+onboarding.v2.associations.detail	Not sure which formats to choose? Use the recommended defaults.	不确定应该选哪些？用推荐设置即可	不確定該選哪些？使用建議設定即可
+onboarding.v2.associations.optional	Change later in Settings. PKG files keep opening with Installer.	以后可在设置中调整；PKG 仍由系统安装器打开。	之後可在設定中調整；PKG 仍由系統安裝程式開啟。
+onboarding.v2.associations.recommended	Set common formats	设置常用格式	設定常用格式
+onboarding.v2.associations.title	Associate file formats	关联文件格式	關聯檔案格式
+onboarding.v2.back	Back	返回	返回
+onboarding.v2.begin	Get started	开始设置	開始設定
+onboarding.v2.box.choice	Enable Box and its menu bar icon	启用文件盒并显示菜单栏图标	啟用檔案盒並顯示選單欄圖示
+onboarding.v2.box.choice_detail	Ready when you need it	轻巧待命，需要时再展开	輕巧待命，需要時再展開
+onboarding.v2.box.collect	Auto-show, easy collection	自动弹出，随手收集	自動彈出，隨手收集
+onboarding.v2.box.detail	Collect files from different places, then open, organize, or process them together.	把不同位置的文件收集在一起，再打开、整理或处理。	把不同位置的檔案收集在一起，再開啟、整理或處理。
+onboarding.v2.box.preview	Preview with ease	轻松预览	輕鬆預覽
+onboarding.v2.box.pro_note	Some features need ArcZip Pro	部分功能需要ArcZip Pro	部分功能需要 ArcZip Pro
+onboarding.v2.box.quick_actions	Quickly compress/extract	快速压缩/解压	快速壓縮/解壓縮
+onboarding.v2.box.title	ArcZip Box	ArcZip 文件盒	ArcZip 檔案盒
+onboarding.v2.box.try_hint	Try it yourself	你也可以试试看	你也可以試試看
+onboarding.v2.complete.box_off	Box is turned off	文件盒暂未开启	檔案盒暫未開啟
+onboarding.v2.complete.box_on	Box is enabled	文件盒已开启	檔案盒已開啟
+onboarding.v2.complete.detail	Start with your first archive.	现在，就从一个压缩包开始。	現在，就從一個壓縮檔開始。
+onboarding.v2.complete.mini	Archives open in ArcZip Mini	默认使用 ArcZip Mini	預設使用 ArcZip Mini
+onboarding.v2.complete.settings	You can change these choices in Settings at any time.	这些选择随时可以在设置中调整。	這些選擇隨時可以在設定中調整。
+onboarding.v2.complete.title	You are ready	一切就绪	一切就緒
+onboarding.v2.complete.workspace	Archives open in the full workspace	默认使用完整工作区	預設使用完整工作區
+onboarding.v2.feature_guide	Discover Pro	功能介绍	功能介紹
+onboarding.v2.finder.detail	Quickly access ArcZip from the context menu	在右键菜单中快速调用ArcZip	從快捷選單快速使用 ArcZip
+onboarding.v2.finder.instructions	Enable the ArcZip Finder extension in System Settings.	在系统设置的扩展管理中，打开 ArcZip 的 Finder 扩展。	在系統設定的延伸功能管理中，啟用 ArcZip 的 Finder 延伸功能。
+onboarding.v2.finder.open	Open extension settings	前往扩展设置	前往延伸功能設定
+onboarding.v2.finder.optional	You can set this up later. Compression and extraction remain available in ArcZip.	暂时跳过也可以，ArcZip 内的压缩与解压随时可用。	暫時略過也可以，ArcZip 內的壓縮與解壓縮隨時可用。
+onboarding.v2.finder.step1	Click “Open System Settings”.	点击“打开系统设置”按钮	按一下「開啟系統設定」按鈕
+onboarding.v2.finder.step2	Turn on “File Providers” in the page that opens.	在弹出的页面中开启“文件提供程序”	在開啟的頁面中啟用「檔案提供者」
+onboarding.v2.finder.title	Enable Finder menu items	开启访达菜单项	啟用 Finder 選單項目
+onboarding.v2.finish	Start using ArcZip	开始使用	開始使用
+onboarding.v2.mini.browse	Browse files and folders	浏览文件与文件夹	瀏覽檔案與資料夾
+onboarding.v2.mini.choice	Open archives in ArcZip Mini by default	默认用 ArcZip Mini 打开压缩包	預設用 ArcZip Mini 開啟壓縮檔
+onboarding.v2.mini.choice_detail	Fully featured, quick to use, with fewer interruptions.	功能齐全，快用快走，减少打扰	功能齊全，隨開隨用，減少打擾
+onboarding.v2.mini.detail	ArcZip Mini gives you a quick look inside. Expand to the workspace when you need more.	ArcZip Mini 让你快速查看压缩包，需要时再展开工作区。	ArcZip Mini 讓你快速查看壓縮檔，需要時再展開工作區。
+onboarding.v2.mini.drag	Drag to extract	拖动进行解压	拖曳以解壓縮
+onboarding.v2.mini.preview	Preview with ease	轻松预览	輕鬆預覽
+onboarding.v2.mini.title	ArcZip Mini	ArcZip Mini	ArcZip Mini
+onboarding.v2.mini.workspace	Full workspace anytime	随时切换到完整界面	隨時切換到完整介面
+onboarding.v2.next	Next	下一步	下一步
+onboarding.v2.pro.activate	Already purchased? Activate	已购买？立即激活	已購買？立即啟用
+onboarding.v2.pro.active	ArcZip Pro is activated	ArcZip Pro 已激活	ArcZip Pro 已啟用
+onboarding.v2.pro.box	The complete file box	完整的文件盒功能	完整的檔案盒功能
+onboarding.v2.pro.box_detail	Quickly compress, extract, open archives or share files.	快速压缩、解压、打开压缩包或快捷分享。	快速壓縮、解壓縮、開啟壓縮檔或分享檔案。
+onboarding.v2.pro.detail	From a clearer preview to your next step.	从看清文件，到完成下一步。	從看清檔案，到完成下一步。
+onboarding.v2.pro.edit	Edit existing archives	编辑已有压缩包	編輯已有壓縮檔
+onboarding.v2.pro.edit_detail	Add, delete, replace or rename files inside an archive, then save your changes.	添加、删除、替换、重命名内部文件，以及保存修改。	加入、刪除、取代或重新命名內部檔案，並儲存變更。
+onboarding.v2.pro.feature_eyebrow	ArcZip Pro feature	ArcZip Pro功能	ArcZip Pro 功能
+onboarding.v2.pro.flow	All Flow features	全部Flow功能	全部 Flow 功能
+onboarding.v2.pro.flow_detail	Install apps and fonts, or send files to another app in one step.	安装应用与字体，或将文件交给其他应用，一步接上后续操作。	安裝應用程式與字型，或將檔案交給其他應用程式，一步接上後續操作。
+onboarding.v2.pro.free	Opening and extraction are free. Try Pro for 7 days without signup or payment details.	打开与解压免费。7 天试用无需注册或支付信息。	開啟與解壓縮免費。7 天試用無需註冊或提供付款資料。
+onboarding.v2.pro.hover	Hover preview	悬浮预览	游標停留預覽
+onboarding.v2.pro.hover_detail	Hover to preview images and documents without opening each file.	鼠标悬停即可查看图片与文档，不必逐个打开。	滑鼠游標停留即可查看圖片與文件，不必逐一開啟。
+onboarding.v2.pro.next_feature	Next feature	下一项功能	下一項功能
+onboarding.v2.pro.previous_feature	Previous feature	上一项功能	上一項功能
+onboarding.v2.pro.purchase	Buy ArcZip Pro	购买ArcZip Pro	購買 ArcZip Pro
+onboarding.v2.pro.purchase_or_trial	Buy or try ArcZip Pro	购买或试用ArcZip Pro	購買或試用 ArcZip Pro
+onboarding.v2.pro.purpose	More compression options	更多压缩选项	更多壓縮選項
+onboarding.v2.pro.purpose_detail	Choose settings for sharing, smaller archives, encryption and split volumes.	按用途压缩，使用加密、分卷与更多格式。	按用途壓縮，使用加密、分卷與更多格式。
+onboarding.v2.pro.search	File search	文件搜索	檔案搜尋
+onboarding.v2.pro.search_detail	Find files by name or path without opening folders one by one.	按名称或路径查找文件，无需逐层翻找。	按名稱或路徑查找檔案，無需逐層翻找。
+onboarding.v2.pro.trial	Start 7-day trial	开始7天试用	開始 7 天試用
+onboarding.v2.pro.trial_ended	Trial ended	试用已结束	試用已結束
+onboarding.v2.pro.trial_used	Trial ended. Free features remain available.	试用已结束，可继续使用免费功能	試用已結束，可繼續使用免費功能
+onboarding.v2.setup_guide	Getting started	初始设置	初始設定
+onboarding.v2.skip	Skip	跳过	略過
+onboarding.v2.step.associations	File associations	格式关联	格式關聯
+onboarding.v2.step.box	Box	文件盒	檔案盒
+onboarding.v2.step.complete	Ready	就绪	就緒
+onboarding.v2.step.fileAccess	File access	文件访问	檔案存取
+onboarding.v2.step.finder	Finder actions	右键菜单	快捷選單
+onboarding.v2.step.mini	Mini	Mini	Mini
+onboarding.v2.step.pro	ArcZip Pro	ArcZip Pro	ArcZip Pro
+onboarding.v2.step.welcome	Welcome	欢迎	歡迎
+onboarding.v2.welcome.archives	Browse & extract	查看与解压	查看與解壓縮
+onboarding.v2.welcome.box	Collect files	随手收集文件	隨手收集檔案
+onboarding.v2.welcome.detail	A fresh Mac archive experience	Mac解压缩工具新体验	Mac 解壓縮工具新體驗
+onboarding.v2.welcome.mini	A lighter Mini	轻巧的 Mini	輕巧的 Mini
+onboarding.v2.welcome.title	Welcome to ArcZip	欢迎使用ArcZip	歡迎使用 ArcZip
+operation.cancelled	Operation Cancelled	操作已取消	操作已取消
+operation.checking	Checking Archive	正在核对压缩包目录	正在核對壓縮檔目錄
+operation.completed	Completed	已完成	已完成
+operation.compressing	Compressing	正在压缩	正在壓縮
+operation.extracting	Extracting	正在解压	正在解壓縮
+operation.failed	Operation Failed	操作失败	操作失敗
+operation.preparing	Preparing	正在准备	正在準備
+password.input.help	Show the password to use Chinese, Japanese or other input methods with composition. You can also paste a password.	输入中文、日文等需要输入法转换的密码时，请先显示密码；也可以直接粘贴。	輸入中文、日文等需要輸入法轉換的密碼時，請先顯示密碼；也可以直接貼上。
+password.input_notice.do_not_show_again	Don't Show Again	不再提示	不再提示
+password.input_notice.message	To enter a password in Chinese or another language, click the eye button to show its contents before typing. You can also paste a password.	输入中文或其他语言的密码时，请先点击眼睛按钮显示内容，再进行输入；也可以直接粘贴。	輸入中文或其他語言的密碼時，請先按一下眼睛按鈕顯示內容，再進行輸入；也可以直接貼上。
+password.input_notice.title	Entering Non-English Passwords	输入非英文密码	輸入非英文密碼
+password_book.archive.multiple	This archive uses multiple passwords. ArcZip matches them when reading its contents.	此压缩包包含多个密码，读取时会自动匹配。	此壓縮檔包含多個密碼，讀取時會自動比對。
+password_book.extraction.partial	Extraction Partially Completed	部分解压完成	部分解壓縮完成
+password_book.extraction.skipped	Available contents extracted; %d files skipped. The source archive was kept.	已解压可用内容，跳过 %d 个文件；源压缩包已保留。	已解壓縮可用內容，略過 %d 個檔案；來源壓縮檔已保留。
+password_book.group.message	These files share one password. Skipping leaves this group unextracted; other unlocked contents remain available.	这些文件需要同一个密码。跳过会保留整组文件未解压，其他已解锁内容不受影响。	這些檔案需要同一個密碼。略過會保留整組檔案未解壓縮，其他已解鎖內容不受影響。
+password_book.group.skip	Skip This Group	跳过这组文件	略過這組檔案
+password_book.group.title	Enter the password for “%@” and its group of %d files	请输入“%@”等 %d 个文件的密码	請輸入「%@」等 %d 個檔案的密碼
+password_book.member.message	The available passwords could not unlock this file. Other unlocked contents remain available.	现有密码无法解锁此文件。其他已解锁内容仍可继续使用。	現有密碼無法解鎖此檔案。其他已解鎖內容仍可繼續使用。
+password_book.member.skip	Skip This File	跳过此文件	略過此檔案
+password_book.member.title	Enter the password for “%@”	请输入“%@”的密码	請輸入「%@」的密碼
+password_book.pro_description	Automatic saving, automatic unlocking, password presets and password protection are included in ArcZip Pro. Saved records are kept; manually entering a password to open and extract archives remains free.	自动保存、自动解锁、密码预设和密码保护均属于 ArcZip Pro。已有记录会保留；手动输入密码打开和解压仍可免费使用。	自動儲存、自動解鎖、密碼預設和密碼保護均屬於 ArcZip Pro。已有記錄會保留；手動輸入密碼開啟和解壓縮仍可免費使用。
+password_book.records.count	%lld saved passwords	共 %lld 个密码	共 %lld 個密碼
+password_book.settings.loading	Loading Password Book…	正在载入密码本…	正在載入密碼本…
+password_book.settings.locked	Password Book is locked	密码本已锁定	密碼本已鎖定
+password_book.settings.protection.detail	Protect your password book with an independent password, with Touch ID or Apple Watch for quick unlock when available.	使用独立密码保护密码本，支持时可用 Touch ID 或 Apple Watch 快速解锁。	使用獨立密碼保護密碼本，支援時可用 Touch ID 或 Apple Watch 快速解鎖。
+password_book.settings.records	Saved Passwords	已保存的密码	已儲存的密碼
+password_book.settings.records.detail	Save passwords to unlock or create archives more easily.	保存常用密码，方便解锁或创建压缩包。	儲存常用密碼，方便解鎖或建立壓縮檔。
+password_book.settings.saving	Automatic Saving	自动保存	自動儲存
+password_book.settings.saving.detail	Save the password after successfully unlocking or creating an encrypted archive.	成功解锁或创建加密压缩包后，自动保存所用密码。	成功解鎖或建立加密壓縮檔後，自動儲存所用密碼。
+password_book.settings.security	Security	安全	安全
+password_book.settings.unlock.detail	Automatically try saved passwords when opening encrypted archives.	打开加密压缩包时，自动尝试已保存的密码。	打開加密壓縮檔時，自動嘗試已儲存的密碼。
+password_book.unnamed	Password %lld	密码 %lld	密碼 %lld
+preview.read_only	Read-Only Preview	只读预览	唯讀預覽
+progress.queue.collapse	Collapse	收起	收合
+progress.queue.expand	Expand	展开	展開
+progress.queue.failed	Failed: %lld	%lld 项失败	%lld 項失敗
+progress.queue.other	Other tasks: %lld	另有 %lld 项任务	另有 %lld 項作業
+progress.queue.running	Other active tasks: %lld	另有 %lld 项进行中	另有 %lld 項進行中
+progress.queue.waiting	Waiting: %lld	还有 %lld 项等待处理	還有 %lld 項等待處理
+progress.queue.waiting_extract	Waiting to extract: %lld	还有 %lld 项等待解压	還有 %lld 項等待解壓縮
+release_overview.122.compression.detail	The unified compression pipeline spends less time recompressing low-gain content such as some videos, while better identifying data that can still shrink. Some videos, design assets and mixed-file workloads benefit from faster processing or smaller archives.	优化统一压缩管线，减少对部分视频等低收益内容的重复压缩，同时更好地识别仍能压缩的数据。在部分视频、设计素材和混合文件场景下，提高处理速度或减小压缩体积。	最佳化統一壓縮管線，減少對部分影片等低收益內容的重複壓縮，同時更好地識別仍能壓縮的資料。在部分影片、設計素材和混合檔案情境下，提高處理速度或減小壓縮體積。
+release_overview.122.compression.title	More Efficient Compression	大幅提高压缩效率	大幅提高壓縮效率
+release_overview.122.exfat.detail	Fixed some archives incorrectly reporting extraction failure on exFAT external drives when auxiliary files were cleaned up. Cleanup and result checks also preserve explicitly selected files and normal contents inside App bundles.	修复部分压缩包在 exFAT 移动存储设备上解压时，因清理辅助文件而误报失败的问题。同时完善解压完成后的清理与结果检查，保留主动选中的文件和正常 App 包内内容。	修復部分壓縮檔在 exFAT 行動儲存裝置上解壓縮時，因清理輔助檔案而誤報失敗的問題。同時完善解壓縮完成後的清理與結果檢查，保留主動選取的檔案和正常 App 套件內的內容。
+release_overview.122.exfat.title	Better Extraction on exFAT Disks	改善 exFAT 磁盘解压	改善 exFAT 磁碟解壓縮
+release_overview.122.save.detail	After compressing or collecting items into a folder, save the result directly to a chosen location. ArcZip remembers the last location, supports saving across disks and numbers conflicting names automatically. This action is free to use.	压缩或收集到文件夹后，可以直接把结果保存到指定位置。ArcZip 会记住上次的位置，支持跨磁盘保存，同名结果自动编号。此操作可免费使用。	壓縮或收集到資料夾後，可以直接把結果儲存到指定位置。ArcZip 會記住上次的位置，支援跨磁碟儲存，同名結果自動編號。此操作可免費使用。
+release_overview.122.save.title	Save To in File Box	文件盒新增“保存到”	檔案盒新增「儲存到」
+release_overview.122.split.detail	Split ZIP and 7Z archives evenly into 2–999 volumes, or choose a common volume size or your own custom size to suit more situations.	现在可以把 ZIP、7Z 压缩包均匀拆成 2–999 卷，也能选择常用分卷大小或自定义大小，让分卷压缩适应更多场景。	現在可以把 ZIP、7Z 壓縮檔均勻拆成 2–999 卷，也能選擇常用分卷大小或自訂大小，讓分卷壓縮適應更多情境。
+release_overview.122.split.title	Split Archives by Volume Count	按数量分卷压缩	按數量分卷壓縮
+release_overview.changelog	Full Release Notes	完整更新日志	完整更新日誌
+release_overview.continue	Get Started	开始使用	開始使用
+release_overview.subtitle	Fewer repeated steps. A little easier to use.	少一些重复操作，用起来再顺手一些。	少一些重複操作，用起來再順手一些。
+release_overview.title	Update Overview	更新概览	更新概覽
+services.destination_unwritable.choose	Choose Another Folder…	选择其他目录…	選擇其他目錄…
+services.destination_unwritable.message	Choose another folder for the extracted files. The source file will remain unchanged.	请选择其他文件夹存放解压结果。来源文件不会被修改。	請選擇其他資料夾存放解壓縮結果。來源檔案不會被修改。
+services.destination_unwritable.title	Cannot write to this location	当前位置无法写入	目前位置無法寫入
+settings.about.licenses.button	View Open Source Licenses	查看开源许可	查看開放原始碼授權
+settings.about.licenses.description	Thanks to these open source projects. Original copyright notices and license texts follow.	感谢这些开源项目。以下保留原始版权声明和许可全文。	感謝這些開放原始碼專案。以下保留原始著作權聲明與完整授權條款。
+settings.about.licenses.project	Project Website	项目主页	專案首頁
+settings.about.licenses.title	Open Source Licenses	开源许可	開放原始碼授權
+settings.about.licenses.unavailable	Could not load the open source licenses. Please reopen this window.	无法读取开源许可，请重新打开此窗口。	無法讀取開放原始碼授權，請重新開啟此視窗。
+settings.about.menu	About ArcZip	关于 ArcZip	關於 ArcZip
+settings.about.title	About	关于	關於
+settings.about.version	Current Version	当前版本	目前版本
+settings.advanced.subtitle	Manage temporary files and preferences	管理临时文件和偏好设置	管理暫存檔案和偏好設定
+settings.browsing.auxiliary.short	Show normally hidden system metadata	显示通常隐藏的系统辅助文件	顯示通常隱藏的系統輔助檔案
+settings.browsing.hover.short	Show file previews when the pointer rests over them	鼠标停留时显示文件预览	游標停留時顯示檔案預覽
+settings.browsing.hover.video	Play videos in hover previews	在悬浮预览中播放视频	在懸浮預覽中播放影片
+settings.browsing.hover.video.detail	Supports MP4, MOV, M4V and more; some codecs or files cannot be previewed	支持 MP4、MOV、M4V 等格式，部分编码或文件无法预览	支援 MP4、MOV、M4V 等格式，部分編碼或檔案無法預覽
+settings.browsing.hover.video.limit	Maximum audio/video size	可预览音视频大小上限	可預覽影音大小上限
+settings.browsing.hover.video.range	10 MB, 50 MB, 100 MB, 500 MB, 1 GB or 2 GB, based on uncompressed size, including the limit	10 MB、50 MB、100 MB、500 MB、1 GB、2 GB，按解压后的大小计算，包含上限	10 MB、50 MB、100 MB、500 MB、1 GB、2 GB，依解壓縮後的大小計算，包含上限
+settings.browsing.title	Browsing	浏览	瀏覽
+settings.cache.calculating	Calculating…	正在计算…	正在計算…
+settings.cache.clean	Clean Up	清理	清理
+settings.cache.cleaning	Cleaning…	正在清理…	正在清理…
+settings.cache.detail	Remove unused temporary files while keeping files in use and your originals.	清理不再使用的临时文件，保留正在使用的文件和你的原文件。	清理不再使用的暫存檔案，保留正在使用的檔案和你的原始檔案。
+settings.cache.size	Temporary files available to remove	可清理的临时文件	可清理的暫存檔案
+settings.cache.title	Temporary files	临时文件	暫存檔案
+settings.compression.default_format	Default format: %@. You can change it for each archive.	当前用途将默认使用 %@；仍可在创建压缩包时临时更改。	目前用途將預設使用 %@；仍可在建立壓縮檔時暫時更改。
+settings.compression.defaults.description	Choose the default preset, format and compression level for new archives.	设置创建压缩包时默认采用的用途、格式与压缩强度	設定建立壓縮檔時預設使用的用途、格式與壓縮強度
+settings.compression.defaults.detail	Each preset saves its own format and compression level.	每个用途会独立保存自己的格式与压缩强度	每個用途會分別儲存自己的格式與壓縮強度
+settings.compression.defaults.title	Default Preset, Format & Compression Level	默认用途、格式与压缩强度	預設用途、格式與壓縮強度
+settings.compression.format.short	Default format: %@	默认格式：%@	預設格式：%@
+settings.compression.format.title	Default Archive Format	默认压缩格式	預設壓縮格式
+settings.compression.purpose.action	Default Purpose: %@	%@默认用途	%@預設用途
+settings.compression.purpose.general.subtitle	Compatibility & efficiency	兼顾兼容性与效率	兼顧相容性與效率
+settings.compression.purpose.general.title	General	通用分享	一般分享
+settings.compression.purpose.mac.subtitle	Keep Mac support files	保留 macOS 辅助文件	保留 macOS 輔助檔案
+settings.compression.purpose.mac.title	Mac to Mac	Mac 之间传递	Mac 之間傳遞
+settings.compression.purpose.smallest.subtitle	Prioritize smaller archives	优先减小压缩包体积	優先減小壓縮檔體積
+settings.compression.purpose.smallest.title	Smallest Size	尽可能小	盡可能小
+settings.compression.purpose.unix.subtitle	Unix directory archives	适合 Unix 目录归档	適合 Unix 目錄封存
+settings.compression.purpose.unix.title	Linux & Servers	Linux 与服务器	Linux 與伺服器
+settings.compression.purpose.windows.subtitle	Cross-platform friendly	优化跨平台使用	優化跨平台使用
+settings.compression.purpose.windows.title	Windows	Windows 用户	Windows 使用者
+settings.compression.strength.action	Default Level: %@	%@默认压缩强度	%@預設壓縮強度
+settings.compression.title	Compression	压缩	壓縮
+settings.cpu.single_core	%@ Core	%@ 个核心	%@ 個核心
+settings.extraction.auxiliary.short	Filter metadata created by macOS and Windows	过滤 macOS、Windows 生成的辅助文件	過濾 macOS、Windows 產生的輔助檔案
+settings.extraction.dmg.short	Filter hidden layout files and the Applications shortcut	过滤隐藏布局文件与 Applications 替身	過濾隱藏的版面配置檔案與 Applications 替身
+settings.extraction.filtering.short	Explicit selections, user dotfiles and app bundle contents are preserved.	明确选中的项目、用户隐藏文件和应用包内容都会保留。	明確選取的項目、使用者的隱藏檔案與應用程式套件內容都會保留。
+settings.extraction.filtering_help	System files include __MACOSX, AppleDouble, .DS_Store, Thumbs.db, desktop.ini, and volume indexes. This filter keeps configuration files such as .gitignore and .env. The DMG filter also skips hidden items and Applications shortcuts. Explicitly selected support files or folders and files inside apps are kept.	系统辅助文件包括 __MACOSX、AppleDouble、.DS_Store、Thumbs.db、desktop.ini 和卷索引。此项不会过滤 .gitignore、.env 等配置文件。DMG 过滤还会跳过隐藏项目和“应用程序”快捷方式。手动选中的辅助文件或辅助文件夹会保留，应用内部文件保持原样。	系統輔助檔案包括 __MACOSX、AppleDouble、.DS_Store、Thumbs.db、desktop.ini 和卷宗索引。此選項不會過濾 .gitignore、.env 等設定檔。DMG 過濾還會略過隱藏項目與「應用程式」替身。手動選取的輔助檔案或資料夾會保留，應用程式內部檔案維持原樣。
+settings.extraction.title	Extraction	解压	解壓縮
+settings.file_associations.title	File Associations	格式关联	格式關聯
+settings.finder.mobile_monitoring.confirm.enable	Enable Monitoring	开启监听	啟用監看
+settings.finder.mobile_monitoring.confirm.message	Enabling monitoring may change external device icons in Finder to the ArcZip icon. This is caused by macOS’s Finder extension behavior, not an ArcZip bug.\n\nYou can turn monitoring off at any time. ArcZip remains available from the Services context menu.	开启后，访达中的移动存储设备图标可能变为 ArcZip 图标。这是 macOS 的 Finder 扩展机制所致，并非 ArcZip 的 BUG。\n\n你可以随时关闭此选项以停止监听。关闭后仍可通过右键“服务”菜单使用 ArcZip。	啟用後，Finder 中的外接儲存裝置圖示可能變為 ArcZip 圖示。這是 macOS 的 Finder 延伸功能機制所致，並非 ArcZip 的錯誤。\n\n你可以隨時關閉此選項以停止監看。關閉後仍可透過快捷選單中的「服務」使用 ArcZip。
+settings.finder.mobile_monitoring.confirm.title	Enable External Storage Monitoring?	开启移动存储监听？	啟用外接儲存裝置監看？
+settings.finder.mobile_monitoring.detail	Show Finder context menus for files on external drives and removable storage	为外接硬盘、U盘等移动存储中的文件提供访达右键菜单	為外接硬碟、USB 隨身碟等儲存裝置中的檔案提供 Finder 快捷選單
+settings.finder.mobile_monitoring.title	Enable Context Menus on External Storage	在移动存储中开启右键菜单	在外接儲存裝置中啟用快捷選單
+settings.finder.subtitle	Manage ArcZip’s Finder integration and context menus	管理 ArcZip 的访达集成与右键菜单	管理 ArcZip 的 Finder 整合與快捷選單
+settings.general.title	General	通用	一般
+settings.heading	Settings	设置	設定
+settings.hover.audio.autoplay	Automatically play audio	自动播放音频	自動播放音訊
+settings.hover.audio.autoplay.detail	Play audio after hovering. Turn off to start playback manually	悬停后自动播放音频，关闭后点击播放按钮开始试听	停留後自動播放音訊，關閉後點按播放按鈕開始試聽
+settings.hover.enabled	Enable hover previews	开启悬浮预览	開啟懸浮預覽
+settings.hover.locked.detail	Takes effect automatically when Pro is activated	激活 Pro 后自动生效	啟用 Pro 後自動生效
+settings.hover.subtitle	Configure file hover previews and media playback	设置文件悬浮预览与音视频播放	設定檔案懸浮預覽與影音播放
+settings.hover.title	Hover Preview	悬浮预览	懸浮預覽
+settings.hover.video.muted	Mute video previews	视频默认静音	影片預設靜音
+settings.hover.video.muted.detail	Muted by default. Turn off to play video audio	默认静音，关闭后播放视频声音	預設靜音，關閉後播放影片聲音
+settings.language.detail	Follow the system language, or choose a language for ArcZip.	跟随系统语言，或为 ArcZip 单独指定语言。	跟隨系統語言，或為 ArcZip 指定其他語言。
+settings.language.restart	Restart ArcZip	重新启动 ArcZip	重新啟動 ArcZip
+settings.language.restart_detail	Restart ArcZip to apply your language choice. Save your changes first.	重新启动 ArcZip 后，语言设置将生效。请先保存修改。	重新啟動 ArcZip 後，語言設定將生效。請先儲存變更。
+settings.language.restart_failed.detail	ArcZip will stay open. Try again later, or quit and reopen ArcZip manually.	ArcZip 将保持打开。请稍后重试，或手动退出后重新打开 ArcZip。	ArcZip 將保持開啟。請稍後再試，或手動結束後重新開啟 ArcZip。
+settings.language.restart_failed.title	Could Not Restart ArcZip	无法重新启动 ArcZip	無法重新啟動 ArcZip
+settings.language.section	Language	语言	語言
+settings.language.system	System Default	跟随系统	跟隨系統
+settings.language.title	App Language	应用语言	應用程式語言
+settings.launch_at_login.approval	Allow ArcZip in System Settings → Login Items	请在系统设置的“登录项”中允许 ArcZip	請在系統設定的「登入項目」中允許 ArcZip
+settings.launch_at_login.section	Startup	启动	啟動
+settings.launch_at_login.title	Launch ArcZip at login	开机自动启动 ArcZip	登入時自動啟動 ArcZip
+settings.menu.title	Settings…	设置…	設定…
+settings.mini.behavior.title	Opening and Appearance	打开方式与外观	開啟方式與外觀
+settings.mini.colored_controls	Use Colored Window Controls	使用彩色窗口控制按钮	使用彩色視窗控制按鈕
+settings.mini.colored_controls.detail	Turn off for neutral buttons. A pinned button and its ring still use light blue.	关闭后按钮恢复未着色外观，置顶时仍保留淡蓝色按钮和圆环	關閉後按鈕恢復未著色外觀，置頂時仍保留淡藍色按鈕和圓環
+settings.mini.liquid_glass	Use Liquid Glass	使用 Liquid Glass 材质	使用 Liquid Glass 材質
+settings.mini.liquid_glass.detail	Turn off to use classic frosted glass. Applies immediately to Mini windows.	关闭后使用经典毛玻璃材质，即时应用于 Mini 窗口	關閉後使用經典毛玻璃材質，即時套用於 Mini 視窗
+settings.mini.liquid_glass.unavailable	Requires macOS 26 or later	需要 macOS 26 或更新版本	需要 macOS 26 或更新版本
+settings.mini.open.detail.short	Use Mini when opening archives from Finder	从 Finder 打开压缩包时优先使用 Mini	從 Finder 開啟壓縮檔時優先使用 Mini
+settings.mini.open.short	Open in ArcZip Mini by Default	默认用 ArcZip Mini 打开	預設用 ArcZip Mini 開啟
+settings.mini.subtitle	Choose how Mini windows open and look	设置 Mini 窗口的打开方式与外观	設定 Mini 視窗的開啟方式與外觀
+settings.password.reveal.short	Use the eye button to hide it at any time	可随时点击眼睛按钮隐藏	可隨時按一下眼睛按鈕隱藏
+settings.password.reveal_by_default	Show Passwords by Default	默认显示密码	預設顯示密碼
+settings.password.reveal_by_default.detail	Makes it easier to enter non-English passwords, including Chinese and Japanese, and use input method candidates. Passwords will be visible; you can still hide them using the eye button.	方便输入中文、日文等非英文密码及使用输入法候选。开启后，密码内容会直接显示；仍可点击眼睛按钮临时隐藏。	方便輸入中文、日文等非英文密碼及使用輸入法候選字。啟用後，密碼會直接顯示；仍可按一下眼睛按鈕暫時隱藏。
+settings.password.subtitle	Choose how new password fields initially display their contents.	设置新密码输入框的初始显示方式	設定新密碼輸入框的初始顯示方式
+settings.password.title	Password Input	密码输入	密碼輸入
+settings.pro.entry.detail	Unlock more.	解锁更多功能	解鎖更多功能
+settings.pro.entry.manage	Manage License	管理许可证	管理授權
+settings.pro.entry.status.activated	Active	已激活	已啟用
+settings.pro.entry.status.inactive	Inactive	未激活	未啟用
+settings.pro.entry.status.trial	Trial	试用中	試用中
+settings.welcome.short	View the introduction again without resetting settings	重新浏览介绍，不会重置设置	重新瀏覽介紹，不會重置設定
+shelf.pin	Keep Box Open	固定文件盒	固定檔案盒
+shelf.unpin	Stop Keeping Box Open	取消固定	取消固定
+update.not_checked	Updates not checked yet	尚未检查更新	尚未檢查更新
+view.columns	Columns	分栏	直欄
+view.icons	Icons	图标	圖示
+view.list	List	列表	列表
+·	·	·	·
+”	”	”	」
+”。继续安装会使用压缩包中的字体替换它。	”. Continuing will replace it with the font from the archive.	”。继续安装会使用压缩包中的字体替换它。	」。繼續安裝會使用壓縮檔中的字型取代它。
+”的密码。	”.	”的密码。	」的密碼。
+”，已将它从最近打开中移除。	”; it was removed from Open Recent.	”，已将它从最近打开中移除。	」，已將它從最近開啟中移除。
+•	•	•	•
+。系统返回：	. System response: 	。系统返回：	。系統返回：
+。继续安装会使用压缩包中的版本替换它。	. Continuing will replace it with the version from the archive.	。继续安装会使用压缩包中的版本替换它。	。繼續安裝會使用壓縮檔中的版本取代它。
+。请选择将内容合并到现有文件夹，还是同时保留为新的文件夹。	. Choose whether to merge it into the existing folder or keep it as a separate folder.	。请选择将内容合并到现有文件夹，还是同时保留为新的文件夹。	。請選擇將內容合併到現有資料夾，還是同時保留為新的資料夾。
+一切就绪	All Set	一切就绪	一切就緒
+上一级	Up One Level	上一级	上一層
+不再提示	Don't Show Again	不再提示	不再提示
+不可直接操作	Cannot Operate Directly	不可直接操作	不可直接操作
+不同意	Decline	不同意	不同意
+不开启	Do not enable	不开启	不開啟
+不支持的压缩格式：	Unsupported archive format: 	不支持的压缩格式：	不支援的壓縮格式：
+不支持的特殊文件	Unsupported special file	不支持的特殊文件	不支援的特殊檔案
+两次输入的密码不一致	Passwords Do Not Match	两次输入的密码不一致	兩次輸入的密碼不一致
+主工作区的“显示辅助文件”只影响浏览。明确选中辅助文件或辅助目录导出时会保留；.gitignore、.env 等用户文件不会被当作辅助文件。应用程序包内部保持原样，以免破坏签名。	Display settings do not affect extraction. Explicitly selected support files are kept.	列表中的显示设置不影响解压。手动选中的辅助文件仍会保留。	列表中的顯示設定不影響解壓縮。手動選取的輔助檔案仍會保留。
+了解	Got It	了解	瞭解
+交给 macOS 打开此应用	Open this application with macOS	交给 macOS 打开此应用	交給 macOS 開啟此應用程式
+仅 ZIP 和 7Z 支持分卷	Only ZIP and 7Z support split volumes.	仅 ZIP 和 7Z 支持分卷	僅 ZIP 與 7Z 支援分卷
+仅在你信任压缩包来源时继续。	Continue only if you trust the archive source.	仅在你信任压缩包来源时继续。	僅在你信任壓縮檔來源時繼續。
+仅打包	Store Only	仅打包	僅封裝
+仅打包，不压缩	Store without compression	合并为一个压缩包，不压缩内容	合併為一個壓縮檔，不壓縮內容
+仅支持安装 OTF、TTF 和 TTC 字体	Use OTF, TTF, or TTC fonts.	仅支持安装 OTF、TTF 和 TTC 字体	僅支援安裝 OTF、TTF 和 TTC 字型
+仅有临时（ad-hoc）签名，无法确认发布者。	has only an ad-hoc signature; the publisher cannot be verified.	仅有临时（ad-hoc）签名，无法确认发布者。	僅有臨時（ad-hoc）簽章，無法確認發佈者。
+今天 	Today 	今天 	今天 
+仍要安装	Install Anyway	仍要安装	仍要安裝
+仍要打开	Open Anyway	仍要打开	仍要開啟
+从 Finder 或 Quick Look 使用 ArcZip 打开时优先进入 Mini 窗口	Prefer the Mini window when opening with ArcZip from Finder or Quick Look	从访达或快速查看打开时，使用 ArcZip Mini。	從 Finder 或快速查看開啟時，使用 ArcZip Mini。
+从 Finder 或 Quick Look 使用 ArcZip 打开时，先进入独立 Mini 窗口而不是完整工作区	Use Mini when opening archives from Finder or Quick Look.	从访达或快速查看打开时，使用独立的小窗口。	從 Finder 或快速查看開啟時，使用獨立的小視窗。
+从压缩包安装 macOS 应用	Install macOS apps from archives.	从压缩包安装 macOS 应用	從壓縮檔安裝 macOS 應用程式
+从暂存架移除	Remove from Shelf	从文件盒移除	從檔案盒移除
+从最近打开中移除	Remove from Open Recent	从最近打开中移除	從最近開啟中移除
+从最近打开中移除 	Remove from Open Recent: 	从最近打开中移除 	從最近開啟中移除 
+以 RAR 封装的漫画归档	RAR-based comic archives	以 RAR 封装的漫画归档	以 RAR 封裝的漫畫封存
+以下项目无法安全加入压缩包。你可以取消操作，或者选择“全部跳过并继续”来压缩其余项目。	These items cannot be archived safely. Skip them to continue.	以下项目无法安全加入压缩包。你可以取消操作，或者选择“全部跳过并继续”来压缩其余项目。	以下項目無法安全加入壓縮檔。你可以取消操作，或者選擇「全部略過並繼續」來壓縮其餘項目。
+以只读方式挂载并浏览光盘与文件系统镜像	Mount and browse optical disc and file-system images read-only	以只读方式挂载并浏览光盘与文件系统镜像	以唯讀方式掛載並瀏覽光碟與檔案系統鏡像
+以只读方式浏览磁盘映像，并快速安装其中的 macOS 应用	Browse disk images read-only and quickly install macOS apps	以只读方式浏览磁盘映像，并快速安装其中的 macOS 应用	以唯讀方式瀏覽磁碟映像檔，並快速安裝其中的 macOS 應用程式
+以后再说	Not now	以后再说	以後再說
+任务已取消，文件仍在暂存架	Cancelled. Your files remain on the shelf.	任务已取消，文件仍在文件盒	作業已取消，檔案仍在檔案盒
+任务队列处理中	Task Queue Processing	任务队列处理中	作業佇列處理中
+优先体积，跳过明确低收益压缩	Favor smaller archives; store files with little compression benefit.	减小压缩包体积，耗时较长	減小壓縮檔體積，耗時較長
+优先减小压缩包体积	Prioritize a smaller archive	优先减小压缩包体积	優先減小壓縮檔體積
+优先速度，积极跳过低收益压缩	Favor speed; store files that compress poorly.	优先压缩速度	優先壓縮速度
+优化跨平台使用	Optimized for cross-platform use	优化跨平台使用	優化跨平台使用
+会与同一文件夹中的其他项目重名	This would duplicate another item in the same folder	会与同一文件夹中的其他项目重名	會與同一資料夾中的其他項目重名
+会替代 Java 启动器；ArcZip 仅预览和解压	Replaces the Java launcher as the default app. ArcZip only previews and extracts.	会替代 Java 启动器；ArcZip 仅预览和解压	會取代 Java 啟動程式；ArcZip 僅提供預覽與解壓縮
+会替代系统“安装器”打开 PKG；ArcZip 仅预览和解压	Replaces Installer as the default app. ArcZip only previews and extracts.	会替代系统“安装器”打开 PKG；ArcZip 仅预览和解压	會替代系統「安裝程式」開啟 PKG；ArcZip 僅預覽和解壓縮
+传统 ARJ 压缩包	Legacy ARJ archive	传统 ARJ 压缩包	傳統 ARJ 壓縮檔
+传统 LHA 系列压缩包	Legacy LHA archive	传统 LHA 系列压缩包	傳統 LHA 系列壓縮檔
+你可以浏览文件列表，但预览或解压缩需要密码。点击此按钮输入密码，即可解锁并显示预览。	Browse the file list freely. Click the lock to enter a password for previewing or extracting.	可浏览文件列表；预览或解压需要密码。点击锁定按钮输入密码。	可瀏覽檔案列表；預覽或解壓縮需要密碼。按一下鎖定按鈕輸入密碼。
+你的选择仅用于本次打开；ArcZip 不会替你自动接受或保存协议选择。	Your choice applies only to this opening; ArcZip will not accept or save the agreement choice for you.	你的选择仅用于本次打开；ArcZip 不会替你自动接受或保存协议选择。	你的選擇僅用於本次開啟；ArcZip 不會替你自動接受或儲存協議選擇。
+使用 TAR 归档	Use TAR archiving	使用 TAR 归档	使用 TAR 封存
+使用 Touch ID	Use Touch ID	使用 Touch ID	使用 Touch ID
+使用 Touch ID 或独立的密码本密码。Mac 登录密码不能代替密码本密码。	Use Touch ID or your separate Password Book password. Your Mac login password cannot unlock Password Book.	使用 Touch ID 或独立的密码本密码。Mac 登录密码不能代替密码本密码。	使用 Touch ID 或獨立的密碼本密碼。Mac 登入密碼不能代替密碼本密碼。
+使用了 Windows 保留的设备名称	Uses a Windows reserved device name	使用了 Windows 保留的设备名称	使用了 Windows 保留的裝置名稱
+使用密码	Use Password	使用密码	使用密碼
+使用密码保护	Protect with Password	使用密码保护	使用密碼保護
+使用密码保护密码本	Protect Password Book with a Password	使用密码保护密码本	使用密碼保護密碼本
+使用当前设置创建压缩包	Create Archive with Current Settings	使用当前设置创建压缩包	使用目前設定建立壓縮檔
+使用推荐设置	Use Recommended Defaults	使用推荐设置	使用推薦設定
+使用这些名称并继续	Use These Names and Continue	使用这些名称并继续	使用這些名稱並繼續
+使用通用文件名编码	Use general filename encoding	使用通用文件名编码	使用一般檔名編碼
+例如安装应用、安装字体或安全打开安装包。	For example, install an app or font, or safely open an installer package.	例如安装应用、安装字体或安全打开安装包。	例如安裝應用程式、安裝字型或安全開啟安裝套件。
+保存	Save	保存	儲存
+保存修改	Save Changes	保存修改	儲存修改
+保存加密压缩包	Save Encrypted Archive	保存加密压缩包	儲存加密壓縮檔
+保存压缩包内容修改	Save Archive Changes	保存压缩包内容修改	儲存壓縮檔內容修改
+保存完成	Saved	保存完成	儲存完成
+保存成功前不会修改原压缩包	The original archive stays unchanged until save succeeds	保存成功前不会修改原压缩包	儲存成功前不會修改原壓縮檔
+保存此密码	Save this password	保存此密码	儲存此密碼
+保留 macOS 文件信息	Preserve macOS File Information	保留 macOS 文件信息	保留 macOS 檔案資訊
+保留 macOS 辅助文件	Keep Mac support files	保留 macOS 辅助文件	保留 macOS 輔助檔案
+保留目录结构与 Unix 文件属性	Preserve directory structure and Unix file attributes	保留目录结构与 Unix 文件属性	保留目錄結構與 Unix 檔案屬性
+修改仅应用于当前选中的用途	Applies to the selected preset.	修改仅应用于当前选中的用途	修改僅套用於目前選中的用途
+修改密码…	Change Password…	修改密码…	更改密碼…
+修改密码本密码	Change Password Book Password	修改密码本密码	更改密碼本密碼
+修改日期	Modified	修改日期	修改日期
+修改时间	Modified	修改时间	修改時間
+修改此记录不会更改已有压缩包的密码。	Editing this entry does not change the passwords of existing archives.	修改此记录不会更改已有压缩包的密码。	修改此記錄不會更改已有壓縮檔的密碼。
+修改现有压缩包内容	Modify Existing Archive	修改现有压缩包内容	修改現有壓縮檔內容
+修改磁盘映像	Modify Disk Image	修改磁盘映像	修改磁碟映像檔
+修正文件名并继续	Fix Names and Continue	修正文件名并继续	修正檔名並繼續
+偏好设置	Preferences	设置	設定
+允许打开的文件格式	Enabled Formats	允许打开的文件格式	允許開啟的檔案格式
+全部取消	Deselect All	全部取消	全部取消
+全部可用（%@）	All Available (%@)	全部可用（%@）	全部可用（%@）
+全部拷贝	Copy All	全部拷贝	全部拷貝
+全部解压	Extract All	全部解压	全部解壓縮
+全部跳过并继续	Skip All and Continue	全部跳过并继续	全部略過並繼續
+共 	Total 	共 	共 
+关联状态	Association Status	关联状态	關聯狀態
+关闭	Close	关闭	關閉
+关闭保护…	Turn off protection…	关闭保护…	關閉保護…
+关闭密码本保护	Turn off Password Book protection	关闭密码本保护	關閉密碼本保護
+关闭工作区	Close	关闭工作区	關閉工作區
+关闭自动保存不会删除已有密码，已有密码仍可用于解锁和创建压缩包。	Turning off automatic saving keeps existing passwords available for unlocking and creating archives.	关闭自动保存不会删除已有密码，已有密码仍可用于解锁和创建压缩包。	關閉自動儲存不會刪除已有密碼，已有密碼仍可用於解鎖和建立壓縮檔。
+兼顾兼容性与效率	Balance Compatibility and Efficiency	兼顾兼容性与效率	兼顧相容性與效率
+内容过滤	Content Filtering	内容过滤	內容過濾
+内层容器没有生成可读取的文件	Nested file unavailable.	内层容器没有生成可读取的文件	內層容器沒有產生可讀取的檔案
+再次输入密码	Re-enter Password	再次输入密码	再次輸入密碼
+再次输入密码本密码	Confirm Password Book password	再次输入密码本密码	再次輸入密碼本密碼
+冲突项目：	Conflicting item: 	冲突项目：	衝突項目：
+准备	Preparing	准备	準備
+准备 	Preparing 	准备 	準備 
+准备加密压缩包中的安装包	Preparing the installer package from the encrypted archive	准备加密压缩包中的安装包	準備加密壓縮檔中的安裝套件
+准备文件	Preparing Files	准备文件	準備檔案
+准备暂存区	Preparing Staging Area	正在准备文件…	正在準備檔案…
+准备解压缩	Preparing	准备解压缩	準備解壓縮
+准备解压缩应用	Preparing	准备解压缩应用	準備解壓縮應用程式
+出于安全原因无法显示内容	Content Cannot Be Displayed for Security Reasons	出于安全原因无法显示内容	出於安全原因無法顯示內容
+分享	Share	分享	分享
+分卷写入未读取到完整的压缩结果	The complete archive could not be read while splitting.	分卷写入未读取到完整的压缩结果	分卷寫入時未讀取到完整的壓縮結果
+分卷压缩	Split Volumes	分卷压缩	分卷壓縮
+分卷压缩包	Split Archives	分卷压缩包	分卷壓縮檔
+分卷大小与计划不一致	The volume size does not match the split plan.	分卷大小与计划不一致	分卷大小與計畫不一致
+分卷大小超过指定上限，未发布压缩包	A volume exceeds the requested size. The archive was not published.	分卷大小超过指定上限，未发布压缩包	分卷大小超過指定上限，未發布壓縮檔
+分卷数量必须为 2 至 999	Volume count must be between 2 and 999.	分卷数量必须为 2 至 999	分卷數量必須為 2 至 999
+分卷数量超过支持范围，未发布压缩包	Too many volumes. The archive was not published.	分卷数量超过支持范围，未发布压缩包	分卷數量超過支援範圍，未發布壓縮檔
+分栏	Columns	分栏	直欄
+分栏视图	Column View	分栏视图	直欄顯示方式
+列表	List	列表	列表
+列表视图	List View	列表视图	列表顯示方式
+创建 	Create 	创建 	建立 
+创建中的压缩包不能解压	An Archive Being Created Cannot Be Extracted	创建中的压缩包不能解压	建立中的壓縮檔不能解壓縮
+创建压缩包	Create Archive	创建压缩包	建立壓縮檔
+创建基础 ZIP 压缩包	Create Basic ZIP Archive	创建基础 ZIP 压缩包	建立基礎 ZIP 壓縮檔
+创建完成	Creation Complete	创建完成	建立完成
+创建磁盘映像	Create Disk Image	创建磁盘映像	建立磁碟映像檔
+删除	Delete	删除	刪除
+删除后，再次打开相关压缩包可能需要重新输入密码。	You may need to enter this password again when opening an archive that uses it.	删除后，再次打开相关压缩包可能需要重新输入密码。	刪除後，再次開啟相關壓縮檔可能需要重新輸入密碼。
+删除所选项目	Delete Selected Items	删除所选项目	刪除所選項目
+删除此密码？	Delete this password?	删除此密码？	刪除此密碼？
+刷新	Refresh	刷新	重新整理
+前进	Forward	前进	前進
+加密	Encryption	加密	加密
+加密文件名	Encrypt File Names	加密文件名	加密檔名
+包内搜索	Search archive	包内搜索	壓縮檔內搜尋
+包内搜索属于 ArcZip Pro	Archive search requires ArcZip Pro	包内搜索属于 ArcZip Pro	壓縮檔內搜尋屬於 ArcZip Pro
+包含	Contains	包含	包含
+包含同名记录	Contains duplicate records	包含同名记录	包含同名記錄
+包含扩展属性与辅助元数据	Includes extended attributes and auxiliary metadata	包含扩展属性与辅助元数据	包含延伸屬性與輔助中繼資料
+单击选择，双击打开，或拖出以解压	Click to select, double-click to open, or drag out to extract	单击选择，双击打开，或拖出以解压	按一下選取，按兩下開啟，或拖出以解壓縮
+单击选择；完整文件索引完成后可预览或解压	Click to select; preview or extract after indexing completes	单击选择；文件列表读取完成后可预览或解压所选文件	按一下選取；檔案列表讀取完成後可預覽或解壓縮所選檔案
+单文件 LZMA 压缩流	Single-file LZMA stream	单文件 LZMA 压缩流	單一檔案 LZMA 壓縮串流
+单文件 Lzip 压缩流	Single-file Lzip stream	单文件 Lzip 压缩流	單一檔案 Lzip 壓縮串流
+压缩	Compress	压缩	壓縮
+压缩为“归档.zip”	Compress as “Archive.zip”	压缩为“归档.zip”	壓縮為「封存.zip」
+压缩为…	Compress As…	压缩为…	壓縮為…
+压缩任务	Compression	压缩任务	壓縮作業
+压缩包	Archive	压缩包	壓縮檔
+压缩包中只有已排除的系统辅助文件	The archive contains only excluded system auxiliary files	压缩包中只有已排除的系统辅助文件	壓縮檔中只有已排除的系統輔助檔案
+压缩包中没有可解压的内容	The archive contains no extractable content	压缩包中没有可解压的内容	壓縮檔中沒有可解壓縮的內容
+压缩包中没有可解压的项目	The archive contains no extractable items	压缩包中没有可解压的项目	壓縮檔中沒有可解壓縮的項目
+压缩包中没有项目	No Items in Archive	压缩包中没有项目	壓縮檔中沒有項目
+压缩包内的新名称	New name inside the archive	压缩包内的新名称	壓縮檔內的新名稱
+压缩包内路径：	Path in archive: 	压缩包内路径：	壓縮檔內路徑：
+压缩包包含不安全路径：	The archive contains an unsafe path: 	压缩包包含不安全路径：	壓縮檔包含不安全路徑：
+压缩包发布失败，ArcZip 已保留回滚记录：	Could not publish the archive. ArcZip retained the rollback record: 	压缩包发布失败，ArcZip 已保留回滚记录：	壓縮檔發佈失敗，ArcZip 已保留還原記錄：
+压缩包名称	Archive Name	压缩包名称	壓縮檔名稱
+压缩包已被其他应用修改	Archive Changed	压缩包已被其他应用修改	壓縮檔已被其他應用程式修改
+压缩包已被其他应用修改，请重新载入或另存为	Archive changed. Reload or save a copy.	压缩包已被其他应用修改，请重新载入或另存为	壓縮檔已被其他應用程式修改，請重新載入或另存為
+压缩包已解锁	Archive Unlocked	压缩包已解锁	壓縮檔已解鎖
+压缩包已锁定	Archive Locked	压缩包已锁定	壓縮檔已鎖定
+压缩包搜索结果	Archive Search Results	压缩包搜索结果	壓縮檔搜尋結果
+压缩包无效或已损坏：	The archive is invalid or damaged: 	压缩包无效或已损坏：	壓縮檔無效或已損壞：
+压缩包根目录	Archive Root	压缩包根目录	壓縮檔根目錄
+压缩包格式	Archive Format	压缩包格式	壓縮檔格式
+压缩包概览	Archive Overview	压缩包概览	壓縮檔概覽
+压缩包详情	Archive Details	压缩包详情	壓縮檔詳細資訊
+压缩完成	Compression Complete	压缩完成	壓縮完成
+压缩引擎失败：	The archive engine failed: 	压缩引擎失败：	壓縮引擎失敗：
+压缩强度	Compression Level	压缩强度	壓縮強度
+压缩格式	Archive Format	压缩格式	壓縮格式
+压缩流	Compressed Streams	单文件压缩	單一檔案壓縮
+压缩结果不是普通文件	The archive output is not a regular file.	压缩结果不是普通文件	壓縮結果不是一般檔案
+压缩结果太小，无法生成指定数量的非空分卷	The compressed archive is too small for the requested number of nonempty volumes.	压缩结果太小，无法生成指定数量的非空分卷	壓縮結果太小，無法產生指定數量的非空分卷
+压缩设置	Compression Settings	压缩设置	壓縮設定
+原因：	Reason: 	原因：	原因：
+原始大小	Original Size	原始大小	原始大小
+原密码本密码	Current Password Book password	原密码本密码	原密碼本密碼
+发布原因：	Publication error: 	发布原因：	發佈原因：
+取消	Cancel	取消	取消
+取消打开	Cancel Opening	取消打开	取消開啟
+取消解压	Cancel Extraction	取消解压	取消解壓縮
+取消退出	Cancel	取消退出	取消結束
+另一个项目在大小写或 Unicode 规范化后会落到相同位置；同时保存可能在解压时覆盖数据。	Conflicting names could overwrite files during extraction.	另一个项目在大小写或 Unicode 规范化后会落到相同位置；同时保存可能在解压时覆盖数据。	另一個項目在大小寫或 Unicode 規範化後會落到相同位置；同時儲存可能在解壓縮時覆蓋資料。
+只修改压缩包内的副本，源文件名称不会改变	Only the copies inside the archive will be renamed; source filenames will not change	只修改压缩包内的副本，源文件名称不会改变	只修改壓縮檔內的副本，來源檔名不會改變
+只有文件类型的压缩包或磁盘映像可以继续打开	Only archives and disk images can be opened.	只有文件类型的压缩包或磁盘映像可以继续打开	只有檔案類型的壓縮檔或磁碟映像檔可以繼續開啟
+只有明确选中的格式才会显示“打开文件” Flow	Show Open File for the selected formats.	为所选格式提供“打开文件”操作	為所選格式提供「開啟檔案」操作
+只读	Read Only	只读	唯讀
+只读打开	Open Read-Only	只读打开	唯讀開啟
+只读预览	Read-Only Preview	只读预览	唯讀預覽
+可在路径栏中显示这些项目	Show these items in the path bar	可在路径栏中显示这些项目	可在路徑欄中顯示這些項目
+可浏览预览 · 后台已索引 	Preview available · indexed in background 	可浏览预览 · 后台已索引 	可瀏覽預覽 · 背景已索引 
+可浏览预览 · 正在完成 	Preview available · finishing 	可浏览预览 · 正在完成 	可瀏覽預覽 · 正在完成 
+可浏览预览 · 正在完成文件索引	Preview available · finishing file index	可浏览预览 · 正在完成文件索引	可瀏覽預覽 · 正在完成檔案索引
+可浏览预览 · 解压和搜索暂不可用	Preview is available · extraction and search are unavailable	可浏览预览 · 解压和搜索暂不可用	可瀏覽預覽 · 解壓縮和搜尋暫不可用
+可能包含安装脚本的软件包格式	Package formats that may contain install scripts	可能包含安装脚本的软件包格式	可能包含安裝腳本的套件格式
+合并	Merge	合并	合併
+同一文件夹中已存在“	The same folder already contains “	同一文件夹中已存在“	同一資料夾中已存在「
+同一路径既需要作为文件存在，又需要作为其他项目的父目录，无法无损地同时保存。	A file and folder share this path; both cannot be saved.	同一路径既需要作为文件存在，又需要作为其他项目的父目录，无法无损地同时保存。	同一路徑既需要作為檔案存在，又需要作為其他項目的父目錄，無法無損地同時儲存。
+同意并打开	Agree and Open	同意并打开	同意並開啟
+同时保留	Keep Both	同时保留	同時保留
+同时覆盖 Bzip2 文件与 .tar.bz2	Covers Bzip2 files and .tar.bz2	同时覆盖 Bzip2 文件与 .tar.bz2	同時套用至 Bzip2 檔案與 .tar.bz2
+同时覆盖 XZ 文件与 .tar.xz	Covers XZ files and .tar.xz	同时覆盖 XZ 文件与 .tar.xz	同時套用至 XZ 檔案與 .tar.xz
+名称	Name	名称	名稱
+名称不能为空	The name cannot be empty	名称不能为空	名稱不能為空
+名称不能包含 NUL 字符	The name cannot contain NUL characters	文件名包含不支持的字符，请重新输入。	檔名包含不支援的字元，請重新輸入。
+名称不能包含“/”或“:”	The name cannot contain “/” or “:”	名称不能包含“/”或“:”	名稱不能包含「/」或「:」
+名称不能包含路径分隔符、父目录跳转或 NUL 字符	The name cannot contain path separators, parent-directory references, or NUL characters	文件名包含不支持的字符，请重新输入。	檔名包含不支援的字元，請重新輸入。
+名称包含 NUL，或路径使用绝对位置、父目录跳转等结构，无法在不越界或不损坏归档结构的前提下写入。	Unsafe name or path.	名称包含 NUL，或路径使用绝对位置、父目录跳转等结构，无法在不越界或不损坏归档结构的前提下写入。	名稱包含 NUL，或路徑使用絕對位置、父目錄跳轉等結構，無法在不越界或不損壞封存結構的前提下寫入。
+名称末尾的点在 Windows 中可能消失	The trailing period may disappear on Windows	名称末尾的点在 Windows 中可能消失	名稱末尾的點在 Windows 中可能消失
+名称末尾的空格在 Windows 中可能被删除	The trailing space may be removed on Windows	名称末尾的空格在 Windows 中可能被删除	名稱末尾的空白在 Windows 中可能被刪除
+名称（可选）	Name (optional)	名称（可选）	名稱（選填）
+后台已索引 	Indexed in background 	后台已索引 	背景已索引 
+后退	Back	后退	後退
+向右浏览最近文件	Browse recent files to the right	向右浏览最近文件	向右瀏覽最近檔案
+向左浏览最近文件	Browse recent files to the left	向左浏览最近文件	向左瀏覽最近檔案
+否	No	否	否
+含有 Windows 不支持或不安全的字符	Contains characters that Windows does not support or that are unsafe	含有 Windows 不支持或不安全的字符	含有 Windows 不支援或不安全的字元
+含有 Windows 不支持的字符	Contains characters that Windows does not support	含有 Windows 不支持的字符	含有 Windows 不支援的字元
+命名管道不是静态文件；读取它可能一直等待其他进程写入，导致压缩任务无法结束。	Reading a named pipe may never finish.	命名管道不是静态文件；读取它可能一直等待其他进程写入，导致压缩任务无法结束。	具名管道並非靜態檔案；讀取時可能持續等待其他程序寫入，導致壓縮作業無法結束。
+命名管道（FIFO）	Named pipe (FIFO)	命名管道（FIFO）	具名管道（FIFO）
+回到创建设置	Back to Creation Settings	回到创建设置	回到建立設定
+图像	Images	图像	圖像
+图标	Icons	图标	圖示
+图标视图	Icon View	图标视图	圖示顯示方式
+在 Finder 中显示	Show in Finder	在 Finder 中显示	在 Finder 中顯示
+在完整窗口中打开此压缩包会放弃当前暂存内容。Mini 窗口可以继续独立使用。	Opening this archive in the full window will discard the current staged content. The Mini window can continue independently.	在完整窗口中打开此压缩包会放弃当前暂存内容。ArcZip Mini 窗口可以继续独立使用。	在完整視窗中開啟此壓縮檔會放棄目前暫存內容。ArcZip Mini 視窗可以繼續獨立使用。
+在访达中显示	Show in Finder	在访达中显示	在 Finder 中顯示
+均衡	Balanced	均衡	均衡
+处理器使用	CPU Usage	处理器使用	處理器使用
+处理完成，结果已放回暂存架	Done. Your results are on the shelf.	处理完成，结果已放回文件盒	處理完成，結果已放回檔案盒
+复制密码	Copy password	复制密码	複製密碼
+外观	Appearance	外观	外觀
+多项选择	Multiple Selection	多项选择	多項選擇
+大小	Size	大小	大小
+套接字是进程间通信端点，不包含可恢复的文件内容，离开当前系统后也无法使用。	Sockets contain no restorable file data.	套接字是进程间通信端点，不包含可恢复的文件内容，离开当前系统后也无法使用。	通訊端是程序間通訊端點，不包含可恢復的檔案內容，離開目前系統後也無法使用。
+好	OK	好	好
+字体安装完成	Font Installation Complete	字体安装完成	字型安裝完成
+存储位置	Storage Location	存储位置	儲存位置
+安全保存	Save Archive	保存	儲存
+安全准备后交给 macOS 安装器	Safely prepare, then hand off to the macOS Installer	安全准备后交给 macOS 安装器	安全準備後交給 macOS 安裝程式
+安装 App 时移除应用根目录已有的下载隔离标记	Remove the app’s download quarantine flag during installation.	安装时移除下载来源标记，可能减少 macOS 的安全提示。仅在信任应用来源时开启。	安裝時移除下載來源標記，可能減少 macOS 的安全提示。僅在信任應用程式來源時開啟。
+安装 PKG	Install PKG	安装 PKG	安裝 PKG
+安装临时签名的应用？	Install an Ad Hoc-Signed App?	安装临时签名的应用？	安裝使用臨時簽章的應用程式？
+安装到“应用程序”文件夹	Install to the Applications folder	安装到“应用程序”文件夹	安裝到「應用程式」資料夾
+安装到当前用户的字体库	Install to the current user's font library	安装到当前用户的字体库	安裝到目前使用者的字型資料庫
+安装加密压缩包中的字体	Install Font from Encrypted Archive	安装加密压缩包中的字体	安裝加密壓縮檔中的字型
+安装加密压缩包中的应用	Install App from Encrypted Archive	安装加密压缩包中的应用	安裝加密壓縮檔中的應用程式
+安装包	Installer Package	安装包	安裝套件
+安装包路径无效	Invalid installer path.	安装包路径无效	安裝套件路徑無效
+安装字体	Install Font	安装字体	安裝字型
+安装完成	Installation Complete	安装完成	安裝完成
+安装应用	Install Application	安装应用	安裝應用程式
+安装应用？	Install Application?	安装应用？	安裝應用程式？
+安装未公证的应用？	Install an Unnotarized App?	安装未公证的应用？	安裝未公證的應用程式？
+安装未签名的应用？	Install an Unsigned App?	安装未签名的应用？	安裝未簽章的應用程式？
+安装来源不明的应用？	Install an App from an Unknown Source?	安装来源不明的应用？	安裝來源不明的應用程式？
+安装目标不是应用程序目录	Invalid app bundle.	安装目标不是应用程序目录	安裝目標不是應用程式目錄
+完成	Done	完成	完成
+完成初始设置	Finish Setup	完成初始设置	完成初始設定
+完成后自动验证完整性	Verify integrity automatically when finished	完成后自动验证完整性	完成後自動驗證完整性
+完整文件索引完成后即可拖出或解压	Drag out or extract after the full file index is ready	文件列表读取完成后即可拖出或解压所选文件	檔案列表讀取完成後即可拖出或解壓縮所選檔案
+完整文件索引完成后即可搜索	Search after the full file index is ready	文件列表读取完成后即可搜索	檔案列表讀取完成後即可搜尋
+完整窗口中有尚未保存的更改	There are unsaved changes in the full window	完整窗口中有尚未保存的更改	完整視窗中有尚未儲存的更改
+完整索引完成前暂不能搜索、预览、拖出或解压	Search, preview, drag-out and extraction are unavailable until indexing completes	完整索引完成前暂不能搜索、预览、拖出或解压	完整索引完成前暫不能搜尋、預覽、拖出或解壓縮
+实践证明，保持 ArcZip 为最新版本有益于压缩包的身心健康	Keep ArcZip and your archives in good shape.	实践证明，保持 ArcZip 为最新版本有益于压缩包的身心健康	讓 ArcZip 保持最新版本，壓縮與解壓縮更安心。
+密码	Password	密码	密碼
+密码不正确	Incorrect Password	密码不正确	密碼不正確
+密码不正确，请重新输入。	Incorrect password. Please try again.	密码不正确，请重新输入。	密碼不正確，請重新輸入。
+密码保护	Password Protection	密码保护	密碼保護
+密码已输入，将在解压或预览时验证。	Password entered. It will be verified when you extract or preview.	密码已输入，将在解压或预览时验证。	密碼已輸入，將在解壓縮或預覽時驗證。
+密码已输入，待读取验证	Password Entered, Awaiting Read Verification	密码已输入，待读取验证	密碼已輸入，待讀取驗證
+密码操作	Password Actions	密码操作	密碼操作
+密码本	Password Book	密码本	密碼本
+密码本 · ArcZip Pro	Password Book · ArcZip Pro	密码本 · ArcZip Pro	密碼本 · ArcZip Pro
+密码本密码	Password Book password	密码本密码	密碼本密碼
+密码本密码不正确。	Incorrect Password Book password.	密码本密码不正确。	密碼本密碼不正確。
+密码本已锁定	Password Book is locked	密码本已锁定	密碼本已鎖定
+密码本已锁定，本次不自动保存	Password Book is locked. This password will not be saved automatically.	密码本已锁定，本次不自动保存	密碼本已鎖定，本次不自動儲存
+密码记录	Password entry	密码记录	密碼記錄
+密码错误	Incorrect Password	密码错误	密碼錯誤
+将压缩包拆分成多个文件	Split the archive into multiple files	将压缩包拆分成多个文件	將壓縮檔拆分成多個檔案
+将移除 	Remove 	将移除 	將移除 
+将较大的压缩包拆分成多个文件	Split large archives into multiple files	将较大的压缩包拆分成多个文件	將較大的壓縮檔拆分成多個檔案
+尚未保存密码	No saved passwords	尚未保存密码	尚未儲存密碼
+尽可能小	Smallest Possible	尽可能小	盡可能小
+展开备选 Flow	Expand Alternative Flows	展开备选 Flow	展開其他 Flow
+展开注释	Show More	展开注释	展開註解
+展示 Flow 可执行的操作	Show Available Flows	展示 Flow 可执行的操作	展示 Flow 可執行的操作
+嵌套容器最多打开 	Nested containers can be opened up to 	嵌套容器最多打开 	巢狀容器最多開啟 
+工作区	Workspace	窗口	視窗
+已交给 macOS 安装器	Opened in Installer	已交给 macOS 安装器	已交給 macOS 安裝程式
+已使用上次成功的密码	Using the previously successful password	已使用上次成功的密码	已使用上次成功的密碼
+已关联	Associated	已关联	已關聯
+已关联 	Associated 	已关联 	已關聯 
+已取消	Cancelled	已取消	已取消
+已取消预览	Preview Cancelled	已取消预览	已取消預覽
+已填入密码本中的密码，将在解压或预览时验证。	A password from Password Book is ready. It will be verified when you extract or preview.	已填入密码本中的密码，将在解压或预览时验证。	已填入密碼本中的密碼，將在解壓縮或預覽時驗證。
+已复用 Quick Look 目录 · 正在建立文件索引	Loading Files	已复用 Quick Look 目录 · 正在建立文件索引	已復用 Quick Look 目錄 · 正在建立檔案索引
+已复用 Quick Look 目录 · 正在建立文件索引 	Reused Quick Look catalog · building file index 	已复用 快速查看 目录 · 正在建立文件索引 	已復用 快速查看 目錄 · 正在建立檔案索引 
+已复用 Quick Look 预览 · 正在验证文件索引	Reused Quick Look preview · verifying file index	已复用 快速查看 预览 · 正在验证文件索引	已復用 快速查看 預覽 · 正在驗證檔案索引
+已安装 	Installed 	已安装 	已安裝 
+已打开安装器	Installer Opened	已打开安装器	已開啟安裝程式
+已打开应用	Application Opened	已打开应用	已開啟應用程式
+已打开文件	File Opened	已打开文件	已開啟檔案
+已拷贝	Copied	已拷贝	已拷貝
+已是最新版本	You're up to date	已是最新版本	已是最新版本
+已显示 	Shown 	已显示 	已顯示 
+已由 Apple 公证。	has been notarized by Apple.	已由 Apple 公证。	已由 Apple 公證。
+已索引 	Indexed 	已索引 	已索引 
+已经存在。继续创建会替换现有文件。	already exists. Continuing will replace the existing file.	已经存在。继续创建会替换现有文件。	已經存在。繼續建立會取代現有檔案。
+已被撤销	revoked	已被撤销	已撤銷
+已读取	Read	已读取	已讀取
+已读取 	Read 	已读取 	已讀取 
+已过滤	Filtered	已过滤	已過濾
+已过滤 	Filtered 	已过滤 	已過濾 
+已退款	refunded	已退款	已退款
+已选择	Selected	已选择	已選擇
+已隐藏	Hidden	已隐藏	已隱藏
+已隐藏 	Hidden 	已隐藏 	已隱藏 
+带有签名，但 ArcZip 无法验证签名者的身份。	is signed, but ArcZip cannot verify the signer's identity.	带有签名，但 ArcZip 无法验证签名者的身份。	帶有簽章，但 ArcZip 無法驗證簽署者的身份。
+常用压缩包	Common Archives	常用压缩包	常用壓縮檔
+常用格式已设为使用 ArcZip 打开	Common formats are now set to open with ArcZip	常用格式已设为使用 ArcZip 打开	常用格式已設為使用 ArcZip 開啟
+应用到新版本	Apply	应用到新版本	套用至新版本
+应用安装	App Installation	应用安装	應用程式安裝
+应用标识：	App identifier: 	应用标识：	應用程式識別碼：
+应用程序	Application	应用程序	應用程式
+应用程序”文件夹	Applications folder	应用程序”文件夹	應用程式」資料夾
+应用程序已从磁盘映像复制到临时目录	Ready	应用程序已从磁盘映像复制到临时目录	應用程式已從磁碟映像檔複製到暫存目錄
+应用程序文件夹中的 ArcZip 不是有效的 ArcZip 安装。	Invalid ArcZip installation. Reinstall ArcZip.	应用程序文件夹中的 ArcZip 不是有效的 ArcZip 安装。	應用程式資料夾中的 ArcZip 不是有效的 ArcZip 安裝。
+应用程序解压缩完成	Extracted	应用程序解压缩完成	應用程式解壓縮完成
+建议先安装此应用	Install This Application First	建议先安装此应用	建議先安裝此應用程式
+开启	Enable	开启	開啟
+开启保护	Enable protection	开启保护	開啟保護
+开启保护…	Enable protection…	开启保护…	開啟保護…
+开启后 ArcZip 会记住成功使用的密码，并为你自动解锁。也可以选择不开启自动保存，并在创建压缩包时手动选择。密码仅保存在这台 Mac 上。	When enabled, ArcZip remembers passwords you successfully use and unlocks archives for you automatically. You can also leave automatic saving off and select passwords manually when creating archives. Passwords stay on this Mac.	开启后 ArcZip 会记住成功使用的密码，并为你自动解锁。也可以选择不开启自动保存，并在创建压缩包时手动选择。密码仅保存在这台 Mac 上。	開啟後 ArcZip 會記住成功使用的密碼，並為你自動解鎖。也可以選擇不開啟自動儲存，並在建立壓縮檔時手動選擇。密碼僅儲存在這台 Mac 上。
+开启密码自动保存？	Automatically save passwords?	开启密码自动保存？	開啟密碼自動儲存？
+开启并使用密码保护	Enable with Password Protection	开启并使用密码保护	開啟並使用密碼保護
+开始使用 ArcZip	Get Started with ArcZip	开始使用 ArcZip	開始使用 ArcZip
+归拢位置不能位于源文件夹内	The destination cannot be inside a source folder.	归拢位置不能位于源文件夹内	彙整位置不能位於來源資料夾內
+归拢过程中源文件发生变化，请重新加入	A source changed during collection. Add it again.	归拢过程中源文件发生变化，请重新加入	彙整過程中來源檔案已變更，請重新加入
+归档	Archive	归档	封存
+当前不是从 ArcZip.app 运行，格式关联开关已停用。	This is not running from ArcZip.app; format association controls are disabled.	当前不是从 ArcZip.app 运行，格式关联开关已停用。	目前不是從 ArcZip.app 執行，格式關聯開關已停用。
+当前为只读格式	is currently read-only	当前为只读格式	目前為唯讀格式
+当前工作区已有一个等待完成的保存或重命名操作。	Wait for the current save or rename operation to finish.	请等待当前保存或重命名操作完成。	請等待目前儲存或重新命名操作完成。
+当前工作区正在处理其他任务，请稍后重新拖入	The workspace is busy. Please drop the files again when it is ready.	当前工作区正在处理其他任务，请稍后重新拖入	目前工作區正在處理其他作業，請稍後重新拖入
+当前工作区的文档占用状态已失效，请重新打开后再试。	This archive is temporarily unavailable. Reopen it and try again.	暂时无法操作此压缩包，请重新打开后重试。	暫時無法操作此壓縮檔，請重新開啟後再試一次。
+当前应用完整性验证失败，请从官方来源重新下载 ArcZip。	App verification failed. Redownload ArcZip from the official website.	当前应用完整性验证失败，请从官方来源重新下载 ArcZip。	目前應用程式完整性驗證失敗，請從官方來源重新下載 ArcZip。
+当前引擎不支持：	This engine does not support: 	当前引擎不支持：	目前引擎不支援：
+当前引擎不支持：自动识别为 GBK 的 ZIP 暂不支持编辑保存；请先解压后重新创建压缩包	Editing and saving ZIP archives detected as GBK is not supported yet. Extract the files first, then create a new archive.	当前引擎不支持：自动识别为 GBK 的 ZIP 暂不支持编辑保存；请先解压后重新创建压缩包	目前引擎不支援：自動識別為 GBK 的 ZIP 暫不支援編輯儲存；請先解壓縮後重新建立壓縮檔
+当前文件不是 macOS 安装包	Not a macOS installer.	当前文件不是 macOS 安装包	目前檔案不是 macOS 安裝套件
+当前文件夹为空 · 后台索引仍在核对	This folder is empty · background indexing is still checking	当前文件夹为空 · 后台索引仍在核对	目前資料夾為空 · 背景索引仍在核對
+当前构建尚未配置 ArcZip 更新服务器	This build has no ArcZip update server configured	当前构建尚未配置 ArcZip 更新服务器	目前建置版本尚未設定 ArcZip 更新伺服器
+当前用户的字体库中已经存在“	The current user's font library already contains “	当前用户的字体库中已经存在“	目前使用者的字型資料庫中已經存在「
+当前用途将默认使用 	This purpose will use 	当前用途将默认使用 	目前用途將預設使用 
+当前目录可以浏览；	This folder is browsable; 	当前目录可以浏览；	目前目錄可以瀏覽；
+当前目录可以浏览；完整索引完成前暂不能搜索、预览、拖出或解压	You can browse this folder; search, preview, drag-out and extraction are unavailable until indexing completes.	当前目录可以浏览；完整索引完成前暂不能搜索、预览、拖出或解压	目前目錄可以瀏覽；完整索引完成前暫不能搜尋、預覽、拖出或解壓縮
+待压缩文件在操作过程中发生了变化，未生成或替换压缩包，请确认文件后重新压缩	Source files changed. No archive was saved. Try again.	待压缩文件在操作过程中发生了变化，未生成或替换压缩包，请确认文件后重新压缩	待壓縮檔案在操作過程中發生了變化，未產生或取代壓縮檔，請確認檔案後重新壓縮
+待处理	Pending	待处理	待處理
+快捷安装	Quick Install	快捷安装	快捷安裝
+快速	Fast	快速	快速
+快速 LZMA2，跳过低收益文件，不使用固实压缩	Fast LZMA2 without solid compression; store files that compress poorly.	优先压缩速度	優先壓縮速度
+快速了解压缩包内容，预览并解压所需文件。	Quickly inspect an archive, preview it and extract what you need.	快速了解压包内容，预览并解压所需文件。	快速瞭解壓縮檔內容，預覽並解壓縮所需檔案。
+快速压缩	Quick Compress	快速压缩	快速壓縮
+快速安装	Quick Install	快速安装	快速安裝
+快速安装应用	Quick Install Application	快速安装应用	快速安裝應用程式
+快速解压	Quick Extract	快速解压	快速解壓縮
+快速解压一次只能处理一个压缩包	Select one archive to extract.	快速解压一次只能处理一个压缩包	快速解壓縮一次只能處理一個壓縮檔
+快速解压到当前目录	Extract Here	快速解压到当前目录	快速解壓縮到目前目錄
+快速解压到指定目录…	Extract to…	快速解压到指定目录…	快速解壓縮到指定目錄…
+恢复全部建议	Restore All Suggestions	恢复全部建议	恢復全部建議
+恢复所有偏好设置	Restore All Preferences	恢复所有设置	恢復所有設定
+恢复所有偏好设置？	Restore All Preferences?	恢复所有设置？	恢復所有設定？
+恢复设置不会改变 Finder 中的格式关联	File associations will stay unchanged.	恢复设置不会改变 访达 中的格式关联	恢復設定不會改變 Finder 中的格式關聯
+恢复默认值	Restore Defaults	恢复默认值	恢復預設值
+恢复默认压缩设置	Restore Defaults	恢复默认压缩设置	恢復預設壓縮設定
+悬浮高清预览	Hover Preview	悬浮预览	懸浮預覽
+意犹未尽？那就再看一遍，设置不会被重置，放心	Want another look? Revisit it without resetting your settings.	再次查看功能介绍，保留当前设置。	再次查看功能介紹，保留目前設定。
+我们将重新定义解压缩工具	We are redefining archive utilities	我们将重新定义解压工具	我們將重新定義解壓縮工具
+所有已保存密码都会被删除。此操作不会修改压缩包，也无法找回压缩包密码。	All saved passwords will be deleted. This does not change archives or recover their passwords.	所有已保存密码都会被删除。此操作不会修改压缩包，也无法找回压缩包密码。	所有已儲存密碼都會被刪除。此操作不會修改壓縮檔，也無法找回壓縮檔密碼。
+所有选中项目都无法安全加入压缩包，因此没有可用于创建压缩包的内容。	No selected items can be safely compressed.	所有选中项目都无法安全加入压缩包，因此没有可用于创建压缩包的内容。	所有選中項目都無法安全加入壓縮檔，因此沒有可用於建立壓縮檔的內容。
+所选内容包含无效项目	Invalid selection.	所选内容包含无效项目	所選內容包含無效項目
+所选内容只有已排除的系统辅助文件	The selected content contains only excluded system auxiliary files	所选内容只有已排除的系统辅助文件	所選內容只有已排除的系統輔助檔案
+所选文件不是 ArcZip 支持的可解压格式	Unsupported file format.	所选文件不是 ArcZip 支持的可解压格式	所選檔案不是 ArcZip 支援的可解壓縮格式
+所选文件夹中没有可解压的项目	The selected folder contains no extractable items	所选文件夹中没有可解压的项目	所選資料夾中沒有可解壓縮的項目
+所选解压目标文件夹不可用	Destination folder unavailable.	所选解压目标文件夹不可用	所選解壓縮目標資料夾不可用
+所选项目不是 macOS 安装包	Select a macOS installer.	所选项目不是 macOS 安装包	所選項目不是 macOS 安裝套件
+所选项目不是 macOS 应用程序包	Select a macOS app.	所选项目不是 macOS 应用程序包	所選項目不是 macOS 應用程式套件
+所选项目不是字体文件	Select a font file.	所选项目不是字体文件	所選項目不是字型檔案
+所选项目缩略图	thumbnails for selected items	所选项目缩略图	所選項目縮圖
+所选项目缩略图，另有 	selected item thumbnails, plus 	所选项目缩略图，另有 	所選項目縮圖，另有 
+打开	Open	打开	開啟
+打开内层加密容器	Open Encrypted Nested Container	打开内层加密容器	開啟內層加密容器
+打开加密压缩包	Open Encrypted Archive	打开加密压缩包	開啟加密壓縮檔
+打开加密文件	Open Encrypted File	打开加密文件	開啟加密檔案
+打开压缩包	Open Archive	打开压缩包	開啟壓縮檔
+打开压缩包…	Open Archive…	打开压缩包…	開啟壓縮檔…
+打开应用	Open Application	打开应用	開啟應用程式
+打开或创建压缩包后，可从这里快速重新打开	Open or create an archive, then reopen it quickly from here	打开或创建压缩包后，可从这里快速重新打开	開啟或建立壓縮檔後，可從這裡快速重新開啟
+打开文件	Open File	打开文件	開啟檔案
+打开文件夹	Open Folder	打开文件夹	開啟資料夾
+打开系统设置	Open System Settings	打开系统设置	開啟系統設定
+批量解压	Batch Extract	批量解压	批次解壓縮
+批量解压或拖出文件夹时忽略隐藏项目、macOS 元数据和 Applications 替身	Bulk extraction and folder drags skip hidden items, macOS metadata, and Applications aliases.	解压 DMG 时跳过隐藏文件和“应用程序”快捷方式。	解壓縮 DMG 時略過隱藏檔案與「應用程式」替身。
+找不到 macOS 安装器	macOS Installer Not Found	找不到 macOS 安装器	找不到 macOS 安裝程式
+找不到“	Cannot find “	找不到“	找不到「
+找不到磁盘映像，请确认文件仍然存在	Disk image not found.	找不到磁盘映像，请确认文件仍然存在	找不到磁碟映像檔，請確認檔案仍然存在
+拖入压缩包进行预览或解压	Drop an archive to preview or extract	拖入压缩包进行预览或解压	拖入壓縮檔進行預覽或解壓縮
+拖入文件以创建压缩包	Drop files to create an archive	拖入文件以创建压缩包	拖入檔案以建立壓縮檔
+拖入时的目标文件夹已不可用，请重新拖入	The original drop folder is no longer available. Please drop the files again.	拖入时的目标文件夹已不可用，请重新拖入	拖入時的目標資料夾已不可用，請重新拖入
+拖入的内容超过接收大小限制	The dropped content exceeds the intake size limit.	拖入的内容超过接收大小限制	拖入的內容超過接收大小限制
+拖入的对象没有可接收的文件或内容	The dropped item does not provide a file or readable content.	拖入的对象没有可接收的文件或内容	拖入的對象沒有可接收的檔案或內容
+拖入的文件内容为空	The dropped file is empty.	拖入的文件内容为空	拖入的檔案內容為空
+拖到 Finder 或其他 App 以解压此项目	Drag to Finder or another app to extract this item	拖到 访达 或其他 App 以解压此项目	拖到 Finder 或其他 App 以解壓縮此項目
+按回车键执行	Press Return to activate	按回车键执行	按 Return 鍵執行
+按空格也可预览	Press Space to preview	按空格也可预览	按空白鍵也可預覽
+按空格键执行	Press Space to activate	按空格键执行	按空白鍵執行
+接收文件超时，请重试	Receiving the file timed out. Please try again.	接收文件超时，请重试	接收檔案逾時，請再試一次
+控制压缩任务最多可使用的 CPU 核心数量	Limit the CPU cores available to compression tasks	控制压缩任务最多可使用的 CPU 核心数量	控制壓縮作業最多可使用的 CPU 核心數量
+控制解压缩时的内容过滤行为	Choose what to exclude when extracting.	控制解压时的内容过滤行为	控制解壓縮時的內容過濾行為
+提取完成	Extraction Complete	提取完成	提取完成
+搜索	Search	搜索	搜尋
+搜索压缩包	Search Archive	搜索压缩包	搜尋壓縮檔
+搜索名称或密码	Search names or passwords	搜索名称或密码	搜尋名稱或密碼
+搜索结果	Search Results	搜索结果	搜尋結果
+操作失败	Operation Failed	操作失败	操作失敗
+操作已取消	Operation Cancelled	操作已取消	操作已取消
+收起备选 Flow	Collapse Alternative Flows	收起备选 Flow	收合其他 Flow
+收起搜索	Close Search	收起搜索	收合搜尋
+收起暂存架	Hide Box	收起文件盒	收合檔案盒
+收起注释	Show Less	收起注释	收合註解
+放入剪贴板	Copy to Clipboard	放入剪贴板	放入剪貼簿
+放入工作区	Put in Workspace	放入工作区	放入工作區
+放入文件夹	Put in a Folder	放入文件夹	放入資料夾
+放弃更改	Discard	放弃更改	放棄更改
+放弃更改并打开	Discard Changes and Open	放弃更改并打开	放棄更改並開啟
+数据与网页	Data & Web	数据与网页	資料與網頁
+文件	File	文件	檔案
+文件与目录结构冲突	File and directory structure conflict	文件与目录结构冲突	檔案與目錄結構衝突
+文件可能已损坏，或使用了当前预览不支持的编码。	The file may be damaged or use an encoding that this preview does not support.	文件可能已损坏，或使用了当前预览不支持的编码。	檔案可能已損壞，或使用了目前預覽不支援的編碼。
+文件名或路径不安全	Unsafe filename or path	文件名或路径不安全	檔名或路徑不安全
+文件名或路径结构无效	Invalid Filename or Path	文件名或路径结构无效	檔名或路徑結構無效
+文件夹	Folder	文件夹	資料夾
+文件夹为空	Folder Is Empty	文件夹为空	資料夾為空
+文件夹导航	Folder Navigation	文件夹导航	資料夾導覽
+文件已就绪	File ready	文件已就绪	檔案已就緒
+文件已归拢	Files Collected	文件已归拢	檔案已彙整
+文件已被移动或删除，无法继续打开。	File moved or deleted.	文件已被移动或删除，无法继续打开。	檔案已被移動或刪除，無法繼續開啟。
+文件投放区	File Drop Zone	文件投放区	檔案投放區
+文件操作失败：	File operation failed: 	文件操作失败：	檔案操作失敗：
+文件索引完成前暂不能拖出或解压项目	Items Cannot Be Dragged Out or Extracted Until Indexing Completes	请等待文件列表读取完成，再拖出或解压所选文件	請等待檔案列表讀取完成，再拖出或解壓縮所選檔案
+文件索引完成前暂不能解压项目	Items Cannot Be Extracted Until Indexing Completes	请等待文件列表读取完成，再解压所选文件	請等待檔案列表讀取完成，再解壓縮所選檔案
+文件索引完成前暂不能读取项目内容	Item contents cannot be read until indexing completes	请等待文件列表读取完成，再打开所选文件	請等待檔案列表讀取完成，再開啟所選檔案
+文件索引已完成	File Index Complete	文件列表已就绪	檔案列表已準備就緒
+文档	Documents	文档	文件
+新密码本密码	New Password Book password	新密码本密码	新密碼本密碼
+新建压缩包时自动启用分卷	Enable split volumes automatically for new archives	新建压缩包时自动启用分卷	新建壓縮檔時自動啟用分卷
+无可用操作	No Available Actions	无可用操作	無可用操作
+无权限	Permission Denied	无权限	無權限
+无法为新压缩包找到可用名称	No available archive name.	无法为新压缩包找到可用名称	無法為新壓縮檔找到可用名稱
+无法为解压结果找到可用名称，请重试	No available folder name. Try again.	无法为解压结果找到可用名称，请重试	無法為解壓縮結果找到可用名稱，請再試一次
+无法保存密码，请重试。	Could not save the password. Please try again.	无法保存密码，请重试。	無法儲存密碼，請重試。
+无法修改打开方式	Unable to Change Default App	无法修改打开方式	無法修改開啟方式
+无法创建浏览索引	Unable to Create Browse Index	无法创建浏览索引	無法建立瀏覽索引
+无法在 Windows 上正常使用，请重命名后再创建	 cannot be used correctly on Windows. Rename it before creating the archive	无法在 Windows 上正常使用，请重命名后再创建	無法在 Windows 上正常使用，請重新命名後再建立
+无法完成操作	Unable to Complete Operation	无法完成操作	無法完成操作
+无法将文件放入剪贴板，请重试	Could not copy the files to the clipboard. Please try again.	无法将文件放入剪贴板，请重试	無法將檔案放入剪貼簿，請再試一次
+无法检查 Windows 文件名兼容性	Unable to check Windows filename compatibility	无法检查 Windows 文件名兼容性	無法檢查 Windows 檔名相容性
+无法生成预览	Unable to Generate Preview	无法生成预览	無法產生預覽
+无法访问文件或文件夹	Unable to Access File or Folder	无法访问文件或文件夹	無法存取檔案或資料夾
+无法访问文件或文件夹，请检查权限后重试	Unable to access the file or folder. Check its permissions and try again.	无法访问文件或文件夹，请检查权限后重试	無法存取檔案或資料夾，請檢查權限後再試一次
+无法访问文件或文件夹：	Unable to access file or folder: 	无法访问文件或文件夹：	無法存取檔案或資料夾：
+无法访问系统钥匙串，请重试。	The system keychain could not be accessed. Try again.	无法访问系统钥匙串，请重试。	無法存取系統鑰匙圈，請重試。
+无法读取 RPM 的有效载荷目录	The RPM payload catalog could not be read.	无法读取 RPM 的有效载荷目录	無法讀取 RPM 承載內容的目錄
+无法读取压缩包	Unable to Read Archive	无法读取压缩包	無法讀取壓縮檔
+无法读取压缩结果身份：	Could not read the archive output identity: 	无法读取压缩结果身份：	無法讀取壓縮結果身份：
+无法读取密码本，请保留数据并重试。	Password Book could not be read. Keep its data and try again.	无法读取密码本，请保留数据并重试。	無法讀取密碼本，請保留資料並重試。
+无法读取来源文件，请在系统设置的“隐私与安全性 → 文件与文件夹”中允许 ArcZip 访问来源应用，然后重新拖入	The source file cannot be read. Allow ArcZip to access the source app in System Settings → Privacy & Security → Files & Folders, then drop the file again.	无法读取来源文件，请在系统设置的“隐私与安全性 → 文件与文件夹”中允许 ArcZip 访问来源应用，然后重新拖入	無法讀取來源檔案，請在系統設定的「隱私權與安全性 → 檔案與檔案夾」中允許 ArcZip 存取來源應用程式，然後重新拖入
+无法验证	could not be verified	无法验证	無法驗證
+日常最常用的压缩与归档格式	Common archive and compression formats	日常最常用的压缩与归档格式	日常最常用的壓縮與封存格式
+昨天	Yesterday	昨天	昨天
+是	Yes	是	是
+显示 __MACOSX、.DS_Store 等通常会被隐藏的辅助文件	Show normally hidden items such as __MACOSX and .DS_Store.	显示 __MACOSX、.DS_Store 等通常会被隐藏的辅助文件	顯示 __MACOSX、.DS_Store 等通常會被隱藏的輔助檔案
+显示包内容	Show Package Contents	显示包内容	顯示套件內容
+显示密码	Show Password	显示密码	顯示密碼
+显示或隐藏密码	Show or hide password	显示或隐藏密码	顯示或隱藏密碼
+显示方式	View	显示方式	顯示方式
+显示辅助项目	Show Auxiliary Items	显示辅助项目	顯示輔助項目
+智能平衡速度与体积	Balance speed and size.	兼顾速度和大小	兼顧速度和大小
+智能选择文件，使用 128 MB 固实块	Adaptive compression with 128 MB solid blocks.	兼顾速度和大小	兼顧速度和大小
+暂不支持此格式的快速预览	Quick Preview Is Not Available for This Format	暂不支持此格式的快速预览	暫不支援此格式的快速預覽
+暂存架	Shelf	文件盒	檔案盒
+暂时无法准备这个文件，请检查网络连接或文件提供商状态后重试。	File unavailable. Try again later.	暂时无法准备这个文件，请检查网络连接或文件提供商状态后重试。	暫時無法準備這個檔案，請檢查網路連線或檔案提供者狀態後再試一次。
+更多……	More…	更多……	更多……
+更多设置…	More Settings…	更多设置…	更多設定…
+更小	Smaller	更小	更小
+更快	Faster	更快	更快
+更改密码	Change Password	更改密码	更改密碼
+更新已就绪；	Update ready; 	更新已就绪；	更新已準備就緒；
+更新已就绪；完成当前任务并保存更改后将安装	The update is ready; it will install after current tasks and changes are complete	更新已就绪；完成当前任务并保存更改后将安装	更新已準備就緒；完成目前作業並儲存更改後將安裝
+替换	Replace	替换	取代
+替换现有压缩包？	Replace Existing Archive?	替换现有压缩包？	取代現有壓縮檔？
+替换现有字体？	Replace Existing Font?	替换现有字体？	取代現有字型？
+替换现有应用？	Replace Existing Application?	替换现有应用？	取代現有應用程式？
+最大可用核心数	Maximum CPU Cores	最大可用核心数	最大可用核心數
+最近打开	Open Recent	最近打开	最近開啟
+最高强度 LZMA2，明确无收益内容仍直接存储，使用 4 GB 固实块	Maximum LZMA2 with 4 GB solid blocks; store files that won’t shrink.	尽量压小，可能需要更长时间	盡量壓小，可能需要更長時間
+最高强度压缩，明确无收益内容仍直接存储	Maximum compression; store files that won’t shrink.	尽量压小，可能需要更长时间	盡量壓小，可能需要更長時間
+有些文件已不在原位置，请重新加入	Some files are no longer available. Add them again.	有些文件已不在原位置，请重新加入	有些檔案已不在原位置，請重新加入
+有可用的更新：	Update available: 	有可用的更新：	有可用的更新：
+未关联	Not Associated	未关联	未關聯
+未命名压缩包	Untitled Archive	未命名压缩包	未命名壓縮檔
+未命名压缩包.zip	Untitled Archive.zip	未命名压缩包.zip	未命名壓縮檔.zip
+未命名项目	Untitled Item	未命名项目	未命名項目
+未选择	Not Selected	未选择	未選擇
+极速	Fastest	仅打包	僅封裝
+极限	Maximum	极限	極限
+查看全部…	View All…	查看全部…	檢視全部…
+查看密码状态或更改密码	View password status or change the password	查看密码状态或更改密码	查看密碼狀態或更改密碼
+根目录可浏览 · 正在准备完整目录	Loading Files	根目录可浏览 · 正在准备完整目录	根目錄可瀏覽 · 正在準備完整目錄
+格式	Format	格式	格式
+格式关联	Format Associations	格式关联	格式關聯
+检查 Windows 文件名兼容性	Check Windows filename compatibility	检查 Windows 文件名兼容性	檢查 Windows 檔名相容性
+检查器	Inspector	检查器	檢查器
+检查更新	Check for Updates	检查更新	檢查更新
+检查更新失败：	Update check failed: 	检查更新失败：	檢查更新失敗：
+欢迎使用ArcZip	Welcome to ArcZip	欢迎使用ArcZip	歡迎使用 ArcZip
+欢迎页面	Welcome	欢迎页面	歡迎頁面
+欢迎！拖入文件以开始	Welcome! Drop files to get started	欢迎！拖入文件以开始	歡迎！拖入檔案以開始
+正在从磁盘映像复制应用程序	Copying Application from Disk Image	正在从磁盘映像复制应用程序	正在從磁碟映像檔複製應用程式
+正在从磁盘映像复制项目	Copying Items from Disk Image	正在从磁盘映像复制项目	正在從磁碟映像檔複製項目
+正在修正 Windows 文件名	Repairing Windows filenames	正在修正 Windows 文件名	正在修正 Windows 檔名
+正在写入修改内容	Saving	正在写入修改内容	正在寫入修改內容
+正在准备	Preparing	正在准备	正在準備
+正在准备 	Preparing 	正在准备 	正在準備 
+正在准备…	Preparing…	正在准备…	正在準備…
+正在准备压缩	Preparing Compression	正在准备压缩	正在準備壓縮
+正在准备安装	Preparing Installation	正在准备安装	正在準備安裝
+正在准备应用程序	Preparing Application	正在准备应用程序	正在準備應用程式
+正在准备当前文件夹…	Preparing This Folder…	正在准备当前文件夹…	正在準備目前資料夾…
+正在准备打开	Preparing to Open	正在准备打开	正在準備開啟
+正在准备文件	Preparing Files	正在准备文件	正在準備檔案
+正在准备解压缩	Preparing Extraction	正在准备解压	正在準備解壓縮
+正在准备软件更新服务	Preparing the update service	正在准备软件更新服务	正在準備軟體更新服務
+正在分卷	Splitting archive	正在分卷	正在分卷
+正在分析压缩包修改	Preparing	正在分析压缩包修改	正在分析壓縮檔修改
+正在分析文件	Analyzing Files	正在分析文件	正在分析檔案
+正在创建	Creating	正在创建	正在建立
+正在删除压缩包项目	Deleting	正在删除压缩包项目	正在刪除壓縮檔項目
+正在加载…	Loading…	正在加载…	正在載入…
+正在匹配密码	Matching passwords	正在匹配密码	正在比對密碼
+正在压缩	Compressing	正在压缩	正在壓縮
+正在压缩可压缩文件	Compressing	正在压缩可压缩文件	正在壓縮可壓縮檔案
+正在发布解压结果	Publishing Extracted Items	正在完成解压…	正在完成解壓縮…
+正在取消	Cancelling	正在取消	正在取消
+正在后台完成文件索引。为避免使用不完整目录，索引完成前暂不能	Indexing is finishing in the background. To avoid using an incomplete catalog, 	正在后台完成文件索引。为避免使用不完整目录，索引完成前暂不能	正在背景完成檔案索引。為避免使用不完整目錄，索引完成前暫不能
+正在启动压缩引擎	Starting	正在启动压缩引擎	正在啟動壓縮引擎
+正在启动解压缩	Starting Extraction	正在启动解压	正在啟動解壓縮
+正在启动解压缩引擎	Starting Extraction Engine	正在准备解压…	正在準備解壓縮…
+正在复制 ISO 项目	Copying	正在复制 ISO 项目	正在複製 ISO 項目
+正在复制已暂存的项目	Copying Staged Items	正在复制文件…	正在複製檔案…
+正在安全保存	Saving Safely	正在保存	正在儲存
+正在安全检查压缩包目录	Checking Archive Contents Safely	正在安全检查压缩包目录	正在安全檢查壓縮檔目錄
+正在安装	Installing	正在安装	正在安裝
+正在安装 	Installing 	正在安装 	正在安裝 
+正在安装 ArcZip 	Installing ArcZip 	正在安装 ArcZip 	正在安裝 ArcZip 
+正在安装…	Installing…	正在安装…	正在安裝…
+正在安装字体	Installing Font	正在安装字体	正在安裝字型
+正在安装字体…	Installing Font…	正在安装字体…	正在安裝字型…
+正在完成 	Finishing 	正在完成 	正在完成 
+正在完成文件索引	Finishing File Index	正在读取文件列表…	正在讀取檔案列表…
+正在应用未保存的修改	Applying Unsaved Changes	正在应用未保存的修改	正在套用未儲存的修改
+正在建立完整文件索引	Building Full File Index	正在读取文件列表…	正在讀取檔案列表…
+正在建立文件索引	Loading Files	正在建立文件索引	正在建立檔案索引
+正在建立文件索引 	Building file index 	正在建立文件索引 	正在建立檔案索引 
+正在归拢文件	Collecting Files	正在归拢文件	正在彙整檔案
+正在打包文件	Packing	正在打包文件	正在封裝檔案
+正在打包无需压缩的文件	Packing	正在打包无需压缩的文件	正在封裝無需壓縮的檔案
+正在打开	Opening	正在打开	正在開啟
+正在打开…	Opening…	正在打开…	正在開啟…
+正在打开内层容器	Opening Nested Container	正在打开内层容器	正在開啟內層容器
+正在打开文件	Opening File	正在打开文件	正在開啟檔案
+正在挂载磁盘映像	Mounting Disk Image	正在挂载磁盘映像	正在掛載磁碟映像檔
+正在接收其他文件，请稍后重试	Other files are being received. Please try again shortly.	正在接收其他文件，请稍后重试	正在接收其他檔案，請稍後再試一次
+正在整理解压结果	Finalizing Extraction	正在整理解压结果	正在整理解壓縮結果
+正在显示目录	Opening	正在显示目录	正在顯示目錄
+正在替换旧项目	Replacing	正在替换旧项目	正在取代舊項目
+正在校验磁盘映像	Verifying Disk Image	正在校验磁盘映像	正在驗證磁碟映像檔
+正在核对压缩包目录	Checking Archive Contents	正在核对压缩包目录	正在核對壓縮檔目錄
+正在检查更新…	Checking for Updates…	正在检查更新…	正在檢查更新…
+正在确认磁盘映像内容完整	Verifying Disk Image Contents	正在确认磁盘映像内容完整	正在確認磁碟映像檔內容完整
+正在等待你选择同名文件夹的处理方式	Waiting for your choice for the same-named folder	正在等待你选择同名文件夹的处理方式	正在等待你選擇同名資料夾的處理方式
+正在等待磁盘映像就绪，刚下载的文件可能需要稍久。	Waiting for the disk image to be ready. Newly downloaded files may take a little longer.	正在等待磁盘映像就绪，刚下载的文件可能需要稍久。	正在等待磁碟映像檔準備就緒，剛下載的檔案可能需要稍久。
+正在索引	Indexing	正在索引	正在索引
+正在结束校验并重新挂载	Finishing Verification and Remounting	正在继续打开…	正在繼續開啟…
+正在继续下一项任务	Starting the Next Task	正在继续下一项任务	正在繼續下一項作業
+正在解压	Extracting	正在解压	正在解壓縮
+正在解压 	Extracting 	正在解压 	正在解壓縮 
+正在解压缩	Extracting	正在解压	正在解壓縮
+正在解压缩应用程序	Extracting Application	正在解压应用程序	正在解壓縮應用程式
+正在解码 Lzip 压缩流	Decoding Lzip Stream	正在解码 Lzip 压缩流	正在解碼 Lzip 壓縮串流
+正在解码压缩流	Decoding Compressed Stream	正在解码压缩流	正在解碼壓縮串流
+正在计算…	Calculating…	正在计算…	正在計算…
+正在计算总大小	Calculating Total Size	正在计算总大小	正在計算總大小
+正在读取…	Reading…	正在读取…	正在讀取…
+正在读取压缩包	Reading Archive	正在读取压缩包	正在讀取壓縮檔
+正在读取压缩包…	Reading Archive…	正在读取压缩包…	正在讀取壓縮檔…
+正在读取安装信息…	Reading installation information…	正在读取安装信息…	正在讀取安裝資訊…
+正在读取授权状态…	Loading license status…	正在读取授权状态…	正在讀取授權狀態…
+正在读取磁盘映像的第一层内容	Reading the First Layer of the Disk Image	正在读取磁盘映像的第一层内容	正在讀取磁碟映像檔的第一層內容
+正在跳过校验	Skipping Verification	正在跳过校验	正在略過驗證
+正在重命名压缩包项目	Renaming	正在重命名压缩包项目	正在重新命名壓縮檔項目
+正在验证 	Verifying 	正在验证 	正在驗證 
+正在验证密码	Verifying password	正在验证密码	正在驗證密碼
+此压缩包仍由一个正在结束任务的工作区占用，请稍后重试。	The previous operation on this archive is still finishing. Try again shortly.	此压缩包的上一次操作尚未结束，请稍后重试。	此壓縮檔的上一次操作尚未結束，請稍後再試一次。
+此压缩包受密码保护	This archive is password protected	此压缩包受密码保护	此壓縮檔受密碼保護
+此压缩包已在当前会话中解锁	This archive is unlocked for the current session	此压缩包已在当前会话中解锁	此壓縮檔已在本次使用期間解鎖
+此压缩包需要密码	Password Required	此压缩包需要密码	此壓縮檔需要密碼
+此工作区正在安全结束；清理完成后会重新打开。	The previous operation is finishing. The archive will reopen when it is done.	正在结束上一次操作，完成后将重新打开。	正在結束上一次操作，完成後將重新開啟。
+此操作当前可用。	Available	此操作当前可用。	此操作目前可用。
+此文件没有可用的内容缩略图	No Content Thumbnail Is Available for This File	此文件没有可用的内容缩略图	此檔案沒有可用的內容縮圖
+此磁盘映像包含需要确认的使用许可协议	Accept the license agreement to open.	此磁盘映像包含需要确认的使用许可协议	此磁碟映像檔包含需要確認的使用授權合約
+此磁盘映像暂被其他应用占用，请稍后重试。如果它显示在 Finder 中，也可以先推出再重试。	Another app is temporarily using this disk image. Try again shortly. If it appears in Finder, you can also eject it first.	此磁盘映像暂被其他应用占用，请稍后重试。如果它显示在 Finder 中，也可以先推出再重试。	此磁碟映像檔暫由其他應用程式使用，請稍後再試。如果它顯示在 Finder 中，也可以先退出映像檔再試。
+每个用途会独立保存自己的压缩强度	Each preset remembers its compression level.	每个用途会独立保存自己的压缩强度	每個用途會獨立儲存自己的壓縮強度
+每卷大小	Volume Size	每卷大小	每卷大小
+每卷大小必须大于零	Volume size must be greater than zero.	每卷大小必须大于零	每卷大小必須大於零
+每天检查一次；更新包不会在后台静默安装	Checks daily. Updates are not installed automatically.	每天检查更新，安装前会征求你的确认。	每天檢查更新，安裝前會徵求你的確認。
+没有任何代码签名，无法确认发布者。	has no code signature; the publisher cannot be verified.	没有任何代码签名，无法确认发布者。	沒有任何程式碼簽章，無法確認發佈者。
+没有匹配的密码	No matching passwords	没有匹配的密码	沒有符合的密碼
+没有可压缩的访达项目	No files to compress.	没有可压缩的访达项目	沒有可壓縮的 Finder 項目
+没有密码时不显示压缩包内容	Hide archive contents without a password	没有密码时不显示压缩包内容	沒有密碼時不顯示壓縮檔內容
+没有打开压缩包	No Archive Is Open	没有打开压缩包	沒有開啟壓縮檔
+没有最近打开的压缩包	No Recent Archives	没有最近打开的压缩包	沒有最近開啟的壓縮檔
+没有权限	Permission Denied	没有权限	沒有權限
+没有权限写入“应用程序”文件夹	Applications access denied.	没有权限写入“应用程序”文件夹	沒有權限寫入「應用程式」資料夾
+没有权限写入当前用户的字体库	Font library access denied.	没有权限写入当前用户的字体库	沒有權限寫入目前使用者的字型資料庫
+没有权限读取此磁盘映像	Disk image access denied.	没有权限读取此磁盘映像	沒有權限讀取此磁碟映像檔
+没有生成有效的 .app 应用程序包	Invalid extracted app.	没有生成有效的 .app 应用程序包	未產生有效的 .app 應用程式套件
+没有生成有效的 .pkg 安装包	Invalid extracted installer.	没有生成有效的 .pkg 安装包	沒有產生有效的 .pkg 安裝套件
+没有读取权限	Read Permission Required	没有读取权限	沒有讀取權限
+没有选择要解压的项目	No Items Selected for Extraction	没有选择要解压的项目	沒有選擇要解壓縮的項目
+注释	Comment	注释	註解
+浅色	Light	浅色	淺色
+浏览	Browse	浏览	瀏覽
+深色	Dark	深色	深色
+添加密码…	Add password…	添加密码…	新增密碼…
+添加文件	Add Files	添加文件	加入檔案
+添加文件到压缩包	Add Files to Archive	添加文件到压缩包	加入檔案到壓縮檔
+清理 macOS 辅助文件	Clean Up macOS Auxiliary Files	清理 macOS 辅助文件	清理 macOS 輔助檔案
+清空暂存架	Clear Box	清空文件盒	清空檔案盒
+清除	Clear	清除	清除
+清除全部	Clear All	清除全部	清除全部
+清除全部最近打开记录	Clear All Open Recent History	清除全部最近打开记录	清除全部最近開啟記錄
+清除搜索	Clear Search	清除搜索	清除搜尋
+清除最近打开记录？	Clear Open Recent History?	清除最近打开记录？	清除最近開啟記錄？
+清除菜单	Clear Menu	清除菜单	清除選單
+点击添加文件，或直接将文件拖到这里	Click Add Files or drag files here	点击添加文件，或直接将文件拖到这里	按一下加入檔案，或直接將檔案拖到這裡
+点击输入压缩包密码	Click to Enter Archive Password	点击输入压缩包密码	按一下輸入壓縮檔密碼
+特殊项目	Special Item	特殊项目	特殊項目
+用 ArcZip 打开 	Open with ArcZip: 	用 ArcZip 打开 	用 ArcZip 開啟 
+用途	Purpose	用途	用途
+由 Apple 认证的开发者签名，但未经 Apple 公证。	is signed by an Apple-identified developer but is not notarized by Apple.	由 Apple 认证的开发者签名，但未经 Apple 公证。	由 Apple 認證的開發者簽章，但未經 Apple 公證。
+由 macOS Launch Services 管理	Managed by macOS	由 macOS Launch Services 管理	由 macOS Launch Services 管理
+由解压缩引擎报告进度	Reported by the Extraction Engine	由解压引擎报告进度	由解壓縮引擎報告進度
+目前目录可以浏览；完整索引完成前暂不能搜索、预览、拖出或解压	You can browse this folder; search, preview, drag-out and extraction are unavailable until indexing completes.	目前目录可以浏览；完整索引完成前暂不能搜索、预览、拖出或解压	目前目錄可以瀏覽；完整索引完成前暫不能搜尋、預覽、拖出或解壓縮
+目录可浏览 · 正在完成文件索引	Loading Files	目录可浏览 · 正在完成文件索引	目錄可瀏覽 · 正在完成檔案索引
+目录较大，仅载入前 	This directory is large; only the first 	目录较大，仅载入前 	目錄較大，僅載入前 
+目标中已有同名文件夹	The destination already contains a folder with the same name	目标中已有同名文件夹	目標中已有同名資料夾
+目标位置已存在“	The destination already contains “	目标位置已存在“	目標位置已存在「
+直接在 Finder 中快速压缩与解压	Quickly compress and extract directly in Finder	直接在 访达 中快速压缩与解压	直接在 Finder 中快速壓縮與解壓縮
+硬链接	Hard Link	硬链接	硬連結
+确认	Confirm	确认	確認
+磁盘与旧式容器	Disk Images & Containers	磁盘映像与其他格式	磁碟映像檔與其他格式
+磁盘映像	Disk Image	磁盘映像	磁碟映像檔
+磁盘映像与光盘容器	Disk images and optical disc containers	磁盘映像和其他封装格式	磁碟映像檔和其他封裝格式
+磁盘映像使用许可协议	License Agreement	磁盘映像使用许可协议	磁碟映像檔授權合約
+磁盘映像挂载已不可用	The disk image mount is no longer available	磁盘映像挂载已不可用	磁碟映像檔掛載已不可用
+磁盘映像校验失败	Disk image check failed.	磁盘映像校验失败	磁碟映像檔驗證失敗
+磁盘映像项目复制完成	Copied	磁盘映像项目复制完成	磁碟映像檔項目複製完成
+磁盘空间	Disk Space	磁盘空间	磁碟空間
+磁盘空间不足	Insufficient Disk Space	磁盘空间不足	磁碟空間不足
+磁盘空间不足，请释放空间后重试，或选择其他位置。	Not enough space. Free up space or choose another location.	磁盘空间不足，请释放空间后重试，或选择其他位置。	磁碟空間不足，請釋放空間後再試一次，或選擇其他位置。
+空格	Space	空格	空白
+空间不足	Insufficient Space	空间不足	空間不足
+立即锁定	Lock now	立即锁定	立即鎖定
+符号链接	Symbolic Link	符号链接	符號連結
+等其他项目	and other items	等其他项目	等其他項目
+等待前一项任务完成	Waiting for the Previous Task to Finish	等待前一项任务完成	等待前一項作業完成
+等待并退出	Wait and Quit	等待并退出	等待並結束
+等待开始	Waiting to Start	等待开始	等待開始
+等待解压缩引擎进度	Waiting for the Extraction Engine	等待解压引擎进度	等待解壓縮引擎進度
+等待输入密码	Waiting for Password	等待输入密码	等待輸入密碼
+签名状态：	Signature status: 	签名状态：	簽章狀態：
+管理密码本…	Manage Password Book…	管理密码本…	管理密碼本…
+系统命令	System command	系统命令	系統命令
+索引完成后即可全部解压	Extract All After Indexing Completes	文件列表读取完成后即可使用此操作	檔案列表讀取完成後即可使用此操作
+索引完成后即可安装	Install After Indexing Completes	文件列表读取完成后即可安装	檔案列表讀取完成後即可安裝
+纯文本	Plain Text	纯文本	純文字
+继续	Continue	继续	繼續
+继续解压	Continue Extraction	继续解压	繼續解壓縮
+维护	Maintenance	维护	維護
+维护和恢复 ArcZip 偏好设置	Manage and reset your preferences.	维护和恢复 ArcZip 设置	維護和恢復 ArcZip 設定
+编辑…	Edit…	编辑…	編輯…
+自动	Automatic	自动	自動
+自动使用密码本解锁	Auto-unlock with Password Book	自动使用密码本解锁	自動使用密碼本解鎖
+自动保存到密码本	Automatically save passwords	自动保存到密码本	自動儲存到密碼本
+自动排除系统辅助文件	Skip System Metadata Files	自动排除系统辅助文件	自動排除系統輔助檔案
+自动检查更新	Check for Updates Automatically	自动检查更新	自動檢查更新
+自动过滤 DMG 安装辅助文件	Skip DMG Installer Extras	自动过滤 DMG 安装辅助文件	自動過濾 DMG 安裝輔助檔案
+视频	Video	视频	影片
+解压	Extract	解压	解壓縮
+解压任务未生成“	The extraction task did not create “	解压任务未生成“	解壓縮作業未產生「
+解压内容包含 	The extracted content contains 	解压内容包含 	解壓縮內容包含 
+解压到临时目录并使用系统默认应用打开	Extract to a temporary folder and open with the default app	使用默认应用打开压缩包中的文件	使用預設應用程式開啟壓縮檔中的檔案
+解压到这里	Extract Here	解压到这里	解壓縮到這裡
+解压加密文件	Extract Encrypted File	解压加密文件	解壓縮加密檔案
+解压单个文件到受管理的临时目录，并使用系统默认应用打开	Extract a file to a temporary folder and open it with its default app.	使用默认应用打开压缩包中的文件	使用預設應用程式開啟壓縮檔中的檔案
+解压完成	Extraction Complete	解压完成	解壓縮完成
+解压所选项目	Extract Selected Items	解压所选项目	解壓縮所選項目
+解压所选项目…	Extract Selected Items…	解压所选项目…	解壓縮所選項目…
+解压文件夹	Extract Folder	解压文件夹	解壓縮資料夾
+解压时忽略 __MACOSX、AppleDouble、.DS_Store、Thumbs.db、desktop.ini 和卷索引等冗余项目	Skip __MACOSX, AppleDouble, .DS_Store, Thumbs.db, desktop.ini, and volume indexes.	解压时跳过 .DS_Store 等系统辅助文件。	解壓縮時略過 .DS_Store 等系統輔助檔案。
+解压此文件	Extract This File	解压此文件	解壓縮此檔案
+解压缩	Extract	解压	解壓縮
+解压缩完成	Extraction Complete	解压完成	解壓縮完成
+解锁	Unlock	解锁	解鎖
+解锁 ArcZip 密码本	Unlock ArcZip Password Book	解锁 ArcZip 密码本	解鎖 ArcZip 密碼本
+解锁压缩包	Unlock Archive	解锁压缩包	解鎖壓縮檔
+解锁后可使用密码本并保存本次密码。	Unlock to use Password Book and save this password.	解锁后可使用密码本并保存本次密码。	解鎖後可使用密碼本並儲存本次密碼。
+解锁密码本	Unlock Password Book	解锁密码本	解鎖密碼本
+计算中…	Calculating…	计算中…	計算中…
+让下一步更简单	Make the next step easier	让下一步更简单	讓下一步更簡單
+让解压结果保持干净，同时保留真实的隐藏文件	Skip system clutter while keeping your own hidden files.	让解压结果保持干净，同时保留真实的隐藏文件	讓解壓縮結果保持乾淨，同時保留真實的隱藏檔案
+许可协议	License Agreement	许可协议	授權合約
+设备节点	Device node	设备节点	裝置節點
+设备节点可能连接磁盘、终端或无限数据流；读取它可能泄露系统数据、产生副作用或永不结束。	Reading a device may expose data, affect the system, or never finish.	设备节点可能连接磁盘、终端或无限数据流；读取它可能泄露系统数据、产生副作用或永不结束。	裝置節點可能連接磁碟、終端或無限資料流；讀取它可能洩露系統資料、產生副作用或永不結束。
+设置	Settings	设置	設定
+设置 ArcZip 的外观与浏览方式	Configure ArcZip's appearance and browsing	设置 ArcZip 的外观与浏览方式	設定 ArcZip 的外觀與瀏覽方式
+设置创建压缩包时默认采用的用途与压缩强度	Choose the default preset and compression level for new archives.	设置创建压缩包时默认采用的用途与压缩强度	設定建立壓縮檔時預設採用的用途與壓縮強度
+设置独立的密码本密码	Set a separate Password Book password	设置独立的密码本密码	設定獨立的密碼本密碼
+访达压缩任务	Finder compression task	访达压缩任务	Finder 壓縮作業
+访达快速创建 ZIP	Quickly create ZIP in Finder	访达快速创建 ZIP	Finder 快速建立 ZIP
+访达解压任务	Finder extraction task	访达解压任务	Finder 解壓縮作業
+访达请求不存在或已被处理	Finder request unavailable.	访达请求不存在或已被处理	Finder 請求不存在或已被處理
+访达请求已过期，请重试	Finder request expired. Try again.	访达请求已过期，请重试	Finder 請求已過期，請再試一次
+访达请求文件无效	Invalid Finder request.	访达请求文件无效	Finder 請求檔案無效
+该内层文件不能作为可浏览容器打开	Cannot browse this file.	该内层文件不能作为可浏览容器打开	該內層檔案不能作為可瀏覽容器開啟
+该项目不是普通文件、目录或符号链接，压缩引擎无法保证安全、完整地保存它。	Only files, folders, and symbolic links can be archived.	该项目不是普通文件、目录或符号链接，压缩引擎无法保证安全、完整地保存它。	該項目不是一般檔案、目錄或符號連結，壓縮引擎無法保證安全、完整地儲存它。
+该项目包含未保存的修改，请先保存或撤销修改后再继续。	Save or undo changes to continue.	该项目包含未保存的修改，请先保存或撤销修改后再继续。	該項目包含未儲存的修改，請先儲存或復原修改後再繼續。
+详细信息：	Details: 	详细信息：	詳細資訊：
+请从已打包的 ArcZip.app 中修改格式关联	Change format associations from a packaged ArcZip.app	请从已打包的 ArcZip.app 中修改格式关联	請從已封裝的 ArcZip.app 中修改格式關聯
+请使用 ArcZip 打开以查看完整内容。	Open with ArcZip to view the full contents.	请使用 ArcZip 打开以查看完整内容。	請使用 ArcZip 開啟以查看完整內容。
+请使用 ArcZip 打开并输入密码。	Open with ArcZip and enter the password.	请使用 ArcZip 打开并输入密码。	請使用 ArcZip 開啟並輸入密碼。
+请先修正所有 Windows 文件名问题	Fix all Windows filename issues first	请先修正所有 Windows 文件名问题	請先修正所有 Windows 檔名問題
+请先完成当前任务并保存压缩包更改	Finish the current task and save archive changes first	请先完成当前任务并保存压缩包更改	請先完成目前作業並儲存壓縮檔更改
+请先完成或取消当前密码、确认或修复操作，再重新退出 ArcZip。	Finish or cancel this prompt before quitting.	请先完成或取消当前密码、确认或修复操作，再重新退出 ArcZip。	請先完成或取消目前密碼、確認或修復操作，再重新結束 ArcZip。
+请先解锁密码本。	Unlock Password Book first.	请先解锁密码本。	請先解鎖密碼本。
+请再次输入密码	Re-enter the password	请再次输入密码	請再次輸入密碼
+请完整阅读	Please Read Carefully	请完整阅读	請完整閱讀
+请检查文件夹权限或选择其他位置后重试	 Check the folder permissions or choose another location and try again	请检查文件夹权限或选择其他位置后重试	請檢查資料夾權限或選擇其他位置後再試一次
+请牢记此密码；忘记密码且无法使用快捷解锁时，只能重置并清空密码本。	Remember this password. If you forget it and quick unlock is unavailable, you can only reset and erase the password book.	请牢记此密码；忘记密码且无法使用快捷解锁时，只能重置并清空密码本。	請牢記此密碼；忘記密碼且無法使用快速解鎖時，只能重置並清空密碼本。
+请确认这个项目的新名称	Confirm a new name for this item	请确认这个项目的新名称	請確認這個項目的新名稱
+请解锁一次密码本，以启用锁定时保存密码。	Unlock Password Book once to enable saving while locked.	请解锁一次密码本，以启用锁定时保存密码。	請解鎖一次密碼本，以啟用鎖定時儲存密碼。
+请设置密码，或关闭密码保护	Set a password or turn off password protection	请设置密码，或关闭密码保护	請設定密碼，或關閉密碼保護
+请设置独立的密码本密码。支持时，也可使用 Touch ID 或 Apple Watch 快速解锁。	Set an independent password for your password book. Touch ID or Apple Watch can also unlock it when available.	请设置独立的密码本密码。支持时，也可使用 Touch ID 或 Apple Watch 快速解锁。	請設定獨立的密碼本密碼。支援時，也可使用 Touch ID 或 Apple Watch 快速解鎖。
+请输入“	Enter the password for “	请输入“	請輸入「
+请输入压缩包名称	Enter an archive name	请输入压缩包名称	請輸入壓縮檔名稱
+请输入压缩包密码	Enter Archive Password	请输入压缩包密码	請輸入壓縮檔密碼
+请输入安全的单个文件名	Enter one safe file name	请输入安全的单个文件名	請輸入安全的單一檔名
+请输入密码	Enter Password	请输入密码	請輸入密碼
+请输入密码后继续。	Enter a password to continue.	请输入密码后继续。	請輸入密碼後繼續。
+请输入密码后继续。密码只保存在当前窗口的内存中。	Enter the password to continue. The password is kept in memory for this window only.	请输入密码后继续。密码只保存在当前窗口的内存中。	請輸入密碼後繼續。密碼只儲存在目前視窗的記憶體中。
+请输入密码后继续。密码只保存在当前窗口的内存中，不会写入磁盘或命令行。	Enter the password to continue. It is kept in memory for this window only and is never written to disk or the command line.	请输入密码后继续。密码只保存在当前窗口的内存中，不会写入磁盘或命令行。	請輸入密碼後繼續。密碼只儲存在目前視窗的記憶體中，不會寫入磁碟或命令列。
+请输入已有的密码本密码以关闭保护。	Enter your current Password Book password to turn off protection.	请输入已有的密码本密码以关闭保护。	請輸入現有的密碼本密碼以關閉保護。
+请选择同一文件夹中的项目	Select items from one folder.	请选择同一文件夹中的项目	請選擇同一資料夾中的項目
+请选择有效的存储位置	Choose a valid storage location	请选择有效的存储位置	請選擇有效的儲存位置
+请释放一些磁盘空间，或检查系统临时目录后重试。压缩包没有被修改。	Free some disk space or check the system temporary folder and try again. The archive was not modified.	请重试；若仍失败，请检查磁盘空间。原压缩包未被修改。	請再試一次；若仍失敗，請檢查磁碟空間。原壓縮檔未被修改。
+请释放空间后重试，或选择其他位置。	 Free some space and try again, or choose another location.	请释放空间后重试，或选择其他位置。	請釋放空間後再試一次，或選擇其他位置。
+读取或暂存失败	Read or staging failed	读取或暂存失败	讀取或暫存失敗
+调整压缩包工作区的默认呈现方式	Choose the default archive view.	调整压缩包窗口的默认呈现方式	調整壓縮檔視窗的預設呈現方式
+资源忙	Resource Busy	资源忙	資源使用中
+路径名称冲突	Path name conflict	路径名称冲突	路徑名稱衝突
+跳过	Skip	跳过	略過
+跳过 	Skip 	跳过 	略過 
+跳过后仍会只读挂载，但无法确认磁盘映像内容是否完整。	It will still be mounted read-only if you skip this, but ArcZip cannot verify that the disk image contents are complete.	跳过后可继续打开，但无法确认文件是否完整。	略過後可繼續開啟，但無法確認檔案是否完整。
+跳过校验	Skip	跳过校验	略過驗證
+软件包（谨慎）	Packages (Caution)	软件包（谨慎）	套件（謹慎）
+软件更新	Software Updates	软件更新	軟體更新
+输入密码	Enter Password	输入密码	輸入密碼
+输入独立的密码本密码以继续。	Enter your separate Password Book password to continue.	输入独立的密码本密码以继续。	輸入獨立的密碼本密碼以繼續。
+返回	Back	返回	返回
+返回上一级	Back	返回上一级	返回上一層
+返回投放台	Back to Drop Zone	返回首页	返回首頁
+返回操作	Back to Actions	返回操作	返回操作
+还没有最近打开的压缩包	No archives have been opened recently	还没有最近打开的压缩包	還沒有最近開啟的壓縮檔
+这个压缩包将用于什么？	What will this archive be used for?	这个压缩包将用于什么？	這個壓縮檔將用於什麼？
+这个项目无法放入文件夹	This item cannot be collected into a folder.	这个项目无法放入文件夹	這個項目無法放入資料夾
+这些名称在 Windows 中可能消失、被改写或无法正常解压。ArcZip 已填入可用名称，你可以直接确认，也可以在这里修改。	These names may disappear, be altered, or fail to extract correctly on Windows. ArcZip has filled in safe names; confirm them as-is or edit them here.	部分文件名无法在 Windows 中正常使用。已填入建议名称，你可以直接使用或修改；原文件名不会改变。	部分檔名無法在 Windows 中正常使用。已填入建議名稱，你可以直接使用或修改；原始檔名不會改變。
+进入主工作区	Open in Workspace	进入主工作区	進入主工作區
+进入完整工作区	Open Full Workspace	打开完整窗口	開啟完整視窗
+进行中	Working	进行中	進行中
+适合 Unix 目录归档	Suitable for Unix directory archives	适合 Unix 目录归档	適合 Unix 目錄封存
+适合在 Mac 之间传递	Suitable for sharing between Macs	适合在 Mac 之间传递	適合在 Mac 之間傳遞
+选择	Choose	选择	選擇
+选择 ArcZip 的打开方式，并启用 Finder 快捷操作	Choose how ArcZip opens files and enable Finder quick actions	选择 ArcZip 的打开方式，并启用 访达 快捷操作	選擇 ArcZip 的開啟方式，並啟用 Finder 快速操作
+选择 ArcZip 窗口使用的明暗模式	Choose light, dark, or automatic.	选择 ArcZip 窗口使用的明暗模式	選擇 ArcZip 視窗使用的明暗模式
+选择全部	Select All	选择全部	全選
+选择压缩包存储位置	Choose Archive Location	选择压缩包存储位置	選擇壓縮檔儲存位置
+选择压缩包格式	Choose an archive format	选择压缩包格式	選擇壓縮檔格式
+选择双击文件时由 ArcZip 打开的格式	Set ArcZip as the default app for selected formats.	选择双击文件时由 ArcZip 打开的格式	選擇按兩下檔案時由 ArcZip 開啟的格式
+选择已有密码	Choose a saved password	选择已有密码	選擇已有密碼
+选择文件	Choose Files	选择文件	選擇檔案
+选择最大可用核心数	Choose the CPU core limit	选择最大可用核心数	選擇最大可用核心數
+选择目标位置并解压此文件夹	Choose a destination and extract this folder	选择目标位置并解压此文件夹	選擇目標位置並解壓縮此資料夾
+选择解压目标文件夹	Choose Extraction Destination	选择解压目标文件夹	選擇解壓縮目標資料夾
+通常用于下载和传输的压缩数据流	Compressed streams commonly used for downloads and transfers	一次压缩一个文件的格式	一次壓縮一個檔案的格式
+通用分享	General Sharing	通用分享	一般分享
+部分关联	Partially Associated	部分关联	部分關聯
+配置 ArcZip 可扩展的智能操作	Customize Flow actions.	设置 Flow 推荐的快捷操作	設定 Flow 推薦的快速操作
+采用 Windows 兼容设置	Use Windows-compatible settings	采用 Windows 兼容设置	採用 Windows 相容設定
+采用所选归档格式	Use Selected Archive Format	采用所选归档格式	採用所選封存格式
+采用所选格式的通用设置	Use general settings for the selected format	采用所选格式的通用设置	採用所選格式的一般設定
+采用通用 ZIP 设置	Use general ZIP settings	采用通用 ZIP 设置	採用一般 ZIP 設定
+采用高强度压缩设置	Use high-compression settings	采用高强度压缩设置	採用高強度壓縮設定
+重命名	Rename	重命名	重新命名
+重命名压缩包	Rename Archive	重命名压缩包	重新命名壓縮檔
+重命名压缩包并选择格式	Rename the archive and choose a format	重命名压缩包并选择格式	重新命名壓縮檔並選擇格式
+重命名压缩包项目	Rename Archive Item	重命名压缩包项目	重新命名壓縮檔項目
+重命名文件	Rename File	重命名文件	重新命名檔案
+重命名文件夹	Rename Folder	重命名文件夹	重新命名資料夾
+重新启动 Finder	Restart Finder	重新启动 Finder	重新啟動 Finder
+重新打开	Reopen	重新打开	重新開啟
+重新打开 	Reopen 	重新打开 	重新開啟 
+重新显示	Show Again	重新显示	重新顯示
+重新显示欢迎页面	Show Welcome Page	重新显示欢迎页面	重新顯示歡迎頁面
+重新载入	Reload	重新载入	重新載入
+重置	Reset	重置	重設
+重置密码本…	Reset Password Book…	重置密码本…	重設密碼本…
+重置并清空密码本？	Reset and clear Password Book?	重置并清空密码本？	重設並清空密碼本？
+重试	Try Again	重试	再試一次
+随时重新查看 ArcZip 的功能介绍与初始设置	Revisit ArcZip’s introduction and setup.	随时重新查看 ArcZip 的功能介绍与初始设置	隨時重新查看 ArcZip 的功能介紹與初始設定
+隐藏密码	Hide Password	隐藏密码	隱藏密碼
+隐藏辅助项目	Hide Auxiliary Items	隐藏辅助项目	隱藏輔助項目
+需要在系统设置中启用 ArcZip Finder 扩展	Enable the ArcZip Finder extension in System Settings	需要在系统设置中启用 ArcZip 访达 扩展	需要在系統設定中啟用 ArcZip 的 Finder 延伸功能
+音频	Audio	音频	音訊
+项目	Item	项目	項目
+项目不存在或无法访问	Item missing or inaccessible	项目不存在或无法访问	項目不存在或無法存取
+项目在压缩前无法复制到安全暂存区；它可能已被移动、权限发生变化、磁盘空间不足，或正由其他程序管理。	Could not prepare this item. Check permissions and disk space.	项目在压缩前无法复制到安全暂存区；它可能已被移动、权限发生变化、磁盘空间不足，或正由其他程序管理。	項目在壓縮前無法複製到安全暫存區；它可能已被移動、權限發生變化、磁碟空間不足，或正由其他程序管理。
+项目详情	Item Details	项目详情	項目詳細資訊
+预览	Preview	预览	預覽
+预览 · 后台索引中	Preview · Indexing in Background	正在读取文件列表…	正在讀取檔案列表…
+预览加密文件	Preview Encrypted File	预览加密文件	預覽加密檔案
+预览所选项目	Preview Selected Items	预览所选项目	預覽所選項目
+首选项	Preferences	通用	一般
+首选项、压缩、解压缩和 Flow 将恢复默认值	Language, General, Compression, Extraction, Flow and Box will return to defaults	语言、通用、压缩、解压、Flow 和文件盒将恢复默认值	語言、一般、壓縮、解壓縮、Flow 和檔案盒將回復預設值
+首选项、压缩、解压缩和 Flow 设置将恢复默认值；格式关联保持不变。	Language, General, Compression, Extraction, Flow and Box settings will return to defaults. File associations will stay unchanged.	语言、通用、压缩、解压、Flow 和文件盒设置将恢复默认值；格式关联保持不变。	語言、一般、壓縮、解壓縮、Flow 和檔案盒設定將回復預設值；格式關聯維持不變。
+高强度 LZMA2，使用 1 GB 固实块	Strong LZMA2 with 1 GB solid blocks.	减小压缩包体积，耗时较长	減小壓縮檔體積，耗時較長
+高级	Advanced	高级	進階
+高级选项	Advanced Options	高级选项	進階選項
+默认使用 Mini 窗口预览压缩包	Open archives in ArcZip Mini by default	默认用 ArcZip Mini 打开压缩包	預設用 ArcZip Mini 開啟壓縮檔
+默认关闭，保留系统安全检查	Off by default; keep system security checks	开启后可能减少 macOS 的安全提示，仅在信任应用来源时开启。	開啟後可能減少 macOS 的安全提示，僅在信任應用程式來源時開啟。
+默认创建分卷压缩包	Split new archives by default	默认创建分卷压缩包	預設建立分卷壓縮檔
+默认压缩强度	Compression Level	默认压缩强度	預設壓縮強度
+默认打开方式只能从已打包的 ArcZip.app 中修改。请先运行 dist/ArcZip.app。	Default app associations can only be changed from a packaged ArcZip.app. Run dist/ArcZip.app first.	默认打开方式只能从已打包的 ArcZip.app 中修改。请先运行 dist/ArcZip.app。	預設開啟方式只能從已打包的 ArcZip.app 中修改。請先執行 dist/ArcZip.app。
+默认浏览方式	Default View	默认浏览方式	預設瀏覽方式
+默认用途与压缩强度	Compression Defaults	默认用途与压缩强度	預設用途與壓縮強度
+鼠标停留 1 秒后，在光标旁预览图片及支持的文档；适用于工作区和 Mini 窗口	Hover for 1 second to preview images and supported documents beside the pointer in the workspace and Mini windows.	鼠标停留 1 秒后，在光标旁预览图片及支持的文档；适用于工作区和 Mini 窗口	滑鼠停留 1 秒後，在游標旁預覽圖片及支援的文件；適用於工作區和 Mini 視窗
+，已展开	, expanded	，已展开	，已展開
+，已折叠	, collapsed	，已折叠	，已收合
+：此前的默认应用已不存在	 has no previous default app available	：此前的默认应用已不存在	：此前的預設應用程式已不存在
+：没有记录到此前的默认应用，请在 Finder 的“显示简介”中选择新的打开方式	 has no recorded previous default app. Choose a new Open With app in Finder's Get Info	：没有记录到此前的默认应用，请在 访达 的“显示简介”中选择新的打开方式	：沒有記錄到此前的預設應用程式，請在 Finder 的「取得資訊」中選擇新的開啟方式
+；仍可在创建压缩包时临时更改。	; you can change it when creating an archive.	；仍可在创建压缩包时临时更改。	；仍可在建立壓縮檔時暫時更改。
+；回滚原因：	; Rollback error: 	；回滚原因：	；還原原因：

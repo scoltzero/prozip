@@ -1,0 +1,13 @@
+app.arczip.archive.add-files
+app.arczip.archive.extract-all
+app.arczip.archive.extract-directory
+app.arczip.archive.extract-selection
+app.arczip.disk-image.application.prefers-open
+app.arczip.install.application
+app.arczip.install.font
+app.arczip.install.package
+app.arczip.open-file.allowed-extensions
+app.arczip.open.disk-image-application
+app.arczip.open.file
+app.arczip.open.installed-application
+app.arczip.unavailable

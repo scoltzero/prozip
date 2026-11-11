@@ -1,0 +1,11 @@
+component	version	project_url	license	role	evidence
+ZIPFoundation	0.9.20	https://github.com/weichsel/ZIPFoundation	MIT	ZIP 容器读写（原生 ZIP writer 的底座）	THIRD_PARTY_NOTICES.md; _TtC13ZIPFoundation7Archive
+libdeflate	1.26	https://github.com/ebiggers/libdeflate	MIT	raw Deflate 编码子集，用于 ZIP 写出	THIRD_PARTY_NOTICES.md
+7-Zip (7zz)	26.04	https://www.7-zip.org/	LGPL-2.1 + unRAR restriction	7z 创建/读取、RAR 读取、宽格式、增量修改（独立子进程）	Contents/Resources/7zz; 7zz --help
+7-Zip public-domain C encoder subset	26.04	https://www.7-zip.org/	Public Domain	LZMA2 编码子集，用于有界压缩收益探测（静态链入，不含 unRAR）	THIRD_PARTY_NOTICES.md
+libarchive	macOS 系统版	https://github.com/libarchive/libarchive	BSD-2-Clause	tar 家族、gz/bz2/xz/lzma 单流、cpio/xar/rpm/cab/lha/arj 等兼容格式	错误前缀 ' bsdtar '; 系统库
+ds_store / mac_alias	—	https://github.com/al45tair/ds_store	MIT	有界只读解析 .DS_Store（DMG 图标布局/背景）	THIRD_PARTY_NOTICES.md; DSStore-LICENSE.txt; FinderDSStoreReader
+Sparkle	2.9.4	https://github.com/sparkle-project/Sparkle	MIT	应用更新（appcast + EdDSA）	Sparkle.framework; SUFeedURL; SUPublicEDKey
+Inter Bold	3.019	https://github.com/rsms/inter	SIL OFL 1.1	Pro 徽标字体	Inter-Bold.otf; 通知文件
+VariableBlur / VariableBlurView	—	https://github.com/nikstar/VariableBlur	MIT	渐进模糊 UI 效果	THIRD_PARTY_NOTICES.md
+SQLite	macOS 系统版	https://sqlite.org/	Public Domain	目录索引与临时产物登记表	sqlite3 运行时库

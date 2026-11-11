@@ -1,0 +1,266 @@
+## ArcZipApp (179)
+  ArcZipApp.(ArcZipXPCResponseSink in _485847D864BD603143792952333CDA31)
+  ArcZipApp.(ArchiveBatchPublisher in _405EB5636C6C367238F16503FD561E78)
+  ArcZipApp.(ArchiveEncryptionNoticePopover in _B8E87BD84EDA048B199EE8A1550998DE).AnchorView
+  ArcZipApp.(ArchiveEncryptionNoticePopover in _B8E87BD84EDA048B199EE8A1550998DE).Coordinator
+  ArcZipApp.(ArchiveHoverVideoPlayerView in _B6E48DC553101E842BCBF0349402C4C2)
+  ArcZipApp.(ArchiveIdentityInteraction in _B8E87BD84EDA048B199EE8A1550998DE)
+  ArcZipApp.(ArchiveProgressPanel in _4E7E8554F171B39D5ECD70DF522B7215)
+  ArcZipApp.(ArchiveValidationCompletion in _485847D864BD603143792952333CDA31)
+  ArcZipApp.(CommercialAccessWindowController in _705D41A5C56AE7E9875D98EB3BA97D53)
+  ArcZipApp.(CommercialPreparationHintLease in _FC07A00E8C242017F8C0F8022D4D6939)
+  ArcZipApp.(CompleteWorkspaceApplicationWindowController in _705D41A5C56AE7E9875D98EB3BA97D53)
+  ArcZipApp.(EntryIconCellInteraction in _6CDD86A42BE66D42E470BC6915A8E774)
+  ArcZipApp.(ExecutionCancellationToken in _4E7E8554F171B39D5ECD70DF522B7215)
+  ArcZipApp.(FileItemNativeMenu in _8172337D6A6062C613323130BC3DD20B)
+  ArcZipApp.(FoldspaceButtonInteraction in _6564B0FDB7B50C6463DCD4594517981E)
+  ArcZipApp.(FoldspaceOutsideClickView in _B8E87BD84EDA048B199EE8A1550998DE)
+  ArcZipApp.(IncomingPromiseCollector in _BFBB528B4B1ECCF2EF062469118D198A)
+  ArcZipApp.(IncomingReadCoordination in _8C9EF6884EE6D5A159DC965F56257A28)
+  ArcZipApp.(LegacyArchiveIconHitTestIndex in _3BC0935D4C4459FDDF43AF94132979F7)
+  ArcZipApp.(MainApplicationWindowController in _705D41A5C56AE7E9875D98EB3BA97D53)
+  ArcZipApp.(MiniArchiveWindowController in _705D41A5C56AE7E9875D98EB3BA97D53)
+  ArcZipApp.(MiniKeyboardShortcuts in _35B768196E70A474E3CF364AACF8FE02).Coordinator
+  ArcZipApp.(MiniNativeTableBrowser in _35B768196E70A474E3CF364AACF8FE02).Coordinator
+  ArcZipApp.(MiniTableDocumentView in _35B768196E70A474E3CF364AACF8FE02)
+  ArcZipApp.(OnboardingFileAccessPanel in _7EB621AF08F89CAAC66FE74FA8732E85)
+  ArcZipApp.(PasswordBookAuthenticationContext in _342CBFCA4BB56F4F8F63D9D23F988CC6)
+  ArcZipApp.(ReleaseOverviewWindow in _8D69310A863A70606D8BEF094F51C2FA)
+  ArcZipApp.(ResourceBundleClass in _A3261D4091D3BD38A51659D63F2E90BE)
+  ArcZipApp.(ShelfAudioArtworkImage in _5F99DA9D0C0856C322B229B856F82162)
+  ArcZipApp.(ShelfExtractionResults in _705D41A5C56AE7E9875D98EB3BA97D53)
+  ArcZipApp.(ShelfPanel in _5F99DA9D0C0856C322B229B856F82162)
+  ArcZipApp.(ShelfPresentationProbe in _6ABE34C8D27BB599DF109E4A5D17CA04).Probe
+  ArcZipApp.(ShelfStatusDropView in _5F99DA9D0C0856C322B229B856F82162)
+  ArcZipApp.(WindowReadingView in _705D41A5C56AE7E9875D98EB3BA97D53)
+  ArcZipApp.(WorkspaceApplicationWindowController in _705D41A5C56AE7E9875D98EB3BA97D53)
+  ArcZipApp.(WorkspaceFilePromiseProvider in _FF189D92485F583250A4B67A487CED1B)
+  ArcZipApp.(WorkspaceSpacePreviewShortcut in _218671953F6AC4C6292CE168495CE6EF).Coordinator
+  ArcZipApp.(WorkspaceViewModeInteraction in _6CDD86A42BE66D42E470BC6915A8E774)
+  ArcZipApp.AppContainer
+  ArcZipApp.AppModel
+  ArcZipApp.AppModel.ArchiveEntryRenameSession
+  ArcZipApp.ApplicationDockPresentationController
+  ArcZipApp.ApplicationLandingModel
+  ArcZipApp.ApplicationRelaunchCoordinator
+  ArcZipApp.ApplicationSettingsModel
+  ArcZipApp.ApplicationTerminationOrchestrator
+  ArcZipApp.ApplicationWindowCoordinator
+  ArcZipApp.ApplicationWindowModeView
+  ArcZipApp.ArcZipApplicationDelegate
+  ArcZipApp.ArcZipBoxPreferences
+  ArcZipApp.ArcZipBoxTemporaryFiles
+  ArcZipApp.ArcZipServicesProvider
+  ArcZipApp.ArcZipUpdateController
+  ArcZipApp.ArcZipXPCClient
+  ArcZipApp.ArchiveAssociationStore
+  ArcZipApp.ArchiveBatchExtraction
+  ArcZipApp.ArchiveBrowserKeyboardCoordinator
+  ArcZipApp.ArchiveBrowserKeyboardState
+  ArcZipApp.ArchiveBrowsingSession
+  ArcZipApp.ArchiveBrowsingSessionLease
+  ArcZipApp.ArchiveBrowsingSessionRegistry
+  ArcZipApp.ArchiveBrowsingWindowCascade
+  ArcZipApp.ArchiveEntryInlineNSTextField
+  ArcZipApp.ArchiveEntryInlineNameField.Coordinator
+  ArcZipApp.ArchiveEntryInteractionView
+  ArcZipApp.ArchiveExecutionLease
+  ArcZipApp.ArchiveExtractionDestinationAnchor
+  ArcZipApp.ArchiveFilePromiseDelegate
+  ArcZipApp.ArchiveHoverPreviewController
+  ArcZipApp.ArchiveHoverPreviewPanel
+  ArcZipApp.ArchiveHoverPreviewSurface
+  ArcZipApp.ArchiveHoverPreviewTrackingView
+  ArcZipApp.ArchiveHoverVideoSession
+  ArcZipApp.ArchiveIconHitTestIndex
+  ArcZipApp.ArchiveIconMarqueeSelectionProbeView
+  ArcZipApp.ArchiveMarqueeSelectionController
+  ArcZipApp.ArchiveMarqueeSelectionView
+  ArcZipApp.ArchivePasswordCoordinator
+  ArcZipApp.ArchiveProgressCenter
+  ArcZipApp.ArchiveProgressCenter.(ExecutionRecord in _4E7E8554F171B39D5ECD70DF522B7215)
+  ArcZipApp.ArchiveProgressCenter.(Record in _4E7E8554F171B39D5ECD70DF522B7215)
+  ArcZipApp.ArchiveProgressPresentationModel
+  ArcZipApp.ArchiveProgressRelay
+  ArcZipApp.ArchiveProgressSession
+  ArcZipApp.ArchiveProgressWindowController
+  ArcZipApp.ArchiveProgressWindowDragView
+  ArcZipApp.ArchiveProgressWindowModelStore
+  ArcZipApp.ArchiveProgressiveVideoLoader
+  ArcZipApp.ArchiveRequestGroup
+  ArcZipApp.ArchiveSourcePreparationProgress
+  ArcZipApp.ArchiveStoredVideoLoader
+  ArcZipApp.ArchiveTableMarqueeSelectionProbeView
+  ArcZipApp.ArchiveThumbnailDeliverySink
+  ArcZipApp.ArchiveThumbnailMemoryController
+  ArcZipApp.ArchiveThumbnailPipeline
+  ArcZipApp.ArchiveThumbnailSlot
+  ArcZipApp.ArchiveThumbnailStore
+  ArcZipApp.ArchiveVideoAssetSource
+  ArcZipApp.CommerceSession
+  ArcZipApp.CommercialEffectGateway
+  ArcZipApp.CommercialRuntimeIntegrityGate
+  ArcZipApp.CommercialTrialExpiryNotice
+  ArcZipApp.CompleteWindowPresentationModel
+  ArcZipApp.DiskImageApplicationArtifactHandoffStore
+  ArcZipApp.DiskImageApplicationLaunchCoordinator
+  ArcZipApp.DiskImageInternalDragAuthorizationStore
+  ArcZipApp.DiskImageInternalDropCoordinator
+  ArcZipApp.DiskImageWindowAutosizingProbeView
+  ArcZipApp.EarlyShelfDragMonitor
+  ArcZipApp.FileDropIntake
+  ArcZipApp.FilePromiseTaskRegistry
+  ArcZipApp.FinderFlowCompletionPresenter
+  ArcZipApp.FlowActionRouter
+  ArcZipApp.FlowPreferences
+  ArcZipApp.FlowTaskRegistry
+  ArcZipApp.ForegroundArchiveOperationCoordinator
+  ArcZipApp.IncomingFileAccess
+  ArcZipApp.IncomingFileJob
+  ArcZipApp.IncomingRemoteResource
+  ArcZipApp.IncomingSourceAccessPrompt
+  ArcZipApp.InspectorPreviewCanvasReference
+  ArcZipApp.InspectorPreviewCanvasView
+  ArcZipApp.InspectorPreviewCanvasView.(Sprite in _2E59A0F6E9D971B39F7996C5AA8B0994)
+  ArcZipApp.LandingWindowActivity
+  ArcZipApp.LaunchAtLoginModel
+  ArcZipApp.LegacyArchiveIconScrollContext
+  ArcZipApp.LegacyArchiveIconScrollProbe
+  ArcZipApp.LocalThumbnailStore
+  ArcZipApp.MainApplicationWindow
+  ArcZipApp.MainWindowModalChromeView
+  ArcZipApp.MainWindowTrafficLightsContainerView
+  ArcZipApp.MainWindowTrafficLightsHoverView
+  ArcZipApp.MainWindowTrafficLightsView
+  ArcZipApp.MenuBarShelfController
+  ArcZipApp.MenuBarShelfModel
+  ArcZipApp.MiniFileTableView
+  ArcZipApp.MiniTableScrollView
+  ArcZipApp.MiniWindowDragView
+  ArcZipApp.MiniWindowPinState
+  ArcZipApp.NestedArchiveSession
+  ArcZipApp.OfficeThumbnailOperation
+  ArcZipApp.OnboardingApplicationDragView
+  ArcZipApp.OnboardingFileAccessGuide
+  ArcZipApp.OpenFileArtifactHandoffStore
+  ArcZipApp.PasswordBook
+  ArcZipApp.PasswordBookStorage
+  ArcZipApp.PasswordBookUIController
+  ArcZipApp.PreviewArtifactCache
+  ArcZipApp.RecentArchiveLibrary
+  ArcZipApp.ReleaseOverviewCoordinator
+  ArcZipApp.ReleaseOverviewWindowController
+  ArcZipApp.SettingsNavigation
+  ArcZipApp.SettingsWindowController
+  ArcZipApp.ShelfArchiveCreationCoordinator
+  ArcZipApp.ShelfDragView
+  ArcZipApp.ShelfFileClipboard
+  ArcZipApp.ShelfFolderBrowser
+  ArcZipApp.ShelfFolderCollectionCoordinator
+  ArcZipApp.ShelfGalleryMarqueeProbeView
+  ArcZipApp.ShelfGalleryScrollBookmarkView
+  ArcZipApp.ShelfGalleryScrollMemory
+  ArcZipApp.ShelfGallerySelectionGeometry
+  ArcZipApp.ShelfResultSavingCoordinator
+  ArcZipApp.ShelfThumbnailSource
+  ArcZipApp.SourceArchiveCompletionCoordinator
+  ArcZipApp.TemporaryFilesMaintenance
+  ArcZipApp.TemporaryFilesSettingsModel
+  ArcZipApp.ThumbnailScrollActivityObserver.Coordinator
+  ArcZipApp.ThumbnailScrollActivityObserver.ProbeView
+  ArcZipApp.ThumbnailScrollCoordinator
+  ArcZipApp.WindowSessionLifecycle
+  ArcZipApp.WindowSessionTaskRegistry
+  ArcZipApp.WorkspaceCommandRouter
+  ArcZipApp.WorkspaceDocumentRegistry
+  ArcZipApp.WorkspaceDocumentTransitionReservation
+  ArcZipApp.WorkspaceEditMenuState
+  ArcZipApp.WorkspacePreferences
+  ArcZipApp.WorkspacePresentationHostingView
+  ArcZipApp.WorkspaceWindowDragView
+
+## ArcZipCommerce (4)
+  ArcZipCommerce.(RejectRedirectDelegate in _2425B1E4CA3F843A4DE8C95292BCE450)
+  ArcZipCommerce.CommercePersistence
+  ArcZipCommerce.EntitlementManager
+  ArcZipCommerce.SecureURLSessionTransport
+
+## ArcZipDialogKit (16)
+  ArcZipDialogKit.(ArcZipArchiveCreationScrollProbeView in _EEBC0FE756230CD47C2F18098228788E)
+  ArcZipDialogKit.(ArcZipIndeterminateProgressView in _471E2617E1766CCC51C87886256E7ED1)
+  ArcZipDialogKit.(ArcZipMiniHoverInteraction in _3A4230B5EB18EE009FAE488A0256DE76)
+  ArcZipDialogKit.(ArcZipModalFocusAnchor in _9D3787709C5456273D6E5C50DC6D62B1)
+  ArcZipDialogKit.(ArcZipRevealedPasswordTextField in _AA63C6B9C743F71DC0EE61ED4A84EF9B)
+  ArcZipDialogKit.(ArcZipSecurePasswordTextField in _AA63C6B9C743F71DC0EE61ED4A84EF9B)
+  ArcZipDialogKit.(ArcZipVariableBlurView in _3A4230B5EB18EE009FAE488A0256DE76)
+  ArcZipDialogKit.(PasswordBookSearchOutsideClickView in _AC86CB5382C4E66F28BADF3315566747)
+  ArcZipDialogKit.ArcZipArchiveCreationExpansionScrollState
+  ArcZipDialogKit.ArcZipNativeAlertAnchor
+  ArcZipDialogKit.ArcZipNativePasswordAlertPresentation
+  ArcZipDialogKit.ArcZipNativePasswordEditor
+  ArcZipDialogKit.ArcZipPasswordBookSaveAccessory.Coordinator
+  ArcZipDialogKit.ArcZipPasswordDialogInteraction
+  ArcZipDialogKit.ArcZipPasswordInputNoticePopover.(AnchorView in _38DBF9A555E4B47653805B026F3FF5A9)
+  ArcZipDialogKit.ArcZipPasswordInputNoticePopover.Coordinator
+
+## ArcZipFinderSupport (1)
+  ArcZipFinderSupport.ExtractionFinalizationManifest.(Scanner in _558162C7020BA6A2ABC447A3830E5D73)
+
+## ArcZipLocalization (1)
+  ArcZipLocalization.ArcZipLocalization.(BundleToken in _435F8CFA474CCC4B34A01C143913BC3A)
+
+## ArcZipUIShared (4)
+  ArcZipUIShared.(FlowOrbitPointerTracker in _0386569384BFA683B4BC0910482D1860).TrackerView
+  ArcZipUIShared.(FlowOrbitPresentation in _0386569384BFA683B4BC0910482D1860)
+  ArcZipUIShared.(ThumbnailRequestCancellation in _4E382CE22792C5661FAA7F62E79C9AA8)
+  ArcZipUIShared.(VideoFrameGeneration in _4E382CE22792C5661FAA7F62E79C9AA8)
+
+## ArchiveCore (9)
+  ArchiveCore.ArchivePreviewSeedStore
+  ArchiveCore.ArchiveSourceCoordinatedRead
+  ArchiveCore.ArchiveSourceCoordinatedRead.(Completion in _C03C24152E80058AA9B6ADAD1D993F38)
+  ArchiveCore.EntryIndex
+  ArchiveCore.ManagedTemporaryArtifactRegistry
+  ArchiveCore.ManagedTemporaryArtifactRegistry.(SQLiteHandle in _D866EC3D38D089F32030C3D3B048B3AF)
+  ArchiveCore.ManagedWorkFileLease
+  ArchiveCore.ManagedWorkFileStore
+  ArchiveCore.ManagedWorkFileStore.(ScanCancellation in _B3107D14B1CF2549FF078845CDC6DD33)
+
+## ArchiveEngines (31)
+  ArchiveEngines.(DiskImageCopyfileContext in _39137DED19D5A760A49F326C05BAD443)
+  ArchiveEngines.(DiskImageMountProgressBroadcaster in _BFE1BA11095D4224C157C440205E6E92)
+  ArchiveEngines.(HDIUtilProgressLineParser in _56C89CADA90DD5F0E5E7F91BBED510AF)
+  ArchiveEngines.(SevenZipCreationPassProgress in _5E4512A1F02D985D1A93A5342111C5FE)
+  ArchiveEngines.(SevenZipCreationProgressEmitter in _5E4512A1F02D985D1A93A5342111C5FE)
+  ArchiveEngines.(SevenZipZIPStreamSink in _4B493896573B9D283E7E0DDC7B57F6B7)
+  ArchiveEngines.(ZIPFoundationProgress in _9274C0A3696D6A596128F447298E83C1)
+  ArchiveEngines.(ZIPProgressEmitter in _9274C0A3696D6A596128F447298E83C1)
+  ArchiveEngines.ArchiveEngineBroker
+  ArchiveEngines.ArchiveWorkerRequestExecutor
+  ArchiveEngines.BSDTarEngine.(CatalogReader in _66BBD870BE31E747118228AE9852FFE6)
+  ArchiveEngines.BSDTarProgressReporter
+  ArchiveEngines.BoundedArchiveMemberStream
+  ArchiveEngines.CompressionBodyProbe.(ZIPState in _B3AF380BBF5720504525DA1406AC383F)
+  ArchiveEngines.CompressionBodyProbe.Encoder
+  ArchiveEngines.DiskImageReadSessionProvider
+  ArchiveEngines.GrowingArchiveMemberFile
+  ArchiveEngines.ISOReadStrategyStore
+  ArchiveEngines.NativeStreamingZIPWriter.(CompressionQueue in _7742A3AAFA6147328D889A592BD0F9A3)
+  ArchiveEngines.NativeStreamingZIPWriter.(NativeZIPProgressEmitter in _7742A3AAFA6147328D889A592BD0F9A3)
+  ArchiveEngines.NativeStreamingZIPWriter.(ReadyPayloadQueue in _7742A3AAFA6147328D889A592BD0F9A3)
+  ArchiveEngines.NativeStreamingZIPWriter.(SpoolWriter in _7742A3AAFA6147328D889A592BD0F9A3)
+  ArchiveEngines.NativeStreamingZIPWriter.(ZIPOutputSink in _7742A3AAFA6147328D889A592BD0F9A3)
+  ArchiveEngines.NativeStreamingZIPWriter.BenchmarkMetricsRecorder
+  ArchiveEngines.ProcessCancellationController
+  ArchiveEngines.ProcessTerminationWaiter
+  ArchiveEngines.SevenZipEngine.CatalogReader
+  ArchiveEngines.SevenZipExtractionProgressEmitter
+  ArchiveEngines.WrappedZIPReadSource
+  ArchiveEngines.ZIPCompressionWorkspaceBudget
+  ArchiveEngines.ZIPVolumeReadSource
+
+## ZIPFoundation (3)
+  ZIPFoundation.(BundleFinder in _58EE3AB11FB2021C4E7A62D618E77FE8)
+  ZIPFoundation.Archive
+  ZIPFoundation.Archive.MemoryFile
+

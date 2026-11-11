@@ -1,0 +1,57 @@
+key	type	default	meaning
+appearance.preference.v1	string	automatic	light | dark | automatic
+localization.preferredLanguage.v1	string	system	system 或具体语言代码
+workspaceViewMode.v1	string	list	list | icons | columns
+showsAuxiliaryEntries.v1	bool	false	列表是否显示系统辅助文件
+onboarding.hasCompleted.v1	bool	false	引导是否完成
+onboarding.currentPage.v2	int	0	引导当前步骤
+onboarding.pendingArchivePaths.v1	array	[]	引导期间待打开的压缩包
+releaseOverview.presentedVersion.v1.<channel>	string		已展示的更新概览版本
+archiveCreation.defaultPurpose.v1	string	general	默认用途
+archiveCreation.defaultFormat.v2.<purpose>	string	zip	每个用途独立记忆格式
+archiveCreation.defaultStrength.v2.<purpose>	string	balanced	每个用途独立记忆强度
+archiveCreation.defaultSplitOptions.v2	data/json	none	默认分卷（关闭/按数量/按大小）
+archiveCreation.defaultVolumeSize.v1	int		默认分卷大小（字节）
+archiveCreation.defaultCreatesSplitVolumes.v1	bool	false	新建时自动启用分卷
+archiveCreation.defaultPreservesMacMetadata.v1	bool	true	保留 macOS 辅助文件
+archiveCreation.processorCount.v1	int	0(自动)	压缩可用 CPU 核心数
+archiveEncryption.noticeSuppressed.v1	bool	false	加密提示不再显示
+extraction.opening.direct	bool	false	双击立即解压
+extraction.completion.action	string	ask	ask | keep | trash
+extraction.completion.reveal_results	bool	true	解压后自动选中结果
+extraction.automaticallyClosesArchive.v1	bool	false	解压后自动关窗
+extraction.automaticallySelectsResults.v1	bool	true	自动选中结果
+extraction.extractsOnExternalOpen.v1	bool	false	外部打开时直接解压
+extraction.filtersSystemAuxiliaryFiles.v1	bool	true	过滤系统辅助文件
+extraction.filtersDMGInstallerArtifacts.v1	bool	true	过滤 DMG 安装辅助
+hoverPreviewEnabled.v1	bool	false	悬浮预览总开关（Pro）
+hoverVideoEnabled.v1	bool	false	悬浮预览播放视频
+hoverAudioAutoplay.v1	bool	true	悬浮音频自动播放
+hoverVideoMuted.v1	bool	true	视频默认静音
+hoverVideoLimitMB.v1	int	100	音视频预览大小上限（按解压后）
+archiveOpening.prefersMiniWindow.v1	bool	true	默认用 Mini 打开
+miniWindow.usesLiquidGlass.v1	bool	true	Mini 使用 Liquid Glass
+miniWindow.usesColoredControlButtons.v1	bool	true	Mini 彩色窗口按钮
+archivePassword.revealsByDefault.v1	bool	false	密码框默认显示
+archivePassword.inputNoticeSuppressed.v1	bool	false	非英文密码提示不再显示
+passwordBook.v1	data		密码本加密内容（主密钥在 Keychain）
+password.v1	data		密码相关本地状态
+box.idleDelay.v1	int		文件盒闲置收起秒数
+box.shellColorOpacity.v1	double		文件盒色彩浓度
+box.lastSaveDirectory.v1	data		文件盒上次保存位置
+box.color	string		文件盒颜色
+finder.monitorsExternalVolumes.v1	bool	false	监听移动存储
+openFile.allowedFormats.v1	array	32 项	Flow 打开文件白名单
+fileAssociation.previousHandlers.v1	dict	{}	关联前的默认应用，用于恢复
+com.maczhang.ArcZip.commerce.v1	data		商业状态缓存（敏感凭据在 Keychain）
+recentArchives.v1	data(json)	[]	[{path, openedAt}] 最近打开
+applicationInstallation.quickInstall.v1	bool	true	DMG 应用快速安装（去隔离）
+applicationInstallation.automaticallyClosesArchive.v1	bool	true	安装后自动关窗
+applicationInstallation.completedArchiveAction.v1	string	ask	安装后处理原包
+applicationInstallation.quickInstall.noticeSuppressed.v1	bool	false	快速安装提示不再显示
+archiveCreation.windowsNameRepair	bool	true	创建时检查 Windows 文件名
+settings.language.system	bool	true	语言跟随系统
+launchAtLogin	bool	false	开机自启（SMAppService 实际状态在系统）
+SUHasLaunchedBefore	bool		Sparkle 首次启动标记
+SULastCheckTime	date		上次检查更新时间
+NSWindow Frame ArcZip.SettingsWindow.Immersive	string		设置窗口位置

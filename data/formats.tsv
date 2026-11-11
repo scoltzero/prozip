@@ -1,0 +1,31 @@
+format	extensions	engine	browse	extract	create	edit	enc_read	enc_write	split	notes
+ZIP/ZIPX	zip zipx	Native + 7zz fallback	yes	yes	yes	yes	yes	no	yes	免费创建；ZIP AES 写入未启用；GBK 包不可编辑
+7Z	7z	7zz	yes	yes	yes	yes	yes	yes	yes	AES-256 + 头加密；LZMA2 固实块
+RAR/CBR	rar cbr	7zz (read only)	yes	yes	no	no	yes	no	yes	.partN.rar / .rNN 分卷识别
+TAR	tar	libarchive	yes	yes	yes	single-file	no	no	no	仅打包，级别不可调
+TAR.GZ/TGZ	tar.gz tgz	libarchive	yes	yes	yes	no	no	no	no	单流外层
+TAR.BZ2/TBZ2	tar.bz2 tbz tbz2	libarchive	yes	yes	yes	no	no	no	no	
+TAR.XZ/TXZ	tar.xz txz	libarchive	yes	yes	yes	no	no	no	no	
+GZ	gz gzip	libarchive	yes	yes	yes	no	no	no	no	单文件虚拟条目
+BZ2	bz2 bzip2	libarchive	yes	yes	yes	no	no	no	no	
+XZ	xz	libarchive	yes	yes	yes	no	no	no	no	
+LZMA	lzma	libarchive	yes	yes	yes	no	no	no	no	
+LZ (lzip)	lz	LzipEngine	yes	yes	no	no	no	no	no	创建未开放
+DMG	dmg	hdiutil	mount	export	no	no	yes	no	-	只读挂载；应用/字体安装
+ISO	iso	hdiutil + fallback	mount	export	no	no	no	no	-	回退引擎不支持提取应用
+CAB	cab	libarchive	yes	yes	no	no	-	no	no	
+CPIO	cpio	libarchive	yes	yes	no	no	-	no	no	
+ARJ	arj	libarchive	yes	yes	no	no	-	no	no	传统格式
+LHA/LZH	lha lzh	libarchive	yes	yes	no	no	-	no	no	传统格式
+XAR	xar	libarchive	yes	yes	no	no	-	no	no	
+RPM	rpm	libarchive	yes	yes	no	no	-	no	no	需解内层 payload
+MSI	msi	7zz/libarchive	yes	yes	no	no	-	no	no	仅当容器浏览
+PKG	pkg	7zz/libarchive	yes	yes	no	no	-	no	no	默认交系统安装器
+JAR	jar	native zip	yes	yes	no	no	-	no	no	本质 ZIP
+APK	apk	native zip	yes	yes	no	no	-	no	no	本质 ZIP
+SPK	spk	7zz	yes	yes	no	no	-	no	no	Synology 包
+EXE	exe	7zz	yes	yes	no	no	-	no	no	自解压/SFX 容器
+SWF	swf	libarchive	yes	yes	no	no	-	no	no	Flash 容器
+数字分卷	001-999	路由到首卷	yes	yes	yes(zip/7z)	no	yes	yes	yes	按同族第一卷打开
+ZIP 分卷	z01-z99	native/7zz	yes	yes	yes	no	yes	yes	yes	
+RAR 分卷	r00-r99	7zz	yes	yes	no	no	yes	no	yes	

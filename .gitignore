@@ -1,0 +1,8 @@
+.DS_Store
+.build/
+.swiftpm/
+build/
+.qa/
+graphify-out/
+ArcZip-*.dmg
+ArcZip-*.app

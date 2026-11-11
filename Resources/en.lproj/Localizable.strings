@@ -1,0 +1,3377 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key> · 后台索引中</key>
+	<string> · indexing in background</string>
+	<key> · 已过滤 </key>
+	<string> · filtered </string>
+	<key> · 正在完成 </key>
+	<string> · finishing </string>
+	<key> 个辅助项目</key>
+	<string> auxiliary items</string>
+	<key> 个问题项目：</key>
+	<string> problem items:</string>
+	<key> 个问题项目？</key>
+	<string> problematic items?</string>
+	<key> 个项目</key>
+	<string> items</string>
+	<key> 个项目的索引</key>
+	<string> items</string>
+	<key> 压缩包</key>
+	<string> archive</string>
+	<key> 层</key>
+	<string> levels</string>
+	<key> 已恢复原打开方式</key>
+	<string> restored its previous default app</string>
+	<key> 已设为使用 ArcZip 打开</key>
+	<string> is now set to open with ArcZip</string>
+	<key> 文件夹</key>
+	<string> folder</string>
+	<key> 条记录，但不会删除任何压缩包文件。</key>
+	<string> records; archive files will not be deleted.</string>
+	<key> 磁盘映像</key>
+	<string> disk image</string>
+	<key> 项</key>
+	<string> items</string>
+	<key>%@ / %@</key>
+	<string>%1$@ / %2$@</string>
+	<key>%@ 个核心</key>
+	<string>%@ Cores</string>
+	<key>%@+</key>
+	<string>%@+</string>
+	<key>%lld</key>
+	<string>%lld</string>
+	<key>1 个文件</key>
+	<string>1 file</string>
+	<key>7Z 压缩包</key>
+	<string>7Z archives</string>
+	<key>Android 应用软件包</key>
+	<string>Android application package</string>
+	<key>ArcZip</key>
+	<string>ArcZip</string>
+	<key>ArcZip %@</key>
+	<string>ArcZip %@</string>
+	<key>ArcZip Box</key>
+	<string>ArcZip Box</string>
+	<key>ArcZip Box：拖入文件，集中处理</key>
+	<string>ArcZip Box: drop files and work with them together</string>
+	<key>ArcZip Mini</key>
+	<string>ArcZip Mini</string>
+	<key>ArcZip Mini 窗口截图</key>
+	<string>ArcZip Mini window screenshot</string>
+	<key>ArcZip Preview</key>
+	<string>ArcZip Preview</string>
+	<key>ArcZip Pro</key>
+	<string>ArcZip Pro</string>
+	<key>ArcZip Pro 功能</key>
+	<string>ArcZip Pro</string>
+	<key>ArcZip 不会覆盖目标文件夹中的现有项目。</key>
+	<string>ArcZip will not overwrite existing items in the destination folder.</string>
+	<key>ArcZip 不直接操作链接或特殊项目</key>
+	<string>ArcZip does not directly operate on links or special items</string>
+	<key>ArcZip 仍有任务正在进行</key>
+	<string>Unfinished Tasks</string>
+	<key>ArcZip 压缩服务不可用。请重试；如果仍然失败，请重新打开 ArcZip。</key>
+	<string>The ArcZip archive service is unavailable. Try again; if the problem continues, reopen ArcZip.</string>
+	<key>ArcZip 压缩服务连接已中断。请重试；如果仍然失败，请重新打开 ArcZip。</key>
+	<string>The connection to the ArcZip archive service was interrupted. Try again; if the problem continues, reopen ArcZip.</string>
+	<key>ArcZip 在扫描时已无法找到或检查该项目；它可能刚被移动、删除，或所在磁盘已断开。将一个未知状态的项目写入压缩包可能造成内容缺失。</key>
+	<string>Item unavailable. The archive could be incomplete.</string>
+	<key>ArcZip 已准备好，现在就从一个压缩包开始。</key>
+	<string>ArcZip is ready. Start with an archive.</string>
+	<key>ArcZip 当前没有读取该项目所需的权限，继续处理可能得到不完整或损坏的压缩内容。</key>
+	<string>Cannot read this item. The archive could be incomplete or damaged.</string>
+	<key>ArcZip 暂存架</key>
+	<string>ArcZip Shelf</string>
+	<key>ArcZip 暂存架：拖入文件，集中处理</key>
+	<string>ArcZip Shelf: collect files and work with them together</string>
+	<key>ArcZip 检测到不安全或有歧义的文件路径。</key>
+	<string>ArcZip detected an unsafe or ambiguous file path.</string>
+	<key>ArcZip 正在等待你的操作</key>
+	<string>Action required</string>
+	<key>ArcZip 没有读取这个文件的权限，请检查文件权限后重试。</key>
+	<string>File access denied. Check permissions.</string>
+	<key>ArcZip：快速压缩（使用默认设置）</key>
+	<string>ArcZip: Quick Compress (Default Settings)</string>
+	<key>EXE 与 SWF 仍可通过“打开方式 → ArcZip”尝试打开，但不会提供默认应用开关。</key>
+	<string>Try EXE or SWF files using Open With → ArcZip. Default-app switches aren’t available for these formats.</string>
+	<key>Extensible Archive 容器</key>
+	<string>Extensible Archive container</string>
+	<key>Finder 中的 ArcZip 右键菜单截图</key>
+	<string>ArcZip Finder context menu screenshot</string>
+	<key>Finder 右键菜单</key>
+	<string>Finder Context Menu</string>
+	<key>Finder 后台任务不会检查软件更新</key>
+	<string>Finder background tasks do not check for updates</string>
+	<key>Flow</key>
+	<string>Flow</string>
+	<key>Flow 会根据压缩包内容，推荐此刻最合适的操作。</key>
+	<string>Flows recommend the most useful action for the current archive.</string>
+	<key>Flow 快捷操作</key>
+	<string>Flow Actions</string>
+	<key>ISO 项目复制完成</key>
+	<string>Copied</string>
+	<key>Linux RPM 软件包容器</key>
+	<string>Linux RPM package container</string>
+	<key>Linux 与服务器</key>
+	<string>Linux and Servers</string>
+	<key>Mac 之间传递</key>
+	<string>Share Between Macs</string>
+	<key>Microsoft Cabinet 压缩包</key>
+	<string>Microsoft Cabinet archive</string>
+	<key>Mini</key>
+	<string>Mini</string>
+	<key>Mini 窗口</key>
+	<string>Mini window</string>
+	<key>Mini 窗口独立出现，不会打断主窗口中的工作。</key>
+	<string>The Mini window appears independently without interrupting work in the main window.</string>
+	<key>Preview</key>
+	<string>Preview</string>
+	<key>Pro</key>
+	<string>Pro</string>
+	<key>Quick Look 只能预览普通文件</key>
+	<string>Quick Look can preview regular files only</string>
+	<key>RAR 压缩包</key>
+	<string>RAR archives</string>
+	<key>RPM 压缩流的文件名无法确定</key>
+	<string>The RPM payload filename is missing or ambiguous.</string>
+	<key>Synology 软件包</key>
+	<string>Synology package</string>
+	<key>TAR 不支持内置加密</key>
+	<string>TAR does not support built-in encryption</string>
+	<key>TAR 不支持分卷压缩</key>
+	<string>TAR does not support split volumes</string>
+	<key>TAR 及其短扩展名变体</key>
+	<string>TAR archives and compressed variants</string>
+	<key>TAR 用于归档目录结构与 Unix 文件信息</key>
+	<string>TAR preserves directory structure and Unix file metadata</string>
+	<key>Touch ID 不可用，请使用独立的密码本密码。</key>
+	<string>Touch ID is unavailable. Use your separate Password Book password.</string>
+	<key>Touch ID 或 Apple Watch 不可用，请使用独立的密码本密码。</key>
+	<string>Touch ID or Apple Watch is unavailable. Use your separate Password Book password.</string>
+	<key>Unix CPIO 归档</key>
+	<string>Unix CPIO archive</string>
+	<key>Unix 套接字</key>
+	<string>Unix socket</string>
+	<key>Windows Installer 软件包</key>
+	<string>Windows Installer package</string>
+	<key>Windows 用户</key>
+	<string>For Windows Users</string>
+	<key>Windows 项目</key>
+	<string>Windows item</string>
+	<key>ZIP 与 ZIPX 压缩包</key>
+	<string>ZIP and ZIPX archives</string>
+	<key>ZIP 压缩、文件 Probe 与 7Z 共用此限制</key>
+	<string>Shared by ZIP, 7Z, and file analysis.</string>
+	<key>ZIP 密码仅支持 ASCII；中文密码请使用 7Z</key>
+	<string>ZIP passwords support ASCII only; use 7Z for Chinese passwords</string>
+	<key>ZIP、7Z 等以 .001 开始的数字分卷</key>
+	<string>Numbered ZIP, 7Z, and other archive volumes starting with .001</string>
+	<key>app.name</key>
+	<string>ArcZip</string>
+	<key>application.install.completion.close_detail</key>
+	<string>Close the window after installation completes and the archive is kept</string>
+	<key>application.install.completion.source_detail</key>
+	<string>Keep the archive or move it to Trash after installation</string>
+	<key>application.install.completion.title</key>
+	<string>Installation Complete</string>
+	<key>application.install.completion.trash_failed</key>
+	<string>Installation completed, but the original archive could not be moved to Trash: %@</string>
+	<key>application.install.failure_details</key>
+	<string>Installation stage: %@ [%@]
+Source: %@
+Destination: %@
+System: %@
+Error details:
+%@</string>
+	<key>application.install.replace.message</key>
+	<string>Replace “%@” in Applications with the archived version?</string>
+	<key>application.install.stage.copy-application</key>
+	<string>Copy to installation directory</string>
+	<key>application.install.stage.extract-application</key>
+	<string>Extract application</string>
+	<key>application.install.stage.finalize-metadata</key>
+	<string>Finalize installation metadata</string>
+	<key>application.install.stage.move-application</key>
+	<string>Move to installation directory</string>
+	<key>application.install.stage.prepare-destination</key>
+	<string>Prepare installation directory</string>
+	<key>application.install.stage.prepare-publication</key>
+	<string>Prepare publication record</string>
+	<key>application.install.stage.prepare-stage</key>
+	<string>Prepare temporary directory</string>
+	<key>application.install.stage.publish-application</key>
+	<string>Publish new application</string>
+	<key>application.install.stage.read-quarantine</key>
+	<string>Read source quarantine attributes</string>
+	<key>application.install.stage.record-installation</key>
+	<string>Record installation state</string>
+	<key>application.install.stage.remove-quarantine</key>
+	<string>Remove application root quarantine</string>
+	<key>application.install.stage.replace-application</key>
+	<string>Replace existing application</string>
+	<key>application.install.stage.validate-application</key>
+	<string>Validate application bundle</string>
+	<key>application.install.stage.write-quarantine</key>
+	<string>Write application quarantine attributes</string>
+	<key>archive.browsing.action_wait</key>
+	<string>Wait for the file list to finish loading to use “%@”.</string>
+	<key>archive.browsing.preliminary_help</key>
+	<string>You can browse and extract the whole archive. Search, preview, drag-out, and selected extraction become available when the file list is ready.</string>
+	<key>archive.completion.active_work</key>
+	<string>The archive still has an operation in progress. Wait for it to finish before moving the archive to Trash.</string>
+	<key>archive.completion.auto_close</key>
+	<string>Automatically Close Archive</string>
+	<key>archive.completion.unsaved_changes</key>
+	<string>The archive has unsaved changes. Save or discard them before moving the archive to Trash.</string>
+	<key>archive.create</key>
+	<string>Create Archive</string>
+	<key>archive.default_filename</key>
+	<string>Archive.zip</string>
+	<key>archive.default_stem</key>
+	<string>Archive</string>
+	<key>archive.delete_selection</key>
+	<string>Delete Selected Items</string>
+	<key>archive.encryption_notice.do_not_show_again</key>
+	<string>Don't Show Again</string>
+	<key>archive.extract_all</key>
+	<string>Extract All</string>
+	<key>archive.extract_selection</key>
+	<string>Extract Selected Items…</string>
+	<key>archive.no_items</key>
+	<string>No Items</string>
+	<key>archive.open</key>
+	<string>Open Archive…</string>
+	<key>archive.open.preparing.icloud.detail</key>
+	<string>Opens after downloading.</string>
+	<key>archive.open.preparing.provider.detail</key>
+	<string>Opens when ready.</string>
+	<key>archive.password.finder.message</key>
+	<string>%@
+%@</string>
+	<key>archive.password_required</key>
+	<string>Password Required</string>
+	<key>archive.preview_selection</key>
+	<string>Preview Selected Items</string>
+	<key>archive.progress.calculating_total</key>
+	<string>%@ / Calculating</string>
+	<key>archive.quit.wait.message</key>
+	<string>ArcZip will quit when the tasks finish. You can cancel quitting to continue managing them.</string>
+	<key>archive.save</key>
+	<string>Save Archive</string>
+	<key>archive.save.source_changed.message</key>
+	<string>The original archive has not been overwritten. You can try merging your changes into the latest file; saving will stop if there is a conflict. Reloading discards your unsaved changes.</string>
+	<key>archive.source.waiting_content</key>
+	<string>Waiting for file contents to become available</string>
+	<key>archive.source.waiting_download</key>
+	<string>Waiting for the file to finish downloading</string>
+	<key>archive.type.archive</key>
+	<string>%@ archive</string>
+	<key>archive.type.disk_image</key>
+	<string>%@ disk image</string>
+	<key>archive.untitled_name</key>
+	<string>Untitled Archive</string>
+	<key>archive.window.active_close.message</key>
+	<string>Finish or cancel the tasks in the progress panel before closing this window.</string>
+	<key>archive.window.active_close.title</key>
+	<string>This window still has active tasks</string>
+	<key>archive.window.already_open</key>
+	<string>“%@” is open in another window. Continue there.</string>
+	<key>archive.window.save_changes.message</key>
+	<string>Changes will be lost if you don’t save.</string>
+	<key>archive.window.save_changes.title</key>
+	<string>Save changes to “%@”?</string>
+	<key>archive.wrong_password</key>
+	<string>Incorrect Password</string>
+	<key>association.incomplete.message</key>
+	<string>The following formats were not associated with ArcZip:
+%@</string>
+	<key>association.incomplete.title</key>
+	<string>File associations incomplete</string>
+	<key>association.open_with.notice</key>
+	<string>PKG files open with Installer by default; ArcZip can view and extract them. Try EXE and SWF files using Open With → ArcZip.</string>
+	<key>batch.cancel</key>
+	<string>Cancel Batch</string>
+	<key>batch.open.browse</key>
+	<string>Browse</string>
+	<key>batch.open.extract</key>
+	<string>Batch Extract…</string>
+	<key>batch.open.message</key>
+	<string>Opening many archives at once may use significant system resources. Choose to browse them or extract them one at a time.</string>
+	<key>batch.open.title</key>
+	<string>Open %d archives?</string>
+	<key>batch.password.notice</key>
+	<string>This password will also be tried for other encrypted archives in this group.</string>
+	<key>batch.skip</key>
+	<string>Skip This Archive</string>
+	<key>batch.sources.message</key>
+	<string>Extraction finished. Move the %d successfully extracted archives to the Trash? Failed and skipped archives will be kept.</string>
+	<key>batch.sources.title</key>
+	<string>How should the original archives be handled?</string>
+	<key>batch.summary</key>
+	<string>%d extracted, %d errors, %d skipped.</string>
+	<key>batch.title</key>
+	<string>Batch Extraction</string>
+	<key>box.brand.subtitle</key>
+	<string>Box</string>
+	<key>box.browser.back</key>
+	<string>Go Back</string>
+	<key>box.browser.empty</key>
+	<string>This folder is empty</string>
+	<key>box.browser.exit</key>
+	<string>Return to All Files</string>
+	<key>box.browser.unavailable</key>
+	<string>Unable to read this folder</string>
+	<key>box.clipboard.copied</key>
+	<string>Copied</string>
+	<key>box.color.blue</key>
+	<string>Blue</string>
+	<key>box.color.gray</key>
+	<string>Gray</string>
+	<key>box.color.green</key>
+	<string>Green</string>
+	<key>box.color.lavender</key>
+	<string>Lavender</string>
+	<key>box.color.orange</key>
+	<string>Orange</string>
+	<key>box.color.pink</key>
+	<string>Pink</string>
+	<key>box.color.red</key>
+	<string>Red</string>
+	<key>box.color.yellow</key>
+	<string>Yellow</string>
+	<key>box.menu.open_app</key>
+	<string>Open ArcZip</string>
+	<key>box.menu.quit</key>
+	<string>Quit</string>
+	<key>box.save.action</key>
+	<string>Save To…</string>
+	<key>box.save.completed</key>
+	<string>Saved</string>
+	<key>box.save.confirm</key>
+	<string>Save</string>
+	<key>box.save.in_use</key>
+	<string>Close windows using these results, or wait for extraction to finish before saving.</string>
+	<key>box.save.inside_source</key>
+	<string>Choose a location outside the result folder.</string>
+	<key>box.save.progress</key>
+	<string>Saving</string>
+	<key>box.save.sharing</key>
+	<string>Wait for sharing to finish before saving.</string>
+	<key>box.save.temporary_destination</key>
+	<string>Choose a save location outside the Box temporary folder.</string>
+	<key>box.settings.appearance</key>
+	<string>Appearance</string>
+	<key>box.settings.behavior</key>
+	<string>Behavior</string>
+	<key>box.settings.color</key>
+	<string>Color</string>
+	<key>box.settings.color_intensity</key>
+	<string>Color Intensity</string>
+	<key>box.settings.enabled</key>
+	<string>Enable ArcZip Box</string>
+	<key>box.settings.enabled_detail</key>
+	<string>Show the menu bar icon and accept files in Box.</string>
+	<key>box.settings.idle_delay</key>
+	<string>Hide after inactivity</string>
+	<key>box.settings.idle_detail</key>
+	<string>Keep Box open with the pin button. Dragging and processing pause the countdown.</string>
+	<key>box.settings.preview</key>
+	<string>ArcZip Box appearance preview</string>
+	<key>box.settings.seconds</key>
+	<string>%lld seconds</string>
+	<key>box.settings.subtitle</key>
+	<string>Collect files and process them from the menu bar</string>
+	<key>box.source_access.message</key>
+	<string>ArcZip cannot read the source file you dropped. In System Settings → Privacy &amp; Security → Files &amp; Folders, expand ArcZip and enable access to the source app, such as WeChat. Then drop the file again.</string>
+	<key>box.source_access.open_settings</key>
+	<string>Open Files &amp; Folders</string>
+	<key>box.source_access.title</key>
+	<string>Allow access to the source file</string>
+	<key>commercial.pro.about_prompt</key>
+	<string>What is ArcZip Pro?</string>
+	<key>commercial.pro.activate</key>
+	<string>Activate ArcZip Pro</string>
+	<key>commercial.pro.activate_license</key>
+	<string>Activate License</string>
+	<key>commercial.pro.activating</key>
+	<string>Verifying activation code…</string>
+	<key>commercial.pro.activating_button</key>
+	<string>Activating…</string>
+	<key>commercial.pro.activation_placeholder</key>
+	<string>XXXX-XXXX-XXXX-XXXX</string>
+	<key>commercial.pro.activation_privacy</key>
+	<string>The code is used only to verify your license</string>
+	<key>commercial.pro.activation_purchased_prompt</key>
+	<string>Already have a license?</string>
+	<key>commercial.pro.activation_subtitle</key>
+	<string>Enter your activation code.</string>
+	<key>commercial.pro.activation_success</key>
+	<string>ArcZip Pro is now active.</string>
+	<key>commercial.pro.activation_success_title</key>
+	<string>ArcZip Pro is activated</string>
+	<key>commercial.pro.activation_support</key>
+	<string>Your support helps ArcZip keep getting better.</string>
+	<key>commercial.pro.activation_thanks</key>
+	<string>Thank you for purchasing ArcZip Pro.</string>
+	<key>commercial.pro.activation_title</key>
+	<string>Activate ArcZip Pro</string>
+	<key>commercial.pro.already_purchased</key>
+	<string>Already purchased?</string>
+	<key>commercial.pro.back_to_purchase</key>
+	<string>Back to Plans</string>
+	<key>commercial.pro.brand_tagline</key>
+	<string>A complete, professional archive experience</string>
+	<key>commercial.pro.buy</key>
+	<string>Buy ArcZip Pro</string>
+	<key>commercial.pro.buy_now</key>
+	<string>Buy Now</string>
+	<key>commercial.pro.choose_plan</key>
+	<string>Choose Your Plan</string>
+	<key>commercial.pro.current_device</key>
+	<string>This Mac</string>
+	<key>commercial.pro.current_device_name</key>
+	<string>This Mac’s name</string>
+	<key>commercial.pro.deactivate_confirm_message</key>
+	<string>This Mac will switch to Free immediately, freeing a device slot. You can reactivate this or another Mac with the same code.</string>
+	<key>commercial.pro.deactivate_confirm_title</key>
+	<string>Deactivate This Mac?</string>
+	<key>commercial.pro.deactivate_current_mac</key>
+	<string>Deactivate This Mac</string>
+	<key>commercial.pro.deactivate_device</key>
+	<string>Deactivate</string>
+	<key>commercial.pro.deactivate_device_confirm_title</key>
+	<string>Deactivate This Device?</string>
+	<key>commercial.pro.deactivate_named_device_confirm_title</key>
+	<string>Deactivate “%@”?</string>
+	<key>commercial.pro.deactivate_remote_confirm_message</key>
+	<string>This frees a device slot. The device will switch to Free after its next online license check.</string>
+	<key>commercial.pro.deactivate_remote_success</key>
+	<string>Device deactivated. A device slot is now available.</string>
+	<key>commercial.pro.deactivate_success</key>
+	<string>This Mac was deactivated and the device seat was released.</string>
+	<key>commercial.pro.device_activation_date_format</key>
+	<string>Activated on %@</string>
+	<key>commercial.pro.device_available_format</key>
+	<string>Available device slots: %lld</string>
+	<key>commercial.pro.device_dates_format</key>
+	<string>Activated %@ · Last verified %@</string>
+	<key>commercial.pro.device_management_title</key>
+	<string>Devices</string>
+	<key>commercial.pro.device_name_detail</key>
+	<string>Uses this Mac’s computer name by default. You can set a custom name of up to 100 characters.</string>
+	<key>commercial.pro.device_name_placeholder</key>
+	<string>Device name</string>
+	<key>commercial.pro.device_name_save</key>
+	<string>Save</string>
+	<key>commercial.pro.device_name_saved</key>
+	<string>This Mac’s name was updated.</string>
+	<key>commercial.pro.device_name_saving</key>
+	<string>Saving…</string>
+	<key>commercial.pro.device_rename</key>
+	<string>Rename</string>
+	<key>commercial.pro.device_rename_title</key>
+	<string>Rename This Mac</string>
+	<key>commercial.pro.device_usage_format</key>
+	<string>%1$lld of %2$lld devices activated</string>
+	<key>commercial.pro.device_usage_single_format</key>
+	<string>%1$lld of %2$lld device activated</string>
+	<key>commercial.pro.device_version_format</key>
+	<string>ArcZip %@</string>
+	<key>commercial.pro.enter_activation_code</key>
+	<string>Enter Activation Code</string>
+	<key>commercial.pro.error_activation_limit</key>
+	<string>The activation limit has been reached. Try again or contact support.</string>
+	<key>commercial.pro.error_authorization_rejected</key>
+	<string>The license credential is no longer valid. Activate ArcZip Pro again.</string>
+	<key>commercial.pro.error_current_device_remote</key>
+	<string>Use “Deactivate This Mac” to remove the license safely from this Mac.</string>
+	<key>commercial.pro.error_device_not_found</key>
+	<string>This device no longer exists or is already deactivated. Refresh the device list.</string>
+	<key>commercial.pro.error_email_mismatch</key>
+	<string>No active license was found for this email. Check the email used for your purchase and try again.</string>
+	<key>commercial.pro.error_invalid_device_name</key>
+	<string>Enter a device name of 1–100 characters without control characters.</string>
+	<key>commercial.pro.error_invalid_email</key>
+	<string>Enter a valid purchase email address.</string>
+	<key>commercial.pro.error_invalid_key</key>
+	<string>The activation code is invalid. Check it and try again.</string>
+	<key>commercial.pro.error_network</key>
+	<string>ArcZip could not reach the license service. Check your network and try again.</string>
+	<key>commercial.pro.error_no_stored_license</key>
+	<string>There is no local license to manage on this Mac.</string>
+	<key>commercial.pro.error_operation_in_progress</key>
+	<string>Another license operation is in progress. Please wait.</string>
+	<key>commercial.pro.error_rate_limited</key>
+	<string>Too many attempts. Try again later.</string>
+	<key>commercial.pro.error_refunded</key>
+	<string>This license was refunded and cannot be activated.</string>
+	<key>commercial.pro.error_revoked</key>
+	<string>This license was revoked and cannot be activated.</string>
+	<key>commercial.pro.error_secure_storage</key>
+	<string>ArcZip could not securely save the license. Check Keychain access and try again.</string>
+	<key>commercial.pro.error_service</key>
+	<string>The activation code could not be verified. Try again later.</string>
+	<key>commercial.pro.error_unavailable_build</key>
+	<string>This preview build is not connected to the license service yet.</string>
+	<key>commercial.pro.error_version_not_covered</key>
+	<string>This activation code does not cover the current ArcZip major version.</string>
+	<key>commercial.pro.feature_creation_title</key>
+	<string>More Formats &amp; Presets</string>
+	<key>commercial.pro.feature_edit_title</key>
+	<string>Edit Existing Archives</string>
+	<key>commercial.pro.feature_flows_title</key>
+	<string>All Pro Flows</string>
+	<key>commercial.pro.feature_requires_pro</key>
+	<string>“%@” requires ArcZip Pro. Free includes opening, browsing, previewing, full extraction, and basic ZIP creation with the General purpose and Balanced compression.</string>
+	<key>commercial.pro.feature_security_title</key>
+	<string>Advanced Compression &amp; Security</string>
+	<key>commercial.pro.last_verified</key>
+	<string>Last Verified</string>
+	<key>commercial.pro.learn_more</key>
+	<string>Learn About ArcZip Pro</string>
+	<key>commercial.pro.learn_more_action</key>
+	<string>Learn More</string>
+	<key>commercial.pro.learn_more_subtitle</key>
+	<string>Learn about ArcZip Pro features, purchasing, and activation</string>
+	<key>commercial.pro.license_management</key>
+	<string>License and Device Management</string>
+	<key>commercial.pro.license_management_detail</key>
+	<string>Deactivate this Mac, or remotely release an old device before activating a new Mac</string>
+	<key>commercial.pro.license_unavailable</key>
+	<string>Your license %@. “%@” is unavailable.</string>
+	<key>commercial.pro.loading_devices</key>
+	<string>Loading activated devices…</string>
+	<key>commercial.pro.lost_license_key</key>
+	<string>Lost Activation Code?</string>
+	<key>commercial.pro.manage_license</key>
+	<string>Manage License</string>
+	<key>commercial.pro.manage_other_devices</key>
+	<string>Manage Devices</string>
+	<key>commercial.pro.paste</key>
+	<string>Paste</string>
+	<key>commercial.pro.plan_single_user_summary</key>
+	<string>1 user</string>
+	<key>commercial.pro.plan_single_user_title</key>
+	<string>Single User</string>
+	<key>commercial.pro.plan_three_users_summary</key>
+	<string>Up to 3 users</string>
+	<key>commercial.pro.plan_three_users_title</key>
+	<string>3 Users</string>
+	<key>commercial.pro.price_single</key>
+	<string>¥68</string>
+	<key>commercial.pro.price_three</key>
+	<string>¥99</string>
+	<key>commercial.pro.purchase_learn_more</key>
+	<string>Learn More</string>
+	<key>commercial.pro.purchase_subtitle</key>
+	<string>Unlock archive search, all Flows, advanced compression options, and archive editing.</string>
+	<key>commercial.pro.purchase_title</key>
+	<string>Unlock ArcZip Pro</string>
+	<key>commercial.pro.recovery_detail</key>
+	<string>Enter the email used for your purchase. If support approves your request, a new activation code will be sent to that address.</string>
+	<key>commercial.pro.recovery_email_placeholder</key>
+	<string>Email used for purchase</string>
+	<key>commercial.pro.recovery_submitted_button</key>
+	<string>Request Submitted</string>
+	<key>commercial.pro.recovery_success</key>
+	<string>Request submitted. Review is expected within 24 hours. If approved, a new activation code will be sent to your purchase email.</string>
+	<key>commercial.pro.recovery_title</key>
+	<string>Lost Activation Code?</string>
+	<key>commercial.pro.refresh_license</key>
+	<string>Refresh License</string>
+	<key>commercial.pro.refresh_success</key>
+	<string>License status updated.</string>
+	<key>commercial.pro.remove_local_license</key>
+	<string>Remove Local License</string>
+	<key>commercial.pro.remove_local_success</key>
+	<string>The local license was removed. The server device seat was not changed.</string>
+	<key>commercial.pro.replacement_changed</key>
+	<string>The device list has changed. Choose a device again.</string>
+	<key>commercial.pro.replacement_confirm</key>
+	<string>Replace and activate this Mac</string>
+	<key>commercial.pro.replacement_message</key>
+	<string>Choose an old Mac to transfer its activation to this Mac.</string>
+	<key>commercial.pro.replacement_progress</key>
+	<string>Transferring activation…</string>
+	<key>commercial.pro.replacement_title</key>
+	<string>Choose a device to replace</string>
+	<key>commercial.pro.retry</key>
+	<string>Retry</string>
+	<key>commercial.pro.search_requires_pro</key>
+	<string>Search by filename or path across your archive with ArcZip Pro, without opening each folder.</string>
+	<key>commercial.pro.settings_subtitle</key>
+	<string>Manage your license and activated Macs.</string>
+	<key>commercial.pro.settings_trial_active</key>
+	<string>Trial Active</string>
+	<key>commercial.pro.settings_trial_ended</key>
+	<string>Trial Ended</string>
+	<key>commercial.pro.settings_trial_remaining</key>
+	<string>Trial · %@</string>
+	<key>commercial.pro.start_using</key>
+	<string>Start Using ArcZip</string>
+	<key>commercial.pro.status.invalid</key>
+	<string>could not be verified</string>
+	<key>commercial.pro.status.refunded</key>
+	<string>was refunded</string>
+	<key>commercial.pro.status.revoked</key>
+	<string>is revoked</string>
+	<key>commercial.pro.status_active</key>
+	<string>Activated</string>
+	<key>commercial.pro.status_active_detail</key>
+	<string>This Mac can use all ArcZip Pro features.</string>
+	<key>commercial.pro.status_free</key>
+	<string>ArcZip Free</string>
+	<key>commercial.pro.status_free_detail</key>
+	<string>Enter an activation code to unlock Pro features on this Mac.</string>
+	<key>commercial.pro.status_inactive</key>
+	<string>Not Activated</string>
+	<key>commercial.pro.status_invalid</key>
+	<string>Local License Invalid</string>
+	<key>commercial.pro.status_invalid_detail</key>
+	<string>ArcZip cannot verify the local license. Remove it and activate again.</string>
+	<key>commercial.pro.status_preview_detail</key>
+	<string>This internal preview build is not connected to the license service.</string>
+	<key>commercial.pro.status_refunded</key>
+	<string>License Refunded</string>
+	<key>commercial.pro.status_refunded_detail</key>
+	<string>This license no longer grants Pro features.</string>
+	<key>commercial.pro.status_revoked</key>
+	<string>License Deactivated on This Mac</string>
+	<key>commercial.pro.status_revoked_detail</key>
+	<string>The device seat is released and this Mac has returned to Free.</string>
+	<key>commercial.pro.submit_recovery</key>
+	<string>Submit Request</string>
+	<key>commercial.pro.transfer_explanation</key>
+	<string>When changing Macs, deactivate the old Mac first. If it is unavailable, open Device Management in ArcZip, deactivate it remotely, then enter the same activation code on the new Mac.</string>
+	<key>commercial.pro.trial_days_remaining</key>
+	<string>%lld days remaining</string>
+	<key>commercial.pro.trial_ended</key>
+	<string>Trial ended</string>
+	<key>commercial.pro.trial_ended_purchase_message</key>
+	<string>Your 7-day trial has ended. Purchase ArcZip Pro to keep all Pro features, or continue using the free features.</string>
+	<key>commercial.pro.trial_error_network</key>
+	<string>Check your network connection</string>
+	<key>commercial.pro.trial_error_service</key>
+	<string>The service is temporarily unavailable. Try again later.</string>
+	<key>commercial.pro.trial_error_time</key>
+	<string>Check your system date and time</string>
+	<key>commercial.pro.trial_error_used</key>
+	<string>You have already used the trial</string>
+	<key>commercial.pro.trial_less_than_one_day</key>
+	<string>Less than 1 day remaining</string>
+	<key>commercial.pro.trial_one_day_remaining</key>
+	<string>%lld day remaining</string>
+	<key>commercial.pro.trial_start</key>
+	<string>Start Trial</string>
+	<key>commercial.pro.trial_start_failed_title</key>
+	<string>Unable to Start Trial</string>
+	<key>commercial.pro.trial_title</key>
+	<string>7-Day Free Trial</string>
+	<key>commercial.pro.unnamed_device</key>
+	<string>Unnamed Mac</string>
+	<key>commercial.pro.upgrade_required</key>
+	<string>Your license covers ArcZip %lld.x and earlier. Upgrade for “%@”.</string>
+	<key>commercial.pro.use_activation_code</key>
+	<string>Use activation code</string>
+	<key>commercial.pro.version_coverage</key>
+	<string>Version Coverage</string>
+	<key>common.cancel</key>
+	<string>Cancel</string>
+	<key>common.close</key>
+	<string>Close</string>
+	<key>common.details</key>
+	<string>Details</string>
+	<key>common.done</key>
+	<string>Done</string>
+	<key>common.loading</key>
+	<string>Loading…</string>
+	<key>common.name</key>
+	<string>Name</string>
+	<key>common.ok</key>
+	<string>OK</string>
+	<key>common.retry</key>
+	<string>Try Again</string>
+	<key>common.search</key>
+	<string>Search</string>
+	<key>common.settings</key>
+	<string>Settings</string>
+	<key>common.size</key>
+	<string>Size</string>
+	<key>creation.external_entry.issue.continuing</key>
+	<string>Skipping problem items and continuing</string>
+	<key>creation.external_entry.issue.message</key>
+	<string>ArcZip can skip items that cannot be represented or read safely and continue with the remaining content. Your source files will not be modified.</string>
+	<key>creation.external_entry.issue.more</key>
+	<string>…and %lld more items</string>
+	<key>creation.external_entry.issue.title</key>
+	<string>Some items cannot be added to the archive</string>
+	<key>creation.external_entry.issue.waiting</key>
+	<string>Waiting for a decision on problem items</string>
+	<key>creation.metadata.support_files.detail</key>
+	<string>Keep existing files such as .DS_Store and __MACOSX</string>
+	<key>creation.metadata.support_files.title</key>
+	<string>Keep Mac support files</string>
+	<key>creation.smallest.formats</key>
+	<string>Smallest Size supports ZIP and 7Z only.</string>
+	<key>creation.smallest.maximum_only</key>
+	<string>Smallest Size uses the maximum compression level and cannot be adjusted.</string>
+	<key>creation.split.by_count</key>
+	<string>Number of volumes</string>
+	<key>creation.split.by_size</key>
+	<string>Volume size</string>
+	<key>creation.split.count</key>
+	<string>Volumes</string>
+	<key>creation.split.count_detail</key>
+	<string>Split the completed archive evenly into the selected number of volumes.</string>
+	<key>creation.split.custom</key>
+	<string>Custom</string>
+	<key>creation.split.custom_size</key>
+	<string>Target size</string>
+	<key>creation.split.decrease</key>
+	<string>Decrease volume count</string>
+	<key>creation.split.increase</key>
+	<string>Increase volume count</string>
+	<key>creation.split.invalid_count</key>
+	<string>Enter a whole number from 2 to 999.</string>
+	<key>creation.split.invalid_size</key>
+	<string>Enter a valid size of at least 1 KB.</string>
+	<key>creation.split.maximum</key>
+	<string>Maximum per volume</string>
+	<key>creation.split.mode</key>
+	<string>Split by</string>
+	<key>creation.split.size_detail</key>
+	<string>A smaller archive produces one volume. The last volume may be smaller.</string>
+	<key>creation.split.unit</key>
+	<string>Size unit</string>
+	<key>creation.tar.no_compression</key>
+	<string>TAR only bundles files; the compression level cannot be adjusted.</string>
+	<key>creation.unix.tar_only</key>
+	<string>Linux &amp; Servers supports TAR only.</string>
+	<key>creation.windows_filename_repair.item_count</key>
+	<string>Names to review: %d</string>
+	<key>creation.windows_filename_repair.list_label</key>
+	<string>Filenames to review</string>
+	<key>creation.windows_filename_repair.message</key>
+	<string>These filenames may not work correctly on Windows. Review or edit the suggested names.</string>
+	<key>creation.windows_filename_repair.new_name</key>
+	<string>New name</string>
+	<key>creation.windows_filename_repair.source_note</key>
+	<string>Only names inside the archive will change; source files remain unchanged.</string>
+	<key>creation.windows_filename_repair.title</key>
+	<string>Fix Windows-incompatible names</string>
+	<key>dialog.archive_replacement.message</key>
+	<string>Replace overwrites the existing archive. Keep Both creates the new archive with a different name.</string>
+	<key>dialog.confirmation.problem_items</key>
+	<string>Problem items</string>
+	<key>dialog.confirmation.skip_items.message</key>
+	<string>These items cannot be safely added to the archive. You can skip them and continue, or cancel compression.</string>
+	<key>dialog.entry_index.close_window</key>
+	<string>Close Window</string>
+	<key>dialog.entry_index.recovery</key>
+	<string>Free up disk space or check the system temporary folder, then try again.</string>
+	<key>dialog.entry_index.source_safe</key>
+	<string>The source archive was not modified.</string>
+	<key>dialog.error.affected_item</key>
+	<string>Affected file</string>
+	<key>dialog.error.code</key>
+	<string>Error code</string>
+	<key>dialog.error.details</key>
+	<string>Error details</string>
+	<key>dialog.error.long.follow_up</key>
+	<string>The source archive was not modified. Try reopening the archive. If the problem persists, send the file path, error code, and request ID shown in Error Details to support so they can investigate this read failure.</string>
+	<key>dialog.error.long.summary</key>
+	<string>Unable to read the file. The archive returned data that does not match its directory index. This item cannot be previewed or exported, but you can continue browsing other items.</string>
+	<key>dialog.error.request_id</key>
+	<string>Request ID</string>
+	<key>dialog.password.required.message</key>
+	<string>This archive is password-protected.</string>
+	<key>disk_image.application.open_failed</key>
+	<string>Unable to open this application: %@</string>
+	<key>disk_image.application.warning.applications</key>
+	<string>The developer recommends dragging “%@” to Applications first, or using ArcZip Quick Install (Pro), and then opening it from Applications.</string>
+	<key>disk_image.application.warning.custom_destination</key>
+	<string>The developer specified “%@” as the installation location. Follow the image's instructions and drag “%@” there first.</string>
+	<key>disk_image.application.warning.destination_unavailable</key>
+	<string>ArcZip couldn't determine the installation location prepared by the developer for “%@”. Continuing will open the application directly.</string>
+	<key>disk_image.application.warning.multiple_destinations</key>
+	<string>The developer provided multiple installation locations. Follow the drag instructions shown in the image before opening the application.</string>
+	<key>disk_image.drop.confirm.conflicts</key>
+	<string>The following items already exist and will be replaced: %@</string>
+	<key>disk_image.drop.confirm.continue</key>
+	<string>Continue</string>
+	<key>disk_image.drop.confirm.custom_title</key>
+	<string>Extract to This Folder?</string>
+	<key>disk_image.drop.confirm.destination</key>
+	<string>Destination: %@</string>
+	<key>disk_image.drop.confirm.replace</key>
+	<string>Replace</string>
+	<key>disk_image.drop.confirm.replace_title</key>
+	<string>Replace Existing Items?</string>
+	<key>disk_image.drop.error.destination_changed</key>
+	<string>The drop destination changed. Drag the items again.</string>
+	<key>disk_image.drop.error.destination_missing</key>
+	<string>The drop destination no longer exists or is not a folder</string>
+	<key>disk_image.drop.error.developer_target_changed</key>
+	<string>The developer-specified drop destination has changed</string>
+	<key>disk_image.drop.error.developer_target_unavailable</key>
+	<string>The developer-specified drop destination is currently unavailable</string>
+	<key>disk_image.drop.error.image_unavailable</key>
+	<string>This disk image can no longer accept the drop</string>
+	<key>disk_image.drop.error.invalid_names</key>
+	<string>The dropped items contain invalid or conflicting names</string>
+	<key>disk_image.drop.error.item_exists</key>
+	<string>An item named “%@” already exists at the destination</string>
+	<key>disk_image.drop.error.items_changed</key>
+	<string>The dragged items have changed. Drag them again.</string>
+	<key>disk_image.drop.error.missing_extracted_item</key>
+	<string>Extraction did not produce “%@”</string>
+	<key>disk_image.drop.error.new_conflict</key>
+	<string>A new item with the same name appeared at the destination. Drag again and confirm replacement.</string>
+	<key>disk_image.drop.error.no_items</key>
+	<string>There are no items to publish</string>
+	<key>disk_image.drop.target_unavailable</key>
+	<string>Destination unavailable</string>
+	<key>disk_image.view.icon.accessibility</key>
+	<string>Disk image icon view</string>
+	<key>disk_image.view.mode.accessibility</key>
+	<string>Disk image view mode</string>
+	<key>disk_image.view.other_items</key>
+	<string>Other Items</string>
+	<key>disk_image.view.other_items_description</key>
+	<string>Items without a usable position appear here</string>
+	<key>edit.action.add</key>
+	<string>Add Files</string>
+	<key>edit.action.delete</key>
+	<string>Delete</string>
+	<key>edit.action.rename</key>
+	<string>Rename</string>
+	<key>edit.redo</key>
+	<string>Redo</string>
+	<key>edit.redo_action</key>
+	<string>Redo %@</string>
+	<key>edit.undo</key>
+	<string>Undo</string>
+	<key>edit.undo_action</key>
+	<string>Undo %@</string>
+	<key>extraction.completion.action_detail</key>
+	<string>Applies to the original archive only after Extract All succeeds. Defaults to Ask Every Time.</string>
+	<key>extraction.completion.always_ask</key>
+	<string>Ask Every Time</string>
+	<key>extraction.completion.always_keep</key>
+	<string>Always Keep File</string>
+	<key>extraction.completion.always_trash</key>
+	<string>Always Move to Trash</string>
+	<key>extraction.completion.close_detail</key>
+	<string>Close the window after extraction completes and the archive is kept</string>
+	<key>extraction.completion.detail</key>
+	<string>Choose how extracted items are shown and how archives are handled after Extract All.</string>
+	<key>extraction.completion.reveal_results</key>
+	<string>Automatically Select Extracted Items</string>
+	<key>extraction.completion.reveal_results_detail</key>
+	<string>Show the output location in Finder and select the extracted items when extraction finishes.</string>
+	<key>extraction.completion.row_detail</key>
+	<string>Keep the archive or move it to Trash after extraction</string>
+	<key>extraction.completion.source_action</key>
+	<string>Handle Archive</string>
+	<key>extraction.completion.title</key>
+	<string>After Extraction</string>
+	<key>extraction.opening.browse_formats</key>
+	<string>Formats such as DMG and ISO are unaffected by this setting and always open for browsing.</string>
+	<key>extraction.opening.browse_menu</key>
+	<string>You can also choose “Browse with ArcZip” from the context menu or Services menu to view an archive’s contents.</string>
+	<key>extraction.opening.browse_shift</key>
+	<string>Hold Shift, then double-click an archive to temporarily browse it in ArcZip Mini or the full window.</string>
+	<key>extraction.opening.detail</key>
+	<string>Only Always Move to Trash removes the original after direct extraction. Other completion choices keep it silently.</string>
+	<key>extraction.opening.direct</key>
+	<string>Quick extract on double-click</string>
+	<key>extraction.opening.direct_detail</key>
+	<string>When enabled, double-clicking an archive immediately extracts it to the folder containing it, skipping browsing.</string>
+	<key>extraction.opening.extract_shift</key>
+	<string>Hold Shift, then double-click an archive to temporarily extract it to its containing folder.</string>
+	<key>extraction.opening.title</key>
+	<string>Opening Archives</string>
+	<key>extraction.trash.confirm</key>
+	<string>Move to Trash</string>
+	<key>extraction.trash.failed</key>
+	<string>Extraction completed, but the original archive could not be moved to Trash: %@</string>
+	<key>extraction.trash.keep</key>
+	<string>Keep Archive</string>
+	<key>extraction.trash.message</key>
+	<string>Move the original archive to Trash?</string>
+	<key>extraction.trash.title</key>
+	<string>Extraction complete</string>
+	<key>finder.batch_extract_here</key>
+	<string>Extract %@ Files Here</string>
+	<key>finder.batch_extract_to</key>
+	<string>Extract %@ Files to…</string>
+	<key>finder.browse_archive</key>
+	<string>Browse with ArcZip</string>
+	<key>finder.compress_advanced</key>
+	<string>Compress As…</string>
+	<key>finder.compress_named</key>
+	<string>Compress as “%@”</string>
+	<key>finder.extensions</key>
+	<string>Finder Extensions</string>
+	<key>finder.extract_here</key>
+	<string>Extract Here</string>
+	<key>finder.extract_to</key>
+	<string>Extract to…</string>
+	<key>finder.menu_repair</key>
+	<string>Repair Finder Menu</string>
+	<key>finder.menu_repair_confirm</key>
+	<string>Repair</string>
+	<key>finder.menu_repair_confirmation_message</key>
+	<string>ArcZip will remove stale Finder Sync and Quick Look registrations, keep only the extensions inside Applications, and restart Finder.</string>
+	<key>finder.menu_repair_confirmation_title</key>
+	<string>Repair Finder Menu?</string>
+	<key>finder.menu_repair_description</key>
+	<string>Repair ArcZip’s extensions if its Finder menu is missing.</string>
+	<key>finder.menu_repair_failure</key>
+	<string>Repair failed. Confirm that ArcZip is installed in Applications and try again.</string>
+	<key>finder.menu_repair_missing_application</key>
+	<string>The current ArcZip was not found in Applications. Install it there first.</string>
+	<key>finder.menu_repair_ready</key>
+	<string>Finder will restart during repair.</string>
+	<key>finder.menu_repair_row_title</key>
+	<string>Finder Context Menu</string>
+	<key>finder.menu_repair_running</key>
+	<string>Repairing Finder Menu…</string>
+	<key>finder.menu_repair_success</key>
+	<string>Finder menu repaired. Finder has restarted.</string>
+	<key>finder.repair.command_failed</key>
+	<string>Finder repair failed: %@.</string>
+	<key>finder.repair.enable_extension</key>
+	<string>Enable %@</string>
+	<key>finder.repair.invalid_signature</key>
+	<string>Untrusted signature for %@.</string>
+	<key>finder.repair.missing_application</key>
+	<string>%@ not found. Install ArcZip in Applications.</string>
+	<key>finder.repair.missing_extension</key>
+	<string>Missing %@ extension. Reinstall ArcZip.</string>
+	<key>finder.repair.read_registration</key>
+	<string>Check %@</string>
+	<key>finder.repair.register_extension</key>
+	<string>Register %@</string>
+	<key>finder.repair.remove_registration</key>
+	<string>Remove %@ registration</string>
+	<key>finder.repair.verification_failed</key>
+	<string>Registration incomplete: %@.</string>
+	<key>flow.alternative_count</key>
+	<string>Alternative Flows: %lld</string>
+	<key>flow.extract_selection.help</key>
+	<string>Extract selected items</string>
+	<key>flow.install_application.inferred.help</key>
+	<string>Install “%@” in the Applications folder</string>
+	<key>flow.open_file.no_default_application</key>
+	<string>No default application can open “%@”</string>
+	<key>flow.open_file.selected_format_count</key>
+	<string>Selected formats: %lld</string>
+	<key>hover.audio.play</key>
+	<string>Play audio</string>
+	<key>inspector.file_type</key>
+	<string>%@ file</string>
+	<key>install.confirm.unnotarized.message</key>
+	<string>“%@” has not been notarized by Apple. Install only if you trust its source.</string>
+	<key>install.confirm.unverified.message</key>
+	<string>The developer of “%@” could not be verified. Install only if you trust its source.</string>
+	<key>install.confirm.unverified.title</key>
+	<string>Install this app anyway?</string>
+	<key>item.menu.copy_file</key>
+	<string>Copy</string>
+	<key>item.menu.copy_path</key>
+	<string>Copy Path</string>
+	<key>item.menu.remove_archive_entry</key>
+	<string>Remove from Archive</string>
+	<key>item.menu.remove_draft_entry</key>
+	<string>Remove from Draft</string>
+	<key>item.menu.remove_reference</key>
+	<string>Remove from Box</string>
+	<key>item.menu.rename_busy</key>
+	<string>This file is in use. Finish or close its workspace before renaming.</string>
+	<key>item.menu.rename_in_workspace</key>
+	<string>Rename in Workspace…</string>
+	<key>item.menu.rename_split</key>
+	<string>Split archive volumes must keep their family names and cannot be renamed here.</string>
+	<key>item.menu.reveal_source</key>
+	<string>Show Source in Finder</string>
+	<key>macOS 不支持此磁盘映像格式</key>
+	<string>Unsupported disk image format.</string>
+	<key>macOS 仍在处理此磁盘映像，请稍后重试。</key>
+	<string>macOS is still processing this disk image. Try again shortly.</string>
+	<key>macOS 多次尝试后仍无法挂载此磁盘映像，可能受到磁盘工具、安全软件或系统服务干扰</key>
+	<string>macOS could not mount this disk image after several attempts. Disk utilities, security software, or system services may be interfering</string>
+	<key>macOS 按末尾扩展名关联，.gz 同时覆盖 .tar.gz</key>
+	<string>Also applies to .tar.gz; macOS uses the final extension.</string>
+	<key>macOS 未返回已启动的应用</key>
+	<string>macOS did not return the launched application</string>
+	<key>menu.archive</key>
+	<string>Archive</string>
+	<key>menu.check_updates</key>
+	<string>Check for Updates…</string>
+	<key>menu.clear</key>
+	<string>Clear Menu</string>
+	<key>menu.no_recent_archives</key>
+	<string>No Recent Archives</string>
+	<key>menu.recent_open</key>
+	<string>Open Recent</string>
+	<key>menu.view</key>
+	<string>View</string>
+	<key>menuBarShelf.item_count</key>
+	<string>%lld files</string>
+	<key>mini.switch.busy</key>
+	<string>This archive’s Mini window still has an active task or pending interaction. Finish it before switching.</string>
+	<key>mini.switch.discard</key>
+	<string>Discard and Switch</string>
+	<key>mini.switch.failed</key>
+	<string>The Mini window could not be prepared. Your current workspace has been kept. Please try again later.</string>
+	<key>mini.switch.save</key>
+	<string>Save and Switch</string>
+	<key>mini.switch.save.message</key>
+	<string>Mini is for browsing. Save or discard your changes to switch.</string>
+	<key>mini.switch.save.title</key>
+	<string>Save changes to “%@” before switching to Mini?</string>
+	<key>mini.switch.title</key>
+	<string>Switch to Mini</string>
+	<key>mini.window.pin</key>
+	<string>Keep Window on Top</string>
+	<key>mini.window.unpin</key>
+	<string>Stop Keeping Window on Top</string>
+	<key>onboarding.v2.access.confirm</key>
+	<string>I have completed setup</string>
+	<key>onboarding.v2.access.confirmed</key>
+	<string>Setup confirmed</string>
+	<key>onboarding.v2.access.detail</key>
+	<string>Enable Full Disk Access so ArcZip can get files from more locations, such as WeChat.</string>
+	<key>onboarding.v2.access.drag_hint</key>
+	<string>Drag ArcZip into the list above, then turn it on</string>
+	<key>onboarding.v2.access.open</key>
+	<string>Open Settings</string>
+	<key>onboarding.v2.access.optional</key>
+	<string>This setup is optional. You can open and extract ordinary archives right away.</string>
+	<key>onboarding.v2.access.step1</key>
+	<string>Click “Open Settings” in the bottom-right corner.</string>
+	<key>onboarding.v2.access.step2</key>
+	<string>Drag ArcZip from the guide into the app list, or use the + button to add it.</string>
+	<key>onboarding.v2.access.step3</key>
+	<string>Turn on ArcZip. If macOS asks to reopen the app, this guide resumes here.</string>
+	<key>onboarding.v2.access.title</key>
+	<string>Let ArcZip access your files smoothly</string>
+	<key>onboarding.v2.associations.all</key>
+	<string>Show all formats</string>
+	<key>onboarding.v2.associations.common</key>
+	<string>Show common formats</string>
+	<key>onboarding.v2.associations.detail</key>
+	<string>Not sure which formats to choose? Use the recommended defaults.</string>
+	<key>onboarding.v2.associations.optional</key>
+	<string>Change later in Settings. PKG files keep opening with Installer.</string>
+	<key>onboarding.v2.associations.recommended</key>
+	<string>Set common formats</string>
+	<key>onboarding.v2.associations.title</key>
+	<string>Associate file formats</string>
+	<key>onboarding.v2.back</key>
+	<string>Back</string>
+	<key>onboarding.v2.begin</key>
+	<string>Get started</string>
+	<key>onboarding.v2.box.choice</key>
+	<string>Enable Box and its menu bar icon</string>
+	<key>onboarding.v2.box.choice_detail</key>
+	<string>Ready when you need it</string>
+	<key>onboarding.v2.box.collect</key>
+	<string>Auto-show, easy collection</string>
+	<key>onboarding.v2.box.detail</key>
+	<string>Collect files from different places, then open, organize, or process them together.</string>
+	<key>onboarding.v2.box.preview</key>
+	<string>Preview with ease</string>
+	<key>onboarding.v2.box.pro_note</key>
+	<string>Some features need ArcZip Pro</string>
+	<key>onboarding.v2.box.quick_actions</key>
+	<string>Quickly compress/extract</string>
+	<key>onboarding.v2.box.title</key>
+	<string>ArcZip Box</string>
+	<key>onboarding.v2.box.try_hint</key>
+	<string>Try it yourself</string>
+	<key>onboarding.v2.complete.box_off</key>
+	<string>Box is turned off</string>
+	<key>onboarding.v2.complete.box_on</key>
+	<string>Box is enabled</string>
+	<key>onboarding.v2.complete.detail</key>
+	<string>Start with your first archive.</string>
+	<key>onboarding.v2.complete.mini</key>
+	<string>Archives open in ArcZip Mini</string>
+	<key>onboarding.v2.complete.settings</key>
+	<string>You can change these choices in Settings at any time.</string>
+	<key>onboarding.v2.complete.title</key>
+	<string>You are ready</string>
+	<key>onboarding.v2.complete.workspace</key>
+	<string>Archives open in the full workspace</string>
+	<key>onboarding.v2.feature_guide</key>
+	<string>Discover Pro</string>
+	<key>onboarding.v2.finder.detail</key>
+	<string>Quickly access ArcZip from the context menu</string>
+	<key>onboarding.v2.finder.instructions</key>
+	<string>Enable the ArcZip Finder extension in System Settings.</string>
+	<key>onboarding.v2.finder.open</key>
+	<string>Open extension settings</string>
+	<key>onboarding.v2.finder.optional</key>
+	<string>You can set this up later. Compression and extraction remain available in ArcZip.</string>
+	<key>onboarding.v2.finder.step1</key>
+	<string>Click “Open System Settings”.</string>
+	<key>onboarding.v2.finder.step2</key>
+	<string>Turn on “File Providers” in the page that opens.</string>
+	<key>onboarding.v2.finder.title</key>
+	<string>Enable Finder menu items</string>
+	<key>onboarding.v2.finish</key>
+	<string>Start using ArcZip</string>
+	<key>onboarding.v2.mini.browse</key>
+	<string>Browse files and folders</string>
+	<key>onboarding.v2.mini.choice</key>
+	<string>Open archives in ArcZip Mini by default</string>
+	<key>onboarding.v2.mini.choice_detail</key>
+	<string>Fully featured, quick to use, with fewer interruptions.</string>
+	<key>onboarding.v2.mini.detail</key>
+	<string>ArcZip Mini gives you a quick look inside. Expand to the workspace when you need more.</string>
+	<key>onboarding.v2.mini.drag</key>
+	<string>Drag to extract</string>
+	<key>onboarding.v2.mini.preview</key>
+	<string>Preview with ease</string>
+	<key>onboarding.v2.mini.title</key>
+	<string>ArcZip Mini</string>
+	<key>onboarding.v2.mini.workspace</key>
+	<string>Full workspace anytime</string>
+	<key>onboarding.v2.next</key>
+	<string>Next</string>
+	<key>onboarding.v2.pro.activate</key>
+	<string>Already purchased? Activate</string>
+	<key>onboarding.v2.pro.active</key>
+	<string>ArcZip Pro is activated</string>
+	<key>onboarding.v2.pro.box</key>
+	<string>The complete file box</string>
+	<key>onboarding.v2.pro.box_detail</key>
+	<string>Quickly compress, extract, open archives or share files.</string>
+	<key>onboarding.v2.pro.detail</key>
+	<string>From a clearer preview to your next step.</string>
+	<key>onboarding.v2.pro.edit</key>
+	<string>Edit existing archives</string>
+	<key>onboarding.v2.pro.edit_detail</key>
+	<string>Add, delete, replace or rename files inside an archive, then save your changes.</string>
+	<key>onboarding.v2.pro.feature_eyebrow</key>
+	<string>ArcZip Pro feature</string>
+	<key>onboarding.v2.pro.flow</key>
+	<string>All Flow features</string>
+	<key>onboarding.v2.pro.flow_detail</key>
+	<string>Install apps and fonts, or send files to another app in one step.</string>
+	<key>onboarding.v2.pro.free</key>
+	<string>Opening and extraction are free. Try Pro for 7 days without signup or payment details.</string>
+	<key>onboarding.v2.pro.hover</key>
+	<string>Hover preview</string>
+	<key>onboarding.v2.pro.hover_detail</key>
+	<string>Hover to preview images and documents without opening each file.</string>
+	<key>onboarding.v2.pro.next_feature</key>
+	<string>Next feature</string>
+	<key>onboarding.v2.pro.previous_feature</key>
+	<string>Previous feature</string>
+	<key>onboarding.v2.pro.purchase</key>
+	<string>Buy ArcZip Pro</string>
+	<key>onboarding.v2.pro.purchase_or_trial</key>
+	<string>Buy or try ArcZip Pro</string>
+	<key>onboarding.v2.pro.purpose</key>
+	<string>More compression options</string>
+	<key>onboarding.v2.pro.purpose_detail</key>
+	<string>Choose settings for sharing, smaller archives, encryption and split volumes.</string>
+	<key>onboarding.v2.pro.search</key>
+	<string>File search</string>
+	<key>onboarding.v2.pro.search_detail</key>
+	<string>Find files by name or path without opening folders one by one.</string>
+	<key>onboarding.v2.pro.trial</key>
+	<string>Start 7-day trial</string>
+	<key>onboarding.v2.pro.trial_ended</key>
+	<string>Trial ended</string>
+	<key>onboarding.v2.pro.trial_used</key>
+	<string>Trial ended. Free features remain available.</string>
+	<key>onboarding.v2.setup_guide</key>
+	<string>Getting started</string>
+	<key>onboarding.v2.skip</key>
+	<string>Skip</string>
+	<key>onboarding.v2.step.associations</key>
+	<string>File associations</string>
+	<key>onboarding.v2.step.box</key>
+	<string>Box</string>
+	<key>onboarding.v2.step.complete</key>
+	<string>Ready</string>
+	<key>onboarding.v2.step.fileAccess</key>
+	<string>File access</string>
+	<key>onboarding.v2.step.finder</key>
+	<string>Finder actions</string>
+	<key>onboarding.v2.step.mini</key>
+	<string>Mini</string>
+	<key>onboarding.v2.step.pro</key>
+	<string>ArcZip Pro</string>
+	<key>onboarding.v2.step.welcome</key>
+	<string>Welcome</string>
+	<key>onboarding.v2.welcome.archives</key>
+	<string>Browse &amp; extract</string>
+	<key>onboarding.v2.welcome.box</key>
+	<string>Collect files</string>
+	<key>onboarding.v2.welcome.detail</key>
+	<string>A fresh Mac archive experience</string>
+	<key>onboarding.v2.welcome.mini</key>
+	<string>A lighter Mini</string>
+	<key>onboarding.v2.welcome.title</key>
+	<string>Welcome to ArcZip</string>
+	<key>operation.cancelled</key>
+	<string>Operation Cancelled</string>
+	<key>operation.checking</key>
+	<string>Checking Archive</string>
+	<key>operation.completed</key>
+	<string>Completed</string>
+	<key>operation.compressing</key>
+	<string>Compressing</string>
+	<key>operation.extracting</key>
+	<string>Extracting</string>
+	<key>operation.failed</key>
+	<string>Operation Failed</string>
+	<key>operation.preparing</key>
+	<string>Preparing</string>
+	<key>password.input.help</key>
+	<string>Show the password to use Chinese, Japanese or other input methods with composition. You can also paste a password.</string>
+	<key>password.input_notice.do_not_show_again</key>
+	<string>Don't Show Again</string>
+	<key>password.input_notice.message</key>
+	<string>To enter a password in Chinese or another language, click the eye button to show its contents before typing. You can also paste a password.</string>
+	<key>password.input_notice.title</key>
+	<string>Entering Non-English Passwords</string>
+	<key>password_book.archive.multiple</key>
+	<string>This archive uses multiple passwords. ArcZip matches them when reading its contents.</string>
+	<key>password_book.extraction.partial</key>
+	<string>Extraction Partially Completed</string>
+	<key>password_book.extraction.skipped</key>
+	<string>Available contents extracted; %d files skipped. The source archive was kept.</string>
+	<key>password_book.group.message</key>
+	<string>These files share one password. Skipping leaves this group unextracted; other unlocked contents remain available.</string>
+	<key>password_book.group.skip</key>
+	<string>Skip This Group</string>
+	<key>password_book.group.title</key>
+	<string>Enter the password for “%@” and its group of %d files</string>
+	<key>password_book.member.message</key>
+	<string>The available passwords could not unlock this file. Other unlocked contents remain available.</string>
+	<key>password_book.member.skip</key>
+	<string>Skip This File</string>
+	<key>password_book.member.title</key>
+	<string>Enter the password for “%@”</string>
+	<key>password_book.pro_description</key>
+	<string>Automatic saving, automatic unlocking, password presets and password protection are included in ArcZip Pro. Saved records are kept; manually entering a password to open and extract archives remains free.</string>
+	<key>password_book.records.count</key>
+	<string>%lld saved passwords</string>
+	<key>password_book.settings.loading</key>
+	<string>Loading Password Book…</string>
+	<key>password_book.settings.locked</key>
+	<string>Password Book is locked</string>
+	<key>password_book.settings.protection.detail</key>
+	<string>Protect your password book with an independent password, with Touch ID or Apple Watch for quick unlock when available.</string>
+	<key>password_book.settings.records</key>
+	<string>Saved Passwords</string>
+	<key>password_book.settings.records.detail</key>
+	<string>Save passwords to unlock or create archives more easily.</string>
+	<key>password_book.settings.saving</key>
+	<string>Automatic Saving</string>
+	<key>password_book.settings.saving.detail</key>
+	<string>Save the password after successfully unlocking or creating an encrypted archive.</string>
+	<key>password_book.settings.security</key>
+	<string>Security</string>
+	<key>password_book.settings.unlock.detail</key>
+	<string>Automatically try saved passwords when opening encrypted archives.</string>
+	<key>password_book.unnamed</key>
+	<string>Password %lld</string>
+	<key>preview.read_only</key>
+	<string>Read-Only Preview</string>
+	<key>progress.queue.collapse</key>
+	<string>Collapse</string>
+	<key>progress.queue.expand</key>
+	<string>Expand</string>
+	<key>progress.queue.failed</key>
+	<string>Failed: %lld</string>
+	<key>progress.queue.other</key>
+	<string>Other tasks: %lld</string>
+	<key>progress.queue.running</key>
+	<string>Other active tasks: %lld</string>
+	<key>progress.queue.waiting</key>
+	<string>Waiting: %lld</string>
+	<key>progress.queue.waiting_extract</key>
+	<string>Waiting to extract: %lld</string>
+	<key>release_overview.122.compression.detail</key>
+	<string>The unified compression pipeline spends less time recompressing low-gain content such as some videos, while better identifying data that can still shrink. Some videos, design assets and mixed-file workloads benefit from faster processing or smaller archives.</string>
+	<key>release_overview.122.compression.title</key>
+	<string>More Efficient Compression</string>
+	<key>release_overview.122.exfat.detail</key>
+	<string>Fixed some archives incorrectly reporting extraction failure on exFAT external drives when auxiliary files were cleaned up. Cleanup and result checks also preserve explicitly selected files and normal contents inside App bundles.</string>
+	<key>release_overview.122.exfat.title</key>
+	<string>Better Extraction on exFAT Disks</string>
+	<key>release_overview.122.save.detail</key>
+	<string>After compressing or collecting items into a folder, save the result directly to a chosen location. ArcZip remembers the last location, supports saving across disks and numbers conflicting names automatically. This action is free to use.</string>
+	<key>release_overview.122.save.title</key>
+	<string>Save To in File Box</string>
+	<key>release_overview.122.split.detail</key>
+	<string>Split ZIP and 7Z archives evenly into 2–999 volumes, or choose a common volume size or your own custom size to suit more situations.</string>
+	<key>release_overview.122.split.title</key>
+	<string>Split Archives by Volume Count</string>
+	<key>release_overview.changelog</key>
+	<string>Full Release Notes</string>
+	<key>release_overview.continue</key>
+	<string>Get Started</string>
+	<key>release_overview.subtitle</key>
+	<string>Fewer repeated steps. A little easier to use.</string>
+	<key>release_overview.title</key>
+	<string>Update Overview</string>
+	<key>services.destination_unwritable.choose</key>
+	<string>Choose Another Folder…</string>
+	<key>services.destination_unwritable.message</key>
+	<string>Choose another folder for the extracted files. The source file will remain unchanged.</string>
+	<key>services.destination_unwritable.title</key>
+	<string>Cannot write to this location</string>
+	<key>settings.about.licenses.button</key>
+	<string>View Open Source Licenses</string>
+	<key>settings.about.licenses.description</key>
+	<string>Thanks to these open source projects. Original copyright notices and license texts follow.</string>
+	<key>settings.about.licenses.project</key>
+	<string>Project Website</string>
+	<key>settings.about.licenses.title</key>
+	<string>Open Source Licenses</string>
+	<key>settings.about.licenses.unavailable</key>
+	<string>Could not load the open source licenses. Please reopen this window.</string>
+	<key>settings.about.menu</key>
+	<string>About ArcZip</string>
+	<key>settings.about.title</key>
+	<string>About</string>
+	<key>settings.about.version</key>
+	<string>Current Version</string>
+	<key>settings.advanced.subtitle</key>
+	<string>Manage temporary files and preferences</string>
+	<key>settings.browsing.auxiliary.short</key>
+	<string>Show normally hidden system metadata</string>
+	<key>settings.browsing.hover.short</key>
+	<string>Show file previews when the pointer rests over them</string>
+	<key>settings.browsing.hover.video</key>
+	<string>Play videos in hover previews</string>
+	<key>settings.browsing.hover.video.detail</key>
+	<string>Supports MP4, MOV, M4V and more; some codecs or files cannot be previewed</string>
+	<key>settings.browsing.hover.video.limit</key>
+	<string>Maximum audio/video size</string>
+	<key>settings.browsing.hover.video.range</key>
+	<string>10 MB, 50 MB, 100 MB, 500 MB, 1 GB or 2 GB, based on uncompressed size, including the limit</string>
+	<key>settings.browsing.title</key>
+	<string>Browsing</string>
+	<key>settings.cache.calculating</key>
+	<string>Calculating…</string>
+	<key>settings.cache.clean</key>
+	<string>Clean Up</string>
+	<key>settings.cache.cleaning</key>
+	<string>Cleaning…</string>
+	<key>settings.cache.detail</key>
+	<string>Remove unused temporary files while keeping files in use and your originals.</string>
+	<key>settings.cache.size</key>
+	<string>Temporary files available to remove</string>
+	<key>settings.cache.title</key>
+	<string>Temporary files</string>
+	<key>settings.compression.default_format</key>
+	<string>Default format: %@. You can change it for each archive.</string>
+	<key>settings.compression.defaults.description</key>
+	<string>Choose the default preset, format and compression level for new archives.</string>
+	<key>settings.compression.defaults.detail</key>
+	<string>Each preset saves its own format and compression level.</string>
+	<key>settings.compression.defaults.title</key>
+	<string>Default Preset, Format &amp; Compression Level</string>
+	<key>settings.compression.format.short</key>
+	<string>Default format: %@</string>
+	<key>settings.compression.format.title</key>
+	<string>Default Archive Format</string>
+	<key>settings.compression.purpose.action</key>
+	<string>Default Purpose: %@</string>
+	<key>settings.compression.purpose.general.subtitle</key>
+	<string>Compatibility &amp; efficiency</string>
+	<key>settings.compression.purpose.general.title</key>
+	<string>General</string>
+	<key>settings.compression.purpose.mac.subtitle</key>
+	<string>Keep Mac support files</string>
+	<key>settings.compression.purpose.mac.title</key>
+	<string>Mac to Mac</string>
+	<key>settings.compression.purpose.smallest.subtitle</key>
+	<string>Prioritize smaller archives</string>
+	<key>settings.compression.purpose.smallest.title</key>
+	<string>Smallest Size</string>
+	<key>settings.compression.purpose.unix.subtitle</key>
+	<string>Unix directory archives</string>
+	<key>settings.compression.purpose.unix.title</key>
+	<string>Linux &amp; Servers</string>
+	<key>settings.compression.purpose.windows.subtitle</key>
+	<string>Cross-platform friendly</string>
+	<key>settings.compression.purpose.windows.title</key>
+	<string>Windows</string>
+	<key>settings.compression.strength.action</key>
+	<string>Default Level: %@</string>
+	<key>settings.compression.title</key>
+	<string>Compression</string>
+	<key>settings.cpu.single_core</key>
+	<string>%@ Core</string>
+	<key>settings.extraction.auxiliary.short</key>
+	<string>Filter metadata created by macOS and Windows</string>
+	<key>settings.extraction.dmg.short</key>
+	<string>Filter hidden layout files and the Applications shortcut</string>
+	<key>settings.extraction.filtering.short</key>
+	<string>Explicit selections, user dotfiles and app bundle contents are preserved.</string>
+	<key>settings.extraction.filtering_help</key>
+	<string>System files include __MACOSX, AppleDouble, .DS_Store, Thumbs.db, desktop.ini, and volume indexes. This filter keeps configuration files such as .gitignore and .env. The DMG filter also skips hidden items and Applications shortcuts. Explicitly selected support files or folders and files inside apps are kept.</string>
+	<key>settings.extraction.title</key>
+	<string>Extraction</string>
+	<key>settings.file_associations.title</key>
+	<string>File Associations</string>
+	<key>settings.finder.mobile_monitoring.confirm.enable</key>
+	<string>Enable Monitoring</string>
+	<key>settings.finder.mobile_monitoring.confirm.message</key>
+	<string>Enabling monitoring may change external device icons in Finder to the ArcZip icon. This is caused by macOS’s Finder extension behavior, not an ArcZip bug.
+
+You can turn monitoring off at any time. ArcZip remains available from the Services context menu.</string>
+	<key>settings.finder.mobile_monitoring.confirm.title</key>
+	<string>Enable External Storage Monitoring?</string>
+	<key>settings.finder.mobile_monitoring.detail</key>
+	<string>Show Finder context menus for files on external drives and removable storage</string>
+	<key>settings.finder.mobile_monitoring.title</key>
+	<string>Enable Context Menus on External Storage</string>
+	<key>settings.finder.subtitle</key>
+	<string>Manage ArcZip’s Finder integration and context menus</string>
+	<key>settings.general.title</key>
+	<string>General</string>
+	<key>settings.heading</key>
+	<string>Settings</string>
+	<key>settings.hover.audio.autoplay</key>
+	<string>Automatically play audio</string>
+	<key>settings.hover.audio.autoplay.detail</key>
+	<string>Play audio after hovering. Turn off to start playback manually</string>
+	<key>settings.hover.enabled</key>
+	<string>Enable hover previews</string>
+	<key>settings.hover.locked.detail</key>
+	<string>Takes effect automatically when Pro is activated</string>
+	<key>settings.hover.subtitle</key>
+	<string>Configure file hover previews and media playback</string>
+	<key>settings.hover.title</key>
+	<string>Hover Preview</string>
+	<key>settings.hover.video.muted</key>
+	<string>Mute video previews</string>
+	<key>settings.hover.video.muted.detail</key>
+	<string>Muted by default. Turn off to play video audio</string>
+	<key>settings.language.detail</key>
+	<string>Follow the system language, or choose a language for ArcZip.</string>
+	<key>settings.language.restart</key>
+	<string>Restart ArcZip</string>
+	<key>settings.language.restart_detail</key>
+	<string>Restart ArcZip to apply your language choice. Save your changes first.</string>
+	<key>settings.language.restart_failed.detail</key>
+	<string>ArcZip will stay open. Try again later, or quit and reopen ArcZip manually.</string>
+	<key>settings.language.restart_failed.title</key>
+	<string>Could Not Restart ArcZip</string>
+	<key>settings.language.section</key>
+	<string>Language</string>
+	<key>settings.language.system</key>
+	<string>System Default</string>
+	<key>settings.language.title</key>
+	<string>App Language</string>
+	<key>settings.launch_at_login.approval</key>
+	<string>Allow ArcZip in System Settings → Login Items</string>
+	<key>settings.launch_at_login.section</key>
+	<string>Startup</string>
+	<key>settings.launch_at_login.title</key>
+	<string>Launch ArcZip at login</string>
+	<key>settings.menu.title</key>
+	<string>Settings…</string>
+	<key>settings.mini.behavior.title</key>
+	<string>Opening and Appearance</string>
+	<key>settings.mini.colored_controls</key>
+	<string>Use Colored Window Controls</string>
+	<key>settings.mini.colored_controls.detail</key>
+	<string>Turn off for neutral buttons. A pinned button and its ring still use light blue.</string>
+	<key>settings.mini.liquid_glass</key>
+	<string>Use Liquid Glass</string>
+	<key>settings.mini.liquid_glass.detail</key>
+	<string>Turn off to use classic frosted glass. Applies immediately to Mini windows.</string>
+	<key>settings.mini.liquid_glass.unavailable</key>
+	<string>Requires macOS 26 or later</string>
+	<key>settings.mini.open.detail.short</key>
+	<string>Use Mini when opening archives from Finder</string>
+	<key>settings.mini.open.short</key>
+	<string>Open in ArcZip Mini by Default</string>
+	<key>settings.mini.subtitle</key>
+	<string>Choose how Mini windows open and look</string>
+	<key>settings.password.reveal.short</key>
+	<string>Use the eye button to hide it at any time</string>
+	<key>settings.password.reveal_by_default</key>
+	<string>Show Passwords by Default</string>
+	<key>settings.password.reveal_by_default.detail</key>
+	<string>Makes it easier to enter non-English passwords, including Chinese and Japanese, and use input method candidates. Passwords will be visible; you can still hide them using the eye button.</string>
+	<key>settings.password.subtitle</key>
+	<string>Choose how new password fields initially display their contents.</string>
+	<key>settings.password.title</key>
+	<string>Password Input</string>
+	<key>settings.pro.entry.detail</key>
+	<string>Unlock more.</string>
+	<key>settings.pro.entry.manage</key>
+	<string>Manage License</string>
+	<key>settings.pro.entry.status.activated</key>
+	<string>Active</string>
+	<key>settings.pro.entry.status.inactive</key>
+	<string>Inactive</string>
+	<key>settings.pro.entry.status.trial</key>
+	<string>Trial</string>
+	<key>settings.progress.keep_on_top</key>
+	<string>Keep on Top</string>
+	<key>settings.progress.title</key>
+	<string>Progress Window</string>
+	<key>settings.welcome.short</key>
+	<string>View the introduction again without resetting settings</string>
+	<key>shelf.pin</key>
+	<string>Keep Box Open</string>
+	<key>shelf.unpin</key>
+	<string>Stop Keeping Box Open</string>
+	<key>update.not_checked</key>
+	<string>Updates not checked yet</string>
+	<key>view.columns</key>
+	<string>Columns</string>
+	<key>view.icons</key>
+	<string>Icons</string>
+	<key>view.list</key>
+	<string>List</string>
+	<key>·</key>
+	<string>·</string>
+	<key>”</key>
+	<string>”</string>
+	<key>”。继续安装会使用压缩包中的字体替换它。</key>
+	<string>”. Continuing will replace it with the font from the archive.</string>
+	<key>”的密码。</key>
+	<string>”.</string>
+	<key>”，已将它从最近打开中移除。</key>
+	<string>”; it was removed from Open Recent.</string>
+	<key>•</key>
+	<string>•</string>
+	<key>。系统返回：</key>
+	<string>. System response: </string>
+	<key>。继续安装会使用压缩包中的版本替换它。</key>
+	<string>. Continuing will replace it with the version from the archive.</string>
+	<key>。请选择将内容合并到现有文件夹，还是同时保留为新的文件夹。</key>
+	<string>. Choose whether to merge it into the existing folder or keep it as a separate folder.</string>
+	<key>一切就绪</key>
+	<string>All Set</string>
+	<key>上一级</key>
+	<string>Up One Level</string>
+	<key>不再提示</key>
+	<string>Don't Show Again</string>
+	<key>不可直接操作</key>
+	<string>Cannot Operate Directly</string>
+	<key>不同意</key>
+	<string>Decline</string>
+	<key>不开启</key>
+	<string>Do not enable</string>
+	<key>不支持的压缩格式：</key>
+	<string>Unsupported archive format: </string>
+	<key>不支持的特殊文件</key>
+	<string>Unsupported special file</string>
+	<key>两次输入的密码不一致</key>
+	<string>Passwords Do Not Match</string>
+	<key>主工作区的“显示辅助文件”只影响浏览。明确选中辅助文件或辅助目录导出时会保留；.gitignore、.env 等用户文件不会被当作辅助文件。应用程序包内部保持原样，以免破坏签名。</key>
+	<string>Display settings do not affect extraction. Explicitly selected support files are kept.</string>
+	<key>了解</key>
+	<string>Got It</string>
+	<key>交给 macOS 打开此应用</key>
+	<string>Open this application with macOS</string>
+	<key>仅 ZIP 和 7Z 支持分卷</key>
+	<string>Only ZIP and 7Z support split volumes.</string>
+	<key>仅在你信任压缩包来源时继续。</key>
+	<string>Continue only if you trust the archive source.</string>
+	<key>仅打包</key>
+	<string>Store Only</string>
+	<key>仅打包，不压缩</key>
+	<string>Store without compression</string>
+	<key>仅支持安装 OTF、TTF 和 TTC 字体</key>
+	<string>Use OTF, TTF, or TTC fonts.</string>
+	<key>仅有临时（ad-hoc）签名，无法确认发布者。</key>
+	<string>has only an ad-hoc signature; the publisher cannot be verified.</string>
+	<key>今天 </key>
+	<string>Today </string>
+	<key>仍要安装</key>
+	<string>Install Anyway</string>
+	<key>仍要打开</key>
+	<string>Open Anyway</string>
+	<key>从 Finder 或 Quick Look 使用 ArcZip 打开时优先进入 Mini 窗口</key>
+	<string>Prefer the Mini window when opening with ArcZip from Finder or Quick Look</string>
+	<key>从 Finder 或 Quick Look 使用 ArcZip 打开时，先进入独立 Mini 窗口而不是完整工作区</key>
+	<string>Use Mini when opening archives from Finder or Quick Look.</string>
+	<key>从压缩包安装 macOS 应用</key>
+	<string>Install macOS apps from archives.</string>
+	<key>从暂存架移除</key>
+	<string>Remove from Shelf</string>
+	<key>从最近打开中移除</key>
+	<string>Remove from Open Recent</string>
+	<key>从最近打开中移除 </key>
+	<string>Remove from Open Recent: </string>
+	<key>以 RAR 封装的漫画归档</key>
+	<string>RAR-based comic archives</string>
+	<key>以下项目无法安全加入压缩包。你可以取消操作，或者选择“全部跳过并继续”来压缩其余项目。</key>
+	<string>These items cannot be archived safely. Skip them to continue.</string>
+	<key>以只读方式挂载并浏览光盘与文件系统镜像</key>
+	<string>Mount and browse optical disc and file-system images read-only</string>
+	<key>以只读方式浏览磁盘映像，并快速安装其中的 macOS 应用</key>
+	<string>Browse disk images read-only and quickly install macOS apps</string>
+	<key>以后再说</key>
+	<string>Not now</string>
+	<key>任务已取消，文件仍在暂存架</key>
+	<string>Cancelled. Your files remain on the shelf.</string>
+	<key>任务队列处理中</key>
+	<string>Task Queue Processing</string>
+	<key>优先体积，跳过明确低收益压缩</key>
+	<string>Favor smaller archives; store files with little compression benefit.</string>
+	<key>优先减小压缩包体积</key>
+	<string>Prioritize a smaller archive</string>
+	<key>优先速度，积极跳过低收益压缩</key>
+	<string>Favor speed; store files that compress poorly.</string>
+	<key>优化跨平台使用</key>
+	<string>Optimized for cross-platform use</string>
+	<key>会与同一文件夹中的其他项目重名</key>
+	<string>This would duplicate another item in the same folder</string>
+	<key>会替代 Java 启动器；ArcZip 仅预览和解压</key>
+	<string>Replaces the Java launcher as the default app. ArcZip only previews and extracts.</string>
+	<key>会替代系统“安装器”打开 PKG；ArcZip 仅预览和解压</key>
+	<string>Replaces Installer as the default app. ArcZip only previews and extracts.</string>
+	<key>传统 ARJ 压缩包</key>
+	<string>Legacy ARJ archive</string>
+	<key>传统 LHA 系列压缩包</key>
+	<string>Legacy LHA archive</string>
+	<key>你可以浏览文件列表，但预览或解压缩需要密码。点击此按钮输入密码，即可解锁并显示预览。</key>
+	<string>Browse the file list freely. Click the lock to enter a password for previewing or extracting.</string>
+	<key>你的选择仅用于本次打开；ArcZip 不会替你自动接受或保存协议选择。</key>
+	<string>Your choice applies only to this opening; ArcZip will not accept or save the agreement choice for you.</string>
+	<key>使用 TAR 归档</key>
+	<string>Use TAR archiving</string>
+	<key>使用 Touch ID</key>
+	<string>Use Touch ID</string>
+	<key>使用 Touch ID 或独立的密码本密码。Mac 登录密码不能代替密码本密码。</key>
+	<string>Use Touch ID or your separate Password Book password. Your Mac login password cannot unlock Password Book.</string>
+	<key>使用了 Windows 保留的设备名称</key>
+	<string>Uses a Windows reserved device name</string>
+	<key>使用密码</key>
+	<string>Use Password</string>
+	<key>使用密码保护</key>
+	<string>Protect with Password</string>
+	<key>使用密码保护密码本</key>
+	<string>Protect Password Book with a Password</string>
+	<key>使用当前设置创建压缩包</key>
+	<string>Create Archive with Current Settings</string>
+	<key>使用推荐设置</key>
+	<string>Use Recommended Defaults</string>
+	<key>使用这些名称并继续</key>
+	<string>Use These Names and Continue</string>
+	<key>使用通用文件名编码</key>
+	<string>Use general filename encoding</string>
+	<key>例如安装应用、安装字体或安全打开安装包。</key>
+	<string>For example, install an app or font, or safely open an installer package.</string>
+	<key>保存</key>
+	<string>Save</string>
+	<key>保存修改</key>
+	<string>Save Changes</string>
+	<key>保存加密压缩包</key>
+	<string>Save Encrypted Archive</string>
+	<key>保存压缩包内容修改</key>
+	<string>Save Archive Changes</string>
+	<key>保存完成</key>
+	<string>Saved</string>
+	<key>保存成功前不会修改原压缩包</key>
+	<string>The original archive stays unchanged until save succeeds</string>
+	<key>保存此密码</key>
+	<string>Save this password</string>
+	<key>保留 macOS 文件信息</key>
+	<string>Preserve macOS File Information</string>
+	<key>保留 macOS 辅助文件</key>
+	<string>Keep Mac support files</string>
+	<key>保留目录结构与 Unix 文件属性</key>
+	<string>Preserve directory structure and Unix file attributes</string>
+	<key>修改仅应用于当前选中的用途</key>
+	<string>Applies to the selected preset.</string>
+	<key>修改密码…</key>
+	<string>Change Password…</string>
+	<key>修改密码本密码</key>
+	<string>Change Password Book Password</string>
+	<key>修改日期</key>
+	<string>Modified</string>
+	<key>修改时间</key>
+	<string>Modified</string>
+	<key>修改此记录不会更改已有压缩包的密码。</key>
+	<string>Editing this entry does not change the passwords of existing archives.</string>
+	<key>修改现有压缩包内容</key>
+	<string>Modify Existing Archive</string>
+	<key>修改磁盘映像</key>
+	<string>Modify Disk Image</string>
+	<key>修正文件名并继续</key>
+	<string>Fix Names and Continue</string>
+	<key>偏好设置</key>
+	<string>Preferences</string>
+	<key>允许打开的文件格式</key>
+	<string>Enabled Formats</string>
+	<key>全部取消</key>
+	<string>Deselect All</string>
+	<key>全部可用（%@）</key>
+	<string>All Available (%@)</string>
+	<key>全部拷贝</key>
+	<string>Copy All</string>
+	<key>全部解压</key>
+	<string>Extract All</string>
+	<key>全部跳过并继续</key>
+	<string>Skip All and Continue</string>
+	<key>共 </key>
+	<string>Total </string>
+	<key>关联状态</key>
+	<string>Association Status</string>
+	<key>关闭</key>
+	<string>Close</string>
+	<key>关闭保护…</key>
+	<string>Turn off protection…</string>
+	<key>关闭密码本保护</key>
+	<string>Turn off Password Book protection</string>
+	<key>关闭工作区</key>
+	<string>Close</string>
+	<key>关闭自动保存不会删除已有密码，已有密码仍可用于解锁和创建压缩包。</key>
+	<string>Turning off automatic saving keeps existing passwords available for unlocking and creating archives.</string>
+	<key>兼顾兼容性与效率</key>
+	<string>Balance Compatibility and Efficiency</string>
+	<key>内容过滤</key>
+	<string>Content Filtering</string>
+	<key>内层容器没有生成可读取的文件</key>
+	<string>Nested file unavailable.</string>
+	<key>再次输入密码</key>
+	<string>Re-enter Password</string>
+	<key>再次输入密码本密码</key>
+	<string>Confirm Password Book password</string>
+	<key>冲突项目：</key>
+	<string>Conflicting item: </string>
+	<key>准备</key>
+	<string>Preparing</string>
+	<key>准备 </key>
+	<string>Preparing </string>
+	<key>准备加密压缩包中的安装包</key>
+	<string>Preparing the installer package from the encrypted archive</string>
+	<key>准备文件</key>
+	<string>Preparing Files</string>
+	<key>准备暂存区</key>
+	<string>Preparing Staging Area</string>
+	<key>准备解压缩</key>
+	<string>Preparing</string>
+	<key>准备解压缩应用</key>
+	<string>Preparing</string>
+	<key>出于安全原因无法显示内容</key>
+	<string>Content Cannot Be Displayed for Security Reasons</string>
+	<key>分享</key>
+	<string>Share</string>
+	<key>分卷写入未读取到完整的压缩结果</key>
+	<string>The complete archive could not be read while splitting.</string>
+	<key>分卷压缩</key>
+	<string>Split Volumes</string>
+	<key>分卷压缩包</key>
+	<string>Split Archives</string>
+	<key>分卷大小与计划不一致</key>
+	<string>The volume size does not match the split plan.</string>
+	<key>分卷大小超过指定上限，未发布压缩包</key>
+	<string>A volume exceeds the requested size. The archive was not published.</string>
+	<key>分卷数量必须为 2 至 999</key>
+	<string>Volume count must be between 2 and 999.</string>
+	<key>分卷数量超过支持范围，未发布压缩包</key>
+	<string>Too many volumes. The archive was not published.</string>
+	<key>分栏</key>
+	<string>Columns</string>
+	<key>分栏视图</key>
+	<string>Column View</string>
+	<key>列表</key>
+	<string>List</string>
+	<key>列表视图</key>
+	<string>List View</string>
+	<key>创建 </key>
+	<string>Create </string>
+	<key>创建中的压缩包不能解压</key>
+	<string>An Archive Being Created Cannot Be Extracted</string>
+	<key>创建压缩包</key>
+	<string>Create Archive</string>
+	<key>创建基础 ZIP 压缩包</key>
+	<string>Create Basic ZIP Archive</string>
+	<key>创建完成</key>
+	<string>Creation Complete</string>
+	<key>创建磁盘映像</key>
+	<string>Create Disk Image</string>
+	<key>删除</key>
+	<string>Delete</string>
+	<key>删除后，再次打开相关压缩包可能需要重新输入密码。</key>
+	<string>You may need to enter this password again when opening an archive that uses it.</string>
+	<key>删除所选项目</key>
+	<string>Delete Selected Items</string>
+	<key>删除此密码？</key>
+	<string>Delete this password?</string>
+	<key>刷新</key>
+	<string>Refresh</string>
+	<key>前进</key>
+	<string>Forward</string>
+	<key>加密</key>
+	<string>Encryption</string>
+	<key>加密文件名</key>
+	<string>Encrypt File Names</string>
+	<key>包内搜索</key>
+	<string>Search archive</string>
+	<key>包内搜索属于 ArcZip Pro</key>
+	<string>Archive search requires ArcZip Pro</string>
+	<key>包含</key>
+	<string>Contains</string>
+	<key>包含同名记录</key>
+	<string>Contains duplicate records</string>
+	<key>包含扩展属性与辅助元数据</key>
+	<string>Includes extended attributes and auxiliary metadata</string>
+	<key>单击选择，双击打开，或拖出以解压</key>
+	<string>Click to select, double-click to open, or drag out to extract</string>
+	<key>单击选择；完整文件索引完成后可预览或解压</key>
+	<string>Click to select; preview or extract after indexing completes</string>
+	<key>单文件 LZMA 压缩流</key>
+	<string>Single-file LZMA stream</string>
+	<key>单文件 Lzip 压缩流</key>
+	<string>Single-file Lzip stream</string>
+	<key>压缩</key>
+	<string>Compress</string>
+	<key>压缩为“归档.zip”</key>
+	<string>Compress as “Archive.zip”</string>
+	<key>压缩为…</key>
+	<string>Compress As…</string>
+	<key>压缩任务</key>
+	<string>Compression</string>
+	<key>压缩包</key>
+	<string>Archive</string>
+	<key>压缩包中只有已排除的系统辅助文件</key>
+	<string>The archive contains only excluded system auxiliary files</string>
+	<key>压缩包中没有可解压的内容</key>
+	<string>The archive contains no extractable content</string>
+	<key>压缩包中没有可解压的项目</key>
+	<string>The archive contains no extractable items</string>
+	<key>压缩包中没有项目</key>
+	<string>No Items in Archive</string>
+	<key>压缩包内的新名称</key>
+	<string>New name inside the archive</string>
+	<key>压缩包内路径：</key>
+	<string>Path in archive: </string>
+	<key>压缩包包含不安全路径：</key>
+	<string>The archive contains an unsafe path: </string>
+	<key>压缩包发布失败，ArcZip 已保留回滚记录：</key>
+	<string>Could not publish the archive. ArcZip retained the rollback record: </string>
+	<key>压缩包名称</key>
+	<string>Archive Name</string>
+	<key>压缩包已被其他应用修改</key>
+	<string>Archive Changed</string>
+	<key>压缩包已被其他应用修改，请重新载入或另存为</key>
+	<string>Archive changed. Reload or save a copy.</string>
+	<key>压缩包已解锁</key>
+	<string>Archive Unlocked</string>
+	<key>压缩包已锁定</key>
+	<string>Archive Locked</string>
+	<key>压缩包搜索结果</key>
+	<string>Archive Search Results</string>
+	<key>压缩包无效或已损坏：</key>
+	<string>The archive is invalid or damaged: </string>
+	<key>压缩包根目录</key>
+	<string>Archive Root</string>
+	<key>压缩包格式</key>
+	<string>Archive Format</string>
+	<key>压缩包概览</key>
+	<string>Archive Overview</string>
+	<key>压缩包详情</key>
+	<string>Archive Details</string>
+	<key>压缩完成</key>
+	<string>Compression Complete</string>
+	<key>压缩引擎失败：</key>
+	<string>The archive engine failed: </string>
+	<key>压缩强度</key>
+	<string>Compression Level</string>
+	<key>压缩格式</key>
+	<string>Archive Format</string>
+	<key>压缩流</key>
+	<string>Compressed Streams</string>
+	<key>压缩结果不是普通文件</key>
+	<string>The archive output is not a regular file.</string>
+	<key>压缩结果太小，无法生成指定数量的非空分卷</key>
+	<string>The compressed archive is too small for the requested number of nonempty volumes.</string>
+	<key>压缩设置</key>
+	<string>Compression Settings</string>
+	<key>原因：</key>
+	<string>Reason: </string>
+	<key>原始大小</key>
+	<string>Original Size</string>
+	<key>原密码本密码</key>
+	<string>Current Password Book password</string>
+	<key>发布原因：</key>
+	<string>Publication error: </string>
+	<key>取消</key>
+	<string>Cancel</string>
+	<key>取消打开</key>
+	<string>Cancel Opening</string>
+	<key>取消解压</key>
+	<string>Cancel Extraction</string>
+	<key>取消退出</key>
+	<string>Cancel</string>
+	<key>另一个项目在大小写或 Unicode 规范化后会落到相同位置；同时保存可能在解压时覆盖数据。</key>
+	<string>Conflicting names could overwrite files during extraction.</string>
+	<key>只修改压缩包内的副本，源文件名称不会改变</key>
+	<string>Only the copies inside the archive will be renamed; source filenames will not change</string>
+	<key>只有文件类型的压缩包或磁盘映像可以继续打开</key>
+	<string>Only archives and disk images can be opened.</string>
+	<key>只有明确选中的格式才会显示“打开文件” Flow</key>
+	<string>Show Open File for the selected formats.</string>
+	<key>只读</key>
+	<string>Read Only</string>
+	<key>只读打开</key>
+	<string>Open Read-Only</string>
+	<key>只读预览</key>
+	<string>Read-Only Preview</string>
+	<key>可在路径栏中显示这些项目</key>
+	<string>Show these items in the path bar</string>
+	<key>可浏览预览 · 后台已索引 </key>
+	<string>Preview available · indexed in background </string>
+	<key>可浏览预览 · 正在完成 </key>
+	<string>Preview available · finishing </string>
+	<key>可浏览预览 · 正在完成文件索引</key>
+	<string>Preview available · finishing file index</string>
+	<key>可浏览预览 · 解压和搜索暂不可用</key>
+	<string>Preview is available · extraction and search are unavailable</string>
+	<key>可能包含安装脚本的软件包格式</key>
+	<string>Package formats that may contain install scripts</string>
+	<key>合并</key>
+	<string>Merge</string>
+	<key>同一文件夹中已存在“</key>
+	<string>The same folder already contains “</string>
+	<key>同一路径既需要作为文件存在，又需要作为其他项目的父目录，无法无损地同时保存。</key>
+	<string>A file and folder share this path; both cannot be saved.</string>
+	<key>同意并打开</key>
+	<string>Agree and Open</string>
+	<key>同时保留</key>
+	<string>Keep Both</string>
+	<key>同时覆盖 Bzip2 文件与 .tar.bz2</key>
+	<string>Covers Bzip2 files and .tar.bz2</string>
+	<key>同时覆盖 XZ 文件与 .tar.xz</key>
+	<string>Covers XZ files and .tar.xz</string>
+	<key>名称</key>
+	<string>Name</string>
+	<key>名称不能为空</key>
+	<string>The name cannot be empty</string>
+	<key>名称不能包含 NUL 字符</key>
+	<string>The name cannot contain NUL characters</string>
+	<key>名称不能包含“/”或“:”</key>
+	<string>The name cannot contain “/” or “:”</string>
+	<key>名称不能包含路径分隔符、父目录跳转或 NUL 字符</key>
+	<string>The name cannot contain path separators, parent-directory references, or NUL characters</string>
+	<key>名称包含 NUL，或路径使用绝对位置、父目录跳转等结构，无法在不越界或不损坏归档结构的前提下写入。</key>
+	<string>Unsafe name or path.</string>
+	<key>名称末尾的点在 Windows 中可能消失</key>
+	<string>The trailing period may disappear on Windows</string>
+	<key>名称末尾的空格在 Windows 中可能被删除</key>
+	<string>The trailing space may be removed on Windows</string>
+	<key>名称（可选）</key>
+	<string>Name (optional)</string>
+	<key>后台已索引 </key>
+	<string>Indexed in background </string>
+	<key>后退</key>
+	<string>Back</string>
+	<key>向右浏览最近文件</key>
+	<string>Browse recent files to the right</string>
+	<key>向左浏览最近文件</key>
+	<string>Browse recent files to the left</string>
+	<key>否</key>
+	<string>No</string>
+	<key>含有 Windows 不支持或不安全的字符</key>
+	<string>Contains characters that Windows does not support or that are unsafe</string>
+	<key>含有 Windows 不支持的字符</key>
+	<string>Contains characters that Windows does not support</string>
+	<key>命名管道不是静态文件；读取它可能一直等待其他进程写入，导致压缩任务无法结束。</key>
+	<string>Reading a named pipe may never finish.</string>
+	<key>命名管道（FIFO）</key>
+	<string>Named pipe (FIFO)</string>
+	<key>回到创建设置</key>
+	<string>Back to Creation Settings</string>
+	<key>图像</key>
+	<string>Images</string>
+	<key>图标</key>
+	<string>Icons</string>
+	<key>图标视图</key>
+	<string>Icon View</string>
+	<key>在 Finder 中显示</key>
+	<string>Show in Finder</string>
+	<key>在完整窗口中打开此压缩包会放弃当前暂存内容。Mini 窗口可以继续独立使用。</key>
+	<string>Opening this archive in the full window will discard the current staged content. The Mini window can continue independently.</string>
+	<key>在访达中显示</key>
+	<string>Show in Finder</string>
+	<key>均衡</key>
+	<string>Balanced</string>
+	<key>处理器使用</key>
+	<string>CPU Usage</string>
+	<key>处理完成，结果已放回暂存架</key>
+	<string>Done. Your results are on the shelf.</string>
+	<key>复制密码</key>
+	<string>Copy password</string>
+	<key>外观</key>
+	<string>Appearance</string>
+	<key>多项选择</key>
+	<string>Multiple Selection</string>
+	<key>大小</key>
+	<string>Size</string>
+	<key>套接字是进程间通信端点，不包含可恢复的文件内容，离开当前系统后也无法使用。</key>
+	<string>Sockets contain no restorable file data.</string>
+	<key>好</key>
+	<string>OK</string>
+	<key>字体安装完成</key>
+	<string>Font Installation Complete</string>
+	<key>存储位置</key>
+	<string>Storage Location</string>
+	<key>安全保存</key>
+	<string>Save Archive</string>
+	<key>安全准备后交给 macOS 安装器</key>
+	<string>Safely prepare, then hand off to the macOS Installer</string>
+	<key>安装 App 时移除应用根目录已有的下载隔离标记</key>
+	<string>Remove the app’s download quarantine flag during installation.</string>
+	<key>安装 PKG</key>
+	<string>Install PKG</string>
+	<key>安装临时签名的应用？</key>
+	<string>Install an Ad Hoc-Signed App?</string>
+	<key>安装到“应用程序”文件夹</key>
+	<string>Install to the Applications folder</string>
+	<key>安装到当前用户的字体库</key>
+	<string>Install to the current user's font library</string>
+	<key>安装加密压缩包中的字体</key>
+	<string>Install Font from Encrypted Archive</string>
+	<key>安装加密压缩包中的应用</key>
+	<string>Install App from Encrypted Archive</string>
+	<key>安装包</key>
+	<string>Installer Package</string>
+	<key>安装包路径无效</key>
+	<string>Invalid installer path.</string>
+	<key>安装字体</key>
+	<string>Install Font</string>
+	<key>安装完成</key>
+	<string>Installation Complete</string>
+	<key>安装应用</key>
+	<string>Install Application</string>
+	<key>安装应用？</key>
+	<string>Install Application?</string>
+	<key>安装未公证的应用？</key>
+	<string>Install an Unnotarized App?</string>
+	<key>安装未签名的应用？</key>
+	<string>Install an Unsigned App?</string>
+	<key>安装来源不明的应用？</key>
+	<string>Install an App from an Unknown Source?</string>
+	<key>安装目标不是应用程序目录</key>
+	<string>Invalid app bundle.</string>
+	<key>完成</key>
+	<string>Done</string>
+	<key>完成初始设置</key>
+	<string>Finish Setup</string>
+	<key>完成后自动验证完整性</key>
+	<string>Verify integrity automatically when finished</string>
+	<key>完整文件索引完成后即可拖出或解压</key>
+	<string>Drag out or extract after the full file index is ready</string>
+	<key>完整文件索引完成后即可搜索</key>
+	<string>Search after the full file index is ready</string>
+	<key>完整窗口中有尚未保存的更改</key>
+	<string>There are unsaved changes in the full window</string>
+	<key>完整索引完成前暂不能搜索、预览、拖出或解压</key>
+	<string>Search, preview, drag-out and extraction are unavailable until indexing completes</string>
+	<key>实践证明，保持 ArcZip 为最新版本有益于压缩包的身心健康</key>
+	<string>Keep ArcZip and your archives in good shape.</string>
+	<key>密码</key>
+	<string>Password</string>
+	<key>密码不正确</key>
+	<string>Incorrect Password</string>
+	<key>密码不正确，请重新输入。</key>
+	<string>Incorrect password. Please try again.</string>
+	<key>密码保护</key>
+	<string>Password Protection</string>
+	<key>密码已输入，将在解压或预览时验证。</key>
+	<string>Password entered. It will be verified when you extract or preview.</string>
+	<key>密码已输入，待读取验证</key>
+	<string>Password Entered, Awaiting Read Verification</string>
+	<key>密码操作</key>
+	<string>Password Actions</string>
+	<key>密码本</key>
+	<string>Password Book</string>
+	<key>密码本 · ArcZip Pro</key>
+	<string>Password Book · ArcZip Pro</string>
+	<key>密码本密码</key>
+	<string>Password Book password</string>
+	<key>密码本密码不正确。</key>
+	<string>Incorrect Password Book password.</string>
+	<key>密码本已锁定</key>
+	<string>Password Book is locked</string>
+	<key>密码本已锁定，本次不自动保存</key>
+	<string>Password Book is locked. This password will not be saved automatically.</string>
+	<key>密码记录</key>
+	<string>Password entry</string>
+	<key>密码错误</key>
+	<string>Incorrect Password</string>
+	<key>将压缩包拆分成多个文件</key>
+	<string>Split the archive into multiple files</string>
+	<key>将移除 </key>
+	<string>Remove </string>
+	<key>将较大的压缩包拆分成多个文件</key>
+	<string>Split large archives into multiple files</string>
+	<key>尚未保存密码</key>
+	<string>No saved passwords</string>
+	<key>尽可能小</key>
+	<string>Smallest Possible</string>
+	<key>展开备选 Flow</key>
+	<string>Expand Alternative Flows</string>
+	<key>展开注释</key>
+	<string>Show More</string>
+	<key>展示 Flow 可执行的操作</key>
+	<string>Show Available Flows</string>
+	<key>嵌套容器最多打开 </key>
+	<string>Nested containers can be opened up to </string>
+	<key>工作区</key>
+	<string>Workspace</string>
+	<key>已交给 macOS 安装器</key>
+	<string>Opened in Installer</string>
+	<key>已使用上次成功的密码</key>
+	<string>Using the previously successful password</string>
+	<key>已关联</key>
+	<string>Associated</string>
+	<key>已关联 </key>
+	<string>Associated </string>
+	<key>已取消</key>
+	<string>Cancelled</string>
+	<key>已取消预览</key>
+	<string>Preview Cancelled</string>
+	<key>已填入密码本中的密码，将在解压或预览时验证。</key>
+	<string>A password from Password Book is ready. It will be verified when you extract or preview.</string>
+	<key>已复用 Quick Look 目录 · 正在建立文件索引</key>
+	<string>Loading Files</string>
+	<key>已复用 Quick Look 目录 · 正在建立文件索引 </key>
+	<string>Reused Quick Look catalog · building file index </string>
+	<key>已复用 Quick Look 预览 · 正在验证文件索引</key>
+	<string>Reused Quick Look preview · verifying file index</string>
+	<key>已安装 </key>
+	<string>Installed </string>
+	<key>已打开安装器</key>
+	<string>Installer Opened</string>
+	<key>已打开应用</key>
+	<string>Application Opened</string>
+	<key>已打开文件</key>
+	<string>File Opened</string>
+	<key>已拷贝</key>
+	<string>Copied</string>
+	<key>已是最新版本</key>
+	<string>You're up to date</string>
+	<key>已显示 </key>
+	<string>Shown </string>
+	<key>已由 Apple 公证。</key>
+	<string>has been notarized by Apple.</string>
+	<key>已索引 </key>
+	<string>Indexed </string>
+	<key>已经存在。继续创建会替换现有文件。</key>
+	<string>already exists. Continuing will replace the existing file.</string>
+	<key>已被撤销</key>
+	<string>revoked</string>
+	<key>已读取</key>
+	<string>Read</string>
+	<key>已读取 </key>
+	<string>Read </string>
+	<key>已过滤</key>
+	<string>Filtered</string>
+	<key>已过滤 </key>
+	<string>Filtered </string>
+	<key>已退款</key>
+	<string>refunded</string>
+	<key>已选择</key>
+	<string>Selected</string>
+	<key>已隐藏</key>
+	<string>Hidden</string>
+	<key>已隐藏 </key>
+	<string>Hidden </string>
+	<key>带有签名，但 ArcZip 无法验证签名者的身份。</key>
+	<string>is signed, but ArcZip cannot verify the signer's identity.</string>
+	<key>常用压缩包</key>
+	<string>Common Archives</string>
+	<key>常用格式已设为使用 ArcZip 打开</key>
+	<string>Common formats are now set to open with ArcZip</string>
+	<key>应用到新版本</key>
+	<string>Apply</string>
+	<key>应用安装</key>
+	<string>App Installation</string>
+	<key>应用标识：</key>
+	<string>App identifier: </string>
+	<key>应用程序</key>
+	<string>Application</string>
+	<key>应用程序”文件夹</key>
+	<string>Applications folder</string>
+	<key>应用程序已从磁盘映像复制到临时目录</key>
+	<string>Ready</string>
+	<key>应用程序文件夹中的 ArcZip 不是有效的 ArcZip 安装。</key>
+	<string>Invalid ArcZip installation. Reinstall ArcZip.</string>
+	<key>应用程序解压缩完成</key>
+	<string>Extracted</string>
+	<key>建议先安装此应用</key>
+	<string>Install This Application First</string>
+	<key>开启</key>
+	<string>Enable</string>
+	<key>开启保护</key>
+	<string>Enable protection</string>
+	<key>开启保护…</key>
+	<string>Enable protection…</string>
+	<key>开启后 ArcZip 会记住成功使用的密码，并为你自动解锁。也可以选择不开启自动保存，并在创建压缩包时手动选择。密码仅保存在这台 Mac 上。</key>
+	<string>When enabled, ArcZip remembers passwords you successfully use and unlocks archives for you automatically. You can also leave automatic saving off and select passwords manually when creating archives. Passwords stay on this Mac.</string>
+	<key>开启密码自动保存？</key>
+	<string>Automatically save passwords?</string>
+	<key>开启并使用密码保护</key>
+	<string>Enable with Password Protection</string>
+	<key>开始使用 ArcZip</key>
+	<string>Get Started with ArcZip</string>
+	<key>归拢位置不能位于源文件夹内</key>
+	<string>The destination cannot be inside a source folder.</string>
+	<key>归拢过程中源文件发生变化，请重新加入</key>
+	<string>A source changed during collection. Add it again.</string>
+	<key>归档</key>
+	<string>Archive</string>
+	<key>当前不是从 ArcZip.app 运行，格式关联开关已停用。</key>
+	<string>This is not running from ArcZip.app; format association controls are disabled.</string>
+	<key>当前为只读格式</key>
+	<string>is currently read-only</string>
+	<key>当前工作区已有一个等待完成的保存或重命名操作。</key>
+	<string>Wait for the current save or rename operation to finish.</string>
+	<key>当前工作区正在处理其他任务，请稍后重新拖入</key>
+	<string>The workspace is busy. Please drop the files again when it is ready.</string>
+	<key>当前工作区的文档占用状态已失效，请重新打开后再试。</key>
+	<string>This archive is temporarily unavailable. Reopen it and try again.</string>
+	<key>当前应用完整性验证失败，请从官方来源重新下载 ArcZip。</key>
+	<string>App verification failed. Redownload ArcZip from the official website.</string>
+	<key>当前引擎不支持：</key>
+	<string>This engine does not support: </string>
+	<key>当前引擎不支持：自动识别为 GBK 的 ZIP 暂不支持编辑保存；请先解压后重新创建压缩包</key>
+	<string>Editing and saving ZIP archives detected as GBK is not supported yet. Extract the files first, then create a new archive.</string>
+	<key>当前文件不是 macOS 安装包</key>
+	<string>Not a macOS installer.</string>
+	<key>当前文件夹为空 · 后台索引仍在核对</key>
+	<string>This folder is empty · background indexing is still checking</string>
+	<key>当前构建尚未配置 ArcZip 更新服务器</key>
+	<string>This build has no ArcZip update server configured</string>
+	<key>当前用户的字体库中已经存在“</key>
+	<string>The current user's font library already contains “</string>
+	<key>当前用途将默认使用 </key>
+	<string>This purpose will use </string>
+	<key>当前目录可以浏览；</key>
+	<string>This folder is browsable; </string>
+	<key>当前目录可以浏览；完整索引完成前暂不能搜索、预览、拖出或解压</key>
+	<string>You can browse this folder; search, preview, drag-out and extraction are unavailable until indexing completes.</string>
+	<key>待压缩文件在操作过程中发生了变化，未生成或替换压缩包，请确认文件后重新压缩</key>
+	<string>Source files changed. No archive was saved. Try again.</string>
+	<key>待处理</key>
+	<string>Pending</string>
+	<key>快捷安装</key>
+	<string>Quick Install</string>
+	<key>快速</key>
+	<string>Fast</string>
+	<key>快速 LZMA2，跳过低收益文件，不使用固实压缩</key>
+	<string>Fast LZMA2 without solid compression; store files that compress poorly.</string>
+	<key>快速了解压缩包内容，预览并解压所需文件。</key>
+	<string>Quickly inspect an archive, preview it and extract what you need.</string>
+	<key>快速压缩</key>
+	<string>Quick Compress</string>
+	<key>快速安装</key>
+	<string>Quick Install</string>
+	<key>快速安装应用</key>
+	<string>Quick Install Application</string>
+	<key>快速解压</key>
+	<string>Quick Extract</string>
+	<key>快速解压一次只能处理一个压缩包</key>
+	<string>Select one archive to extract.</string>
+	<key>快速解压到当前目录</key>
+	<string>Extract Here</string>
+	<key>快速解压到指定目录…</key>
+	<string>Extract to…</string>
+	<key>恢复全部建议</key>
+	<string>Restore All Suggestions</string>
+	<key>恢复所有偏好设置</key>
+	<string>Restore All Preferences</string>
+	<key>恢复所有偏好设置？</key>
+	<string>Restore All Preferences?</string>
+	<key>恢复设置不会改变 Finder 中的格式关联</key>
+	<string>File associations will stay unchanged.</string>
+	<key>恢复默认值</key>
+	<string>Restore Defaults</string>
+	<key>恢复默认压缩设置</key>
+	<string>Restore Defaults</string>
+	<key>悬浮高清预览</key>
+	<string>Hover Preview</string>
+	<key>意犹未尽？那就再看一遍，设置不会被重置，放心</key>
+	<string>Want another look? Revisit it without resetting your settings.</string>
+	<key>我们将重新定义解压缩工具</key>
+	<string>We are redefining archive utilities</string>
+	<key>所有已保存密码都会被删除。此操作不会修改压缩包，也无法找回压缩包密码。</key>
+	<string>All saved passwords will be deleted. This does not change archives or recover their passwords.</string>
+	<key>所有选中项目都无法安全加入压缩包，因此没有可用于创建压缩包的内容。</key>
+	<string>No selected items can be safely compressed.</string>
+	<key>所选内容包含无效项目</key>
+	<string>Invalid selection.</string>
+	<key>所选内容只有已排除的系统辅助文件</key>
+	<string>The selected content contains only excluded system auxiliary files</string>
+	<key>所选文件不是 ArcZip 支持的可解压格式</key>
+	<string>Unsupported file format.</string>
+	<key>所选文件夹中没有可解压的项目</key>
+	<string>The selected folder contains no extractable items</string>
+	<key>所选解压目标文件夹不可用</key>
+	<string>Destination folder unavailable.</string>
+	<key>所选项目不是 macOS 安装包</key>
+	<string>Select a macOS installer.</string>
+	<key>所选项目不是 macOS 应用程序包</key>
+	<string>Select a macOS app.</string>
+	<key>所选项目不是字体文件</key>
+	<string>Select a font file.</string>
+	<key>所选项目缩略图</key>
+	<string>thumbnails for selected items</string>
+	<key>所选项目缩略图，另有 </key>
+	<string>selected item thumbnails, plus </string>
+	<key>打开</key>
+	<string>Open</string>
+	<key>打开内层加密容器</key>
+	<string>Open Encrypted Nested Container</string>
+	<key>打开加密压缩包</key>
+	<string>Open Encrypted Archive</string>
+	<key>打开加密文件</key>
+	<string>Open Encrypted File</string>
+	<key>打开压缩包</key>
+	<string>Open Archive</string>
+	<key>打开压缩包…</key>
+	<string>Open Archive…</string>
+	<key>打开应用</key>
+	<string>Open Application</string>
+	<key>打开或创建压缩包后，可从这里快速重新打开</key>
+	<string>Open or create an archive, then reopen it quickly from here</string>
+	<key>打开文件</key>
+	<string>Open File</string>
+	<key>打开文件夹</key>
+	<string>Open Folder</string>
+	<key>打开系统设置</key>
+	<string>Open System Settings</string>
+	<key>批量解压</key>
+	<string>Batch Extract</string>
+	<key>批量解压或拖出文件夹时忽略隐藏项目、macOS 元数据和 Applications 替身</key>
+	<string>Bulk extraction and folder drags skip hidden items, macOS metadata, and Applications aliases.</string>
+	<key>找不到 macOS 安装器</key>
+	<string>macOS Installer Not Found</string>
+	<key>找不到“</key>
+	<string>Cannot find “</string>
+	<key>找不到磁盘映像，请确认文件仍然存在</key>
+	<string>Disk image not found.</string>
+	<key>拖入压缩包进行预览或解压</key>
+	<string>Drop an archive to preview or extract</string>
+	<key>拖入文件以创建压缩包</key>
+	<string>Drop files to create an archive</string>
+	<key>拖入时的目标文件夹已不可用，请重新拖入</key>
+	<string>The original drop folder is no longer available. Please drop the files again.</string>
+	<key>拖入的内容超过接收大小限制</key>
+	<string>The dropped content exceeds the intake size limit.</string>
+	<key>拖入的对象没有可接收的文件或内容</key>
+	<string>The dropped item does not provide a file or readable content.</string>
+	<key>拖入的文件内容为空</key>
+	<string>The dropped file is empty.</string>
+	<key>拖到 Finder 或其他 App 以解压此项目</key>
+	<string>Drag to Finder or another app to extract this item</string>
+	<key>按回车键执行</key>
+	<string>Press Return to activate</string>
+	<key>按空格也可预览</key>
+	<string>Press Space to preview</string>
+	<key>按空格键执行</key>
+	<string>Press Space to activate</string>
+	<key>接收文件超时，请重试</key>
+	<string>Receiving the file timed out. Please try again.</string>
+	<key>控制压缩任务最多可使用的 CPU 核心数量</key>
+	<string>Limit the CPU cores available to compression tasks</string>
+	<key>控制解压缩时的内容过滤行为</key>
+	<string>Choose what to exclude when extracting.</string>
+	<key>提取完成</key>
+	<string>Extraction Complete</string>
+	<key>搜索</key>
+	<string>Search</string>
+	<key>搜索压缩包</key>
+	<string>Search Archive</string>
+	<key>搜索名称或密码</key>
+	<string>Search names or passwords</string>
+	<key>搜索结果</key>
+	<string>Search Results</string>
+	<key>操作失败</key>
+	<string>Operation Failed</string>
+	<key>操作已取消</key>
+	<string>Operation Cancelled</string>
+	<key>收起备选 Flow</key>
+	<string>Collapse Alternative Flows</string>
+	<key>收起搜索</key>
+	<string>Close Search</string>
+	<key>收起暂存架</key>
+	<string>Hide Box</string>
+	<key>收起注释</key>
+	<string>Show Less</string>
+	<key>放入剪贴板</key>
+	<string>Copy to Clipboard</string>
+	<key>放入工作区</key>
+	<string>Put in Workspace</string>
+	<key>放入文件夹</key>
+	<string>Put in a Folder</string>
+	<key>放弃更改</key>
+	<string>Discard</string>
+	<key>放弃更改并打开</key>
+	<string>Discard Changes and Open</string>
+	<key>数据与网页</key>
+	<string>Data &amp; Web</string>
+	<key>文件</key>
+	<string>File</string>
+	<key>文件与目录结构冲突</key>
+	<string>File and directory structure conflict</string>
+	<key>文件可能已损坏，或使用了当前预览不支持的编码。</key>
+	<string>The file may be damaged or use an encoding that this preview does not support.</string>
+	<key>文件名或路径不安全</key>
+	<string>Unsafe filename or path</string>
+	<key>文件名或路径结构无效</key>
+	<string>Invalid Filename or Path</string>
+	<key>文件夹</key>
+	<string>Folder</string>
+	<key>文件夹为空</key>
+	<string>Folder Is Empty</string>
+	<key>文件夹导航</key>
+	<string>Folder Navigation</string>
+	<key>文件已就绪</key>
+	<string>File ready</string>
+	<key>文件已归拢</key>
+	<string>Files Collected</string>
+	<key>文件已被移动或删除，无法继续打开。</key>
+	<string>File moved or deleted.</string>
+	<key>文件投放区</key>
+	<string>File Drop Zone</string>
+	<key>文件操作失败：</key>
+	<string>File operation failed: </string>
+	<key>文件索引完成前暂不能拖出或解压项目</key>
+	<string>Items Cannot Be Dragged Out or Extracted Until Indexing Completes</string>
+	<key>文件索引完成前暂不能解压项目</key>
+	<string>Items Cannot Be Extracted Until Indexing Completes</string>
+	<key>文件索引完成前暂不能读取项目内容</key>
+	<string>Item contents cannot be read until indexing completes</string>
+	<key>文件索引已完成</key>
+	<string>File Index Complete</string>
+	<key>文档</key>
+	<string>Documents</string>
+	<key>新密码本密码</key>
+	<string>New Password Book password</string>
+	<key>新建压缩包时自动启用分卷</key>
+	<string>Enable split volumes automatically for new archives</string>
+	<key>无可用操作</key>
+	<string>No Available Actions</string>
+	<key>无权限</key>
+	<string>Permission Denied</string>
+	<key>无法为新压缩包找到可用名称</key>
+	<string>No available archive name.</string>
+	<key>无法为解压结果找到可用名称，请重试</key>
+	<string>No available folder name. Try again.</string>
+	<key>无法保存密码，请重试。</key>
+	<string>Could not save the password. Please try again.</string>
+	<key>无法修改打开方式</key>
+	<string>Unable to Change Default App</string>
+	<key>无法创建浏览索引</key>
+	<string>Unable to Create Browse Index</string>
+	<key>无法在 Windows 上正常使用，请重命名后再创建</key>
+	<string> cannot be used correctly on Windows. Rename it before creating the archive</string>
+	<key>无法完成操作</key>
+	<string>Unable to Complete Operation</string>
+	<key>无法将文件放入剪贴板，请重试</key>
+	<string>Could not copy the files to the clipboard. Please try again.</string>
+	<key>无法检查 Windows 文件名兼容性</key>
+	<string>Unable to check Windows filename compatibility</string>
+	<key>无法生成预览</key>
+	<string>Unable to Generate Preview</string>
+	<key>无法访问文件或文件夹</key>
+	<string>Unable to Access File or Folder</string>
+	<key>无法访问文件或文件夹，请检查权限后重试</key>
+	<string>Unable to access the file or folder. Check its permissions and try again.</string>
+	<key>无法访问文件或文件夹：</key>
+	<string>Unable to access file or folder: </string>
+	<key>无法访问系统钥匙串，请重试。</key>
+	<string>The system keychain could not be accessed. Try again.</string>
+	<key>无法读取 RPM 的有效载荷目录</key>
+	<string>The RPM payload catalog could not be read.</string>
+	<key>无法读取压缩包</key>
+	<string>Unable to Read Archive</string>
+	<key>无法读取压缩结果身份：</key>
+	<string>Could not read the archive output identity: </string>
+	<key>无法读取密码本，请保留数据并重试。</key>
+	<string>Password Book could not be read. Keep its data and try again.</string>
+	<key>无法读取来源文件，请在系统设置的“隐私与安全性 → 文件与文件夹”中允许 ArcZip 访问来源应用，然后重新拖入</key>
+	<string>The source file cannot be read. Allow ArcZip to access the source app in System Settings → Privacy &amp; Security → Files &amp; Folders, then drop the file again.</string>
+	<key>无法验证</key>
+	<string>could not be verified</string>
+	<key>日常最常用的压缩与归档格式</key>
+	<string>Common archive and compression formats</string>
+	<key>昨天</key>
+	<string>Yesterday</string>
+	<key>是</key>
+	<string>Yes</string>
+	<key>显示 __MACOSX、.DS_Store 等通常会被隐藏的辅助文件</key>
+	<string>Show normally hidden items such as __MACOSX and .DS_Store.</string>
+	<key>显示包内容</key>
+	<string>Show Package Contents</string>
+	<key>显示密码</key>
+	<string>Show Password</string>
+	<key>显示或隐藏密码</key>
+	<string>Show or hide password</string>
+	<key>显示方式</key>
+	<string>View</string>
+	<key>显示辅助项目</key>
+	<string>Show Auxiliary Items</string>
+	<key>智能平衡速度与体积</key>
+	<string>Balance speed and size.</string>
+	<key>智能选择文件，使用 128 MB 固实块</key>
+	<string>Adaptive compression with 128 MB solid blocks.</string>
+	<key>暂不支持此格式的快速预览</key>
+	<string>Quick Preview Is Not Available for This Format</string>
+	<key>暂存架</key>
+	<string>Shelf</string>
+	<key>暂时无法准备这个文件，请检查网络连接或文件提供商状态后重试。</key>
+	<string>File unavailable. Try again later.</string>
+	<key>更多……</key>
+	<string>More…</string>
+	<key>更多设置…</key>
+	<string>More Settings…</string>
+	<key>更小</key>
+	<string>Smaller</string>
+	<key>更快</key>
+	<string>Faster</string>
+	<key>更改密码</key>
+	<string>Change Password</string>
+	<key>更新已就绪；</key>
+	<string>Update ready; </string>
+	<key>更新已就绪；完成当前任务并保存更改后将安装</key>
+	<string>The update is ready; it will install after current tasks and changes are complete</string>
+	<key>替换</key>
+	<string>Replace</string>
+	<key>替换现有压缩包？</key>
+	<string>Replace Existing Archive?</string>
+	<key>替换现有字体？</key>
+	<string>Replace Existing Font?</string>
+	<key>替换现有应用？</key>
+	<string>Replace Existing Application?</string>
+	<key>最大可用核心数</key>
+	<string>Maximum CPU Cores</string>
+	<key>最近打开</key>
+	<string>Open Recent</string>
+	<key>最高强度 LZMA2，明确无收益内容仍直接存储，使用 4 GB 固实块</key>
+	<string>Maximum LZMA2 with 4 GB solid blocks; store files that won’t shrink.</string>
+	<key>最高强度压缩，明确无收益内容仍直接存储</key>
+	<string>Maximum compression; store files that won’t shrink.</string>
+	<key>有些文件已不在原位置，请重新加入</key>
+	<string>Some files are no longer available. Add them again.</string>
+	<key>有可用的更新：</key>
+	<string>Update available: </string>
+	<key>未关联</key>
+	<string>Not Associated</string>
+	<key>未命名压缩包</key>
+	<string>Untitled Archive</string>
+	<key>未命名压缩包.zip</key>
+	<string>Untitled Archive.zip</string>
+	<key>未命名项目</key>
+	<string>Untitled Item</string>
+	<key>未选择</key>
+	<string>Not Selected</string>
+	<key>极速</key>
+	<string>Fastest</string>
+	<key>极限</key>
+	<string>Maximum</string>
+	<key>查看全部…</key>
+	<string>View All…</string>
+	<key>查看密码状态或更改密码</key>
+	<string>View password status or change the password</string>
+	<key>根目录可浏览 · 正在准备完整目录</key>
+	<string>Loading Files</string>
+	<key>格式</key>
+	<string>Format</string>
+	<key>格式关联</key>
+	<string>Format Associations</string>
+	<key>检查 Windows 文件名兼容性</key>
+	<string>Check Windows filename compatibility</string>
+	<key>检查器</key>
+	<string>Inspector</string>
+	<key>检查更新</key>
+	<string>Check for Updates</string>
+	<key>检查更新失败：</key>
+	<string>Update check failed: </string>
+	<key>欢迎使用ArcZip</key>
+	<string>Welcome to ArcZip</string>
+	<key>欢迎页面</key>
+	<string>Welcome</string>
+	<key>欢迎！拖入文件以开始</key>
+	<string>Welcome! Drop files to get started</string>
+	<key>正在从磁盘映像复制应用程序</key>
+	<string>Copying Application from Disk Image</string>
+	<key>正在从磁盘映像复制项目</key>
+	<string>Copying Items from Disk Image</string>
+	<key>正在修正 Windows 文件名</key>
+	<string>Repairing Windows filenames</string>
+	<key>正在写入修改内容</key>
+	<string>Saving</string>
+	<key>正在准备</key>
+	<string>Preparing</string>
+	<key>正在准备 </key>
+	<string>Preparing </string>
+	<key>正在准备…</key>
+	<string>Preparing…</string>
+	<key>正在准备压缩</key>
+	<string>Preparing Compression</string>
+	<key>正在准备安装</key>
+	<string>Preparing Installation</string>
+	<key>正在准备应用程序</key>
+	<string>Preparing Application</string>
+	<key>正在准备当前文件夹…</key>
+	<string>Preparing This Folder…</string>
+	<key>正在准备打开</key>
+	<string>Preparing to Open</string>
+	<key>正在准备文件</key>
+	<string>Preparing Files</string>
+	<key>正在准备解压缩</key>
+	<string>Preparing Extraction</string>
+	<key>正在准备软件更新服务</key>
+	<string>Preparing the update service</string>
+	<key>正在分卷</key>
+	<string>Splitting archive</string>
+	<key>正在分析压缩包修改</key>
+	<string>Preparing</string>
+	<key>正在分析文件</key>
+	<string>Analyzing Files</string>
+	<key>正在创建</key>
+	<string>Creating</string>
+	<key>正在删除压缩包项目</key>
+	<string>Deleting</string>
+	<key>正在加载…</key>
+	<string>Loading…</string>
+	<key>正在匹配密码</key>
+	<string>Matching passwords</string>
+	<key>正在压缩</key>
+	<string>Compressing</string>
+	<key>正在压缩可压缩文件</key>
+	<string>Compressing</string>
+	<key>正在发布解压结果</key>
+	<string>Publishing Extracted Items</string>
+	<key>正在取消</key>
+	<string>Cancelling</string>
+	<key>正在后台完成文件索引。为避免使用不完整目录，索引完成前暂不能</key>
+	<string>Indexing is finishing in the background. To avoid using an incomplete catalog, </string>
+	<key>正在启动压缩引擎</key>
+	<string>Starting</string>
+	<key>正在启动解压缩</key>
+	<string>Starting Extraction</string>
+	<key>正在启动解压缩引擎</key>
+	<string>Starting Extraction Engine</string>
+	<key>正在复制 ISO 项目</key>
+	<string>Copying</string>
+	<key>正在复制已暂存的项目</key>
+	<string>Copying Staged Items</string>
+	<key>正在安全保存</key>
+	<string>Saving Safely</string>
+	<key>正在安全检查压缩包目录</key>
+	<string>Checking Archive Contents Safely</string>
+	<key>正在安装</key>
+	<string>Installing</string>
+	<key>正在安装 </key>
+	<string>Installing </string>
+	<key>正在安装 ArcZip </key>
+	<string>Installing ArcZip </string>
+	<key>正在安装…</key>
+	<string>Installing…</string>
+	<key>正在安装字体</key>
+	<string>Installing Font</string>
+	<key>正在安装字体…</key>
+	<string>Installing Font…</string>
+	<key>正在完成 </key>
+	<string>Finishing </string>
+	<key>正在完成文件索引</key>
+	<string>Finishing File Index</string>
+	<key>正在应用未保存的修改</key>
+	<string>Applying Unsaved Changes</string>
+	<key>正在建立完整文件索引</key>
+	<string>Building Full File Index</string>
+	<key>正在建立文件索引</key>
+	<string>Loading Files</string>
+	<key>正在建立文件索引 </key>
+	<string>Building file index </string>
+	<key>正在归拢文件</key>
+	<string>Collecting Files</string>
+	<key>正在打包文件</key>
+	<string>Packing</string>
+	<key>正在打包无需压缩的文件</key>
+	<string>Packing</string>
+	<key>正在打开</key>
+	<string>Opening</string>
+	<key>正在打开…</key>
+	<string>Opening…</string>
+	<key>正在打开内层容器</key>
+	<string>Opening Nested Container</string>
+	<key>正在打开文件</key>
+	<string>Opening File</string>
+	<key>正在挂载磁盘映像</key>
+	<string>Mounting Disk Image</string>
+	<key>正在接收其他文件，请稍后重试</key>
+	<string>Other files are being received. Please try again shortly.</string>
+	<key>正在整理解压结果</key>
+	<string>Finalizing Extraction</string>
+	<key>正在显示目录</key>
+	<string>Opening</string>
+	<key>正在替换旧项目</key>
+	<string>Replacing</string>
+	<key>正在校验磁盘映像</key>
+	<string>Verifying Disk Image</string>
+	<key>正在核对压缩包目录</key>
+	<string>Checking Archive Contents</string>
+	<key>正在检查更新…</key>
+	<string>Checking for Updates…</string>
+	<key>正在确认磁盘映像内容完整</key>
+	<string>Verifying Disk Image Contents</string>
+	<key>正在等待你选择同名文件夹的处理方式</key>
+	<string>Waiting for your choice for the same-named folder</string>
+	<key>正在等待磁盘映像就绪，刚下载的文件可能需要稍久。</key>
+	<string>Waiting for the disk image to be ready. Newly downloaded files may take a little longer.</string>
+	<key>正在索引</key>
+	<string>Indexing</string>
+	<key>正在结束校验并重新挂载</key>
+	<string>Finishing Verification and Remounting</string>
+	<key>正在继续下一项任务</key>
+	<string>Starting the Next Task</string>
+	<key>正在解压</key>
+	<string>Extracting</string>
+	<key>正在解压 </key>
+	<string>Extracting </string>
+	<key>正在解压缩</key>
+	<string>Extracting</string>
+	<key>正在解压缩应用程序</key>
+	<string>Extracting Application</string>
+	<key>正在解码 Lzip 压缩流</key>
+	<string>Decoding Lzip Stream</string>
+	<key>正在解码压缩流</key>
+	<string>Decoding Compressed Stream</string>
+	<key>正在计算…</key>
+	<string>Calculating…</string>
+	<key>正在计算总大小</key>
+	<string>Calculating Total Size</string>
+	<key>正在读取…</key>
+	<string>Reading…</string>
+	<key>正在读取压缩包</key>
+	<string>Reading Archive</string>
+	<key>正在读取压缩包…</key>
+	<string>Reading Archive…</string>
+	<key>正在读取安装信息…</key>
+	<string>Reading installation information…</string>
+	<key>正在读取授权状态…</key>
+	<string>Loading license status…</string>
+	<key>正在读取磁盘映像的第一层内容</key>
+	<string>Reading the First Layer of the Disk Image</string>
+	<key>正在跳过校验</key>
+	<string>Skipping Verification</string>
+	<key>正在重命名压缩包项目</key>
+	<string>Renaming</string>
+	<key>正在验证 </key>
+	<string>Verifying </string>
+	<key>正在验证密码</key>
+	<string>Verifying password</string>
+	<key>此压缩包仍由一个正在结束任务的工作区占用，请稍后重试。</key>
+	<string>The previous operation on this archive is still finishing. Try again shortly.</string>
+	<key>此压缩包受密码保护</key>
+	<string>This archive is password protected</string>
+	<key>此压缩包已在当前会话中解锁</key>
+	<string>This archive is unlocked for the current session</string>
+	<key>此压缩包需要密码</key>
+	<string>Password Required</string>
+	<key>此工作区正在安全结束；清理完成后会重新打开。</key>
+	<string>The previous operation is finishing. The archive will reopen when it is done.</string>
+	<key>此操作当前可用。</key>
+	<string>Available</string>
+	<key>此文件没有可用的内容缩略图</key>
+	<string>No Content Thumbnail Is Available for This File</string>
+	<key>此磁盘映像包含需要确认的使用许可协议</key>
+	<string>Accept the license agreement to open.</string>
+	<key>此磁盘映像暂被其他应用占用，请稍后重试。如果它显示在 Finder 中，也可以先推出再重试。</key>
+	<string>Another app is temporarily using this disk image. Try again shortly. If it appears in Finder, you can also eject it first.</string>
+	<key>每个用途会独立保存自己的压缩强度</key>
+	<string>Each preset remembers its compression level.</string>
+	<key>每卷大小</key>
+	<string>Volume Size</string>
+	<key>每卷大小必须大于零</key>
+	<string>Volume size must be greater than zero.</string>
+	<key>每天检查一次；更新包不会在后台静默安装</key>
+	<string>Checks daily. Updates are not installed automatically.</string>
+	<key>没有任何代码签名，无法确认发布者。</key>
+	<string>has no code signature; the publisher cannot be verified.</string>
+	<key>没有匹配的密码</key>
+	<string>No matching passwords</string>
+	<key>没有可压缩的访达项目</key>
+	<string>No files to compress.</string>
+	<key>没有密码时不显示压缩包内容</key>
+	<string>Hide archive contents without a password</string>
+	<key>没有打开压缩包</key>
+	<string>No Archive Is Open</string>
+	<key>没有最近打开的压缩包</key>
+	<string>No Recent Archives</string>
+	<key>没有权限</key>
+	<string>Permission Denied</string>
+	<key>没有权限写入“应用程序”文件夹</key>
+	<string>Applications access denied.</string>
+	<key>没有权限写入当前用户的字体库</key>
+	<string>Font library access denied.</string>
+	<key>没有权限读取此磁盘映像</key>
+	<string>Disk image access denied.</string>
+	<key>没有生成有效的 .app 应用程序包</key>
+	<string>Invalid extracted app.</string>
+	<key>没有生成有效的 .pkg 安装包</key>
+	<string>Invalid extracted installer.</string>
+	<key>没有读取权限</key>
+	<string>Read Permission Required</string>
+	<key>没有选择要解压的项目</key>
+	<string>No Items Selected for Extraction</string>
+	<key>注释</key>
+	<string>Comment</string>
+	<key>浅色</key>
+	<string>Light</string>
+	<key>浏览</key>
+	<string>Browse</string>
+	<key>深色</key>
+	<string>Dark</string>
+	<key>添加密码…</key>
+	<string>Add password…</string>
+	<key>添加文件</key>
+	<string>Add Files</string>
+	<key>添加文件到压缩包</key>
+	<string>Add Files to Archive</string>
+	<key>清理 macOS 辅助文件</key>
+	<string>Clean Up macOS Auxiliary Files</string>
+	<key>清空暂存架</key>
+	<string>Clear Box</string>
+	<key>清除</key>
+	<string>Clear</string>
+	<key>清除全部</key>
+	<string>Clear All</string>
+	<key>清除全部最近打开记录</key>
+	<string>Clear All Open Recent History</string>
+	<key>清除搜索</key>
+	<string>Clear Search</string>
+	<key>清除最近打开记录？</key>
+	<string>Clear Open Recent History?</string>
+	<key>清除菜单</key>
+	<string>Clear Menu</string>
+	<key>点击添加文件，或直接将文件拖到这里</key>
+	<string>Click Add Files or drag files here</string>
+	<key>点击输入压缩包密码</key>
+	<string>Click to Enter Archive Password</string>
+	<key>特殊项目</key>
+	<string>Special Item</string>
+	<key>用 ArcZip 打开 </key>
+	<string>Open with ArcZip: </string>
+	<key>用途</key>
+	<string>Purpose</string>
+	<key>由 Apple 认证的开发者签名，但未经 Apple 公证。</key>
+	<string>is signed by an Apple-identified developer but is not notarized by Apple.</string>
+	<key>由 macOS Launch Services 管理</key>
+	<string>Managed by macOS</string>
+	<key>由解压缩引擎报告进度</key>
+	<string>Reported by the Extraction Engine</string>
+	<key>目前目录可以浏览；完整索引完成前暂不能搜索、预览、拖出或解压</key>
+	<string>You can browse this folder; search, preview, drag-out and extraction are unavailable until indexing completes.</string>
+	<key>目录可浏览 · 正在完成文件索引</key>
+	<string>Loading Files</string>
+	<key>目录较大，仅载入前 </key>
+	<string>This directory is large; only the first </string>
+	<key>目标中已有同名文件夹</key>
+	<string>The destination already contains a folder with the same name</string>
+	<key>目标位置已存在“</key>
+	<string>The destination already contains “</string>
+	<key>直接在 Finder 中快速压缩与解压</key>
+	<string>Quickly compress and extract directly in Finder</string>
+	<key>硬链接</key>
+	<string>Hard Link</string>
+	<key>确认</key>
+	<string>Confirm</string>
+	<key>磁盘与旧式容器</key>
+	<string>Disk Images &amp; Containers</string>
+	<key>磁盘映像</key>
+	<string>Disk Image</string>
+	<key>磁盘映像与光盘容器</key>
+	<string>Disk images and optical disc containers</string>
+	<key>磁盘映像使用许可协议</key>
+	<string>License Agreement</string>
+	<key>磁盘映像挂载已不可用</key>
+	<string>The disk image mount is no longer available</string>
+	<key>磁盘映像校验失败</key>
+	<string>Disk image check failed.</string>
+	<key>磁盘映像项目复制完成</key>
+	<string>Copied</string>
+	<key>磁盘空间</key>
+	<string>Disk Space</string>
+	<key>磁盘空间不足</key>
+	<string>Insufficient Disk Space</string>
+	<key>磁盘空间不足，请释放空间后重试，或选择其他位置。</key>
+	<string>Not enough space. Free up space or choose another location.</string>
+	<key>空格</key>
+	<string>Space</string>
+	<key>空间不足</key>
+	<string>Insufficient Space</string>
+	<key>立即锁定</key>
+	<string>Lock now</string>
+	<key>符号链接</key>
+	<string>Symbolic Link</string>
+	<key>等其他项目</key>
+	<string>and other items</string>
+	<key>等待前一项任务完成</key>
+	<string>Waiting for the Previous Task to Finish</string>
+	<key>等待并退出</key>
+	<string>Wait and Quit</string>
+	<key>等待开始</key>
+	<string>Waiting to Start</string>
+	<key>等待解压缩引擎进度</key>
+	<string>Waiting for the Extraction Engine</string>
+	<key>等待输入密码</key>
+	<string>Waiting for Password</string>
+	<key>签名状态：</key>
+	<string>Signature status: </string>
+	<key>管理密码本…</key>
+	<string>Manage Password Book…</string>
+	<key>系统命令</key>
+	<string>System command</string>
+	<key>索引完成后即可全部解压</key>
+	<string>Extract All After Indexing Completes</string>
+	<key>索引完成后即可安装</key>
+	<string>Install After Indexing Completes</string>
+	<key>纯文本</key>
+	<string>Plain Text</string>
+	<key>继续</key>
+	<string>Continue</string>
+	<key>继续解压</key>
+	<string>Continue Extraction</string>
+	<key>维护</key>
+	<string>Maintenance</string>
+	<key>维护和恢复 ArcZip 偏好设置</key>
+	<string>Manage and reset your preferences.</string>
+	<key>编辑…</key>
+	<string>Edit…</string>
+	<key>自动</key>
+	<string>Automatic</string>
+	<key>自动使用密码本解锁</key>
+	<string>Auto-unlock with Password Book</string>
+	<key>自动保存到密码本</key>
+	<string>Automatically save passwords</string>
+	<key>自动排除系统辅助文件</key>
+	<string>Skip System Metadata Files</string>
+	<key>自动检查更新</key>
+	<string>Check for Updates Automatically</string>
+	<key>自动过滤 DMG 安装辅助文件</key>
+	<string>Skip DMG Installer Extras</string>
+	<key>视频</key>
+	<string>Video</string>
+	<key>解压</key>
+	<string>Extract</string>
+	<key>解压任务未生成“</key>
+	<string>The extraction task did not create “</string>
+	<key>解压内容包含 </key>
+	<string>The extracted content contains </string>
+	<key>解压到临时目录并使用系统默认应用打开</key>
+	<string>Extract to a temporary folder and open with the default app</string>
+	<key>解压到这里</key>
+	<string>Extract Here</string>
+	<key>解压加密文件</key>
+	<string>Extract Encrypted File</string>
+	<key>解压单个文件到受管理的临时目录，并使用系统默认应用打开</key>
+	<string>Extract a file to a temporary folder and open it with its default app.</string>
+	<key>解压完成</key>
+	<string>Extraction Complete</string>
+	<key>解压所选项目</key>
+	<string>Extract Selected Items</string>
+	<key>解压所选项目…</key>
+	<string>Extract Selected Items…</string>
+	<key>解压文件夹</key>
+	<string>Extract Folder</string>
+	<key>解压时忽略 __MACOSX、AppleDouble、.DS_Store、Thumbs.db、desktop.ini 和卷索引等冗余项目</key>
+	<string>Skip __MACOSX, AppleDouble, .DS_Store, Thumbs.db, desktop.ini, and volume indexes.</string>
+	<key>解压此文件</key>
+	<string>Extract This File</string>
+	<key>解压缩</key>
+	<string>Extract</string>
+	<key>解压缩完成</key>
+	<string>Extraction Complete</string>
+	<key>解锁</key>
+	<string>Unlock</string>
+	<key>解锁 ArcZip 密码本</key>
+	<string>Unlock ArcZip Password Book</string>
+	<key>解锁压缩包</key>
+	<string>Unlock Archive</string>
+	<key>解锁后可使用密码本并保存本次密码。</key>
+	<string>Unlock to use Password Book and save this password.</string>
+	<key>解锁密码本</key>
+	<string>Unlock Password Book</string>
+	<key>计算中…</key>
+	<string>Calculating…</string>
+	<key>让下一步更简单</key>
+	<string>Make the next step easier</string>
+	<key>让解压结果保持干净，同时保留真实的隐藏文件</key>
+	<string>Skip system clutter while keeping your own hidden files.</string>
+	<key>许可协议</key>
+	<string>License Agreement</string>
+	<key>设备节点</key>
+	<string>Device node</string>
+	<key>设备节点可能连接磁盘、终端或无限数据流；读取它可能泄露系统数据、产生副作用或永不结束。</key>
+	<string>Reading a device may expose data, affect the system, or never finish.</string>
+	<key>设置</key>
+	<string>Settings</string>
+	<key>设置 ArcZip 的外观与浏览方式</key>
+	<string>Configure ArcZip's appearance and browsing</string>
+	<key>设置创建压缩包时默认采用的用途与压缩强度</key>
+	<string>Choose the default preset and compression level for new archives.</string>
+	<key>设置独立的密码本密码</key>
+	<string>Set a separate Password Book password</string>
+	<key>访达压缩任务</key>
+	<string>Finder compression task</string>
+	<key>访达快速创建 ZIP</key>
+	<string>Quickly create ZIP in Finder</string>
+	<key>访达解压任务</key>
+	<string>Finder extraction task</string>
+	<key>访达请求不存在或已被处理</key>
+	<string>Finder request unavailable.</string>
+	<key>访达请求已过期，请重试</key>
+	<string>Finder request expired. Try again.</string>
+	<key>访达请求文件无效</key>
+	<string>Invalid Finder request.</string>
+	<key>该内层文件不能作为可浏览容器打开</key>
+	<string>Cannot browse this file.</string>
+	<key>该项目不是普通文件、目录或符号链接，压缩引擎无法保证安全、完整地保存它。</key>
+	<string>Only files, folders, and symbolic links can be archived.</string>
+	<key>该项目包含未保存的修改，请先保存或撤销修改后再继续。</key>
+	<string>Save or undo changes to continue.</string>
+	<key>详细信息：</key>
+	<string>Details: </string>
+	<key>请从已打包的 ArcZip.app 中修改格式关联</key>
+	<string>Change format associations from a packaged ArcZip.app</string>
+	<key>请使用 ArcZip 打开以查看完整内容。</key>
+	<string>Open with ArcZip to view the full contents.</string>
+	<key>请使用 ArcZip 打开并输入密码。</key>
+	<string>Open with ArcZip and enter the password.</string>
+	<key>请先修正所有 Windows 文件名问题</key>
+	<string>Fix all Windows filename issues first</string>
+	<key>请先完成当前任务并保存压缩包更改</key>
+	<string>Finish the current task and save archive changes first</string>
+	<key>请先完成或取消当前密码、确认或修复操作，再重新退出 ArcZip。</key>
+	<string>Finish or cancel this prompt before quitting.</string>
+	<key>请先解锁密码本。</key>
+	<string>Unlock Password Book first.</string>
+	<key>请再次输入密码</key>
+	<string>Re-enter the password</string>
+	<key>请完整阅读</key>
+	<string>Please Read Carefully</string>
+	<key>请检查文件夹权限或选择其他位置后重试</key>
+	<string> Check the folder permissions or choose another location and try again</string>
+	<key>请牢记此密码；忘记密码且无法使用快捷解锁时，只能重置并清空密码本。</key>
+	<string>Remember this password. If you forget it and quick unlock is unavailable, you can only reset and erase the password book.</string>
+	<key>请确认这个项目的新名称</key>
+	<string>Confirm a new name for this item</string>
+	<key>请解锁一次密码本，以启用锁定时保存密码。</key>
+	<string>Unlock Password Book once to enable saving while locked.</string>
+	<key>请设置密码，或关闭密码保护</key>
+	<string>Set a password or turn off password protection</string>
+	<key>请设置独立的密码本密码。支持时，也可使用 Touch ID 或 Apple Watch 快速解锁。</key>
+	<string>Set an independent password for your password book. Touch ID or Apple Watch can also unlock it when available.</string>
+	<key>请输入“</key>
+	<string>Enter the password for “</string>
+	<key>请输入压缩包名称</key>
+	<string>Enter an archive name</string>
+	<key>请输入压缩包密码</key>
+	<string>Enter Archive Password</string>
+	<key>请输入安全的单个文件名</key>
+	<string>Enter one safe file name</string>
+	<key>请输入密码</key>
+	<string>Enter Password</string>
+	<key>请输入密码后继续。</key>
+	<string>Enter a password to continue.</string>
+	<key>请输入密码后继续。密码只保存在当前窗口的内存中。</key>
+	<string>Enter the password to continue. The password is kept in memory for this window only.</string>
+	<key>请输入密码后继续。密码只保存在当前窗口的内存中，不会写入磁盘或命令行。</key>
+	<string>Enter the password to continue. It is kept in memory for this window only and is never written to disk or the command line.</string>
+	<key>请输入已有的密码本密码以关闭保护。</key>
+	<string>Enter your current Password Book password to turn off protection.</string>
+	<key>请选择同一文件夹中的项目</key>
+	<string>Select items from one folder.</string>
+	<key>请选择有效的存储位置</key>
+	<string>Choose a valid storage location</string>
+	<key>请释放一些磁盘空间，或检查系统临时目录后重试。压缩包没有被修改。</key>
+	<string>Free some disk space or check the system temporary folder and try again. The archive was not modified.</string>
+	<key>请释放空间后重试，或选择其他位置。</key>
+	<string> Free some space and try again, or choose another location.</string>
+	<key>读取或暂存失败</key>
+	<string>Read or staging failed</string>
+	<key>调整压缩包工作区的默认呈现方式</key>
+	<string>Choose the default archive view.</string>
+	<key>资源忙</key>
+	<string>Resource Busy</string>
+	<key>路径名称冲突</key>
+	<string>Path name conflict</string>
+	<key>跳过</key>
+	<string>Skip</string>
+	<key>跳过 </key>
+	<string>Skip </string>
+	<key>跳过后仍会只读挂载，但无法确认磁盘映像内容是否完整。</key>
+	<string>It will still be mounted read-only if you skip this, but ArcZip cannot verify that the disk image contents are complete.</string>
+	<key>跳过校验</key>
+	<string>Skip</string>
+	<key>软件包（谨慎）</key>
+	<string>Packages (Caution)</string>
+	<key>软件更新</key>
+	<string>Software Updates</string>
+	<key>输入密码</key>
+	<string>Enter Password</string>
+	<key>输入独立的密码本密码以继续。</key>
+	<string>Enter your separate Password Book password to continue.</string>
+	<key>返回</key>
+	<string>Back</string>
+	<key>返回上一级</key>
+	<string>Back</string>
+	<key>返回投放台</key>
+	<string>Back to Drop Zone</string>
+	<key>返回操作</key>
+	<string>Back to Actions</string>
+	<key>还没有最近打开的压缩包</key>
+	<string>No archives have been opened recently</string>
+	<key>这个压缩包将用于什么？</key>
+	<string>What will this archive be used for?</string>
+	<key>这个项目无法放入文件夹</key>
+	<string>This item cannot be collected into a folder.</string>
+	<key>这些名称在 Windows 中可能消失、被改写或无法正常解压。ArcZip 已填入可用名称，你可以直接确认，也可以在这里修改。</key>
+	<string>These names may disappear, be altered, or fail to extract correctly on Windows. ArcZip has filled in safe names; confirm them as-is or edit them here.</string>
+	<key>进入主工作区</key>
+	<string>Open in Workspace</string>
+	<key>进入完整工作区</key>
+	<string>Open Full Workspace</string>
+	<key>进行中</key>
+	<string>Working</string>
+	<key>适合 Unix 目录归档</key>
+	<string>Suitable for Unix directory archives</string>
+	<key>适合在 Mac 之间传递</key>
+	<string>Suitable for sharing between Macs</string>
+	<key>选择</key>
+	<string>Choose</string>
+	<key>选择 ArcZip 的打开方式，并启用 Finder 快捷操作</key>
+	<string>Choose how ArcZip opens files and enable Finder quick actions</string>
+	<key>选择 ArcZip 窗口使用的明暗模式</key>
+	<string>Choose light, dark, or automatic.</string>
+	<key>选择全部</key>
+	<string>Select All</string>
+	<key>选择压缩包存储位置</key>
+	<string>Choose Archive Location</string>
+	<key>选择压缩包格式</key>
+	<string>Choose an archive format</string>
+	<key>选择双击文件时由 ArcZip 打开的格式</key>
+	<string>Set ArcZip as the default app for selected formats.</string>
+	<key>选择已有密码</key>
+	<string>Choose a saved password</string>
+	<key>选择文件</key>
+	<string>Choose Files</string>
+	<key>选择最大可用核心数</key>
+	<string>Choose the CPU core limit</string>
+	<key>选择目标位置并解压此文件夹</key>
+	<string>Choose a destination and extract this folder</string>
+	<key>选择解压目标文件夹</key>
+	<string>Choose Extraction Destination</string>
+	<key>通常用于下载和传输的压缩数据流</key>
+	<string>Compressed streams commonly used for downloads and transfers</string>
+	<key>通用分享</key>
+	<string>General Sharing</string>
+	<key>部分关联</key>
+	<string>Partially Associated</string>
+	<key>配置 ArcZip 可扩展的智能操作</key>
+	<string>Customize Flow actions.</string>
+	<key>采用 Windows 兼容设置</key>
+	<string>Use Windows-compatible settings</string>
+	<key>采用所选归档格式</key>
+	<string>Use Selected Archive Format</string>
+	<key>采用所选格式的通用设置</key>
+	<string>Use general settings for the selected format</string>
+	<key>采用通用 ZIP 设置</key>
+	<string>Use general ZIP settings</string>
+	<key>采用高强度压缩设置</key>
+	<string>Use high-compression settings</string>
+	<key>重命名</key>
+	<string>Rename</string>
+	<key>重命名压缩包</key>
+	<string>Rename Archive</string>
+	<key>重命名压缩包并选择格式</key>
+	<string>Rename the archive and choose a format</string>
+	<key>重命名压缩包项目</key>
+	<string>Rename Archive Item</string>
+	<key>重命名文件</key>
+	<string>Rename File</string>
+	<key>重命名文件夹</key>
+	<string>Rename Folder</string>
+	<key>重新启动 Finder</key>
+	<string>Restart Finder</string>
+	<key>重新打开</key>
+	<string>Reopen</string>
+	<key>重新打开 </key>
+	<string>Reopen </string>
+	<key>重新显示</key>
+	<string>Show Again</string>
+	<key>重新显示欢迎页面</key>
+	<string>Show Welcome Page</string>
+	<key>重新载入</key>
+	<string>Reload</string>
+	<key>重置</key>
+	<string>Reset</string>
+	<key>重置密码本…</key>
+	<string>Reset Password Book…</string>
+	<key>重置并清空密码本？</key>
+	<string>Reset and clear Password Book?</string>
+	<key>重试</key>
+	<string>Try Again</string>
+	<key>随时重新查看 ArcZip 的功能介绍与初始设置</key>
+	<string>Revisit ArcZip’s introduction and setup.</string>
+	<key>隐藏密码</key>
+	<string>Hide Password</string>
+	<key>隐藏辅助项目</key>
+	<string>Hide Auxiliary Items</string>
+	<key>需要在系统设置中启用 ArcZip Finder 扩展</key>
+	<string>Enable the ArcZip Finder extension in System Settings</string>
+	<key>音频</key>
+	<string>Audio</string>
+	<key>项目</key>
+	<string>Item</string>
+	<key>项目不存在或无法访问</key>
+	<string>Item missing or inaccessible</string>
+	<key>项目在压缩前无法复制到安全暂存区；它可能已被移动、权限发生变化、磁盘空间不足，或正由其他程序管理。</key>
+	<string>Could not prepare this item. Check permissions and disk space.</string>
+	<key>项目详情</key>
+	<string>Item Details</string>
+	<key>预览</key>
+	<string>Preview</string>
+	<key>预览 · 后台索引中</key>
+	<string>Preview · Indexing in Background</string>
+	<key>预览加密文件</key>
+	<string>Preview Encrypted File</string>
+	<key>预览所选项目</key>
+	<string>Preview Selected Items</string>
+	<key>首选项</key>
+	<string>Preferences</string>
+	<key>首选项、压缩、解压缩和 Flow 将恢复默认值</key>
+	<string>Language, General, Compression, Extraction, Flow and Box will return to defaults</string>
+	<key>首选项、压缩、解压缩和 Flow 设置将恢复默认值；格式关联保持不变。</key>
+	<string>Language, General, Compression, Extraction, Flow and Box settings will return to defaults. File associations will stay unchanged.</string>
+	<key>高强度 LZMA2，使用 1 GB 固实块</key>
+	<string>Strong LZMA2 with 1 GB solid blocks.</string>
+	<key>高级</key>
+	<string>Advanced</string>
+	<key>高级选项</key>
+	<string>Advanced Options</string>
+	<key>默认使用 Mini 窗口预览压缩包</key>
+	<string>Open archives in ArcZip Mini by default</string>
+	<key>默认关闭，保留系统安全检查</key>
+	<string>Off by default; keep system security checks</string>
+	<key>默认创建分卷压缩包</key>
+	<string>Split new archives by default</string>
+	<key>默认压缩强度</key>
+	<string>Compression Level</string>
+	<key>默认打开方式只能从已打包的 ArcZip.app 中修改。请先运行 dist/ArcZip.app。</key>
+	<string>Default app associations can only be changed from a packaged ArcZip.app. Run dist/ArcZip.app first.</string>
+	<key>默认浏览方式</key>
+	<string>Default View</string>
+	<key>默认用途与压缩强度</key>
+	<string>Compression Defaults</string>
+	<key>鼠标停留 1 秒后，在光标旁预览图片及支持的文档；适用于工作区和 Mini 窗口</key>
+	<string>Hover for 1 second to preview images and supported documents beside the pointer in the workspace and Mini windows.</string>
+	<key>，已展开</key>
+	<string>, expanded</string>
+	<key>，已折叠</key>
+	<string>, collapsed</string>
+	<key>：此前的默认应用已不存在</key>
+	<string> has no previous default app available</string>
+	<key>：没有记录到此前的默认应用，请在 Finder 的“显示简介”中选择新的打开方式</key>
+	<string> has no recorded previous default app. Choose a new Open With app in Finder's Get Info</string>
+	<key>；仍可在创建压缩包时临时更改。</key>
+	<string>; you can change it when creating an archive.</string>
+	<key>；回滚原因：</key>
+	<string>; Rollback error: </string>
+	<key>通用</key>
+	<string>General</string>
+	<key>ProZip Mini</key>
+	<string>ProZip Mini</string>
+	<key>ProZip 文件盒</key>
+	<string>ProZip Box</string>
+	<key>关于</key>
+	<string>About</string>
+	<key>全功能已解锁</key>
+	<string>All features unlocked</string>
+	<key>开源无限制，专业功能全部可用</key>
+	<string>Open source, with all professional features included</string>
+	<key>开源许可与概览</key>
+	<string>License and overview</string>
+	<key>启动</key>
+	<string>Startup</string>
+	<key>开机自动启动 ProZip</key>
+	<string>Launch ProZip at login</string>
+	<key>语言</key>
+	<string>Language</string>
+	<key>应用语言</key>
+	<string>App language</string>
+	<key>跟随系统语言，或为 ProZip 单独指定语言。</key>
+	<string>Follow the system language, or choose a language for ProZip.</string>
+	<key>跟随系统</key>
+	<string>System default</string>
+	<key>重新启动 ProZip 后，语言设置将生效。请先保存修改。</key>
+	<string>The language will change after restarting ProZip. Save your changes first.</string>
+	<key>重新启动 ProZip</key>
+	<string>Restart ProZip</string>
+	<key>进度窗口</key>
+	<string>Progress window</string>
+	<key>保持置顶</key>
+	<string>Keep on top</string>
+	<key>显示通常隐藏的系统辅助文件</key>
+	<string>Show system files that are usually hidden</string>
+	<key>悬浮预览</key>
+	<string>Hover preview</string>
+	<key>Pro 已解锁</key>
+	<string>Pro unlocked</string>
+	<key>开启悬浮预览</key>
+	<string>Enable hover preview</string>
+	<key>鼠标停留时显示文件预览</key>
+	<string>Preview files when the pointer hovers over them</string>
+	<key>在悬浮预览中播放视频</key>
+	<string>Play video in hover previews</string>
+	<key>支持 MP4、MOV、M4V 等格式</key>
+	<string>Supports MP4, MOV, M4V and other formats</string>
+	<key>自动播放音频</key>
+	<string>Autoplay audio</string>
+	<key>视频默认静音</key>
+	<string>Mute video by default</string>
+	<key>可预览音视频大小上限：%ld MB</key>
+	<string>Maximum media preview size: %ld MB</string>
+	<key>密码输入</key>
+	<string>Password entry</string>
+	<key>默认显示密码</key>
+	<string>Show passwords by default</string>
+	<key>可随时点击眼睛按钮隐藏</key>
+	<string>Click the eye button to hide a password at any time</string>
+	<key>全部可用（%ld）</key>
+	<string>All available (%ld)</string>
+	<key>访达扩展</key>
+	<string>Finder extension</string>
+	<key>在移动存储中开启右键菜单</key>
+	<string>Enable context menus on removable volumes</string>
+	<key>为外接硬盘、U盘等移动存储中的文件提供访达右键菜单</key>
+	<string>Show Finder context menus for files on external drives and USB storage</string>
+	<key>访达右键菜单</key>
+	<string>Finder context menu</string>
+	<key>如果访达右键菜单中没有 ProZip，可以尝试修复。</key>
+	<string>If ProZip is missing from the Finder context menu, try repairing it.</string>
+	<key>修复访达菜单项</key>
+	<string>Repair Finder menu items</string>
+	<key>重新浏览介绍，不会重置设置</key>
+	<string>Revisit the introduction without resetting your settings</string>
+</dict>
+</plist>
