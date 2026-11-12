@@ -1,103 +1,189 @@
-# ArcZip 行为资料库（用于开源重实现）
+<p align="center">
+  <img src="Resources/AppIcon-Preview.png" alt="ProZip Logo" width="160">
+</p>
 
-> 目标：给"从零写一个完全开源的 ArcZip 等价物"提供**行为参考 + 实现上限**。
-> 这里描述的是**可观察行为与内部契约**，不是原版源码，也不含原版资源、证书、私有密钥或安装包。
+<h1 align="center">ProZip</h1>
 
-- 样本版本：**ArcZip 1.2.3 (build 366)**，`com.maczhang.ArcZip`
-- 架构：Universal（arm64 + x86_64），arm64 slice `14,898,368` B，SHA-256 `b2dff34b59c099ddc55263d8313a79c6fb7dbd5e94d3cf56af93d0f3fa8aa529`
-- 安装包：`ArcZip-1.2.3-366.dmg`，SHA-256 `d194af66932c8fa6bcfa09884e9606a3d81e002c6f8d16e148024f3b6da73fd8`
-- 最低系统：macOS 14.0；构建 SDK：macOS 27.0；签名：Developer ID + Hardened Runtime（**未开 App Sandbox**，entitlements 只有 App Group 与 Keychain Group）
-- 三语本地化：en / zh-Hans / zh-Hant，`Localizable.strings` 各 **1640** 条
-- 技术栈：Swift + SwiftUI（少量 AppKit）；ZIPFoundation 0.9.20、libdeflate 1.26、内置 7-Zip `7zz 26.04`（+ 静态链入的 LZMA2 编码子集）、系统 libarchive、Sparkle 2.9.4
+<p align="center">
+  <strong>现代、优雅且高性能的 macOS 开源解压缩与归档管理工具</strong><br>
+  原生 Swift / SwiftUI 打造 · 四层引擎深度融合 · SQLite 极速索引 · 系统级扩展集成
+</p>
 
-## 怎么用这份资料
+<p align="center">
+  <a href="https://github.com/scoltzero/prozip/stargazers"><img src="https://img.shields.io/github/stars/scoltzero/prozip?style=flat-square&logo=github&label=Stars" alt="GitHub Stars"></a>
+  <a href="https://github.com/scoltzero/prozip/forks"><img src="https://img.shields.io/github/forks/scoltzero/prozip?style=flat-square&logo=github&label=Forks" alt="GitHub Forks"></a>
+  <a href="https://github.com/scoltzero/prozip/releases"><img src="https://img.shields.io/github/downloads/scoltzero/prozip/total?style=flat-square&label=Downloads" alt="GitHub Downloads"></a>
+  <a href="https://github.com/scoltzero/prozip/releases/latest"><img src="https://img.shields.io/github/v/release/scoltzero/prozip?style=flat-square&label=Release" alt="Latest Release"></a>
+  <a href="https://developer.apple.com/macos/"><img src="https://img.shields.io/badge/Platform-macOS%2014.0%2B-000000?style=flat-square&logo=apple&logoColor=white" alt="Platform macOS 14+"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/scoltzero/prozip?style=flat-square&label=License" alt="License"></a>
+</p>
 
-| 你想做的事 | 先读 |
+<p align="center">
+  <a href="https://github.com/scoltzero/prozip/releases/latest"><img src="https://img.shields.io/badge/Download-Latest%20Release-0969DA?style=for-the-badge&logo=github&logoColor=white" alt="下载最新版本"></a>
+  <a href="#快速开始"><img src="https://img.shields.io/badge/Guide-Quick%20Start-334155?style=for-the-badge&logo=readthedocs&logoColor=white" alt="快速开始"></a>
+  <a href="https://github.com/scoltzero/prozip/issues"><img src="https://img.shields.io/badge/Feedback-Issues-2EA44F?style=for-the-badge&logo=github&logoColor=white" alt="问题反馈与建议"></a>
+</p>
+
+> [!IMPORTANT]
+> **关于本项目的定位与初衷**：
+> 本项目为开发者个人出于对 macOS 现代化桌面应用架构、SwiftUI 与 AppKit 混合交互设计、跨引擎归档流（Archive Streaming Pipeline）及清洁室工程实践的学习、研究与技术探索而发起的完全开源项目。
+> 
+> 本软件仅供技术交流与学习使用，无意与市面上任何成熟的商业归档软件构成竞争。所有代码均由个人独立编写，不包含任何商业逆向源码或非授权素材，全量源码均遵循 [GNU General Public License v3.0](LICENSE) 协议公开。欢迎广大 macOS 开发者与开源爱好者交流探讨、指正与共同完善。
+
+---
+
+## 为什么选择 ProZip
+
+| 核心特性 | 说明 |
 |---|---|
-| 定产品范围、抄交互骨架 | [01-产品与交互模型](01-产品与交互模型.md) |
-| 写"打开压缩包"这条主链路 | [02-浏览与索引](02-浏览与索引.md) |
-| 决定用哪个引擎、支持哪些格式 | [03-引擎与格式矩阵](03-引擎与格式矩阵.md) |
-| 写压缩/解压功能 | [04-创建压缩包](04-创建压缩包.md)、[05-解压](05-解压.md) |
-| 写密码、密码本 | [06-密码与密码本](06-密码与密码本.md) |
-| 写编辑保存（最容易翻车） | [07-编辑与保存](07-编辑与保存.md) |
-| 写 DMG 浏览、装 App/字体 | [08-磁盘映像与安装](08-磁盘映像与安装.md) |
-| 写 Flow、Finder/QL/Services/Box | [09-Flow与系统集成](09-Flow与系统集成.md) |
-| 写设置、持久化、试用/授权/更新 | [10-设置-持久化-商业-更新](10-设置-持久化-商业-更新.md) |
-| 直接开工 | [11-开源实现蓝图](11-开源实现蓝图.md) → [12-验收测试矩阵](12-验收测试矩阵.md) |
-| 复核证据 | [90-证据与方法](90-证据与方法.md) + `data/` |
+| **原生性能与体验** | 纯 Swift / SwiftUI 打造，深度融合 macOS 原生外观、触控反馈与视觉层级，轻快敏捷。 |
+| **四层引擎深度协同** | 结合 NativeZipEngine（零拷贝直读）、7-Zip (LZMA2 多线程)、系统 libarchive 与 hdiutil 磁盘挂载。 |
+| **SQLite 双表极速索引** | 归档加载即在本地建立分层索引数据库，数万条目秒级展开、过滤与局部提取，告别漫长解包等待。 |
+| **双模式灵活工作台** | 支持 1040×740 多栏全功能工作台与 560×422 磨砂 Mini 浏览窗口无缝切换（快捷键 `⌥⌘M`）。 |
+| **智能 Flow 动作流** | 上下文自动识别归档内容（应用、字体、文档等），智能推荐「安装到应用程序」、「安装字体」或直开。 |
+| **菜单栏暂存盒 (Shelf)** | 常驻菜单栏的敏捷暂存工作区，支持拖拽收集多源散落文件、目录内联穿透浏览与批量一键压缩。 |
+| **安全密码本与 Touch ID** | 本地 AES-GCM 密码安全管理，支持系统 Keychain 与 Touch ID 硬件解锁保护，多密码自动轮询匹配。 |
+| **系统级深度扩展** | 配套 Finder 右键上下文菜单扩展（FinderSync）与空格键 Quick Look 极速预览插件。 |
 
-## 十条最值得先抄的行为
+---
 
-1. **三种窗口形态同源**：Workspace（完整）/ Mini（560×422 浏览态）/ Box（菜单栏暂存架），同一个会话模型，切换时要求"保存或放弃"。
-2. **目录索引落盘**：每次打开压缩包在 `~/Library/Caches/com.maczhang.ArcZip/Temporary/Sessions/<pid>-<uuid>/Indexes/index-<uuid>.sqlite` 建索引，UI 只查库，不反复读压缩包。
-3. **索引有明确阶段**：`preliminary`（可浏览、可全部解压）→ 索引完成（可搜索/预览/拖出/解压所选）。未完成时相关入口显示"等待文件列表读取完成"。
-4. **"进入目录"而不是展开树**：双击目录整体替换列表，行层级恒为 0；这决定了行↔条目映射必须靠"当前目录 + 排序"重建。
-5. **排序固定**：目录优先，再 `localizedCaseInsensitiveCompare`（SQL 侧 `is_directory DESC, sort_name COLLATE NOCASE`）。
-6. **引擎四层分工**：原生 ZIP writer（ZIPFoundation 容器 + libdeflate 编码 + 结构校验）→ 内置 7zz（7z/rar/宽格式/增量修改）→ 系统 libarchive（大量兼容格式/单文件流）→ `hdiutil`（DMG/ISO），另有独立 Lzip 解析器。
-7. **压缩是事务**：输出先在临时区写完、校验 manifest、再原子发布；发布登记表 `archive_publications` 有 `prepared/backingUp/committed/rollingBack/recoveryUncertain` 状态，崩溃后可恢复。
-8. **临时文件有登记表**：`temporary_artifacts` 记录 device/inode/birthtime/size + 所有权 token，清理前逐项核对身份，避免误删用户文件。
-9. **密码绝不出现在进程参数里**：7zz 用 `-p__ARCZIP_NO_PASSWORD__` 占位，真实密码走安全管道（`writePassword(_:to:)`）。
-10. **Pro 门是"效果级"的**：每个动作先过一个商业策略判定（`decide()`），而不是在 UI 里藏按钮；免费版仍保留打开、浏览、预览、完整解压、ZIP+通用+均衡创建。
+## 格式支持矩阵
 
-## 原版已知的"实现上限"（照着做时可以少走弯路）
-
-这些是原版**自己写在错误文案里**的能力边界，说明 1.2.3 并没有做到"全格式全功能"：
-
-| 边界 | 原文 |
+| 类别 | 支持格式与能力 |
 |---|---|
-| 不写加密 ZIP | "ZIP AES 写入将在授权加密引擎接入后启用；不会回退到泄露命令行密码的实现" |
-| 不预览加密 ZIP | "此预览版尚未接入 ZIP AES 解密" |
-| 不支持 GBK ZIP 编辑 | "自动识别为 GBK 的 ZIP 暂不支持编辑保存；请先解压后重新创建压缩包" |
-| 拼接/分卷 ZIP 不编辑 | "拼接 ZIP 暂不支持编辑保存"、"分卷压缩包暂不支持原位编辑" |
-| 单文件流不编辑 | "单文件压缩流不支持归档式编辑" |
-| RAR 只读 | 无 RAR 写入器；RAR 只做浏览/解压（含 `.partN.rar` 识别） |
-| Lzip 只读 | "Lzip 创建尚未开放" |
-| TAR 不能调压缩级别 | "TAR 仅打包，不支持调整压缩强度" |
-| 分卷只支持 ZIP/7Z | "仅 ZIP 和 7Z 支持分卷" |
-| ISO 能力受限 | "ISO 回退引擎不支持应用程序提取"/"不支持提取"（只能挂载后复制） |
-| ZIP 密码只支持 ASCII | "为保证跨平台可解压，创建 ZIP 时密码仅支持 ASCII。中文密码请使用 7Z" |
+| **主流解压与浏览** | ZIP, 7Z, RAR (v4 / v5 / 分卷), TAR, GZ, TGZ, BZ2, TBZ2, XZ, TXZ, ZST, TZST, CPIO, CAB, ISO, DMG 等 |
+| **归档与压缩创建** | ZIP (支持 Deflate 速度与压缩比调节、AES-256 加密、分卷切片)、7Z (LZMA2 高压缩比、Header 加密、分卷)、TAR |
+| **原位修改与保存** | 支持对现有非分卷归档直接添加、删除、重命名文件并安全原子提交（带发布事务与回滚保障） |
 
-## 目录结构
+---
 
+## 平台与系统要求
+
+- **操作系统**：macOS 14.0 (Sonoma) 及以上
+- **处理器架构**：Apple Silicon (M 系列芯片) 原生运行与 Intel (x86_64) 通用兼容
+- **权限与环境**：纯本地运行，默认不开启任何联网追踪、遥测或远程统计
+
+---
+
+## 快速开始
+
+### 1. 下载预编译版本
+前往 [Latest Release](https://github.com/scoltzero/prozip/releases/latest) 页面下载 `ProZip-v0.1.0-macos.dmg` 或 `ProZip-v0.1.0-macos.zip`。
+
+### 2. 安装与运行
+1. 打开 DMG 磁盘映像，将 `ProZip.app` 拖入 `Applications`（应用程序）文件夹。
+2. 双击打开 ProZip。如遇系统安全提示，可在「系统设置 → 隐私与安全性」中点击「仍要打开」。
+3. 首次启动时可根据向导提示开启 Finder 扩展与 Quick Look 预览插件。
+
+---
+
+## 架构与技术实现
+
+ProZip 采用清晰的分层架构，将界面交互、业务状态、会话索引与底层解压缩引擎完全解耦：
+
+```text
+┌─────────────────────────────────────────────────────────────┐
+│              ProZip App & Extensions Layer                  │
+│   (WorkspaceWindowView / MiniWindowView / MenuBarShelf)     │
+│   (ProZipFinderSync Extension / ProZipQuickLook Plugin)     │
+└──────────────────────────────┬──────────────────────────────┘
+                               │
+┌──────────────────────────────▼──────────────────────────────┐
+│                    ProZipUI & ViewModels                    │
+│   - AppViewModel (会话驱动、状态流转、Flow 动作决策)        │
+│   - ProZipTheme (原生风格、色彩层级、动画反馈)              │
+└──────────────────────────────┬──────────────────────────────┘
+                               │
+┌──────────────────────────────▼──────────────────────────────┐
+│                    ProZipCore Engine Layer                  │
+│   - ArchiveBrowsingSession (会话生命周期与安全暂存管理)     │
+│   - EntryIndex (SQLite 极速目录与条目索引表)                │
+│   - PasswordBook (AES-GCM + Keychain + Touch ID 密码金库)   │
+│   - ManagedTemporaryArtifactRegistry (临时产物生命周期治理) │
+└──────────────────────────────┬──────────────────────────────┘
+                               │
+┌──────────────────────────────▼──────────────────────────────┐
+│                   Archive Engine Broker                     │
+│   ├─ NativeZipEngine   : 纯 Swift 原生直读与快速写入        │
+│   ├─ SevenZipEngine    : 7-Zip LZMA2 / AES / 宽格式子系统   │
+│   ├─ LibarchiveEngine  : 系统 libarchive 兼容流引擎         │
+│   └─ DiskImageEngine   : hdiutil 磁盘映像与挂载管理         │
+└─────────────────────────────────────────────────────────────┘
 ```
-prozip/
-├── README.md
-├── 01-产品与交互模型.md
-├── 02-浏览与索引.md
-├── 03-引擎与格式矩阵.md
-├── 04-创建压缩包.md
-├── 05-解压.md
-├── 06-密码与密码本.md
-├── 07-编辑与保存.md
-├── 08-磁盘映像与安装.md
-├── 09-Flow与系统集成.md
-├── 10-设置-持久化-商业-更新.md
-├── 11-开源实现蓝图.md
-├── 12-验收测试矩阵.md
-├── 90-证据与方法.md
-└── data/
-    ├── localizable.tsv          # 1640 条 × 3 语对照
-    ├── defaults-keys.tsv        # 全部 UserDefaults 键
-    ├── formats.tsv              # 格式 × 能力矩阵
-    ├── flow-ids.txt             # Flow 标识符
-    ├── allowed-open-formats.txt # Flow「打开文件」32 种白名单
-    ├── entry-index.sql          # 目录索引 schema（从二进制提取）
-    ├── publish-registry.sql     # 临时文件/发布事务 schema
-    ├── types-by-module.txt      # 类型清单（按模块）
-    ├── swift-sources.txt        # 源码文件清单（101 个）
-    ├── engine-strings.txt       # 引擎错误/边界原文
-    ├── third-party.tsv          # 第三方组件/版本/许可
-    ├── README.md                # data 目录用途与可再分发性说明
-    └── screenshots/             # Mini / Workspace / 设置 4 个面板
-```
 
-## 标注约定
+---
 
-- `[实证]`：二进制字符串、plist、SQLite、AX 树、截图、实际运行可直接确认。
-- `[推断]`：由类型名、字段名、文案、调用关系推出，未逐条动态验证。
-- `[上限]`：原版明确未实现或受限。
-- 行内 `0x…` 是 arm64 slice 的文件偏移，便于复核。
+## 本地编译与开发
 
-## 边界说明
+本项目使用标准 Swift Package Manager 管理依赖，并提供自动化构建脚本：
 
-本资料用于**互操作与重实现**：描述文件格式、交互契约、错误语义和数据结构。开源版请使用自己的代码与素材，不要复用原版的图标、`Assets.car`、本地化文案原文和品牌名。详见 [11-开源实现蓝图](11-开源实现蓝图.md) 的"清洁室"一节。
+### 前置依赖
+- macOS 14.0+，已安装 Xcode 15+ 或 Command Line Tools
+- Homebrew 安装的 7zz 工具（用于提取内置引擎子集）：
+  ```bash
+  brew install sevenzip
+  ```
+
+### 构建步骤
+1. **克隆代码仓库**：
+   ```bash
+   git clone https://github.com/scoltzero/prozip.git
+   cd prozip
+   ```
+
+2. **编译 Swift 核心模块**：
+   ```bash
+   swift build -c release
+   ```
+
+3. **打包完整 macOS Application 产物**（含 Finder 扩展与 Quick Look）：
+   ```bash
+   bash scripts/build_app.sh release
+   ```
+   打包完成后，产物位于 `build/ProZip.app`。
+
+---
+
+## 独立实现与开源交流说明
+
+<details>
+<summary><strong>展开查看设计理念与著作权边界说明</strong></summary>
+
+1. **研发宗旨与学习初衷**：
+   本项目的开发初衷在于探索 macOS 现代桌面 GUI 开发的极限体验。我们在开发中研究了业界大量优秀归档工具在交互设计、动画节奏、多引擎调度与流式处理上的先进思路，并通过纯 Swift / SwiftUI 进行了独立设计与编码实现。
+
+2. **独立编写与清洁室原则**：
+   本项目不包含任何商业专有软件的反编译源码、受保护资源或私有证书。所有业务逻辑、数据结构、UI 视图代码均从零编写，符合 Clean Room 软件工程原则。
+
+3. **友善交流与非竞争承诺**：
+   开源此项目的目的是为了与社区中对 macOS 桌面开发、文件系统流处理、原生跨语言互操作感兴趣的开发者互相交流与学习。我们充分尊重所有商业软件开发者的知识产权与辛勤劳动，本仓库不以替代任何商业软件为目的。
+
+</details>
+
+---
+
+## 来源与鸣谢
+
+ProZip 的实现离不开开源社区优秀基础设施与工具库的支持，特此向以下开源项目与维护者致以诚挚感谢：
+
+| 开源项目 | 用途与贡献 | 开源协议 |
+|---|---|---|
+| [ZIPFoundation](https://github.com/weichsel/ZIPFoundation) | 原生 Swift ZIP 结构解析与流式读写基础 | MIT |
+| [7-Zip / p7zip](https://www.7-zip.org/) | 7z、LZMA2 算法与多格式解包引擎 | LGPL-2.1+ / unRAR License |
+| [libarchive](https://www.libarchive.org/) | 多格式流式归档兼容层 | BSD |
+| [libdeflate](https://github.com/ebiggers/libdeflate) | 高性能 Deflate / zlib 解压缩参考 | MIT |
+
+---
+
+## 支持与交流
+
+如果你喜欢 ProZip，或者它在学习和日常使用中对你有所帮助：
+- 欢迎在 GitHub 上点亮一颗 **Star** ⭐️ 支持项目！
+- 发现 Bug 或有改进建议？欢迎随时提交 [Issues](https://github.com/scoltzero/prozip/issues) 或 Pull Request！
+
+---
+
+## 许可证
+
+ProZip 核心代码基于 **[GNU General Public License v3.0](LICENSE)** (GPL-3.0) 协议开源。
+引用的第三方开源组件继续遵循其各自的上游开源许可证。

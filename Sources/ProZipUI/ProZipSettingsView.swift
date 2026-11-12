@@ -2242,7 +2242,7 @@ public struct AboutSettingsPane: View {
                     Text("当前版本")
                         .font(.system(size: 13))
                         .foregroundStyle(.secondary)
-                    Text("1.2.3 (366)")
+                    Text("\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.1.0") (\(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1"))")
                         .font(.system(size: 13, weight: .medium))
                     Text(isCheckingForUpdates ? "正在检查更新…" : "尚未检查更新")
                         .font(.system(size: 11))

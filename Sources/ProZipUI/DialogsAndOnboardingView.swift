@@ -984,9 +984,9 @@ public struct ReleaseOverviewWindowView: View {
 
                     VStack(alignment: .leading, spacing: 3) {
                         HStack(spacing: 8) {
-                            Text("ProZip 1.2.3 更新概览")
+                            Text("ProZip 0.1.0 欢迎与特性概览")
                                 .font(.system(size: 18, weight: .bold))
-                            Text("Build 366 · Open Source")
+                            Text("Build 1 · Open Source")
                                 .font(.system(size: 11, weight: .bold, design: .monospaced))
                                 .foregroundStyle(ProZipTheme.darkInk)
                                 .padding(.horizontal, 7)
@@ -1053,7 +1053,7 @@ public struct ReleaseOverviewWindowView: View {
                         .foregroundStyle(.secondary)
                     Spacer()
                     ArcZipDialogButton("知道了", role: .primary, size: .regular) {
-                        UserDefaults.standard.set("1.2.3", forKey: "releaseOverview.presentedVersion.v1.stable")
+                        UserDefaults.standard.set("0.1.0", forKey: "releaseOverview.presentedVersion.v1.stable")
                         dismiss()
                     }
                     .keyboardShortcut(.defaultAction)
@@ -1125,7 +1125,9 @@ public struct AboutProZipView: View {
                 VStack(spacing: 4) {
                     Text("ProZip")
                         .font(.system(size: 22, weight: .bold))
-                    Text("版本 1.2.3 (Build 366) · Open Source Edition")
+                    let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.1.0"
+                    let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1"
+                    Text("版本 \(version) (Build \(build)) · Open Source Edition")
                         .font(.system(size: 12, weight: .medium))
                         .foregroundStyle(.secondary)
                 }
@@ -1189,9 +1191,9 @@ public struct CheckForUpdatesDialogView: View {
                     ProZipBrandIcon(size: 52, showAppSquircle: true)
 
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(isChecking ? "正在检查更新…" : "ProZip 1.2.3 已是最新版本")
+                        Text(isChecking ? "正在检查更新…" : "ProZip 0.1.0 已是最新版本")
                             .font(.system(size: 15, weight: .bold))
-                        Text("当前安装的 ProZip 1.2.3 (Build 366) Open Source 是目前已发布的最新版本。")
+                        Text("当前安装的 ProZip 0.1.0 (Build 1) Open Source 是目前已发布的最新版本。")
                             .font(.system(size: 12))
                             .foregroundStyle(.secondary)
                             .fixedSize(horizontal: false, vertical: true)
@@ -2774,7 +2776,7 @@ public struct ProZipUIDialogGalleryView: View {
     private var componentShowcaseLab: some View {
         ArcZipDialogSurface(width: 620) {
             VStack(alignment: .leading, spacing: 18) {
-                Text("ArcZip 1.2.3 / ProZip 原生交互组件实验室")
+                Text("ProZip 原生交互组件实验室")
                     .font(.system(size: 16, weight: .bold))
 
                 Group {

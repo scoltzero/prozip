@@ -335,18 +335,18 @@ public struct StructuredArchiveError: Identifiable, Hashable, Sendable {
     public init(
         title: String = "无法读取压缩包中的文件",
         summaryReason: String = "无法读取文件。压缩包返回的数据与目录索引不一致（CRC-32 校验和不匹配）。当前项目无法预览或导出，但其他项目仍可继续浏览。",
-        affectedItemPath: String = "/Users/luochuhan/Downloads/Release_Bundle_v1.2.3.zip → Payload/CoreEngine.dylib",
+        affectedItemPath: String = "/Users/luochuhan/Downloads/Release_Bundle_v0.1.0.zip → Payload/CoreEngine.dylib",
         recoverySuggestion: String = "源压缩包没有被修改。你可以重新打开压缩包后再试。如果问题持续出现，请检查源文件是否下载完整，或复制下方诊断信息以供排查。",
         errorCode: String = "PZ-ERR-CRC32-MISMATCH (0x8004020B)",
         requestID: String = "REQ-20261110-9F4A2C8E",
         engineName: String = "NativeZipEngine (Zero-Copy LocalHeader Reader)",
         technicalDetails: String = """
         阶段：extract-member [verify-crc32]
-        来源：/Users/luochuhan/Downloads/Release_Bundle_v1.2.3.zip
+        来源：/Users/luochuhan/Downloads/Release_Bundle_v0.1.0.zip
         条目：Payload/CoreEngine.dylib (offset=0x0041A820, compressed=418,902 B, uncompressed=1,048,576 B)
         期望 CRC32：0x9A8F3C12
         实际 CRC32：0x4401E7B9
-        系统：macOS 15.2 (arm64) · ProZip 1.2.3 (366) Open Source
+        系统：macOS 15.2 (arm64) · ProZip 0.1.0 (1) Open Source
         事务状态：Staging 已安全清理，原压缩包保持未修改状态
         """
     ) {
@@ -937,7 +937,7 @@ public final class ProZipAppViewModel: ObservableObject {
     @Published public var deleteTargetNames: [String] = ["旧版草稿_v1.sketch", "临时导出缓存/"]
     @Published public var trashTargetArchiveName: String = "macOS_SDK_Components.7z"
     @Published public var sourceAccessTargetFolder: String = "~/Library/Containers/com.tencent.xinWeChat/Data/Library/Application Support/com.tencent.xinWeChat"
-    @Published public var diskImageName: String = "ProDeveloperTools_1.2.3.dmg"
+    @Published public var diskImageName: String = "ProDeveloperTools_0.1.0.dmg"
     @Published public var diskImageLicenseText: String = ""
     private var pendingLicenseArchiveURL: URL?
 
