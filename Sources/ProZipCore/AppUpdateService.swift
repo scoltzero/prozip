@@ -102,7 +102,7 @@ public final class AppUpdateService: Sendable {
         repository: String = defaultRepository,
         currentVersion: String? = nil
     ) async throws -> UpdateCheckResult {
-        let appVersion = currentVersion ?? (Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String) ?? "0.1.0"
+        let appVersion = currentVersion ?? (Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String) ?? "0.1.2"
         let endpoint = "https://api.github.com/repos/\(repository)/releases/latest"
         guard let url = URL(string: endpoint) else {
             throw URLError(.badURL)

@@ -68,7 +68,7 @@
 ## 快速开始
 
 ### 1. 下载预编译版本
-前往 [Latest Release](https://github.com/scoltzero/prozip/releases/latest) 页面下载 `ProZip-v0.1.0-macos.dmg` 或 `ProZip-v0.1.0-macos.zip`。
+前往 [Latest Release](https://github.com/scoltzero/prozip/releases/latest) 页面下载 `ProZip-v0.1.2-macos.dmg` 或 `ProZip-v0.1.2-macos.zip`。
 
 ### 2. 安装与运行
 1. 打开 DMG 磁盘映像，将 `ProZip.app` 拖入 `Applications`（应用程序）文件夹。
