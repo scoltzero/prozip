@@ -16,18 +16,16 @@ struct ProZipApplication: App {
     var body: some Scene {
         Settings { EmptyView() }
         .commands {
-            // Full macOS Menu Bar commands matching doc/01 section 3 & doc/13
             CommandGroup(replacing: .appSettings) {
                 Button("设置…") {
-                    ProZipAppDelegate.shared?.openSettings()
+                    appDelegate.openSettings()
                 }
                 .keyboardShortcut(",", modifiers: .command)
             }
 
             CommandGroup(replacing: .appInfo) {
                 Button("关于 ProZip") {
-                    appViewModel.settingsSelectedTab = .about
-                    appDelegate.openSettings()
+                    appDelegate.openSettings(tab: .about)
                 }
 
                 Button("检查更新…") {
@@ -91,7 +89,10 @@ struct ProZipApplication: App {
                         appViewModel.extractSelection(s.selectedEntries, in: s)
                     }
                 }
+                .keyboardShortcut("e", modifiers: [.command, .shift])
                 .disabled(appViewModel.activeSession?.selectedEntries.isEmpty != false)
+
+                Divider()
 
                 Button("删除所选项目") {
                     if let s = appViewModel.activeSession {
@@ -100,8 +101,6 @@ struct ProZipApplication: App {
                 }
                 .keyboardShortcut(.delete, modifiers: [])
                 .disabled(appViewModel.activeSession?.selectedEntries.isEmpty != false || appViewModel.activeSession?.safeDescriptor.editingEligibility.allowed != true)
-
-                Divider()
 
                 Button("保存") {
                     if let s = appViewModel.activeSession {
@@ -132,30 +131,23 @@ struct ProZipApplication: App {
 
                 Divider()
 
-                Button("切换到 Mini 窗口") {
+                Button("切换到 Mini") {
                     if let s = appViewModel.activeSession {
                         s.isMiniMode.toggle()
                     }
                 }
-                .keyboardShortcut("m", modifiers: [.option, .command])
                 .disabled(appViewModel.activeSession?.initialSourceStat == nil)
             }
 
-            CommandGroup(after: .windowList) {
-                Button("ProZip 暂存盒") {
+            CommandGroup(after: .windowArrangement) {
+                Button("ProZip 文件盒") {
                     appDelegate.showShelf()
                 }
 
-                Button("任务队列…") {
-                    appDelegate.showActiveWindow()
-                    appDelegate.openProgressWindow()
-                }
-
                 if ProcessInfo.processInfo.environment["PROZIP_UI_GALLERY"] == "1" {
-                    Divider()
                     Button("界面与弹窗全览…") {
                         appDelegate.showActiveWindow()
-                        appViewModel.isDialogGalleryPresented = true
+                        appViewModel.presentDialog(\.isDialogGalleryPresented, for: appViewModel.activeSessionID)
                     }
                     .keyboardShortcut("d", modifiers: [.command, .shift])
                 }
@@ -164,8 +156,9 @@ struct ProZipApplication: App {
             CommandGroup(replacing: .help) {
                 Button("更新概览") {
                     appDelegate.showActiveWindow()
-                    appViewModel.isReleaseOverviewPresented = true
+                    appViewModel.presentDialog(\.isReleaseOverviewPresented, for: appViewModel.activeSessionID)
                 }
+                .disabled(true)
 
                 Button("ProZip 帮助") {
                     if let url = URL(string: "https://github.com/prozip/prozip") {
@@ -199,7 +192,7 @@ struct AppRootView: View {
         RootArchiveContainerView(sessionID: sessionID)
             .environmentObject(appViewModel)
             .sheet(isPresented: presentation(\.isOnboardingPresented)) {
-                FirstLaunchOnboardingView()
+                FirstLaunchOnboardingView(dismissesSheetOnFinish: true)
             }
             .sheet(isPresented: presentation(\.isCreationDialogPresented), onDismiss: {
                 appViewModel.creationDialogDidDismiss()
@@ -259,15 +252,368 @@ struct AppRootView: View {
     }
 }
 
-/// Borderless main window: ArcZip has no system titlebar; it draws 16pt
-/// traffic lights itself. NSWindow needs canBecomeKey overridden for that.
+/// Custom AppKit traffic-lights group container that positions genuine AppKit
+/// `standardWindowButton`s at `(19, 24)`, `(39, 24)`, `(59, 24)` (`16×16`) while
+/// preserving native `_mouseInGroup:` cluster rollover, `⌥+Green` zoom, and tiling menus.
+final class MainWindowTrafficLightsContainerView: NSView {
+    private var isHoveringGroup = false
+    private var trackingAreaRef: NSTrackingArea?
+    private var flagsMonitor: Any?
+
+    @objc(_mouseInGroup:)
+    func _mouseInGroup(_ button: NSButton) -> Bool {
+        isHoveringGroup
+    }
+
+    override func updateTrackingAreas() {
+        super.updateTrackingAreas()
+        if let trackingAreaRef { removeTrackingArea(trackingAreaRef) }
+        let area = NSTrackingArea(
+            rect: bounds,
+            options: [.mouseEnteredAndExited, .activeAlways, .inVisibleRect],
+            owner: self,
+            userInfo: nil
+        )
+        addTrackingArea(area)
+        trackingAreaRef = area
+    }
+
+    override func mouseEntered(with event: NSEvent) {
+        super.mouseEntered(with: event)
+        setHovering(true)
+    }
+
+    override func mouseExited(with event: NSEvent) {
+        super.mouseExited(with: event)
+        setHovering(false)
+    }
+
+    override func viewWillMove(toWindow newWindow: NSWindow?) {
+        if newWindow == nil { setHovering(false) }
+        super.viewWillMove(toWindow: newWindow)
+    }
+
+    deinit {
+        if let flagsMonitor { NSEvent.removeMonitor(flagsMonitor) }
+    }
+
+    private func setHovering(_ hovering: Bool) {
+        guard isHoveringGroup != hovering else { return }
+        isHoveringGroup = hovering
+        if hovering {
+            if flagsMonitor == nil {
+                flagsMonitor = NSEvent.addLocalMonitorForEvents(matching: [.flagsChanged]) { [weak self] event in
+                    self?.refreshButtons()
+                    return event
+                }
+            }
+        } else if let monitor = flagsMonitor {
+            NSEvent.removeMonitor(monitor)
+            flagsMonitor = nil
+        }
+        refreshButtons()
+    }
+
+    func refreshButtons() {
+        for case let button as NSButton in subviews {
+            button.needsDisplay = true
+        }
+        needsDisplay = true
+    }
+
+    override func layout() {
+        super.layout()
+        (window as? ArcZipWindow)?.enforceTrafficLightButtonFramesInContainer()
+    }
+}
+
+/// Main application window using `.titled` + `.fullSizeContentView` so native FullScreen
+/// (`toggleFullScreen`), `⌥+Green` zoom (`zoom`), and `⌘W` (`performClose:`) all work natively.
 final class ArcZipWindow: NSWindow {
+    struct TrafficLightRecord {
+        weak var button: NSButton?
+        weak var originalParent: NSView?
+        var originalFrame: NSRect
+        var originalMask: NSView.AutoresizingMask
+    }
+
+    var savedWorkspaceContentSize = NSSize(width: 1040, height: 740)
+    var usesPositionedTrafficLights = false
+    var hidesTrafficLights = false
+    var isTransitioningFullScreen = false
+    var minFrameWidth: CGFloat?
+    var minFrameHeight: CGFloat?
+    private var isApplyingTrafficLights = false
+    private var hasPendingDeferredTrafficPass = false
+    private var trafficLightRecords: [NSWindow.ButtonType: TrafficLightRecord] = [:]
+    private var trafficLightsContainer: MainWindowTrafficLightsContainerView?
+    private var trafficLightObservers: [NSObjectProtocol] = []
+    private var observedButtons: Set<ObjectIdentifier> = []
+    private weak var observedThemeFrame: NSView?
+
+    deinit {
+        for token in trafficLightObservers {
+            NotificationCenter.default.removeObserver(token)
+        }
+    }
+
     override var canBecomeKey: Bool { true }
     override var canBecomeMain: Bool { true }
 
     override func performClose(_ sender: Any?) {
         guard delegate?.windowShouldClose?(self) ?? true else { return }
         close()
+    }
+
+    override func setFrame(_ frameRect: NSRect, display flag: Bool) {
+        var adjusted = frameRect
+        if !styleMask.contains(.fullScreen) {
+            if let minW = minFrameWidth, adjusted.size.width < minW {
+                adjusted.size.width = minW
+            }
+            if let minH = minFrameHeight, adjusted.size.height < minH {
+                adjusted.origin.y += (adjusted.size.height - minH)
+                adjusted.size.height = minH
+            }
+        }
+        super.setFrame(adjusted, display: flag)
+        repositionTrafficLightsContainerIfNeeded()
+    }
+
+    override func makeKeyAndOrderFront(_ sender: Any?) {
+        super.makeKeyAndOrderFront(sender)
+        applyTrafficLightsLayout()
+        scheduleDeferredTrafficLightsPass()
+    }
+
+    override func orderFront(_ sender: Any?) {
+        super.orderFront(sender)
+        applyTrafficLightsLayout()
+        scheduleDeferredTrafficLightsPass()
+    }
+
+    override func orderFrontRegardless() {
+        super.orderFrontRegardless()
+        applyTrafficLightsLayout()
+        scheduleDeferredTrafficLightsPass()
+    }
+
+    func scheduleDeferredTrafficLightsPass() {
+        guard !hasPendingDeferredTrafficPass else { return }
+        hasPendingDeferredTrafficPass = true
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            self.hasPendingDeferredTrafficPass = false
+            guard !self.isTransitioningFullScreen, !self.styleMask.contains(.fullScreen) else { return }
+            self.applyTrafficLightsLayout()
+        }
+    }
+
+    func prepareForFullScreenEntry() {
+        isTransitioningFullScreen = true
+        isApplyingTrafficLights = true
+        defer { isApplyingTrafficLights = false }
+        restoreTrafficLightsToOriginalParents(hidden: false)
+        trafficLightsContainer?.isHidden = true
+    }
+
+    func enforceTrafficLightButtonFramesInContainer() {
+        guard !isApplyingTrafficLights, usesPositionedTrafficLights, !hidesTrafficLights,
+              !isTransitioningFullScreen, !styleMask.contains(.fullScreen),
+              let container = trafficLightsContainer, !container.isHidden else { return }
+        isApplyingTrafficLights = true
+        defer { isApplyingTrafficLights = false }
+        layoutButtons(inside: container)
+    }
+
+    func applyTrafficLightsLayout() {
+        guard styleMask.contains(.titled) else { return }
+        if styleMask.contains(.fullScreen) || isTransitioningFullScreen {
+            if styleMask.contains(.fullScreen) {
+                isApplyingTrafficLights = true
+                restoreTrafficLightsToOriginalParents(hidden: false)
+                trafficLightsContainer?.isHidden = true
+                isApplyingTrafficLights = false
+            }
+            return
+        }
+        guard !isApplyingTrafficLights else { return }
+        isApplyingTrafficLights = true
+        defer { isApplyingTrafficLights = false }
+
+        captureTrafficLightRecordsIfNeeded()
+
+        if usesPositionedTrafficLights, let themeFrame = contentView?.superview {
+            observeThemeFrameIfNeeded(themeFrame)
+            let container: MainWindowTrafficLightsContainerView
+            let targetFrame = targetContainerFrame(in: themeFrame)
+            if let existing = trafficLightsContainer {
+                container = existing
+            } else {
+                let created = MainWindowTrafficLightsContainerView(frame: targetFrame)
+                created.autoresizingMask = [.maxXMargin, .minYMargin]
+                trafficLightsContainer = created
+                container = created
+            }
+            if container.superview !== themeFrame {
+                themeFrame.addSubview(container, positioned: .above, relativeTo: nil)
+            }
+            if abs(container.frame.origin.x - targetFrame.origin.x) > 0.5
+                || abs(container.frame.origin.y - targetFrame.origin.y) > 0.5
+                || abs(container.frame.size.width - targetFrame.size.width) > 0.5
+                || abs(container.frame.size.height - targetFrame.size.height) > 0.5 {
+                container.frame = targetFrame
+            }
+
+            if hidesTrafficLights {
+                if !container.isHidden { container.isHidden = true }
+                for type: NSWindow.ButtonType in [.closeButton, .miniaturizeButton, .zoomButton] {
+                    if let button = standardWindowButton(type) ?? trafficLightRecords[type]?.button {
+                        if button.superview !== container {
+                            button.removeFromSuperview()
+                            container.addSubview(button)
+                        }
+                        if !button.isHidden { button.isHidden = true }
+                    }
+                }
+                return
+            }
+
+            if container.isHidden { container.isHidden = false }
+            layoutButtons(inside: container)
+        } else if hidesTrafficLights {
+            trafficLightsContainer?.isHidden = true
+            for type: NSWindow.ButtonType in [.closeButton, .miniaturizeButton, .zoomButton] {
+                if let button = standardWindowButton(type) ?? trafficLightRecords[type]?.button {
+                    if !button.isHidden { button.isHidden = true }
+                }
+            }
+        } else {
+            trafficLightsContainer?.isHidden = true
+            restoreTrafficLightsToOriginalParents(hidden: false)
+        }
+    }
+
+    private func targetContainerFrame(in themeFrame: NSView) -> NSRect {
+        let windowRect = NSRect(x: 19, y: max(0, frame.height - 40), width: 56, height: 16)
+        return themeFrame.convert(windowRect, from: nil)
+    }
+
+    private func layoutButtons(inside container: MainWindowTrafficLightsContainerView) {
+        let types: [(NSWindow.ButtonType, CGFloat)] = [(.closeButton, 0), (.miniaturizeButton, 20), (.zoomButton, 40)]
+        let resizable = styleMask.contains(.resizable)
+        for (type, xOffset) in types {
+            guard let button = standardWindowButton(type) ?? trafficLightRecords[type]?.button else { continue }
+            if button.superview !== container {
+                button.removeFromSuperview()
+                container.addSubview(button)
+            }
+            if !button.autoresizingMask.isEmpty {
+                button.autoresizingMask = []
+            }
+            let actualSize = button.frame.size
+            let targetOrigin = NSPoint(
+                x: xOffset + floor((16 - actualSize.width) * 0.5),
+                y: floor((16 - actualSize.height) * 0.5)
+            )
+            if abs(button.frame.origin.x - targetOrigin.x) > 0.5 || abs(button.frame.origin.y - targetOrigin.y) > 0.5 {
+                button.setFrameOrigin(targetOrigin)
+            }
+            if button.isHidden { button.isHidden = false }
+            let shouldEnable = (type == .zoomButton) ? resizable : true
+            if button.isEnabled != shouldEnable { button.isEnabled = shouldEnable }
+        }
+    }
+
+    private func repositionTrafficLightsContainerIfNeeded() {
+        guard !isApplyingTrafficLights, usesPositionedTrafficLights, !isTransitioningFullScreen,
+              !styleMask.contains(.fullScreen),
+              let container = trafficLightsContainer,
+              let themeFrame = contentView?.superview else { return }
+        isApplyingTrafficLights = true
+        defer { isApplyingTrafficLights = false }
+        let targetFrame = targetContainerFrame(in: themeFrame)
+        if abs(container.frame.origin.x - targetFrame.origin.x) > 0.5
+            || abs(container.frame.origin.y - targetFrame.origin.y) > 0.5
+            || abs(container.frame.size.width - targetFrame.size.width) > 0.5
+            || abs(container.frame.size.height - targetFrame.size.height) > 0.5 {
+            container.frame = targetFrame
+        }
+        if !hidesTrafficLights {
+            layoutButtons(inside: container)
+        }
+    }
+
+    private func observeThemeFrameIfNeeded(_ themeFrame: NSView) {
+        guard observedThemeFrame !== themeFrame else { return }
+        observedThemeFrame = themeFrame
+        themeFrame.postsFrameChangedNotifications = true
+        let token = NotificationCenter.default.addObserver(
+            forName: NSView.frameDidChangeNotification,
+            object: themeFrame,
+            queue: nil
+        ) { [weak self] _ in
+            self?.repositionTrafficLightsContainerIfNeeded()
+        }
+        trafficLightObservers.append(token)
+    }
+
+    private func captureTrafficLightRecordsIfNeeded() {
+        for type: NSWindow.ButtonType in [.closeButton, .miniaturizeButton, .zoomButton] {
+            guard let button = standardWindowButton(type) else { continue }
+            if let superview = button.superview, superview !== trafficLightsContainer, trafficLightRecords[type] == nil {
+                trafficLightRecords[type] = TrafficLightRecord(
+                    button: button,
+                    originalParent: superview,
+                    originalFrame: button.frame,
+                    originalMask: button.autoresizingMask
+                )
+            } else if trafficLightRecords[type]?.button == nil {
+                trafficLightRecords[type]?.button = button
+            }
+
+            let buttonID = ObjectIdentifier(button)
+            if !observedButtons.contains(buttonID) {
+                observedButtons.insert(buttonID)
+                button.postsFrameChangedNotifications = true
+                let token = NotificationCenter.default.addObserver(
+                    forName: NSView.frameDidChangeNotification,
+                    object: button,
+                    queue: nil
+                ) { [weak self] _ in
+                    guard let self, !self.isApplyingTrafficLights,
+                          (self.usesPositionedTrafficLights || self.hidesTrafficLights),
+                          !self.isTransitioningFullScreen,
+                          !self.styleMask.contains(.fullScreen) else { return }
+                    self.scheduleDeferredTrafficLightsPass()
+                }
+                trafficLightObservers.append(token)
+            }
+        }
+    }
+
+    private func restoreTrafficLightsToOriginalParents(hidden: Bool) {
+        let resizable = styleMask.contains(.resizable)
+        for type: NSWindow.ButtonType in [.closeButton, .miniaturizeButton, .zoomButton] {
+            guard let record = trafficLightRecords[type],
+                  let button = standardWindowButton(type) ?? record.button else {
+                if let button = standardWindowButton(type) {
+                    if button.isHidden != hidden { button.isHidden = hidden }
+                    let shouldEnable = (type == .zoomButton) ? resizable : true
+                    if button.isEnabled != shouldEnable { button.isEnabled = shouldEnable }
+                }
+                continue
+            }
+            if let originalParent = record.originalParent, button.superview !== originalParent {
+                button.removeFromSuperview()
+                originalParent.addSubview(button)
+                button.autoresizingMask = record.originalMask
+                button.frame = record.originalFrame
+            }
+            if button.isHidden != hidden { button.isHidden = hidden }
+            let shouldEnable = (type == .zoomButton) ? resizable : true
+            if button.isEnabled != shouldEnable { button.isEnabled = shouldEnable }
+        }
     }
 }
 
@@ -284,11 +630,12 @@ final class TaskProgressPanel: NSPanel {
     override func performClose(_ sender: Any?) { ProZipAppViewModel.shared.isTaskProgressPresented = false }
 }
 
-// MARK: - Root Container Switcher (Workspace vs Mini)
+// MARK: - Root Container Switcher (Onboarding vs Landing vs Workspace vs Mini)
 
 struct RootArchiveContainerView: View {
     let sessionID: UUID?
     @EnvironmentObject var appViewModel: ProZipAppViewModel
+    @ObservedObject private var preferences = ProZipPreferences.shared
 
     var body: some View {
         if let sessionID {
@@ -297,26 +644,38 @@ struct RootArchiveContainerView: View {
                     .environmentObject(appViewModel)
             }
         } else {
-            ProZipLandingView()
-                .environmentObject(appViewModel)
-                .frame(width: 560, height: 390)
-                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                .background(WindowAccessor(
-                    isAlwaysOnTop: false,
-                    hidesNativeTrafficLights: true,
-                    contentSize: CGSize(width: 560, height: 390),
-                    minContentSize: CGSize(width: 560, height: 390),
-                    windowTitle: "ProZip",
-                    windowIdentifier: "ProZip.MainWindow",
-                    isResizable: false
-                ))
-
+            let isOnboarding = !preferences.onboardingCompleted
+            let targetSize = isOnboarding ? CGSize(width: 704, height: 582) : CGSize(width: 560, height: 390)
+            Group {
+                if isOnboarding {
+                    FirstLaunchOnboardingView()
+                        .environmentObject(appViewModel)
+                        .frame(width: 704, height: 582)
+                } else {
+                    ProZipLandingView()
+                        .environmentObject(appViewModel)
+                        .frame(width: 560, height: 390)
+                }
+            }
+            .background(WindowAccessor(
+                isAlwaysOnTop: false,
+                hidesNativeTrafficLights: isOnboarding || appViewModel.isOnboardingPresented,
+                usesPositionedTrafficLights: true,
+                contentSize: targetSize,
+                minContentSize: targetSize,
+                windowTitle: "ProZip",
+                windowIdentifier: "ProZip.MainWindow",
+                isResizable: false,
+                allowsFullScreen: false,
+                centersOnSizeChange: true
+            ))
         }
     }
 }
 
 /// Observes the session directly so `isMiniMode` / `isAlwaysOnTop` toggles re-render
-/// the window immediately (ArcZip switches Workspace ↔ Mini in place).
+/// the window immediately (ArcZip switches Workspace ↔ Mini in place, preserving selection
+/// and `savedWorkspaceContentSize`).
 struct SessionRootView: View {
     @ObservedObject var session: ArchiveBrowsingSession
     @EnvironmentObject var appViewModel: ProZipAppViewModel
@@ -334,118 +693,239 @@ struct SessionRootView: View {
         }
         .background(WindowAccessor(
             isAlwaysOnTop: session.isAlwaysOnTop,
-            hidesNativeTrafficLights: true,
-            contentSize: session.isMiniMode ? CGSize(width: 560, height: 422) : CGSize(width: 900, height: 600),
-            minContentSize: session.isMiniMode ? CGSize(width: 560, height: 422) : CGSize(width: 880, height: 600),
+            hidesNativeTrafficLights: session.isMiniMode,
+            usesPositionedTrafficLights: true,
+            contentSize: session.isMiniMode ? CGSize(width: 560, height: 422) : CGSize(width: 1040, height: 740),
+            minContentSize: session.isMiniMode ? CGSize(width: 560, height: 422) : CGSize(width: 900, height: 600),
             windowTitle: session.archiveName,
             windowIdentifier: "\(session.isMiniMode ? "Mini" : "Workspace").\(session.id.uuidString)",
-            isResizable: !session.isMiniMode
+            isResizable: !session.isMiniMode,
+            allowsFullScreen: !session.isMiniMode,
+            restoresSavedWorkspaceSize: !session.isMiniMode
         ))
         .onAppear { session.showsAuxiliaryEntries = preferences.showsAuxiliaryEntries }
         .onChange(of: preferences.showsAuxiliaryEntries) { _, value in session.showsAuxiliaryEntries = value }
     }
 }
 
-/// ArcZip landing (560×390): brand lockup on top, centered welcome copy,
-/// outline "open" capsule + filled "create" capsule, gear at top-right.
+/// ArcZip landing (`560×390`): `6pt` `#E8E9ED` bezel + `1pt` `#FFFFFF` inner rim around `r=26` card,
+/// ambient peach + ProZip green glow, cycling headline, hover/press capsules, gear at `(503, 13)`.
 struct ProZipLandingView: View {
     @EnvironmentObject var appViewModel: ProZipAppViewModel
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.controlActiveState) private var controlActiveState
     @State private var isDropTargeted = false
+    @State private var headlineIndex = 0
+    @State private var isHoveringGear = false
+    @State private var isHoveringOpen = false
+    @State private var isHoveringCreate = false
+
+    private static let headlines = [
+        "拖入压缩包进行预览或解压",
+        "拖入文件以创建压缩包"
+    ]
+
+    private var isWindowActive: Bool {
+        controlActiveState != .inactive
+    }
 
     var body: some View {
+        let outerShape = RoundedRectangle(cornerRadius: 32, style: .continuous)
+        let innerShape = RoundedRectangle(cornerRadius: 26, style: .continuous)
+
         ZStack {
-            ProZipTheme.landingGradient(for: colorScheme)
-                .ignoresSafeArea()
+            outerShape
+                .fill(colorScheme == .dark ? Color(red: 0.11, green: 0.114, blue: 0.125) : Color(red: 0.910, green: 0.914, blue: 0.929))
 
-            VStack(spacing: 0) {
-                HStack(spacing: 8) {
-                    Spacer()
-                    ProZipBrandIcon(size: 30, showAppSquircle: true)
-                    Text("ProZip")
-                        .font(.system(size: 18, weight: .bold))
-                    Spacer()
-                }
-                .overlay(alignment: .trailing) {
-                    Button {
-                        ProZipAppDelegate.shared?.openSettings()
-                    } label: {
-                        Image(systemName: "gearshape")
-                            .font(.system(size: 15, weight: .medium))
-                            .frame(width: 38, height: 38)
-                            .background(Circle().fill(Color.white.opacity(0.7)))
+            ZStack {
+                landingBackdrop
+                    .clipShape(innerShape)
+
+                VStack(spacing: 0) {
+                    HStack(spacing: 8) {
+                        Spacer(minLength: 0)
+                        ProZipBrandIcon(size: 30, showAppSquircle: true)
+                        Text("ProZip")
+                            .font(.system(size: 18, weight: .bold))
+                            .foregroundStyle(.primary)
+                        Spacer(minLength: 0)
                     }
-                    .buttonStyle(.plain)
-                    .help("设置")
-                }
-                .padding(.horizontal, 11)
-                .padding(.top, 17)
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel("ProZip")
+                    .accessibilityValue("欢迎页面")
+                    .padding(.top, 10)
 
-                Spacer(minLength: 0)
+                    Spacer(minLength: 0)
 
-                Text("拖入压缩包进行预览或解压")
-                    .font(.system(size: 30, weight: .bold))
-                    .foregroundStyle(.primary)
-                    .offset(y: 47)
+                    ZStack {
+                        Text(Self.headlines[headlineIndex])
+                            .id(headlineIndex)
+                            .font(.system(size: 26, weight: .bold))
+                            .foregroundStyle(.primary)
+                            .transition(.opacity)
+                    }
+                    .frame(height: 33)
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityIdentifier("ProZip.LandingHeadline")
+                    .accessibilityLabel("欢迎！拖入文件以开始")
+                    .padding(.bottom, 47.5)
 
-                Spacer(minLength: 0)
-
-                HStack(spacing: 14) {
-                    Button {
-                        ProZipAppDelegate.shared?.promptOpenArchive()
-                    } label: {
-                        HStack(spacing: 8) {
-                            Image(systemName: "folder")
-                                .font(.system(size: 14, weight: .semibold))
-                            Text("打开压缩包")
-                                .font(.system(size: 14, weight: .semibold))
+                    HStack(spacing: 12) {
+                        Button {
+                            ProZipAppDelegate.shared?.promptOpenArchive()
+                        } label: {
+                            HStack(spacing: 8) {
+                                Image(systemName: "folder")
+                                    .font(.system(size: 14, weight: .semibold))
+                                Text("打开压缩包")
+                                    .font(.system(size: 14, weight: .semibold))
+                            }
+                            .frame(width: 146.5, height: 40)
+                            .background(
+                                Capsule().fill(
+                                    isHoveringOpen
+                                        ? (colorScheme == .dark ? Color.white.opacity(0.20) : Color(red: 0.835, green: 0.816, blue: 0.824))
+                                        : (colorScheme == .dark ? Color.white.opacity(0.11) : Color.white.opacity(0.84))
+                                )
+                            )
+                            .overlay(
+                                Capsule().strokeBorder(Color.primary.opacity(0.08), lineWidth: 1)
+                            )
+                            .shadow(color: .black.opacity(colorScheme == .dark ? 0.18 : 0.04), radius: 5, y: 2)
+                            .foregroundStyle(.primary)
                         }
-                        .frame(width: 146, height: 40)
-                        .background(Capsule().fill(Color.white))
-                        .overlay(Capsule().stroke(Color.primary.opacity(0.10), lineWidth: 1))
-                        .foregroundStyle(.primary)
-                    }
-                    .buttonStyle(.plain)
-                    .help("打开压缩包")
-
-                    Button {
-                        ProZipAppDelegate.shared?.createNewArchive()
-                    } label: {
-                        HStack(spacing: 8) {
-                            Image(systemName: "plus")
-                                .font(.system(size: 14, weight: .bold))
-                            Text("创建压缩包")
-                                .font(.system(size: 14, weight: .semibold))
+                        .buttonStyle(LandingScaleButtonStyle(scale: 0.97))
+                        .onHover { hovering in
+                            withAnimation(.easeOut(duration: 0.14)) { isHoveringOpen = hovering }
                         }
-                        .frame(width: 142, height: 40)
-                        .background(Capsule().fill(ProZipTheme.accent))
-                        .foregroundStyle(.white)
+                        .accessibilityIdentifier("ProZip.LandingOpen")
+                        .accessibilityLabel("打开压缩包")
+                        .help("打开压缩包")
+
+                        Button {
+                            ProZipAppDelegate.shared?.createNewArchive()
+                        } label: {
+                            HStack(spacing: 8) {
+                                Image(systemName: "plus")
+                                    .font(.system(size: 14, weight: .bold))
+                                Text("创建压缩包")
+                                    .font(.system(size: 14, weight: .semibold))
+                            }
+                            .frame(width: 142.5, height: 40)
+                            .background(
+                                Capsule().fill(
+                                    isWindowActive
+                                        ? ProZipTheme.accent
+                                        : (colorScheme == .dark ? Color.white.opacity(0.12) : Color(red: 0.925, green: 0.933, blue: 0.945))
+                                )
+                            )
+                            .overlay(
+                                Capsule().strokeBorder(
+                                    LinearGradient(
+                                        colors: [Color.white.opacity(isWindowActive ? 0.34 : 0.0), .clear],
+                                        startPoint: .top,
+                                        endPoint: .bottom
+                                    ),
+                                    lineWidth: 1
+                                )
+                            )
+                            .brightness(isWindowActive && isHoveringCreate ? 0.04 : 0)
+                            .shadow(
+                                color: isWindowActive ? ProZipTheme.accent.opacity(0.26) : .clear,
+                                radius: 8,
+                                y: 3
+                            )
+                            .foregroundStyle(isWindowActive ? Color.white : Color.secondary)
+                        }
+                        .buttonStyle(LandingScaleButtonStyle(scale: 0.97))
+                        .onHover { hovering in
+                            withAnimation(.easeOut(duration: 0.14)) { isHoveringCreate = hovering }
+                        }
+                        .accessibilityIdentifier("ProZip.LandingCreate")
+                        .accessibilityLabel("创建压缩包")
+                        .help("创建压缩包")
                     }
-                    .buttonStyle(.plain)
-                    .help("创建压缩包")
+                    .padding(.bottom, 84.5)
                 }
-                .padding(.bottom, 91)
             }
-            .ignoresSafeArea(.container, edges: .top)
+            .clipShape(innerShape)
+            .overlay(
+                innerShape.strokeBorder(
+                    colorScheme == .dark ? Color.white.opacity(0.10) : Color.white,
+                    lineWidth: 1
+                )
+            )
+            .padding(6)
+        }
+        .frame(width: 560, height: 390)
+        .clipShape(outerShape)
+        .overlay(
+            outerShape.strokeBorder(Color.primary.opacity(0.10), lineWidth: 1)
+                .allowsHitTesting(false)
+        )
+        .overlay(alignment: .topTrailing) {
+            Button {
+                ProZipAppDelegate.shared?.openSettings()
+            } label: {
+                Image(systemName: "gearshape")
+                    .font(.system(size: 15, weight: .medium))
+                    .foregroundStyle(.primary.opacity(0.85))
+                    .frame(width: 38, height: 38)
+                    .background(
+                        Circle().fill(
+                            isHoveringGear
+                                ? (colorScheme == .dark ? Color.white.opacity(0.20) : Color(red: 0.824, green: 0.820, blue: 0.827))
+                                : (colorScheme == .dark ? Color.white.opacity(0.10) : Color(red: 0.976, green: 0.976, blue: 0.976))
+                        )
+                    )
+                    .overlay(Circle().strokeBorder(Color.primary.opacity(0.08), lineWidth: 1))
+            }
+            .buttonStyle(LandingScaleButtonStyle(scale: 0.95))
+            .onHover { hovering in
+                withAnimation(.easeOut(duration: 0.14)) { isHoveringGear = hovering }
+            }
+            .padding(.top, 13)
+            .padding(.trailing, 19)
+            .accessibilityIdentifier("ProZip.LandingSettings")
+            .accessibilityLabel("设置…")
+            .help("设置…")
         }
         .overlay(alignment: .topLeading) {
             MainWindowTrafficLightsView(
-                onClose: { NSApp.keyWindow?.close() },
-                onMinimize: { NSApp.keyWindow?.miniaturize(nil) },
-                onZoom: { NSApp.keyWindow?.zoom(nil) }
+                isZoomEnabled: false,
+                onClose: { (ProZipAppDelegate.shared?.landingWindow ?? NSApp.keyWindow)?.performClose(nil) },
+                onMinimize: { (ProZipAppDelegate.shared?.landingWindow ?? NSApp.keyWindow)?.miniaturize(nil) },
+                onZoom: {}
             )
             .padding(.leading, 19)
             .padding(.top, 24)
         }
         .overlay(alignment: .topLeading) {
             WindowDragArea()
-                .frame(width: 430, height: 44)
-                .offset(x: 80, y: 0)
+                .frame(width: 416, height: 48)
+                .offset(x: 82, y: 0)
         }
         .overlay {
-            if isDropTargeted { ProZipTheme.accent.opacity(0.10).allowsHitTesting(false) }
+            if isDropTargeted {
+                innerShape
+                    .fill(ProZipTheme.accent.opacity(0.10))
+                    .overlay(innerShape.strokeBorder(ProZipTheme.accent.opacity(0.45), lineWidth: 1.5))
+                    .padding(6)
+                    .allowsHitTesting(false)
+            }
         }
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("文件投放区")
         .animation(.easeInOut(duration: 0.15), value: isDropTargeted)
+        .task {
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(3.6))
+                guard !Task.isCancelled else { break }
+                withAnimation(.easeInOut(duration: 0.45)) {
+                    headlineIndex = (headlineIndex + 1) % Self.headlines.count
+                }
+            }
+        }
         .onDrop(of: [.fileURL], isTargeted: $isDropTargeted) { providers in
             guard providers.contains(where: { $0.hasItemConformingToTypeIdentifier(UTType.fileURL.identifier) }) else { return false }
             Task { @MainActor in
@@ -455,21 +935,73 @@ struct ProZipLandingView: View {
             return true
         }
     }
+
+    @ViewBuilder
+    private var landingBackdrop: some View {
+        if colorScheme == .dark {
+            ZStack {
+                Color(red: 0.118, green: 0.122, blue: 0.133)
+                RadialGradient(
+                    colors: [Color(red: 0.24, green: 0.16, blue: 0.16).opacity(0.42), .clear],
+                    center: UnitPoint(x: 0.24, y: 0.30),
+                    startRadius: 12,
+                    endRadius: 240
+                )
+                RadialGradient(
+                    colors: [ProZipTheme.accent.opacity(0.14), .clear],
+                    center: UnitPoint(x: 0.80, y: 0.84),
+                    startRadius: 16,
+                    endRadius: 230
+                )
+            }
+        } else {
+            ZStack {
+                Color(red: 0.996, green: 0.988, blue: 0.986)
+                RadialGradient(
+                    colors: [Color(red: 0.996, green: 0.910, blue: 0.902).opacity(0.85), .clear],
+                    center: UnitPoint(x: 0.26, y: 0.32),
+                    startRadius: 10,
+                    endRadius: 245
+                )
+                RadialGradient(
+                    colors: [ProZipTheme.accent.opacity(0.12), .clear],
+                    center: UnitPoint(x: 0.80, y: 0.84),
+                    startRadius: 12,
+                    endRadius: 240
+                )
+            }
+        }
+    }
 }
 
-// MARK: - AppKit Window Accessor for Always-On-Top
+private struct LandingScaleButtonStyle: ButtonStyle {
+    var scale: CGFloat = 0.97
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? scale : 1.0)
+            .animation(.spring(response: 0.22, dampingFraction: 0.78), value: configuration.isPressed)
+    }
+}
+
+// MARK: - AppKit Window Accessor
 
 struct WindowAccessor: NSViewRepresentable {
     var isAlwaysOnTop: Bool
     var hidesNativeTrafficLights: Bool = false
+    var usesPositionedTrafficLights: Bool = false
     var contentSize: CGSize? = nil
     var minContentSize: CGSize? = nil
     var windowTitle: String? = nil
     var windowIdentifier: String? = nil
     var isResizable: Bool = true
+    var allowsFullScreen: Bool = false
+    var restoresSavedWorkspaceSize: Bool = false
+    var centersOnSizeChange: Bool = false
 
     final class Coordinator {
-        var lastAppliedSize: CGSize?
+        var lastAppliedModeKey: String?
+        var wasResizable: Bool?
     }
 
     func makeCoordinator() -> Coordinator { Coordinator() }
@@ -490,21 +1022,47 @@ struct WindowAccessor: NSViewRepresentable {
 
     private func updateWindow(_ window: NSWindow?, context: Context) {
         guard let window else { return }
+        let arcWindow = window as? ArcZipWindow
+        let isFullScreen = window.styleMask.contains(.fullScreen)
+
+        if !allowsFullScreen && isFullScreen {
+            window.toggleFullScreen(nil)
+            return
+        }
+
         let level: NSWindow.Level = isAlwaysOnTop ? .floating : .normal
         if window.level != level { window.level = level }
-        var style = window.styleMask.union([.closable, .miniaturizable])
-        if isResizable { style.insert(.resizable) } else { style.remove(.resizable) }
-        let styleChanged = window.styleMask != style
-        if styleChanged { window.styleMask = style }
-        if hidesNativeTrafficLights {
-            window.standardWindowButton(.closeButton)?.isHidden = true
-            window.standardWindowButton(.miniaturizeButton)?.isHidden = true
-            window.standardWindowButton(.zoomButton)?.isHidden = true
+
+        if context.coordinator.wasResizable == true && !isResizable && !isFullScreen, let arcWindow {
+            let current = window.contentView?.bounds.size ?? window.frame.size
+            if current.width >= 900 && current.height >= 600 {
+                arcWindow.savedWorkspaceContentSize = current
+            }
         }
-        window.titlebarAppearsTransparent = true
-        window.titleVisibility = .hidden
-        window.isMovableByWindowBackground = true
-        window.acceptsMouseMovedEvents = true
+        context.coordinator.wasResizable = isResizable
+
+        var styleChanged = false
+        if !isFullScreen {
+            var style = window.styleMask.union([.titled, .fullSizeContentView, .closable, .miniaturizable])
+            style.remove(.borderless)
+            if isResizable { style.insert(.resizable) } else { style.remove(.resizable) }
+            if window.styleMask != style {
+                window.styleMask = style
+                styleChanged = true
+            }
+        }
+
+        let targetCollection: NSWindow.CollectionBehavior = allowsFullScreen ? [.fullScreenPrimary] : []
+        if !isFullScreen && window.collectionBehavior != targetCollection {
+            window.collectionBehavior = targetCollection
+        }
+
+        if !window.titlebarAppearsTransparent { window.titlebarAppearsTransparent = true }
+        if window.titleVisibility != .hidden { window.titleVisibility = .hidden }
+        if window.titlebarSeparatorStyle != .none { window.titlebarSeparatorStyle = .none }
+        if !window.isMovableByWindowBackground { window.isMovableByWindowBackground = true }
+        if !window.acceptsMouseMovedEvents { window.acceptsMouseMovedEvents = true }
+
         if let windowTitle, window.title != windowTitle {
             window.title = windowTitle
             NSApp.changeWindowsItem(window, title: windowTitle, filename: false)
@@ -517,23 +1075,50 @@ struct WindowAccessor: NSViewRepresentable {
             }
         }
 
-        if isResizable {
-            window.contentMaxSize = NSSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude)
-        }
-        if let contentSize, context.coordinator.lastAppliedSize != contentSize {
-            context.coordinator.lastAppliedSize = contentSize
+        let modeKey = "\(windowIdentifier ?? ""):\(isResizable):\(Int(contentSize?.width ?? 0))x\(Int(contentSize?.height ?? 0))"
+        if !isFullScreen, let contentSize, context.coordinator.lastAppliedModeKey != modeKey {
+            let previousKey = context.coordinator.lastAppliedModeKey
+            context.coordinator.lastAppliedModeKey = modeKey
+            let resolvedSize: NSSize
+            if restoresSavedWorkspaceSize, let saved = arcWindow?.savedWorkspaceContentSize {
+                resolvedSize = NSSize(width: max(900, saved.width), height: max(600, saved.height))
+            } else {
+                resolvedSize = contentSize
+            }
             window.contentMinSize = .zero
             window.minSize = .zero
-            window.setContentSize(contentSize)
-            window.center()
-        }
-        if let minContentSize {
-            window.contentMinSize = minContentSize
-        }
-        if !isResizable, let contentSize {
-            window.contentMaxSize = contentSize
+            window.contentMaxSize = NSSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude)
+            window.maxSize = NSSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude)
+            window.setContentSize(resolvedSize)
+            if previousKey == nil || centersOnSizeChange {
+                window.center()
+            }
+            if previousKey != nil, windowIdentifier == "ProZip.MainWindow", ProZipAppViewModel.shared.activeSessionID == nil, !window.isVisible {
+                window.makeKeyAndOrderFront(nil)
+            }
         }
 
+        if !isFullScreen {
+            if let minContentSize {
+                if window.contentMinSize != minContentSize { window.contentMinSize = minContentSize }
+                if window.minSize != minContentSize { window.minSize = minContentSize }
+            }
+            let maxTarget = isResizable
+                ? NSSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude)
+                : (contentSize ?? window.frame.size)
+            if window.contentMaxSize != maxTarget { window.contentMaxSize = maxTarget }
+            if window.maxSize != maxTarget { window.maxSize = maxTarget }
+        }
+
+        if let arcWindow {
+            arcWindow.hidesTrafficLights = hidesNativeTrafficLights
+            arcWindow.usesPositionedTrafficLights = usesPositionedTrafficLights
+            arcWindow.applyTrafficLightsLayout()
+        } else if hidesNativeTrafficLights {
+            for type: NSWindow.ButtonType in [.closeButton, .miniaturizeButton, .zoomButton] {
+                if let btn = window.standardWindowButton(type), !btn.isHidden { btn.isHidden = true }
+            }
+        }
     }
 }
 
@@ -583,6 +1168,26 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
             .sink { [weak self] id in
                 guard let id, ProZipAppViewModel.shared.activeSessionID == id else { return }
                 self?.showActiveWindow()
+            }
+            .store(in: &cancellables)
+
+        ProZipAppViewModel.shared.$isSettingsPresented
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] presented in
+                guard presented else { return }
+                ProZipAppViewModel.shared.isSettingsPresented = false
+                self?.openSettings(tab: ProZipAppViewModel.shared.settingsSelectedTab)
+            }
+            .store(in: &cancellables)
+
+        ProZipAppViewModel.shared.$isPasswordBookManagerPresented
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] presented in
+                guard presented else { return }
+                ProZipAppViewModel.shared.isPasswordBookManagerPresented = false
+                self?.openSettings(tab: .passwordBook)
             }
             .store(in: &cancellables)
 
@@ -652,12 +1257,6 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
             if !files.isEmpty { importFiles(files, replacingLanding: true, honorMiniPreference: true) }
         }
 
-        Task { @MainActor in
-            if !ProZipPreferences.shared.onboardingCompleted {
-                ProZipAppViewModel.shared.isOnboardingPresented = true
-            }
-        }
-
         // The empty SwiftUI Settings scene can materialize at launch on macOS 27.
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) { [weak self] in
             guard let self else { return }
@@ -673,16 +1272,28 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
     }
 
     private func createArchiveWindow(for session: ArchiveBrowsingSession?) -> ArcZipWindow {
-        let size = session.map { $0.isMiniMode ? NSSize(width: 560, height: 422) : NSSize(width: 900, height: 600) }
-            ?? NSSize(width: 560, height: 390)
+        let isOnboarding = session == nil && !ProZipPreferences.shared.onboardingCompleted
+        let size: NSSize
+        if let session {
+            size = session.isMiniMode ? NSSize(width: 560, height: 422) : NSSize(width: 1040, height: 740)
+        } else {
+            size = isOnboarding ? NSSize(width: 704, height: 582) : NSSize(width: 560, height: 390)
+        }
+
         let hosting = NSHostingView(rootView: AppRootView(sessionID: session?.id).environmentObject(ProZipAppViewModel.shared))
+        hosting.safeAreaRegions = []
         hosting.frame = NSRect(origin: .zero, size: size)
         hosting.autoresizingMask = [.width, .height]
         hosting.sizingOptions = [.minSize]
 
+        let isWorkspace = (session != nil && session?.isMiniMode == false)
+        let styleMask: NSWindow.StyleMask = isWorkspace
+            ? [.titled, .fullSizeContentView, .closable, .miniaturizable, .resizable]
+            : [.titled, .fullSizeContentView, .closable, .miniaturizable]
+
         let window = ArcZipWindow(
             contentRect: NSRect(origin: .zero, size: size),
-            styleMask: session?.isMiniMode == false ? [.borderless, .closable, .miniaturizable, .resizable] : [.borderless, .closable, .miniaturizable],
+            styleMask: styleMask,
             backing: .buffered,
             defer: false
         )
@@ -692,10 +1303,17 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
         window.isOpaque = false
         window.backgroundColor = .clear
         window.hasShadow = true
+        window.titlebarAppearsTransparent = true
+        window.titleVisibility = .hidden
+        window.titlebarSeparatorStyle = .none
         window.isMovableByWindowBackground = true
-        window.contentMinSize = session?.isMiniMode == false ? NSSize(width: 880, height: 600) : size
-        if session?.isMiniMode != false { window.contentMaxSize = size }
-        window.collectionBehavior = [.fullScreenPrimary]
+        window.acceptsMouseMovedEvents = true
+        window.contentMinSize = isWorkspace ? NSSize(width: 900, height: 600) : size
+        if !isWorkspace { window.contentMaxSize = size }
+        window.collectionBehavior = isWorkspace ? [.fullScreenPrimary] : []
+        window.usesPositionedTrafficLights = true
+        window.hidesTrafficLights = (session?.isMiniMode == true) || isOnboarding
+        window.applyTrafficLightsLayout()
         window.center()
         window.title = session?.archiveName ?? "ProZip"
         let identifier = session.map { "\($0.isMiniMode ? "Mini" : "Workspace").\($0.id.uuidString)" } ?? "ProZip.MainWindow"
@@ -757,6 +1375,51 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
         ProZipAppViewModel.shared.closeSession(id: id)
         // The session is removed only after its save/discard flow has completed.
         return false
+    }
+
+    func windowWillEnterFullScreen(_ notification: Notification) {
+        (notification.object as? ArcZipWindow)?.prepareForFullScreenEntry()
+    }
+
+    func windowDidEnterFullScreen(_ notification: Notification) {
+        (notification.object as? ArcZipWindow)?.isTransitioningFullScreen = false
+    }
+
+    func windowDidFailToEnterFullScreen(_ window: NSWindow) {
+        guard let arcWindow = window as? ArcZipWindow else { return }
+        arcWindow.isTransitioningFullScreen = false
+        arcWindow.applyTrafficLightsLayout()
+        arcWindow.scheduleDeferredTrafficLightsPass()
+    }
+
+    func windowWillExitFullScreen(_ notification: Notification) {
+        (notification.object as? ArcZipWindow)?.isTransitioningFullScreen = true
+    }
+
+    func windowDidExitFullScreen(_ notification: Notification) {
+        guard let arcWindow = notification.object as? ArcZipWindow else { return }
+        arcWindow.isTransitioningFullScreen = false
+        arcWindow.applyTrafficLightsLayout()
+        arcWindow.scheduleDeferredTrafficLightsPass()
+    }
+
+    func windowWillResize(_ sender: NSWindow, to frameSize: NSSize) -> NSSize {
+        if sender === settingsWindow {
+            return NSSize(width: max(900, frameSize.width), height: max(680, frameSize.height))
+        }
+        return frameSize
+    }
+
+    func windowDidResize(_ notification: Notification) {
+        guard let window = notification.object as? ArcZipWindow,
+              window.usesPositionedTrafficLights,
+              !window.hidesTrafficLights,
+              window.styleMask.contains(.resizable),
+              !window.styleMask.contains(.fullScreen) else { return }
+        let size = window.contentView?.bounds.size ?? window.frame.size
+        if size.width >= 900 && size.height >= 600 {
+            window.savedWorkspaceContentSize = size
+        }
     }
 
     func windowDidBecomeKey(_ notification: Notification) { activateSession(for: notification) }
@@ -862,6 +1525,7 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
                let logo = NSImage(contentsOfFile: path) {
                 logo.size = NSSize(width: 18, height: 18)
                 logo.isTemplate = false
+                logo.accessibilityDescription = "ProZip 文件盒"
                 button.image = logo
             } else {
                 button.image = NSImage(systemSymbolName: "tray.full", accessibilityDescription: "ProZip 文件盒")
@@ -871,16 +1535,15 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
             button.action = #selector(toggleShelfPanel(_:))
             button.sendAction(on: [.leftMouseUp, .rightMouseUp])
             button.toolTip = "ProZip 文件盒"
+            button.setAccessibilityLabel("ProZip 文件盒")
+            button.setAccessibilityTitle("ProZip 文件盒")
         }
         shelfStatusItem = item
 
-        NotificationCenter.default.addObserver(
-            forName: .proZipCloseShelf,
-            object: nil,
-            queue: .main
-        ) { [weak self] _ in
-            Task { @MainActor in self?.hideShelfPanel() }
-        }
+        NotificationCenter.default.publisher(for: .proZipCloseShelf)
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in self?.hideShelfPanel() }
+            .store(in: &cancellables)
 
         let local = NSEvent.addLocalMonitorForEvents(matching: [.leftMouseDown]) { [weak self] event in
             self?.closeShelfIfUnpinned(event: event)
@@ -961,6 +1624,8 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
             panel.becomesKeyOnlyIfNeeded = false
             panel.acceptsMouseMovedEvents = true
             panel.title = "ProZip 文件盒"
+            panel.identifier = NSUserInterfaceItemIdentifier("ProZip.MenuBarShelf")
+            panel.setAccessibilityIdentifier("ProZip.MenuBarShelf")
             panel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .transient]
             shelfPanel = panel
         }
@@ -1040,9 +1705,12 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
     }
 
     private func updateProgressWindowLevel() {
-        let defaults = UserDefaults.standard
-        let keepOnTop = defaults.object(forKey: "progressWindow.keepOnTop.v1") as? Bool ?? true
-        progressWindow?.level = keepOnTop ? .floating : .normal
+        guard let progressWindow else { return }
+        let keepOnTop = UserDefaults.standard.object(forKey: "progressWindow.keepOnTop.v1") as? Bool ?? true
+        let targetLevel: NSWindow.Level = keepOnTop ? .floating : .normal
+        if progressWindow.level != targetLevel {
+            progressWindow.level = targetLevel
+        }
     }
 
     func openProgressWindow() {
@@ -1083,7 +1751,10 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
     }
 
     @MainActor
-    func openSettings() {
+    func openSettings(tab: SettingsTab? = nil) {
+        if let tab, ProZipAppViewModel.shared.settingsSelectedTab != tab {
+            ProZipAppViewModel.shared.settingsSelectedTab = tab
+        }
         if let existing = settingsWindow {
             existing.makeKeyAndOrderFront(nil)
             NSApp.activate(ignoringOtherApps: true)
@@ -1091,32 +1762,38 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
         }
         let root = ProZipSettingsView(initialTab: ProZipAppViewModel.shared.settingsSelectedTab)
             .environmentObject(ProZipAppViewModel.shared)
-            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .strokeBorder(Color.primary.opacity(0.10), lineWidth: 1)
-            )
         let hosting = NSHostingView(rootView: root)
+        hosting.safeAreaRegions = []
         hosting.frame = NSRect(x: 0, y: 0, width: 900, height: 712)
         hosting.autoresizingMask = [.width, .height]
         hosting.sizingOptions = [.minSize]
 
         let window = ArcZipWindow(
             contentRect: NSRect(x: 0, y: 0, width: 900, height: 712),
-            styleMask: [.borderless, .closable, .miniaturizable, .resizable],
+            styleMask: [.titled, .fullSizeContentView, .closable, .miniaturizable, .resizable],
             backing: .buffered,
             defer: false
         )
+        window.delegate = self
         window.contentView = hosting
         window.isReleasedWhenClosed = false
-        window.isOpaque = false
-        window.backgroundColor = .clear
         window.hasShadow = true
-        window.isMovableByWindowBackground = true
+        window.titlebarAppearsTransparent = true
+        window.titleVisibility = .hidden
+        window.titlebarSeparatorStyle = .none
+        window.isMovableByWindowBackground = false
         window.acceptsMouseMovedEvents = true
-        window.minSize = NSSize(width: 900, height: 712)
+        window.minFrameWidth = 900
+        window.minFrameHeight = 680
+        window.minSize = NSSize(width: 900, height: 680)
+        window.contentMinSize = NSSize(width: 900, height: 680)
+        window.collectionBehavior = [.fullScreenNone]
+        window.usesPositionedTrafficLights = false
+        window.hidesTrafficLights = false
+        window.applyTrafficLightsLayout()
         window.title = "设置"
         window.identifier = NSUserInterfaceItemIdentifier("ProZip.SettingsWindow")
+        window.setAccessibilityIdentifier("ProZip.SettingsWindow")
         window.center()
         window.makeKeyAndOrderFront(nil)
         NSApp.addWindowsItem(window, title: "设置", filename: false)

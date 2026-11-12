@@ -307,7 +307,7 @@ public final class ProZipPreferences: ObservableObject, @unchecked Sendable {
 
         self.prefersMiniWindow = defaults.object(forKey: "archiveOpening.prefersMiniWindow.v1") as? Bool ?? false
         self.miniUsesLiquidGlass = defaults.object(forKey: "miniWindow.usesLiquidGlass.v1") as? Bool ?? true
-        self.miniUsesColoredControlButtons = defaults.object(forKey: "miniWindow.usesColoredControlButtons.v1") as? Bool ?? true
+        self.miniUsesColoredControlButtons = defaults.object(forKey: "miniWindow.usesColoredControlButtons.v1") as? Bool ?? false
 
         self.boxEnabled = defaults.object(forKey: "box.enabled.v1") as? Bool ?? true
         self.boxColor = defaults.string(forKey: "box.color") ?? "chartreuse"
@@ -539,7 +539,7 @@ public final class ProZipPreferences: ObservableObject, @unchecked Sendable {
         allowedOpenFormats = AllowedOpenFormat.defaultAllowedIDs
         prefersMiniWindow = false
         miniUsesLiquidGlass = true
-        miniUsesColoredControlButtons = true
+        miniUsesColoredControlButtons = false
         boxEnabled = true
         boxColor = "chartreuse"
         boxShellColorOpacity = 0.35

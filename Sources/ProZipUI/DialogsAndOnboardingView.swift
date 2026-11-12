@@ -1,6 +1,7 @@
 import AppKit
 import ProZipCore
 import ProZipShared
+import ServiceManagement
 import SwiftUI
 
 // MARK: - ArcZipDialogSurface (Unified Glass & Specular Rim Modal Container)
@@ -82,6 +83,7 @@ private enum OnboardingSkin {
 public struct FirstLaunchOnboardingView: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject public var preferences = ProZipPreferences.shared
+    public var dismissesSheetOnFinish: Bool = false
     @State private var currentPage: Int = 0
     @State private var associatedFormats: Set<String> = []
     @State private var initialAssociationGroups: Set<String> = []
@@ -92,8 +94,13 @@ public struct FirstLaunchOnboardingView: View {
     private static let lastPage = 7
     private static let dotCount = 7
 
-    public init(initialStep: Int = 0, preferences: ProZipPreferences = .shared) {
+    public init(
+        initialStep: Int = 0,
+        preferences: ProZipPreferences = .shared,
+        dismissesSheetOnFinish: Bool = false
+    ) {
         self.preferences = preferences
+        self.dismissesSheetOnFinish = dismissesSheetOnFinish
         _currentPage = State(initialValue: min(max(0, initialStep), FirstLaunchOnboardingView.lastPage))
     }
 
@@ -164,9 +171,9 @@ public struct FirstLaunchOnboardingView: View {
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundStyle(.white)
                     .frame(width: 144, height: 44)
-                    .background(Capsule().fill(Color.accentColor))
+                    .background(Capsule().fill(ProZipTheme.accent))
             }
-            .buttonStyle(.plain)
+            .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.02, pressedScale: 0.97))
             .keyboardShortcut(.defaultAction)
             .padding(.top, 24)
 
@@ -192,7 +199,7 @@ public struct FirstLaunchOnboardingView: View {
 
             Spacer(minLength: 8)
 
-            OnboardingArtwork(imageName: "OnboardingMiniWindow", fallbackSymbol: "macwindow")
+            OnboardingMiniMock()
                 .frame(width: 504, height: 284)
                 .frame(maxWidth: .infinity, alignment: .center)
 
@@ -215,14 +222,23 @@ public struct FirstLaunchOnboardingView: View {
             Spacer(minLength: 10)
 
             HStack(alignment: .center, spacing: 4) {
-                ZStack {
+                ZStack(alignment: .top) {
                     OnboardingArtwork(imageName: "OnboardingBoxDesktop", fallbackSymbol: "tray.full.fill")
                         .frame(width: 480, height: 300)
 
+                    OnboardingMenuBarStripMock()
+                        .frame(width: 480, height: 24)
+
                     OnboardingShelfMock()
-                        .frame(width: 300, height: 300)
+                        .frame(width: 268, height: 260)
+                        .padding(.top, 28)
                 }
                 .frame(width: 480, height: 300)
+                .clipShape(RoundedRectangle(cornerRadius: OnboardingSkin.artworkCorner, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: OnboardingSkin.artworkCorner, style: .continuous)
+                        .strokeBorder(Color.primary.opacity(0.08), lineWidth: 1)
+                )
 
                 VStack(alignment: .leading, spacing: 18) {
                     OnboardingFeatureBullet(icon: "tray.and.arrow.down.fill", text: "自动弹出，随手收集")
@@ -341,11 +357,8 @@ public struct FirstLaunchOnboardingView: View {
     private var stepFinderMenu: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .center, spacing: 24) {
-                OnboardingArtwork(
-                    imageName: "OnboardingFinderContextMenu",
-                    fallbackSymbol: "contextualmenu.and.cursorarrow"
-                )
-                .frame(width: 376, height: 330)
+                OnboardingFinderContextMenuMock()
+                    .frame(width: 376, height: 330)
 
                 VStack(alignment: .leading, spacing: 0) {
                     onboardingPageTitle("开启访达菜单项")
@@ -515,7 +528,18 @@ public struct FirstLaunchOnboardingView: View {
             OnboardingToggleCard(
                 title: "开机自动启动 ProZip",
                 subtitle: nil,
-                isOn: $preferences.launchAtLogin
+                isOn: Binding(
+                    get: { preferences.launchAtLogin },
+                    set: { enabled in
+                        do {
+                            if enabled { try SMAppService.mainApp.register() }
+                            else { try SMAppService.mainApp.unregister() }
+                            preferences.launchAtLogin = enabled
+                        } catch {
+                            preferences.launchAtLogin = SMAppService.mainApp.status == .enabled
+                        }
+                    }
+                )
             )
             .frame(width: 320)
             .padding(.top, 26)
@@ -547,7 +571,7 @@ public struct FirstLaunchOnboardingView: View {
                     .frame(width: 88, height: 32, alignment: .leading)
                     .contentShape(Rectangle())
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.02, pressedScale: 0.97))
 
                 Spacer(minLength: 0)
 
@@ -657,7 +681,10 @@ public struct FirstLaunchOnboardingView: View {
 
     private func finish() {
         preferences.onboardingCompleted = true
-        dismiss()
+        ProZipAppViewModel.shared.isOnboardingPresented = false
+        if dismissesSheetOnFinish {
+            dismiss()
+        }
     }
 
     private func openFinderExtensionSettings() {
@@ -882,7 +909,7 @@ private struct OnboardingVioletPillButton: View {
     }
 }
 
-/// 112 × 36 system-blue capsule used by the footer (下一步 / 开始使用 / 打开设置).
+/// 112 × 36 accent capsule used by the footer (下一步 / 开始使用 / 打开设置).
 private struct OnboardingCapsuleButton: View {
     var title: String
     var action: () -> Void
@@ -893,9 +920,9 @@ private struct OnboardingCapsuleButton: View {
                 .font(.system(size: 13, weight: .semibold))
                 .foregroundStyle(.white)
                 .frame(width: 112, height: 36)
-                .background(Capsule().fill(Color.accentColor))
+                .background(Capsule().fill(ProZipTheme.accent))
         }
-        .buttonStyle(.plain)
+        .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.02, pressedScale: 0.97))
         .keyboardShortcut(.defaultAction)
     }
 }
@@ -912,7 +939,7 @@ private struct OnboardingDotsIndicator: View {
                     onSelect(index)
                 } label: {
                     Circle()
-                        .fill(index == current ? Color.accentColor : OnboardingSkin.inactiveDot)
+                        .fill(index == current ? ProZipTheme.accent : OnboardingSkin.inactiveDot)
                         .frame(width: 8, height: 8)
                         .contentShape(Circle())
                 }
@@ -984,7 +1011,7 @@ public struct ReleaseOverviewWindowView: View {
                             icon: "macwindow.on.rectangle",
                             title: "双模式工作区与 ProZip Mini 窗口",
                             description: "支持 1040×740 三视图完整工作台与 560×422 磨砂 Mini 窗口一键切换（⌥⌘M），内置黄绿立体口袋检查器与彩色控制圆钮。",
-                            imageName: "OnboardingMiniWindow"
+                            imageName: nil
                         )
 
                         releaseHighlightCard(
@@ -998,7 +1025,7 @@ public struct ReleaseOverviewWindowView: View {
                             icon: "tray.full.fill",
                             title: "菜单栏暂存盒闪电批处理",
                             description: "支持拖放收集散落文件、内联展开浏览目录与归档内容（ShelfFolderBrowser），以及直接压缩、配置压缩、原位解压、合并解压 4 大快捷动作。",
-                            imageName: "OnboardingBoxDesktop"
+                            imageName: nil
                         )
 
                         releaseHighlightCard(
@@ -1222,6 +1249,7 @@ public struct PasswordPromptSheetView: View {
     @State private var isRevealed: Bool = ProZipPreferences.shared.revealsPasswordByDefault
     @State private var showNonASCIINotice: Bool = false
     @State private var errorFeedback: String?
+    @FocusState private var isPasswordFieldFocused: Bool
 
     public init() {}
 
@@ -1229,28 +1257,32 @@ public struct PasswordPromptSheetView: View {
         password.unicodeScalars.contains { !$0.isASCII }
     }
 
+    private func evaluateInputSourceNotice() {
+        let suppressed = UserDefaults.standard.bool(forKey: "archivePassword.inputNoticeSuppressed.v1")
+        guard !suppressed, !isRevealed else {
+            showNonASCIINotice = false
+            return
+        }
+        if ProZipKeyboardInputMonitor.isCurrentInputSourceNonASCII() {
+            showNonASCIINotice = true
+        }
+    }
+
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Image(systemName: "lock.shield.fill")
-                .font(.system(size: 30, weight: .medium))
-                .foregroundStyle(ProZipTheme.accent)
-                .frame(width: 68, height: 68)
-                .background(
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .fill(ProZipTheme.accentSoft)
-                )
+            ProZipBrandIcon(size: 68, showAppSquircle: true)
 
-            Text("预览加密文件")
+            Text("解压加密文件")
                 .font(.system(size: 15, weight: .bold))
                 .padding(.top, 15)
 
             Text(appViewModel.passwordPromptTitle.isEmpty ? "加密压缩包" : appViewModel.passwordPromptTitle)
-                .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(.primary.opacity(0.78))
+                .font(.system(size: 13, weight: .medium))
+                .foregroundStyle(.primary.opacity(0.88))
                 .padding(.top, 8)
 
             Text(appViewModel.passwordPromptMessage.isEmpty ? "此压缩包受密码保护，输入密码以继续。" : appViewModel.passwordPromptMessage)
-                .font(.system(size: 11))
+                .font(.system(size: 12))
                 .foregroundStyle(.secondary)
                 .padding(.top, 3)
 
@@ -1258,17 +1290,31 @@ public struct PasswordPromptSheetView: View {
                 Group {
                     if isRevealed {
                         TextField("密码", text: $password)
+                            .focused($isPasswordFieldFocused)
                     } else {
                         SecureField("密码", text: $password)
+                            .focused($isPasswordFieldFocused)
                     }
                 }
                 .textFieldStyle(.plain)
                 .font(.system(size: 13, design: .monospaced))
-                .onChange(of: password) { newVal in
+                .onChange(of: password) { _, newVal in
                     errorFeedback = nil
                     let suppressed = UserDefaults.standard.bool(forKey: "archivePassword.inputNoticeSuppressed.v1")
-                    if !suppressed && newVal.unicodeScalars.contains(where: { !$0.isASCII }) {
+                    if !suppressed && !isRevealed && newVal.unicodeScalars.contains(where: { !$0.isASCII }) {
                         showNonASCIINotice = true
+                    }
+                }
+                .onChange(of: isPasswordFieldFocused) { _, focused in
+                    if focused {
+                        evaluateInputSourceNotice()
+                    }
+                }
+                .onChange(of: isRevealed) { _, revealed in
+                    if revealed {
+                        showNonASCIINotice = false
+                    } else {
+                        evaluateInputSourceNotice()
                     }
                 }
 
@@ -1284,22 +1330,35 @@ public struct PasswordPromptSheetView: View {
                 .popover(isPresented: $showNonASCIINotice, arrowEdge: .top) {
                     ArcZipPasswordInputNoticePopover(
                         format: .sevenZip,
-                        onRevealPassword: { isRevealed = true }
+                        onRevealPassword: {
+                            isRevealed = true
+                            showNonASCIINotice = false
+                        },
+                        onDismiss: {
+                            showNonASCIINotice = false
+                        }
                     )
                 }
                 .help(isRevealed ? "隐藏密码" : "显示密码")
             }
-            .padding(.horizontal, 9)
-            .frame(width: 204, height: 38)
+            .padding(.horizontal, 10)
+            .frame(width: 210, height: 40)
             .background(
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
                     .fill(Color(NSColor.textBackgroundColor))
                     .overlay(
-                        RoundedRectangle(cornerRadius: 8, style: .continuous)
-                            .strokeBorder(errorFeedback != nil ? Color.red : ProZipTheme.accent.opacity(0.55), lineWidth: 1.4)
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .strokeBorder(errorFeedback != nil ? Color.red : ProZipTheme.accent, lineWidth: 1.5)
                     )
             )
             .padding(.top, 10)
+            .onAppear {
+                isPasswordFieldFocused = true
+                evaluateInputSourceNotice()
+            }
+            .onReceive(NotificationCenter.default.publisher(for: NSTextInputContext.keyboardSelectionDidChangeNotification)) { _ in
+                evaluateInputSourceNotice()
+            }
 
             if let err = errorFeedback {
                 Text(err)
@@ -1323,7 +1382,7 @@ public struct PasswordPromptSheetView: View {
                                 .fill(Color.primary.opacity(0.06))
                         )
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.02, pressedScale: 0.97))
                 .keyboardShortcut(.cancelAction)
 
                 Button {
@@ -1340,7 +1399,7 @@ public struct PasswordPromptSheetView: View {
                                 .fill(password.isEmpty ? Color.primary.opacity(0.04) : ProZipTheme.accent.opacity(0.20))
                         )
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.02, pressedScale: 0.97))
                 .disabled(password.isEmpty)
                 .keyboardShortcut(.defaultAction)
             }
@@ -1520,7 +1579,7 @@ public struct RenameEntrySheetView: View {
 
                 TextField("输入新名称", text: $appViewModel.renameInput)
                     .textFieldStyle(.roundedBorder)
-                    .onChange(of: appViewModel.renameInput) { _ in
+                    .onChange(of: appViewModel.renameInput) { _, _ in
                         errorMessage = nil
                     }
 
@@ -1603,7 +1662,7 @@ public struct ConflictResolutionDialogView: View {
                                 .fill(Color.primary.opacity(0.07))
                         )
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.01, pressedScale: 0.97))
 
                 Button {
                     onResolve?(.replace, true)
@@ -1619,7 +1678,7 @@ public struct ConflictResolutionDialogView: View {
                                 .fill(Color.primary.opacity(0.07))
                         )
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.01, pressedScale: 0.97))
                 .keyboardShortcut(.defaultAction)
 
                 Button {
@@ -1635,7 +1694,7 @@ public struct ConflictResolutionDialogView: View {
                                 .fill(Color.primary.opacity(0.07))
                         )
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.01, pressedScale: 0.97))
                 .keyboardShortcut(.cancelAction)
             }
         }
@@ -1710,14 +1769,6 @@ public struct SaveChangesConfirmationDialogView: View {
                         : "如果不保存，你在当前会话中添加、删除或重命名的归档草稿更改将会丢失。",
                     icon: isConflict ? "exclamationmark.arrow.triangle.2.circlepath" : "externaldrive.badge.checkmark"
                 )
-
-                HStack {
-                    Toggle("切换模拟：源压缩包外部并发修改冲突状态", isOn: $appViewModel.saveChangesIsSourceModifiedConflict)
-                        .toggleStyle(.checkbox)
-                        .font(.system(size: 11))
-                        .foregroundStyle(.secondary)
-                    Spacer()
-                }
 
                 Divider()
 
@@ -1857,7 +1908,7 @@ public struct TrashConfirmationDialogView: View {
                                 .fill(Color.primary.opacity(0.06))
                         )
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.02, pressedScale: 0.97))
                 .keyboardShortcut(.cancelAction)
 
                 Button {
@@ -1873,7 +1924,7 @@ public struct TrashConfirmationDialogView: View {
                                 .fill(Color.primary.opacity(0.06))
                         )
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.02, pressedScale: 0.97))
             }
             .padding(.bottom, 16)
         }
@@ -2121,7 +2172,7 @@ public struct DiskImageLicenseDialogView: View {
                     .frame(width: 190, height: 40)
                     .background(Capsule().fill(Color(red: 0.92, green: 0.26, blue: 0.23)))
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.02, pressedScale: 0.97))
                 .keyboardShortcut(.cancelAction)
 
                 Button {
@@ -2136,9 +2187,9 @@ public struct DiskImageLicenseDialogView: View {
                     }
                     .foregroundStyle(.white)
                     .frame(width: 190, height: 40)
-                    .background(Capsule().fill(Color.accentColor))
+                    .background(Capsule().fill(ProZipTheme.accent))
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.02, pressedScale: 0.97))
                 .keyboardShortcut(.defaultAction)
             }
             .padding(.top, 14)
@@ -2549,7 +2600,7 @@ public enum GalleryShowcaseItem: String, CaseIterable, Identifiable {
         case .diskImageSLA: return "opticaldiscdrive.fill"
         case .sourceAccessTCC: return "folder.badge.person.crop"
         case .structuredError: return "exclamationmark.octagon.fill"
-        case .buttonAndComponentLab: return "CursorArrow.click.2"
+        case .buttonAndComponentLab: return "cursorarrow.click.2"
         }
     }
 }
@@ -2809,7 +2860,7 @@ public struct ProZipAlertDialogView: View {
 
             Button {
                 appViewModel.isAlertPresented = false
-                NSApp.keyWindow?.close()
+                dismiss()
             } label: {
                 Text("好")
                     .font(.system(size: 13, weight: .semibold))
@@ -2817,10 +2868,10 @@ public struct ProZipAlertDialogView: View {
                     .frame(width: 230, height: 30)
                     .background(
                         RoundedRectangle(cornerRadius: 8, style: .continuous)
-                            .fill(Color.accentColor)
+                            .fill(ProZipTheme.accent)
                     )
             }
-            .buttonStyle(.plain)
+            .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.02, pressedScale: 0.97))
             .keyboardShortcut(.defaultAction)
             .padding(.bottom, 16)
         }
@@ -2915,13 +2966,548 @@ private struct OnboardingShelfMock: View {
         .background(
             RoundedRectangle(cornerRadius: 14, style: .continuous)
                 .fill(
-                    LinearGradient(colors: [Color.white.opacity(0.92), Color(red: 0.86, green: 0.90, blue: 1.0).opacity(0.92)], startPoint: .top, endPoint: .bottom)
+                    LinearGradient(colors: [Color.white.opacity(0.92), Color(red: 0.91, green: 0.97, blue: 0.80).opacity(0.92)], startPoint: .top, endPoint: .bottom)
                 )
                 .shadow(color: .black.opacity(0.18), radius: 12, y: 5)
         )
         .overlay(
             RoundedRectangle(cornerRadius: 14, style: .continuous)
                 .strokeBorder(Color.white.opacity(0.8), lineWidth: 1)
+        )
+    }
+}
+
+// MARK: - Onboarding Menu Bar Cover (Page 3 · ProZip 文件盒)
+
+private struct OnboardingMenuBarStripMock: View {
+    var body: some View {
+        HStack(spacing: 11) {
+            Spacer(minLength: 0)
+
+            ProZipBrandIcon(size: 14, showAppSquircle: true)
+
+            Image(systemName: "wifi")
+                .font(.system(size: 10, weight: .semibold))
+            Image(systemName: "battery.100")
+                .font(.system(size: 10.5, weight: .medium))
+            Image(systemName: "magnifyingglass")
+                .font(.system(size: 9.5, weight: .semibold))
+            Image(systemName: "switch.2")
+                .font(.system(size: 9.5, weight: .semibold))
+
+            Text("10月11日 周日 23:59")
+                .font(.system(size: 10, weight: .semibold))
+        }
+        .foregroundStyle(.white.opacity(0.95))
+        .padding(.horizontal, 12)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(
+            LinearGradient(
+                colors: [
+                    Color(red: 0.08, green: 0.24, blue: 0.39).opacity(0.97),
+                    Color(red: 0.24, green: 0.45, blue: 0.63).opacity(0.97),
+                    Color(red: 0.14, green: 0.36, blue: 0.54).opacity(0.97)
+                ],
+                startPoint: .leading,
+                endPoint: .trailing
+            )
+        )
+    }
+}
+
+// MARK: - Onboarding Vector ProZip Mini Mock (Page 2 · 504×284, Zero Residual Brand Text)
+
+private struct OnboardingMiniMock: View {
+    @Environment(\.colorScheme) private var colorScheme
+
+    private let entries: [(String, String, Color, Bool)] = [
+        ("IMG_0079.jpeg", "4 MB", Color(red: 0.85, green: 0.42, blue: 0.22), false),
+        ("IMG_0667.jpeg", "5.1 MB", Color(red: 0.32, green: 0.48, blue: 0.72), false),
+        ("IMG_0927.jpeg", "1.9 MB", Color(red: 0.36, green: 0.69, blue: 0.28), true),
+        ("IMG_1207.jpeg", "2.2 MB", Color(red: 0.25, green: 0.60, blue: 0.78), false),
+        ("IMG_1216.jpeg", "2.8 MB", Color(red: 0.44, green: 0.56, blue: 0.40), false),
+        ("IMG_1606.jpeg", "1.5 MB", Color(red: 0.35, green: 0.52, blue: 0.68), false)
+    ]
+
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: OnboardingSkin.artworkCorner, style: .continuous)
+                .fill(colorScheme == .dark ? Color.white.opacity(0.05) : Color(red: 0.953, green: 0.957, blue: 0.961))
+
+            // Dashed callout curves
+            Canvas { context, _ in
+                let stroke = StrokeStyle(lineWidth: 1.1, lineCap: .round, dash: [3, 2.5])
+                let ink = colorScheme == .dark ? Color.white.opacity(0.45) : Color.black.opacity(0.42)
+
+                // 1. Selected row -> "拖动进行解压"
+                var dragCurve = Path()
+                dragCurve.move(to: CGPoint(x: 118, y: 132))
+                dragCurve.addQuadCurve(to: CGPoint(x: 68, y: 126), control: CGPoint(x: 92, y: 108))
+                context.stroke(dragCurve, with: .color(ink), style: stroke)
+
+                // 2. Expand circle -> "随时切换到完整界面"
+                var expandCurve = Path()
+                expandCurve.move(to: CGPoint(x: 155, y: 235))
+                expandCurve.addQuadCurve(to: CGPoint(x: 84, y: 212), control: CGPoint(x: 118, y: 262))
+                context.stroke(expandCurve, with: .color(ink), style: stroke)
+
+                // 3. Preview button -> "轻松预览"
+                var previewCurve = Path()
+                previewCurve.move(to: CGPoint(x: 306, y: 235))
+                previewCurve.addQuadCurve(to: CGPoint(x: 410, y: 236), control: CGPoint(x: 358, y: 264))
+                context.stroke(previewCurve, with: .color(ink), style: stroke)
+            }
+            .allowsHitTesting(false)
+
+            // Callout labels
+            Text("拖动进行解压")
+                .font(.system(size: 10, weight: .medium))
+                .foregroundStyle(.primary.opacity(0.75))
+                .position(x: 58, y: 138)
+
+            Text("随时切换到完整界面")
+                .font(.system(size: 10, weight: .medium))
+                .foregroundStyle(.primary.opacity(0.75))
+                .position(x: 68, y: 198)
+
+            Text("轻松预览")
+                .font(.system(size: 10, weight: .medium))
+                .foregroundStyle(.primary.opacity(0.75))
+                .position(x: 422, y: 224)
+
+            // Center ProZip Mini card (272×194)
+            miniCard
+                .frame(width: 272, height: 194)
+        }
+        .clipShape(RoundedRectangle(cornerRadius: OnboardingSkin.artworkCorner, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: OnboardingSkin.artworkCorner, style: .continuous)
+                .strokeBorder(Color.primary.opacity(0.08), lineWidth: 1)
+        )
+    }
+
+    private var miniCard: some View {
+        let selectionBlue = Color(red: 0.0, green: 0.396, blue: 0.898)
+        return VStack(spacing: 0) {
+            // Header
+            HStack(spacing: 6) {
+                RoundedRectangle(cornerRadius: 4, style: .continuous)
+                    .fill(Color.white.opacity(0.88))
+                    .frame(width: 18, height: 20)
+                    .overlay(
+                        Image(systemName: "doc.zipper")
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundStyle(.secondary)
+                    )
+
+                VStack(alignment: .leading, spacing: 1) {
+                    Text("照片集.zip")
+                        .font(.system(size: 9.5, weight: .bold))
+                        .foregroundStyle(.primary)
+                    Text("ZIP 压缩包 · 26 个项目")
+                        .font(.system(size: 7))
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer(minLength: 4)
+
+                HStack(spacing: 4) {
+                    ProZipBrandIcon(size: 17, showAppSquircle: true)
+                    VStack(alignment: .trailing, spacing: 1) {
+                        Text("ProZip")
+                            .font(.system(size: 8.5, weight: .bold))
+                        Text("Mini")
+                            .font(.system(size: 6, weight: .semibold))
+                            .foregroundStyle(.secondary)
+                            .padding(.horizontal, 4)
+                            .padding(.vertical, 0.5)
+                            .background(Capsule().fill(Color.black.opacity(0.06)))
+                    }
+                }
+            }
+            .padding(.horizontal, 10)
+            .padding(.top, 7)
+            .padding(.bottom, 5)
+
+            // Breadcrumb bar
+            HStack(spacing: 5) {
+                Image(systemName: "chevron.left").font(.system(size: 6.5, weight: .semibold)).foregroundStyle(.secondary)
+                Image(systemName: "chevron.up").font(.system(size: 6.5, weight: .semibold)).foregroundStyle(.secondary)
+                Text("照片集 / 照片 / 城市")
+                    .font(.system(size: 7.5, weight: .medium))
+                    .foregroundStyle(.primary.opacity(0.78))
+                Spacer()
+            }
+            .padding(.horizontal, 8)
+            .frame(height: 18)
+            .background(
+                RoundedRectangle(cornerRadius: 6, style: .continuous)
+                    .fill(Color.white.opacity(colorScheme == .dark ? 0.10 : 0.62))
+            )
+            .padding(.horizontal, 8)
+            .padding(.bottom, 4)
+
+            // File rows
+            VStack(spacing: 0) {
+                ForEach(Array(entries.enumerated()), id: \.offset) { _, item in
+                    HStack(spacing: 6) {
+                        RoundedRectangle(cornerRadius: 2, style: .continuous)
+                            .fill(item.2.gradient)
+                            .frame(width: 9, height: 7)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 2, style: .continuous)
+                                    .strokeBorder(Color.white.opacity(0.55), lineWidth: 0.4)
+                            )
+
+                        Text(item.0)
+                            .font(.system(size: 7.8, weight: item.3 ? .semibold : .regular))
+                            .foregroundStyle(item.3 ? Color.white : Color.primary.opacity(0.88))
+
+                        Spacer()
+
+                        Text(item.1)
+                            .font(.system(size: 7.2, design: .monospaced))
+                            .foregroundStyle(item.3 ? Color.white.opacity(0.92) : Color.secondary)
+                    }
+                    .padding(.horizontal, 10)
+                    .frame(height: 17.5)
+                    .background(item.3 ? selectionBlue : Color.clear)
+                }
+            }
+
+            Spacer(minLength: 0)
+
+            // Bottom floating bar
+            HStack(spacing: 5) {
+                HStack(spacing: 4) {
+                    miniCircleControl("xmark")
+                    miniCircleControl("pin")
+                    miniCircleControl("arrow.up.left.and.arrow.down.right")
+                }
+
+                Spacer(minLength: 4)
+
+                HStack(spacing: 3) {
+                    Image(systemName: "bolt.fill").font(.system(size: 6.5, weight: .bold))
+                    Text("解压").font(.system(size: 7.5, weight: .semibold))
+                }
+                .foregroundStyle(.white)
+                .padding(.horizontal, 9)
+                .frame(height: 16)
+                .background(Capsule().fill(ProZipTheme.accent))
+
+                HStack(spacing: 4) {
+                    HStack(spacing: 2) {
+                        Image(systemName: "eye").font(.system(size: 6.5))
+                        Text("预览").font(.system(size: 6.8, weight: .medium))
+                        Text("空格")
+                            .font(.system(size: 5.5))
+                            .foregroundStyle(.secondary)
+                            .padding(.horizontal, 2.5)
+                            .padding(.vertical, 0.5)
+                            .background(RoundedRectangle(cornerRadius: 2).strokeBorder(Color.primary.opacity(0.15), lineWidth: 0.5))
+                    }
+                    Rectangle().fill(Color.primary.opacity(0.12)).frame(width: 0.6, height: 9)
+                    HStack(spacing: 2) {
+                        Image(systemName: "arrow.up.square").font(.system(size: 6.5))
+                        Text("全部解压").font(.system(size: 6.8, weight: .medium))
+                        Text("⏎").font(.system(size: 5.8)).foregroundStyle(.secondary)
+                    }
+                }
+                .padding(.horizontal, 6)
+                .frame(height: 16)
+                .background(Capsule().fill(Color.white.opacity(colorScheme == .dark ? 0.16 : 0.86)))
+            }
+            .padding(.horizontal, 8)
+            .padding(.bottom, 7)
+        }
+        .background(
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .fill(
+                    LinearGradient(
+                        colors: colorScheme == .dark
+                            ? [Color(red: 0.16, green: 0.18, blue: 0.22), Color(red: 0.13, green: 0.16, blue: 0.20)]
+                            : [Color(red: 0.965, green: 0.969, blue: 0.961), Color(red: 0.855, green: 0.945, blue: 0.992), Color(red: 0.812, green: 0.925, blue: 0.988)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .shadow(color: .black.opacity(0.12), radius: 12, y: 5)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .strokeBorder(Color.white.opacity(colorScheme == .dark ? 0.20 : 0.86), lineWidth: 1)
+        )
+    }
+
+    private func miniCircleControl(_ icon: String) -> some View {
+        Circle()
+            .fill(Color.white.opacity(colorScheme == .dark ? 0.16 : 0.78))
+            .frame(width: 14, height: 14)
+            .overlay(
+                Image(systemName: icon)
+                    .font(.system(size: 6, weight: .semibold))
+                    .foregroundStyle(.primary.opacity(0.82))
+            )
+            .overlay(Circle().strokeBorder(Color.primary.opacity(0.08), lineWidth: 0.5))
+    }
+}
+
+// MARK: - Onboarding Vector Finder Context Menu Mock (Page 5 · 376×330, Zero Residual Brand Text)
+
+private struct OnboardingFinderContextMenuMock: View {
+    private let sidebarItems: [(String, String)] = [
+        ("app.badge", "应用程序"),
+        ("menubar.dock.rectangle", "桌面"),
+        ("doc", "文稿"),
+        ("arrow.down.circle", "下载"),
+        ("folder", "进行中项目"),
+        ("photo", "图片")
+    ]
+
+    private let tagColors: [Color] = [
+        Color(red: 0.98, green: 0.36, blue: 0.34),
+        Color(red: 0.98, green: 0.62, blue: 0.20),
+        Color(red: 0.98, green: 0.82, blue: 0.22),
+        Color(red: 0.28, green: 0.80, blue: 0.38),
+        Color(red: 0.22, green: 0.58, blue: 0.98),
+        Color(red: 0.68, green: 0.42, blue: 0.92),
+        Color(white: 0.62)
+    ]
+
+    var body: some View {
+        ZStack(alignment: .topLeading) {
+            // Coastal twilight ocean backdrop
+            LinearGradient(
+                colors: [
+                    Color(red: 0.44, green: 0.50, blue: 0.60),
+                    Color(red: 0.62, green: 0.58, blue: 0.56),
+                    Color(red: 0.24, green: 0.34, blue: 0.44),
+                    Color(red: 0.13, green: 0.20, blue: 0.27)
+                ],
+                startPoint: .topTrailing,
+                endPoint: .bottomLeading
+            )
+
+            // Finder Window Mock (316×174)
+            finderWindowMock
+                .frame(width: 316, height: 174)
+                .offset(x: 10, y: 10)
+
+            // macOS Frosted Context Menu Mock (132×194)
+            contextMenuCard
+                .frame(width: 132)
+                .offset(x: 226, y: 122)
+        }
+        .frame(width: 376, height: 330)
+        .clipShape(RoundedRectangle(cornerRadius: OnboardingSkin.artworkCorner, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: OnboardingSkin.artworkCorner, style: .continuous)
+                .strokeBorder(Color.primary.opacity(0.08), lineWidth: 1)
+        )
+    }
+
+    private var finderWindowMock: some View {
+        HStack(spacing: 0) {
+            // Sidebar
+            VStack(alignment: .leading, spacing: 5) {
+                HStack(spacing: 4) {
+                    Circle().fill(Color(red: 1.0, green: 0.37, blue: 0.34)).frame(width: 6, height: 6)
+                    Circle().fill(Color(red: 1.0, green: 0.74, blue: 0.18)).frame(width: 6, height: 6)
+                    Circle().fill(Color(red: 0.16, green: 0.78, blue: 0.25)).frame(width: 6, height: 6)
+                }
+                .padding(.bottom, 4)
+
+                Text("个人收藏")
+                    .font(.system(size: 5.5, weight: .semibold))
+                    .foregroundStyle(.secondary)
+
+                ForEach(sidebarItems, id: \.1) { item in
+                    HStack(spacing: 4) {
+                        Image(systemName: item.0)
+                            .font(.system(size: 6.5))
+                            .foregroundStyle(Color(red: 0.16, green: 0.52, blue: 0.96))
+                            .frame(width: 8)
+                        Text(item.1)
+                            .font(.system(size: 6.5))
+                            .foregroundStyle(Color.black.opacity(0.80))
+                            .lineLimit(1)
+                    }
+                }
+                Spacer(minLength: 0)
+            }
+            .padding(8)
+            .frame(width: 72)
+            .background(Color(red: 0.945, green: 0.949, blue: 0.957))
+
+            // Main Canvas
+            VStack(spacing: 0) {
+                HStack(spacing: 5) {
+                    Image(systemName: "chevron.left").font(.system(size: 6.5)).foregroundStyle(.secondary)
+                    Image(systemName: "chevron.right").font(.system(size: 6.5)).foregroundStyle(.secondary.opacity(0.5))
+                    Text("ProZip 演示")
+                        .font(.system(size: 8, weight: .semibold))
+                        .foregroundStyle(Color.black.opacity(0.85))
+                    Spacer()
+                    Image(systemName: "square.grid.2x2").font(.system(size: 6.5)).foregroundStyle(.secondary)
+                    Image(systemName: "square.and.arrow.up").font(.system(size: 6.5)).foregroundStyle(.secondary)
+                    Image(systemName: "magnifyingglass").font(.system(size: 6.5)).foregroundStyle(.secondary)
+                }
+                .padding(.horizontal, 8)
+                .frame(height: 24)
+                .background(Color(white: 0.98))
+
+                Rectangle().fill(Color.black.opacity(0.06)).frame(height: 0.6)
+
+                ZStack(alignment: .topLeading) {
+                    Color.white
+
+                    HStack(alignment: .top, spacing: 22) {
+                        finderDesktopItem(icon: "externaldrive", tint: .gray, name: "App.dmg", selected: false)
+                        finderDesktopItem(icon: "doc.zipper", tint: .secondary, name: "Flow.zip", selected: false)
+                        finderDesktopItem(icon: "folder.fill", tint: Color(red: 0.33, green: 0.71, blue: 0.98), name: "照片集", selected: false)
+                    }
+                    .padding(.leading, 18)
+                    .padding(.top, 14)
+
+                    finderDesktopItem(icon: "doc.zipper", tint: .secondary, name: "照片集.zip", selected: true)
+                        .offset(x: 186, y: 86)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+                Rectangle().fill(Color.black.opacity(0.06)).frame(height: 0.6)
+
+                HStack(spacing: 3) {
+                    Text("Macintosh HD ▸ 用户 ▸ Demo ▸ ProZip 演示 ▸ 照片集.zip")
+                        .font(.system(size: 5.5))
+                        .foregroundStyle(Color.black.opacity(0.55))
+                        .lineLimit(1)
+                    Spacer()
+                }
+                .padding(.horizontal, 6)
+                .frame(height: 14)
+                .background(Color(white: 0.98))
+            }
+        }
+        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .strokeBorder(Color.white.opacity(0.45), lineWidth: 0.8)
+        )
+        .shadow(color: .black.opacity(0.24), radius: 8, y: 3)
+    }
+
+    private func finderDesktopItem(icon: String, tint: Color, name: String, selected: Bool) -> some View {
+        VStack(spacing: 3) {
+            RoundedRectangle(cornerRadius: 4, style: .continuous)
+                .fill(selected ? Color.black.opacity(0.08) : Color.clear)
+                .frame(width: 28, height: 28)
+                .overlay(
+                    Image(systemName: icon)
+                        .font(.system(size: 18))
+                        .foregroundStyle(tint)
+                )
+            Text(name)
+                .font(.system(size: 6, weight: selected ? .semibold : .regular))
+                .foregroundStyle(selected ? Color.white : Color.black.opacity(0.82))
+                .padding(.horizontal, 3)
+                .padding(.vertical, 0.8)
+                .background(
+                    Capsule().fill(selected ? Color(red: 0.0, green: 0.40, blue: 0.90) : Color.clear)
+                )
+        }
+    }
+
+    private var contextMenuCard: some View {
+        VStack(alignment: .leading, spacing: 2.5) {
+            menuRow("打开")
+            menuRow("打开方式", hasSubmenu: true)
+            menuDivider
+            menuRow("移到废纸篓", sfSymbol: "trash")
+            menuDivider
+            menuRow("显示简介")
+            menuRow("快速查看“照片集.zip”")
+            menuDivider
+
+            HStack(spacing: 4) {
+                ForEach(Array(tagColors.enumerated()), id: \.offset) { _, color in
+                    Circle()
+                        .fill(color)
+                        .frame(width: 6.5, height: 6.5)
+                }
+            }
+            .padding(.horizontal, 7)
+            .padding(.vertical, 2)
+
+            menuRow("标签…", sfSymbol: "tag")
+            menuDivider
+            menuRow("快速操作", sfSymbol: "gearshape", hasSubmenu: true)
+            proZipMenuRow("快速解压到当前目录", highlighted: true)
+            proZipMenuRow("快速解压到指定目录…", highlighted: false)
+            menuDivider
+            proZipMenuRow("压缩为 “照片集 2.zip”", highlighted: false)
+            proZipMenuRow("压缩为…", highlighted: false)
+            menuDivider
+            menuRow("服务", hasSubmenu: true)
+        }
+        .padding(.vertical, 5)
+        .padding(.horizontal, 4)
+        .background(
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .fill(Color(white: 0.95).opacity(0.95))
+                .shadow(color: .black.opacity(0.28), radius: 10, y: 4)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .strokeBorder(Color.white.opacity(0.75), lineWidth: 0.8)
+        )
+    }
+
+    private var menuDivider: some View {
+        Rectangle()
+            .fill(Color.black.opacity(0.10))
+            .frame(height: 0.6)
+            .padding(.horizontal, 5)
+            .padding(.vertical, 1)
+    }
+
+    private func menuRow(_ title: String, sfSymbol: String? = nil, hasSubmenu: Bool = false) -> some View {
+        HStack(spacing: 4) {
+            if let sfSymbol {
+                Image(systemName: sfSymbol)
+                    .font(.system(size: 6.5))
+                    .foregroundStyle(Color.black.opacity(0.65))
+                    .frame(width: 9)
+            }
+            Text(title)
+                .font(.system(size: 6.8))
+                .foregroundStyle(Color.black.opacity(0.86))
+                .lineLimit(1)
+            Spacer(minLength: 2)
+            if hasSubmenu {
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 5.5, weight: .semibold))
+                    .foregroundStyle(Color.black.opacity(0.5))
+            }
+        }
+        .padding(.horizontal, 6)
+        .frame(height: 10.5)
+    }
+
+    private func proZipMenuRow(_ title: String, highlighted: Bool) -> some View {
+        HStack(spacing: 4.5) {
+            ProZipBrandIcon(size: 9.5, showAppSquircle: true)
+            Text(title)
+                .font(.system(size: 6.8, weight: highlighted ? .semibold : .medium))
+                .foregroundStyle(highlighted ? Color.white : Color.black.opacity(0.88))
+                .lineLimit(1)
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, 5)
+        .frame(height: 12)
+        .background(
+            RoundedRectangle(cornerRadius: 3.5, style: .continuous)
+                .fill(highlighted ? ProZipTheme.accent : Color.clear)
         )
     }
 }

@@ -136,7 +136,8 @@ public struct LibarchiveEngine: ArchiveEngine {
         let bin = try requireBsdtarURL()
         let result = try await ProcessCancellationController.run(
             executableURL: bin,
-            arguments: ["-tvvf", url.path]
+            arguments: ["-tvvf", url.path],
+            environment: ["LC_ALL": "C"]
         )
 
         let combined = result.combinedOutputString
@@ -377,6 +378,10 @@ public struct LibarchiveEngine: ArchiveEngine {
                 throw ProZipError.corruptedArchive("单流压缩失败，退出码 \(result.exitCode)")
             }
         } else {
+            guard !sources.isEmpty else {
+                throw ProZipError.invalidCreationProfile("创建归档需要至少一个源文件")
+            }
+
             var args: [String] = []
             switch profile.format {
             case .tar:
@@ -398,8 +403,16 @@ public struct LibarchiveEngine: ArchiveEngine {
                 args.append("--no-mac-metadata")
             }
 
+            // Strip leading "./" from member names only (S preserves symlink targets untouched),
+            // while "./<basename>" avoids option-flag ambiguity for leading-dash filenames.
+            args.append(contentsOf: ["-s", "#^\\./##S"])
+
             for s in sources {
-                args.append(s.path)
+                let name = s.lastPathComponent
+                guard !name.isEmpty, name != "/" else {
+                    throw ProZipError.invalidCreationProfile("无效的源文件路径：\(s.path)")
+                }
+                args.append(contentsOf: ["-C", s.deletingLastPathComponent().path, "./\(name)"])
             }
 
             let result = try await ProcessCancellationController.run(
@@ -452,7 +465,7 @@ public struct LibarchiveEngine: ArchiveEngine {
         return (filename as NSString).deletingPathExtension
     }
 
-    public static func parseBsdtarListing(_ output: String) -> [ArchiveEntry] {
+    public static func parseBsdtarListing(_ output: String, referenceDate: Date = Date()) -> [ArchiveEntry] {
         var entries: [ArchiveEntry] = []
         let lines = output.components(separatedBy: "\n")
 
@@ -468,7 +481,13 @@ public struct LibarchiveEngine: ArchiveEngine {
             let isDir = modeStr.hasPrefix("d")
             let isSymlink = modeStr.hasPrefix("l")
 
-            // Skip mode, links, owner, group, size and the three date fields.
+            let modifiedAt = Self.parseBsdtarDate(
+                monthToken: parts[5],
+                dayToken: parts[6],
+                timeOrYearToken: parts[7],
+                referenceDate: referenceDate
+            )
+
             let pathAndLink = parts[8]
             let path: String
             let symlinkTarget: String?
@@ -500,7 +519,7 @@ public struct LibarchiveEngine: ArchiveEngine {
                 type: type,
                 uncompressedSize: size,
                 compressedSize: 0,
-                modifiedAt: Date(),
+                modifiedAt: modifiedAt,
                 permissions: isDir ? 493 : 420,
                 symlinkTarget: symlinkTarget
             )
@@ -508,5 +527,71 @@ public struct LibarchiveEngine: ArchiveEngine {
         }
 
         return entries
+    }
+
+    private static let posixMonthMap: [String: Int] = [
+        "jan": 1, "feb": 2, "mar": 3, "apr": 4,
+        "may": 5, "jun": 6, "jul": 7, "aug": 8,
+        "sep": 9, "oct": 10, "nov": 11, "dec": 12
+    ]
+
+    private static func parseBsdtarDate(
+        monthToken: String,
+        dayToken: String,
+        timeOrYearToken: String,
+        referenceDate: Date
+    ) -> Date {
+        let month: Int?
+        if let mapped = posixMonthMap[monthToken.lowercased()] {
+            month = mapped
+        } else if monthToken.hasSuffix("月") {
+            month = Int(monthToken.dropLast())
+        } else {
+            month = Int(monthToken)
+        }
+
+        guard let m = month, (1...12).contains(m),
+              let day = Int(dayToken), (1...31).contains(day) else {
+            return referenceDate
+        }
+
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = .current
+
+        if timeOrYearToken.contains(":") {
+            let hms = timeOrYearToken.split(separator: ":").compactMap { Int($0) }
+            guard hms.count >= 2, (0...23).contains(hms[0]), (0...59).contains(hms[1]) else {
+                return referenceDate
+            }
+            let second = hms.count >= 3 ? max(0, min(59, hms[2])) : 0
+            let refYear = calendar.component(.year, from: referenceDate)
+            let baseComponents = DateComponents(
+                year: refYear,
+                month: m,
+                day: day,
+                hour: hms[0],
+                minute: hms[1],
+                second: second
+            )
+            guard let candidate = calendar.date(from: baseComponents) else {
+                return referenceDate
+            }
+            // bsdtar prints HH:MM when mtime is within ~6 months of referenceDate.
+            let halfYearSeconds: TimeInterval = 183 * 86_400
+            let delta = candidate.timeIntervalSince(referenceDate)
+            if delta > halfYearSeconds,
+               let prev = calendar.date(byAdding: .year, value: -1, to: candidate) {
+                return prev
+            } else if delta < -halfYearSeconds,
+                      let next = calendar.date(byAdding: .year, value: 1, to: candidate) {
+                return next
+            }
+            return candidate
+        } else if let year = Int(timeOrYearToken), year >= 1900 {
+            let components = DateComponents(year: year, month: m, day: day, hour: 0, minute: 0, second: 0)
+            return calendar.date(from: components) ?? referenceDate
+        }
+
+        return referenceDate
     }
 }

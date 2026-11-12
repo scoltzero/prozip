@@ -1138,51 +1138,6 @@ public struct AllowedOpenFormat: Identifiable, Hashable, Sendable {
     public let category: OpenFileCategory
     public let extensions: [String]
 
-    public static let all32: [AllowedOpenFormat] = [
-        // 文档 (9)
-        AllowedOpenFormat(id: "pdf", displayName: "PDF", category: .document, extensions: ["pdf"]),
-        AllowedOpenFormat(id: "plain-text", displayName: "纯文本", category: .document, extensions: ["txt", "text", "log"]),
-        AllowedOpenFormat(id: "markdown", displayName: "Markdown", category: .document, extensions: ["md", "markdown"]),
-        AllowedOpenFormat(id: "rtf", displayName: "RTF", category: .document, extensions: ["rtf"]),
-        AllowedOpenFormat(id: "csv", displayName: "CSV", category: .document, extensions: ["csv", "tsv"]),
-        AllowedOpenFormat(id: "word", displayName: "Word", category: .document, extensions: ["doc", "docx"]),
-        AllowedOpenFormat(id: "excel", displayName: "Excel", category: .document, extensions: ["xls", "xlsx"]),
-        AllowedOpenFormat(id: "powerpoint", displayName: "PowerPoint", category: .document, extensions: ["ppt", "pptx"]),
-        AllowedOpenFormat(id: "epub", displayName: "EPUB", category: .document, extensions: ["epub"]),
-        // 图像 (8)
-        AllowedOpenFormat(id: "jpeg", displayName: "JPEG", category: .image, extensions: ["jpg", "jpeg"]),
-        AllowedOpenFormat(id: "png", displayName: "PNG", category: .image, extensions: ["png"]),
-        AllowedOpenFormat(id: "gif", displayName: "GIF", category: .image, extensions: ["gif"]),
-        AllowedOpenFormat(id: "webp", displayName: "WebP", category: .image, extensions: ["webp"]),
-        AllowedOpenFormat(id: "heif", displayName: "HEIF / HEIC", category: .image, extensions: ["heic", "heif"]),
-        AllowedOpenFormat(id: "tiff", displayName: "TIFF", category: .image, extensions: ["tif", "tiff"]),
-        AllowedOpenFormat(id: "bmp", displayName: "BMP", category: .image, extensions: ["bmp"]),
-        AllowedOpenFormat(id: "svg", displayName: "SVG", category: .image, extensions: ["svg"]),
-        // 音频 (5)
-        AllowedOpenFormat(id: "mp3", displayName: "MP3", category: .audio, extensions: ["mp3"]),
-        AllowedOpenFormat(id: "m4a", displayName: "M4A / AAC", category: .audio, extensions: ["m4a", "aac"]),
-        AllowedOpenFormat(id: "wav", displayName: "WAV", category: .audio, extensions: ["wav"]),
-        AllowedOpenFormat(id: "flac", displayName: "FLAC", category: .audio, extensions: ["flac"]),
-        AllowedOpenFormat(id: "ogg-audio", displayName: "OGG", category: .audio, extensions: ["ogg", "oga"]),
-        // 视频 (6)
-        AllowedOpenFormat(id: "mp4", displayName: "MP4", category: .video, extensions: ["mp4"]),
-        AllowedOpenFormat(id: "m4v", displayName: "M4V", category: .video, extensions: ["m4v"]),
-        AllowedOpenFormat(id: "mov", displayName: "MOV", category: .video, extensions: ["mov"]),
-        AllowedOpenFormat(id: "mkv", displayName: "MKV", category: .video, extensions: ["mkv"]),
-        AllowedOpenFormat(id: "avi", displayName: "AVI", category: .video, extensions: ["avi"]),
-        AllowedOpenFormat(id: "webm", displayName: "WebM", category: .video, extensions: ["webm"]),
-        // 其它 (5) -> Total = 9 + 8 + 5 + 6 + 4 = 32!
-        AllowedOpenFormat(id: "html", displayName: "HTML", category: .other, extensions: ["html", "htm"]),
-        AllowedOpenFormat(id: "css", displayName: "CSS", category: .other, extensions: ["css"]),
-        AllowedOpenFormat(id: "json", displayName: "JSON", category: .other, extensions: ["json"]),
-        AllowedOpenFormat(id: "xml", displayName: "XML", category: .other, extensions: ["xml", "plist"]),
-        AllowedOpenFormat(id: "yaml", displayName: "YAML", category: .other, extensions: ["yml", "yaml"])
-    ]
-
-    // Wait: let's verify exact 32 logical IDs from data/allowed-open-formats.txt!
-    // In data/allowed-open-formats.txt:
-    // avi, bmp, css, csv, epub, excel, flac, gif, heif, html, jpeg, json, m4a, markdown, mkv, mov, mp3, mp4, ogg-audio, pdf, plain-text, png, powerpoint, rtf, svg, tiff, wav, webm, webp, word, xml, yaml
-    // Notice m4v is merged under mp4/m4v so there are 32 exact IDs!
     public static let exact32: [AllowedOpenFormat] = [
         // 文档 (9)
         AllowedOpenFormat(id: "pdf", displayName: "PDF", category: .document, extensions: ["pdf"]),

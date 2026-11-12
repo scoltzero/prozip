@@ -308,15 +308,23 @@ public actor ManagedTemporaryArtifactRegistry {
 
     // MARK: - Artifact Management
 
+    private static let managedTempSessionPrefix = "managed-temp:"
+
     public func createManagedTemporaryDirectory(purpose: String = "misc") throws -> URL {
         let base = FileManager.default.temporaryDirectory.appendingPathComponent("org.prozip.ProZip-\(UUID().uuidString)", isDirectory: true)
         try FileManager.default.createDirectory(at: base, withIntermediateDirectories: true)
         let artifactPurpose: ArtifactPurpose
         switch purpose {
-        case "quicklook", "preview": artifactPurpose = .previewMaterialization
+        case "quicklook", "preview", "entry-export": artifactPurpose = .previewMaterialization
+        case "application-installation": artifactPurpose = .applicationInstallation
+        case "creation-draft": artifactPurpose = .archiveEditing
         default: artifactPurpose = .streamExtraction
         }
-        _ = try registerArtifact(at: base, purpose: artifactPurpose, sessionID: UUID().uuidString)
+        _ = try registerArtifact(
+            at: base,
+            purpose: artifactPurpose,
+            sessionID: "\(Self.managedTempSessionPrefix)\(purpose):\(UUID().uuidString)"
+        )
         return base
     }
 
@@ -885,7 +893,7 @@ public actor ManagedTemporaryArtifactRegistry {
 
         // 2. Scan temporary_artifacts from dead processes
         let currentPID = ProcessInfo.processInfo.processIdentifier
-        let artSQL = "SELECT artifact_id, process_id, path FROM temporary_artifacts WHERE state NOT IN ('cleaned', 'ownershipUncertain');"
+        let artSQL = "SELECT artifact_id, process_id, path FROM temporary_artifacts WHERE state NOT IN ('cleaned', 'committed', 'restored', 'ownershipUncertain');"
         var artStmt: OpaquePointer?
         if sqlite3_prepare_v2(db, artSQL, -1, &artStmt, nil) == SQLITE_OK {
             var deadTargets: [(artifactID: String, path: String)] = []
@@ -893,7 +901,7 @@ public actor ManagedTemporaryArtifactRegistry {
                 guard let artCStr = sqlite3_column_text(artStmt, 0),
                       let pathCStr = sqlite3_column_text(artStmt, 2) else { continue }
                 let pid = sqlite3_column_int64(artStmt, 1)
-                let isDead = (pid != currentPID) && (kill(pid_t(pid), 0) != 0 && errno == ESRCH)
+                let isDead = Self.isProcessDead(pid: pid, currentPID: currentPID)
                 if isDead {
                     deadTargets.append((String(cString: artCStr), String(cString: pathCStr)))
                 }
@@ -919,27 +927,45 @@ public actor ManagedTemporaryArtifactRegistry {
 
     public func totalCleanableBytes() -> Int64 {
         guard let db = db else { return 0 }
-        let sql = "SELECT process_id, path, size_bytes FROM temporary_artifacts WHERE state NOT IN ('cleaned', 'ownershipUncertain');"
+        let sql = """
+        SELECT session_id, process_id, purpose, path, reserved_at
+        FROM temporary_artifacts
+        WHERE state NOT IN ('cleaned', 'committed', 'restored', 'ownershipUncertain')
+          AND operation_id NOT IN (SELECT transaction_id FROM archive_publications);
+        """
         var stmt: OpaquePointer?
         guard sqlite3_prepare_v2(db, sql, -1, &stmt, nil) == SQLITE_OK else { return 0 }
         defer { sqlite3_finalize(stmt) }
 
         var total: Int64 = 0
         let currentPID = ProcessInfo.processInfo.processIdentifier
+        let now = Date().timeIntervalSinceReferenceDate
+        let openPaths = Self.openProcessFilePaths()
 
         while sqlite3_step(stmt) == SQLITE_ROW {
-            let pid = sqlite3_column_int64(stmt, 0)
-            guard let pathCStr = sqlite3_column_text(stmt, 1) else { continue }
+            guard let sessionCStr = sqlite3_column_text(stmt, 0),
+                  let purposeCStr = sqlite3_column_text(stmt, 2),
+                  let pathCStr = sqlite3_column_text(stmt, 3) else { continue }
+            let sessionID = String(cString: sessionCStr)
+            let pid = sqlite3_column_int64(stmt, 1)
+            let purpose = String(cString: purposeCStr)
             let path = String(cString: pathCStr)
+            let reservedAt = sqlite3_column_double(stmt, 4)
 
-            let isDead = (pid != currentPID) && (kill(pid_t(pid), 0) != 0 && errno == ESRCH)
-            if isDead {
-                var statInfo = stat()
-                if stat(path, &statInfo) == 0 {
-                    total += Int64(statInfo.st_size)
-                } else if sqlite3_column_type(stmt, 2) != SQLITE_NULL {
-                    total += sqlite3_column_int64(stmt, 2)
-                }
+            guard let diskBytes = Self.artifactDiskBytes(at: path) else { continue }
+
+            if Self.isArtifactCleanable(
+                pid: pid,
+                currentPID: currentPID,
+                sessionID: sessionID,
+                purpose: purpose,
+                path: path,
+                diskBytes: diskBytes,
+                reservedAt: reservedAt,
+                now: now,
+                openPaths: openPaths
+            ) {
+                total += diskBytes
             }
         }
         return total
@@ -947,38 +973,160 @@ public actor ManagedTemporaryArtifactRegistry {
 
     public func cleanAllTemporaryFiles() throws -> Int64 {
         guard let db = db else { throw RegistryError.databaseClosed }
-        let sql = "SELECT artifact_id, process_id, path FROM temporary_artifacts WHERE state NOT IN ('cleaned', 'ownershipUncertain');"
+        let sql = """
+        SELECT artifact_id, session_id, process_id, purpose, path, reserved_at
+        FROM temporary_artifacts
+        WHERE state NOT IN ('cleaned', 'committed', 'restored', 'ownershipUncertain')
+          AND operation_id NOT IN (SELECT transaction_id FROM archive_publications);
+        """
         var stmt: OpaquePointer?
         if sqlite3_prepare_v2(db, sql, -1, &stmt, nil) != SQLITE_OK {
             throw RegistryError.sqliteError(code: sqlite3_errcode(db), message: String(cString: sqlite3_errmsg(db)))
         }
 
-        var targets: [(artifactID: String, path: String)] = []
-        let currentPID = ProcessInfo.processInfo.processIdentifier
+        struct Candidate {
+            let artifactID: String
+            let sessionID: String
+            let pid: Int64
+            let purpose: String
+            let path: String
+            let reservedAt: Double
+        }
 
+        var candidates: [Candidate] = []
         while sqlite3_step(stmt) == SQLITE_ROW {
             guard let idCStr = sqlite3_column_text(stmt, 0),
-                  let pathCStr = sqlite3_column_text(stmt, 2) else { continue }
-            let pid = sqlite3_column_int64(stmt, 1)
-            let isDead = (pid != currentPID) && (kill(pid_t(pid), 0) != 0 && errno == ESRCH)
-            if isDead {
-                targets.append((String(cString: idCStr), String(cString: pathCStr)))
-            }
+                  let sessionCStr = sqlite3_column_text(stmt, 1),
+                  let purposeCStr = sqlite3_column_text(stmt, 3),
+                  let pathCStr = sqlite3_column_text(stmt, 4) else { continue }
+            candidates.append(Candidate(
+                artifactID: String(cString: idCStr),
+                sessionID: String(cString: sessionCStr),
+                pid: sqlite3_column_int64(stmt, 2),
+                purpose: String(cString: purposeCStr),
+                path: String(cString: pathCStr),
+                reservedAt: sqlite3_column_double(stmt, 5)
+            ))
         }
         sqlite3_finalize(stmt)
 
+        let currentPID = ProcessInfo.processInfo.processIdentifier
+        let now = Date().timeIntervalSinceReferenceDate
+        let openPaths = Self.openProcessFilePaths()
         var freedBytes: Int64 = 0
-        for target in targets {
-            var statInfo = stat()
-            let size = stat(target.path, &statInfo) == 0 ? Int64(statInfo.st_size) : 0
-            do {
-                try safelyRemoveArtifact(artifactID: target.artifactID)
-                freedBytes += size
-            } catch {
-                // Skip if identity mismatch or deletion error
+
+        for candidate in candidates {
+            let diskBytes = Self.artifactDiskBytes(at: candidate.path)
+            if let bytes = diskBytes {
+                guard Self.isArtifactCleanable(
+                    pid: candidate.pid,
+                    currentPID: currentPID,
+                    sessionID: candidate.sessionID,
+                    purpose: candidate.purpose,
+                    path: candidate.path,
+                    diskBytes: bytes,
+                    reservedAt: candidate.reservedAt,
+                    now: now,
+                    openPaths: openPaths
+                ) else { continue }
+                do {
+                    try safelyRemoveArtifact(artifactID: candidate.artifactID)
+                    freedBytes += bytes
+                } catch {
+                    // Skip if identity mismatch or deletion error
+                }
+            } else if Self.isProcessDead(pid: candidate.pid, currentPID: currentPID) ||
+                      (candidate.pid == Int64(currentPID)
+                       && candidate.sessionID.hasPrefix(Self.managedTempSessionPrefix)
+                       && candidate.purpose == ArtifactPurpose.previewMaterialization.rawValue) {
+                try? safelyRemoveArtifact(artifactID: candidate.artifactID)
             }
         }
         return freedBytes
+    }
+
+    private static func isProcessDead(pid: Int64, currentPID: Int32) -> Bool {
+        guard pid != Int64(currentPID), pid > 0, pid <= Int64(Int32.max) else { return false }
+        return kill(pid_t(pid), 0) != 0 && errno == ESRCH
+    }
+
+    private static func isArtifactCleanable(
+        pid: Int64,
+        currentPID: Int32,
+        sessionID: String,
+        purpose: String,
+        path: String,
+        diskBytes: Int64,
+        reservedAt: Double,
+        now: Double,
+        openPaths: Set<String>
+    ) -> Bool {
+        if isProcessDead(pid: pid, currentPID: currentPID) {
+            return true
+        }
+        guard pid == Int64(currentPID),
+              sessionID.hasPrefix(managedTempSessionPrefix),
+              purpose == ArtifactPurpose.previewMaterialization.rawValue else {
+            return false
+        }
+        if diskBytes == 0 && (now - reservedAt) < 5.0 {
+            return false
+        }
+        return !isPathOpen(path, in: openPaths)
+    }
+
+    /// Computes on-disk payload bytes without following symbolic links. Returns `nil` when `path` no longer exists.
+    private static func artifactDiskBytes(at path: String) -> Int64? {
+        var rootStat = stat()
+        guard lstat(path, &rootStat) == 0 else { return nil }
+        let mode = rootStat.st_mode & S_IFMT
+        if mode != S_IFDIR {
+            return mode == S_IFREG ? Int64(rootStat.st_size) : 0
+        }
+
+        let dirURL = URL(fileURLWithPath: path, isDirectory: true)
+        guard let enumerator = FileManager.default.enumerator(
+            at: dirURL,
+            includingPropertiesForKeys: nil,
+            options: []
+        ) else {
+            return 0
+        }
+
+        var sum: Int64 = 0
+        for case let childURL as URL in enumerator {
+            var childStat = stat()
+            if lstat(childURL.path, &childStat) == 0, (childStat.st_mode & S_IFMT) == S_IFREG {
+                sum += Int64(childStat.st_size)
+            }
+        }
+        return sum
+    }
+
+    /// Captures canonical file paths currently held open by the calling process via `/dev/fd` + `F_GETPATH`.
+    private static func openProcessFilePaths() -> Set<String> {
+        guard let fdEntries = try? FileManager.default.contentsOfDirectory(atPath: "/dev/fd") else {
+            return []
+        }
+        var paths: Set<String> = []
+        var buffer = [CChar](repeating: 0, count: Int(MAXPATHLEN))
+        for name in fdEntries {
+            guard let fd = Int32(name) else { continue }
+            if fcntl(fd, F_GETPATH, &buffer) != -1 {
+                let rawPath = String(cString: buffer)
+                if !rawPath.isEmpty {
+                    paths.insert(URL(fileURLWithPath: rawPath).resolvingSymlinksInPath().path)
+                }
+            }
+        }
+        return paths
+    }
+
+    private static func isPathOpen(_ path: String, in openPaths: Set<String>) -> Bool {
+        guard !openPaths.isEmpty else { return false }
+        let canonical = URL(fileURLWithPath: path).resolvingSymlinksInPath().path
+        let prefix = canonical.hasSuffix("/") ? canonical : canonical + "/"
+        return openPaths.contains { $0 == canonical || $0.hasPrefix(prefix) }
     }
 
     public func close() {

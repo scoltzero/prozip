@@ -38,24 +38,23 @@ public enum ProZipTheme {
         endPoint: .bottom
     )
 
-    /// Landing / welcome window ambient gradient (ArcZip uses a pink→lavender wash;
-    /// ProZip keeps the same structure with a lime→mint wash).
+    /// Landing / welcome window ambient gradient (top-left warm peach glow -> neutral -> bottom-right soft ProZip lime glow).
     public static func landingGradient(for scheme: ColorScheme) -> LinearGradient {
         if scheme == .dark {
             return LinearGradient(
                 colors: [
-                    Color(red: 0.09, green: 0.10, blue: 0.08),
-                    Color(red: 0.13, green: 0.16, blue: 0.09),
-                    Color(red: 0.10, green: 0.13, blue: 0.10)
+                    Color(red: 0.12, green: 0.10, blue: 0.10),
+                    Color(red: 0.10, green: 0.11, blue: 0.12),
+                    Color(red: 0.10, green: 0.13, blue: 0.09)
                 ],
                 startPoint: .topLeading, endPoint: .bottomTrailing
             )
         }
         return LinearGradient(
             colors: [
-                Color(red: 0.99, green: 0.99, blue: 0.97),
-                Color(red: 0.95, green: 0.98, blue: 0.88),
-                Color(red: 0.90, green: 0.96, blue: 0.86)
+                Color(red: 0.996, green: 0.933, blue: 0.925), // #FEECEB / #FEE8E6 warm peach top-left
+                Color(red: 0.996, green: 0.988, blue: 0.988),
+                Color(red: 0.945, green: 0.976, blue: 0.910)  // soft #ECF7E0 bottom-right lime glow
             ],
             startPoint: .topLeading, endPoint: .bottomTrailing
         )
@@ -63,26 +62,26 @@ public enum ProZipTheme {
 
     public static func inspectorBackground(for scheme: ColorScheme) -> Color {
         scheme == .dark
-            ? Color(red: 0.14, green: 0.18, blue: 0.11)
-            : Color(red: 0.94, green: 0.97, blue: 0.89)
+            ? Color(red: 32.0 / 255.0, green: 33.0 / 255.0, blue: 37.0 / 255.0)   // #202125
+            : Color(red: 235.0 / 255.0, green: 231.0 / 255.0, blue: 241.0 / 255.0) // #EBE7F1
     }
 
     public static func inspectorCardBackground(for scheme: ColorScheme) -> Color {
         scheme == .dark
-            ? Color(red: 0.18, green: 0.22, blue: 0.15)
+            ? Color(red: 38.0 / 255.0, green: 39.0 / 255.0, blue: 43.0 / 255.0)   // #26272B
             : Color.white
     }
 
     public static func zebraRowBackground(index: Int, isSelected: Bool, scheme: ColorScheme) -> Color {
         if isSelected {
-            return accent.opacity(scheme == .dark ? 0.32 : 0.20)
+            return scheme == .dark ? Color.white.opacity(0.13) : Color.black.opacity(0.13) // #DDDCDD
         }
         if index.isMultiple(of: 2) {
             return Color.clear
         }
         return scheme == .dark
-            ? Color.white.opacity(0.03)
-            : Color.black.opacity(0.028)
+            ? Color.white.opacity(0.035)
+            : Color.black.opacity(0.035) // #F4F5F5
     }
 }
 
@@ -461,10 +460,26 @@ public enum ProZipIconRenderer {
 public struct ProZipStrengthSlider: View {
     @Binding public var strength: CreationProfile.Strength
     public var isDisabled: Bool
+    public var thumbDiameter: CGFloat
+    public var trackHeight: CGFloat
+    public var rowSpacing: CGFloat
+    public var subtitleFontSize: CGFloat
+    @Environment(\.colorScheme) private var colorScheme
 
-    public init(strength: Binding<CreationProfile.Strength>, isDisabled: Bool = false) {
+    public init(
+        strength: Binding<CreationProfile.Strength>,
+        isDisabled: Bool = false,
+        thumbDiameter: CGFloat = 22,
+        trackHeight: CGFloat = 14,
+        rowSpacing: CGFloat = 8,
+        subtitleFontSize: CGFloat = 12
+    ) {
         self._strength = strength
         self.isDisabled = isDisabled
+        self.thumbDiameter = thumbDiameter
+        self.trackHeight = trackHeight
+        self.rowSpacing = rowSpacing
+        self.subtitleFontSize = subtitleFontSize
     }
 
     /// Maps strength to the 5 visual stops (0..4) matching ArcZip 1.2.3's compression.png
@@ -490,31 +505,35 @@ public struct ProZipStrengthSlider: View {
     }
 
     public var body: some View {
-        VStack(spacing: 8) {
+        let dotSize: CGFloat = thumbDiameter >= 26 ? 4 : 3
+        VStack(spacing: rowSpacing) {
             GeometryReader { geo in
                 let totalWidth = max(1, geo.size.width)
-                let thumbDiameter: CGFloat = 24
                 let usableWidth = max(1, totalWidth - thumbDiameter)
                 let fraction = CGFloat(visualStopIndex) / 4.0
                 let thumbCenterX = (thumbDiameter / 2.0) + usableWidth * fraction
 
                 ZStack(alignment: .leading) {
-                    // Track background
+                    // Track background (#EDEEF1 light / white 12% dark)
                     Capsule()
-                        .fill(Color.primary.opacity(0.08))
-                        .frame(height: 16)
+                        .fill(
+                            colorScheme == .dark
+                                ? Color.white.opacity(0.12)
+                                : Color(red: 237.0 / 255.0, green: 238.0 / 255.0, blue: 241.0 / 255.0)
+                        )
+                        .frame(height: trackHeight)
 
-                    // Yellow-green active fill track
+                    // Solid yellow-green active fill track
                     Capsule()
                         .fill(isDisabled ? Color.secondary.opacity(0.35) : ProZipTheme.accent)
-                        .frame(width: max(thumbDiameter, thumbCenterX + thumbDiameter * 0.2), height: 16)
+                        .frame(width: max(trackHeight, thumbCenterX + 2), height: trackHeight)
 
                     // 5 stop dots
                     HStack(spacing: 0) {
                         ForEach(0..<5, id: \.self) { idx in
                             Circle()
                                 .fill(idx <= visualStopIndex ? Color.white.opacity(0.92) : Color.secondary.opacity(0.45))
-                                .frame(width: 4, height: 4)
+                                .frame(width: dotSize, height: dotSize)
                             if idx < 4 {
                                 Spacer()
                             }
@@ -526,7 +545,7 @@ public struct ProZipStrengthSlider: View {
                     Circle()
                         .fill(Color.white)
                         .frame(width: thumbDiameter, height: thumbDiameter)
-                        .shadow(color: .black.opacity(0.18), radius: 3, y: 1)
+                        .shadow(color: .black.opacity(0.16), radius: 3, y: 1)
                         .overlay(
                             Circle()
                                 .stroke(Color.black.opacity(0.08), lineWidth: 0.5)
@@ -547,7 +566,7 @@ public struct ProZipStrengthSlider: View {
                         }
                 )
             }
-            .frame(height: 24)
+            .frame(height: thumbDiameter)
 
             // 3-column labels matching compression.png ("更快" left, active title center, "更小" right)
             ZStack {
@@ -567,7 +586,7 @@ public struct ProZipStrengthSlider: View {
             }
 
             Text(strength.subtitle)
-                .font(.system(size: 12))
+                .font(.system(size: subtitleFontSize))
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, alignment: .center)
         }
@@ -942,7 +961,6 @@ public struct FlowOrbitControl: View {
     public let action: () -> Void
 
     @State private var isHovered: Bool = false
-    @State private var hoverPoint: CGPoint = .zero
     @State private var orbitAngle: Double = 0
     @Environment(\.colorScheme) private var colorScheme
 
@@ -1013,10 +1031,8 @@ public struct FlowOrbitControl: View {
         }
         .buttonStyle(FoldspaceButtonStyle(pressScale: 0.97))
         .disabled(!isEnabled)
-        .onContinuousHover { phase in
-            switch phase {
-            case .active(let pt):
-                hoverPoint = pt
+        .onHover { hovering in
+            if hovering {
                 if !isHovered {
                     withAnimation(.easeInOut(duration: 0.18)) {
                         isHovered = true
@@ -1025,7 +1041,7 @@ public struct FlowOrbitControl: View {
                         orbitAngle = 360
                     }
                 }
-            case .ended:
+            } else {
                 withAnimation(.easeOut(duration: 0.2)) {
                     isHovered = false
                     orbitAngle = 0
@@ -1333,6 +1349,7 @@ public struct ArcZipMiniRoundActionButton: View {
     public var tooltip: String
     public var size: CGFloat
     public var tintColor: Color?
+    public var fillTint: Color?
     public let action: () -> Void
 
     @State private var isHovered: Bool = false
@@ -1343,12 +1360,14 @@ public struct ArcZipMiniRoundActionButton: View {
         tooltip: String = "",
         size: CGFloat = 28,
         tintColor: Color? = nil,
+        fillTint: Color? = nil,
         action: @escaping () -> Void
     ) {
         self.icon = icon
         self.tooltip = tooltip
         self.size = size
         self.tintColor = tintColor
+        self.fillTint = fillTint
         self.action = action
     }
 
@@ -1356,15 +1375,15 @@ public struct ArcZipMiniRoundActionButton: View {
         Button(action: action) {
             ZStack {
                 Circle()
-                    .fill(
-                        colorScheme == .dark
-                            ? Color.white.opacity(isHovered ? 0.18 : 0.11)
-                            : Color.white.opacity(isHovered ? 0.72 : 0.56)
-                    )
+                    .fill(circleFill)
                     .frame(width: size, height: size)
+                    .overlay(
+                        Circle()
+                            .fill(isHovered && fillTint == nil && colorScheme != .dark ? Color.black.opacity(0.08) : Color.clear)
+                    )
                     .shadow(
-                        color: Color.black.opacity(isHovered ? 0.16 : 0.08),
-                        radius: isHovered ? 4 : 2,
+                        color: Color.black.opacity(isHovered ? 0.14 : 0.08),
+                        radius: isHovered ? 3.5 : 2,
                         x: 0,
                         y: 1
                     )
@@ -1374,10 +1393,10 @@ public struct ArcZipMiniRoundActionButton: View {
                         LinearGradient(
                             colors: [
                                 Color.white.opacity(colorScheme == .dark ? 0.35 : 0.88),
-                                Color.white.opacity(colorScheme == .dark ? 0.10 : 0.42)
+                                Color.black.opacity(colorScheme == .dark ? 0.22 : 0.12)
                             ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
+                            startPoint: .top,
+                            endPoint: .bottom
                         ),
                         lineWidth: 1.0
                     )
@@ -1389,46 +1408,58 @@ public struct ArcZipMiniRoundActionButton: View {
                         tintColor ?? (colorScheme == .dark ? Color.white.opacity(0.90) : Color(red: 0.14, green: 0.15, blue: 0.17))
                     )
             }
-            .scaleEffect(isHovered ? 1.04 : 1.0)
+            .scaleEffect(isHovered ? 1.03 : 1.0)
         }
         .buttonStyle(FoldspaceButtonStyle(pressScale: 0.94))
         .help(tooltip)
+        .accessibilityLabel(tooltip.isEmpty ? icon : tooltip)
         .onHover { hovering in
             withAnimation(.spring(response: 0.22, dampingFraction: 0.76)) {
                 isHovered = hovering
             }
         }
     }
+
+    private var circleFill: Color {
+        if let fillTint {
+            return fillTint.opacity(isHovered ? 0.26 : 0.17)
+        }
+        return colorScheme == .dark
+            ? Color.white.opacity(isHovered ? 0.18 : 0.11)
+            : Color.white.opacity(0.62)
+    }
 }
 
 public struct ArcZipMiniPinButtonStyle: ButtonStyle {
     public var isPinned: Bool
     public var size: CGFloat
+    public var isColored: Bool
 
     @State private var isHovered: Bool = false
     @Environment(\.colorScheme) private var colorScheme
 
-    public init(isPinned: Bool, size: CGFloat = 28) {
+    private static let skyBlue = Color(red: 0.251, green: 0.663, blue: 1.0) // #40A9FF
+
+    public init(isPinned: Bool, size: CGFloat = 28, isColored: Bool = false) {
         self.isPinned = isPinned
         self.size = size
+        self.isColored = isColored
     }
 
     public func makeBody(configuration: Configuration) -> some View {
         ZStack {
             Circle()
-                .fill(
-                    isPinned
-                        ? ProZipTheme.accentBright.opacity(colorScheme == .dark ? 0.24 : 0.30)
-                        : (colorScheme == .dark
-                            ? Color.white.opacity(isHovered ? 0.18 : 0.11)
-                            : Color.white.opacity(isHovered ? 0.72 : 0.56))
-                )
+                .fill(circleFill)
                 .frame(width: size, height: size)
+                .overlay(
+                    Circle()
+                        .fill(!isPinned && !isColored && isHovered && colorScheme != .dark ? Color.black.opacity(0.08) : Color.clear)
+                )
                 .shadow(
                     color: isPinned
-                        ? ProZipTheme.accentPrimary.opacity(0.28)
-                        : Color.black.opacity(isHovered ? 0.16 : 0.08),
-                    radius: isHovered ? 4 : 2,
+                        ? Self.skyBlue.opacity(0.32)
+                        : Color.black.opacity(isHovered ? 0.14 : 0.08),
+                    radius: isHovered ? 3.5 : 2,
                     x: 0,
                     y: 1
                 )
@@ -1437,54 +1468,82 @@ public struct ArcZipMiniPinButtonStyle: ButtonStyle {
                 .strokeBorder(
                     isPinned
                         ? LinearGradient(
-                            colors: [ProZipTheme.accentBright, ProZipTheme.accentPrimary],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
+                            colors: [Color.white.opacity(0.78), Self.skyBlue.opacity(0.9)],
+                            startPoint: .top,
+                            endPoint: .bottom
                         )
                         : LinearGradient(
                             colors: [
                                 Color.white.opacity(colorScheme == .dark ? 0.35 : 0.88),
-                                Color.white.opacity(colorScheme == .dark ? 0.10 : 0.42)
+                                Color.black.opacity(colorScheme == .dark ? 0.22 : 0.12)
                             ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
+                            startPoint: .top,
+                            endPoint: .bottom
                         ),
-                    lineWidth: isPinned ? 1.4 : 1.0
+                    lineWidth: 1.0
                 )
                 .frame(width: size, height: size)
 
             configuration.label
                 .font(.system(size: size * 0.41, weight: .semibold))
-                .foregroundStyle(
-                    isPinned
-                        ? (colorScheme == .dark ? ProZipTheme.accentBright : ProZipTheme.accentDeep)
-                        : (colorScheme == .dark ? Color.white.opacity(0.90) : Color(red: 0.14, green: 0.15, blue: 0.17))
-                )
-                .rotationEffect(.degrees(isPinned ? -45 : 0))
-                .animation(.spring(response: 0.26, dampingFraction: 0.72), value: isPinned)
+                .foregroundStyle(iconColor)
         }
-        .scaleEffect(configuration.isPressed ? 0.94 : (isHovered ? 1.04 : 1.0))
+        .overlay {
+            if isPinned {
+                Circle()
+                    .stroke(Self.skyBlue.opacity(0.88), lineWidth: 1.5)
+                    .frame(width: size + 4, height: size + 4)
+                    .allowsHitTesting(false)
+            }
+        }
+        .scaleEffect(configuration.isPressed ? 0.94 : (isHovered ? 1.03 : 1.0))
         .animation(.spring(response: 0.22, dampingFraction: 0.76), value: configuration.isPressed)
+        .animation(.spring(response: 0.24, dampingFraction: 0.76), value: isPinned)
         .onHover { hovering in
             withAnimation(.spring(response: 0.22, dampingFraction: 0.76)) {
                 isHovered = hovering
             }
         }
     }
+
+    private var circleFill: Color {
+        if isPinned {
+            return Self.skyBlue.opacity(isHovered ? 0.96 : 0.88)
+        }
+        if isColored {
+            return Self.skyBlue.opacity(isHovered ? 0.26 : 0.17)
+        }
+        return colorScheme == .dark
+            ? Color.white.opacity(isHovered ? 0.18 : 0.11)
+            : Color.white.opacity(0.62)
+    }
+
+    private var iconColor: Color {
+        if isPinned {
+            return .white
+        }
+        if isColored {
+            return Self.skyBlue
+        }
+        return colorScheme == .dark ? Color.white.opacity(0.90) : Color(red: 0.14, green: 0.15, blue: 0.17)
+    }
 }
 
 public struct ArcZipMiniPinButton: View {
     @Binding public var isPinned: Bool
     public var size: CGFloat
+    public var isColored: Bool
     public var tooltip: String?
 
-    public init(isPinned: Binding<Bool>, size: CGFloat = 34, tooltip: String? = nil) {
+    public init(isPinned: Binding<Bool>, size: CGFloat = 34, isColored: Bool = false, tooltip: String? = nil) {
         self._isPinned = isPinned
         self.size = size
+        self.isColored = isColored
         self.tooltip = tooltip
     }
 
     public var body: some View {
+        let resolvedTooltip = tooltip ?? (isPinned ? "取消窗口置顶" : "窗口置顶")
         Button {
             withAnimation(.spring(response: 0.26, dampingFraction: 0.72)) {
                 isPinned.toggle()
@@ -1492,8 +1551,9 @@ public struct ArcZipMiniPinButton: View {
         } label: {
             Image(systemName: isPinned ? "pin.fill" : "pin")
         }
-        .buttonStyle(ArcZipMiniPinButtonStyle(isPinned: isPinned, size: size))
-        .help(tooltip ?? (isPinned ? "取消窗口置顶" : "窗口置顶"))
+        .buttonStyle(ArcZipMiniPinButtonStyle(isPinned: isPinned, size: size, isColored: isColored))
+        .help(resolvedTooltip)
+        .accessibilityLabel(resolvedTooltip)
     }
 }
 
@@ -1753,36 +1813,190 @@ public struct ProZipModalHeader: View {
     }
 }
 
-// MARK: - Borderless window dragging (top-bar drag support)
+// MARK: - Shared Liquid Glass & Progressive Variable Blur Coatings
 
-public struct ProZipWindowDragModifier: ViewModifier {
-    @State private var startOrigin: CGPoint?
+public struct ProZipGlassMaterialView: NSViewRepresentable {
+    public var material: NSVisualEffectView.Material
+    public var blendingMode: NSVisualEffectView.BlendingMode
+    public var state: NSVisualEffectView.State
+    public var isEmphasized: Bool
 
-    public init() {}
+    public init(
+        material: NSVisualEffectView.Material = .hudWindow,
+        blendingMode: NSVisualEffectView.BlendingMode = .behindWindow,
+        state: NSVisualEffectView.State = .active,
+        isEmphasized: Bool = false
+    ) {
+        self.material = material
+        self.blendingMode = blendingMode
+        self.state = state
+        self.isEmphasized = isEmphasized
+    }
 
-    public func body(content: Content) -> some View {
+    public func makeNSView(context: Context) -> NSVisualEffectView {
+        let view = PassThroughVisualEffectView()
+        view.material = material
+        view.blendingMode = blendingMode
+        view.state = state
+        view.isEmphasized = isEmphasized
+        return view
+    }
+
+    public func updateNSView(_ nsView: NSVisualEffectView, context: Context) {
+        if nsView.material != material { nsView.material = material }
+        if nsView.blendingMode != blendingMode { nsView.blendingMode = blendingMode }
+        if nsView.state != state { nsView.state = state }
+        if nsView.isEmphasized != isEmphasized { nsView.isEmphasized = isEmphasized }
+    }
+}
+
+private final class PassThroughVisualEffectView: NSVisualEffectView {
+    override func hitTest(_ point: NSPoint) -> NSView? { nil }
+}
+
+/// Progressive variable backdrop blur (`withinWindow`) feathered smoothly via `CAGradientLayer` mask.
+public struct ProZipVariableBlurView: NSViewRepresentable {
+    public enum Direction: Sendable {
+        case topToBottom
+        case bottomToTop
+    }
+
+    public var direction: Direction
+    public var material: NSVisualEffectView.Material
+
+    public init(
+        direction: Direction = .topToBottom,
+        material: NSVisualEffectView.Material = .headerView
+    ) {
+        self.direction = direction
+        self.material = material
+    }
+
+    public func makeNSView(context: Context) -> NSView {
+        let view = VariableBlurBackdropNSView()
+        view.configure(direction: direction, material: material)
+        return view
+    }
+
+    public func updateNSView(_ nsView: NSView, context: Context) {
+        (nsView as? VariableBlurBackdropNSView)?.configure(direction: direction, material: material)
+    }
+}
+
+private final class VariableBlurBackdropNSView: NSView {
+    private let effectView = NSVisualEffectView()
+    private let maskGradient = CAGradientLayer()
+    private var currentDirection: ProZipVariableBlurView.Direction = .topToBottom
+
+    override init(frame frameRect: NSRect) {
+        super.init(frame: frameRect)
+        wantsLayer = true
+        effectView.blendingMode = .withinWindow
+        effectView.state = .active
+        effectView.autoresizingMask = [.width, .height]
+        addSubview(effectView)
+        layer?.mask = maskGradient
+        applyStops()
+    }
+
+    required init?(coder: NSCoder) { nil }
+
+    override func hitTest(_ point: NSPoint) -> NSView? { nil }
+
+    func configure(direction: ProZipVariableBlurView.Direction, material: NSVisualEffectView.Material) {
+        if effectView.material != material {
+            effectView.material = material
+        }
+        if currentDirection != direction {
+            currentDirection = direction
+            applyStops()
+        }
+    }
+
+    private func applyStops() {
+        let solid = NSColor.white.cgColor
+        let high = NSColor.white.withAlphaComponent(0.88).cgColor
+        let mid = NSColor.white.withAlphaComponent(0.38).cgColor
+        let clear = NSColor.clear.cgColor
+        maskGradient.colors = [solid, high, mid, clear]
+        maskGradient.locations = [0.0, 0.46, 0.78, 1.0]
+        // AppKit layer-backed coordinates have y=0 at bottom, y=1 at top unless flipped.
+        switch currentDirection {
+        case .topToBottom:
+            maskGradient.startPoint = CGPoint(x: 0.5, y: 1.0)
+            maskGradient.endPoint = CGPoint(x: 0.5, y: 0.0)
+        case .bottomToTop:
+            maskGradient.startPoint = CGPoint(x: 0.5, y: 0.0)
+            maskGradient.endPoint = CGPoint(x: 0.5, y: 1.0)
+        }
+    }
+
+    override func layout() {
+        super.layout()
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        effectView.frame = bounds
+        maskGradient.frame = bounds
+        CATransaction.commit()
+    }
+}
+
+private struct ProZipGlassCoatingModifier: ViewModifier {
+    var cornerRadius: CGFloat
+    var material: NSVisualEffectView.Material
+    var blendingMode: NSVisualEffectView.BlendingMode
+    var tint: Color?
+    var rimOpacity: Double
+
+    @Environment(\.colorScheme) private var colorScheme
+
+    func body(content: Content) -> some View {
+        let shape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
         content
-            .contentShape(Rectangle())
-            .simultaneousGesture(
-            DragGesture(minimumDistance: 2)
-                .onChanged { value in
-                    guard let window = NSApp.keyWindow ?? NSApp.mainWindow else { return }
-                    if startOrigin == nil { startOrigin = window.frame.origin }
-                    guard let origin = startOrigin else { return }
-                    window.setFrameOrigin(NSPoint(
-                        x: origin.x + value.translation.width,
-                        y: origin.y - value.translation.height
-                    ))
+            .background {
+                ZStack {
+                    ProZipGlassMaterialView(material: material, blendingMode: blendingMode)
+                    if let tint {
+                        tint
+                    } else {
+                        Color.white.opacity(colorScheme == .dark ? 0.05 : 0.42)
+                    }
                 }
-                .onEnded { _ in startOrigin = nil }
-        )
+                .clipShape(shape)
+            }
+            .overlay {
+                shape.strokeBorder(
+                    LinearGradient(
+                        colors: [
+                            Color.white.opacity((colorScheme == .dark ? 0.24 : 0.68) * rimOpacity),
+                            Color.primary.opacity(0.08 * rimOpacity)
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    ),
+                    lineWidth: 1
+                )
+            }
     }
 }
 
 public extension View {
-    /// Enables dragging a borderless window by its top bar while keeping buttons clickable.
-    func proZipWindowDrag() -> some View {
-        modifier(ProZipWindowDragModifier())
+    func proZipGlassCoating(
+        cornerRadius: CGFloat = 16,
+        material: NSVisualEffectView.Material = .hudWindow,
+        blendingMode: NSVisualEffectView.BlendingMode = .behindWindow,
+        tint: Color? = nil,
+        rimOpacity: Double = 1.0
+    ) -> some View {
+        modifier(
+            ProZipGlassCoatingModifier(
+                cornerRadius: cornerRadius,
+                material: material,
+                blendingMode: blendingMode,
+                tint: tint,
+                rimOpacity: rimOpacity
+            )
+        )
     }
 }
 

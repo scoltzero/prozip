@@ -24,8 +24,8 @@
 	<string> levels</string>
 	<key> 已恢复原打开方式</key>
 	<string> restored its previous default app</string>
-	<key> 已设为使用 ArcZip 打开</key>
-	<string> is now set to open with ArcZip</string>
+	<key> 已设为使用 ProZip 打开</key>
+	<string> is now set to open with ProZip</string>
 	<key> 文件夹</key>
 	<string> folder</string>
 	<key> 条记录，但不会删除任何压缩包文件。</key>
@@ -48,58 +48,12 @@
 	<string>7Z archives</string>
 	<key>Android 应用软件包</key>
 	<string>Android application package</string>
-	<key>ArcZip</key>
-	<string>ArcZip</string>
-	<key>ArcZip %@</key>
-	<string>ArcZip %@</string>
-	<key>ArcZip Box</key>
-	<string>ArcZip Box</string>
-	<key>ArcZip Box：拖入文件，集中处理</key>
-	<string>ArcZip Box: drop files and work with them together</string>
-	<key>ArcZip Mini</key>
-	<string>ArcZip Mini</string>
-	<key>ArcZip Mini 窗口截图</key>
-	<string>ArcZip Mini window screenshot</string>
-	<key>ArcZip Preview</key>
-	<string>ArcZip Preview</string>
-	<key>ArcZip Pro</key>
-	<string>ArcZip Pro</string>
-	<key>ArcZip Pro 功能</key>
-	<string>ArcZip Pro</string>
-	<key>ArcZip 不会覆盖目标文件夹中的现有项目。</key>
-	<string>ArcZip will not overwrite existing items in the destination folder.</string>
-	<key>ArcZip 不直接操作链接或特殊项目</key>
-	<string>ArcZip does not directly operate on links or special items</string>
-	<key>ArcZip 仍有任务正在进行</key>
-	<string>Unfinished Tasks</string>
-	<key>ArcZip 压缩服务不可用。请重试；如果仍然失败，请重新打开 ArcZip。</key>
-	<string>The ArcZip archive service is unavailable. Try again; if the problem continues, reopen ArcZip.</string>
-	<key>ArcZip 压缩服务连接已中断。请重试；如果仍然失败，请重新打开 ArcZip。</key>
-	<string>The connection to the ArcZip archive service was interrupted. Try again; if the problem continues, reopen ArcZip.</string>
-	<key>ArcZip 在扫描时已无法找到或检查该项目；它可能刚被移动、删除，或所在磁盘已断开。将一个未知状态的项目写入压缩包可能造成内容缺失。</key>
-	<string>Item unavailable. The archive could be incomplete.</string>
-	<key>ArcZip 已准备好，现在就从一个压缩包开始。</key>
-	<string>ArcZip is ready. Start with an archive.</string>
-	<key>ArcZip 当前没有读取该项目所需的权限，继续处理可能得到不完整或损坏的压缩内容。</key>
-	<string>Cannot read this item. The archive could be incomplete or damaged.</string>
-	<key>ArcZip 暂存架</key>
-	<string>ArcZip Shelf</string>
-	<key>ArcZip 暂存架：拖入文件，集中处理</key>
-	<string>ArcZip Shelf: collect files and work with them together</string>
-	<key>ArcZip 检测到不安全或有歧义的文件路径。</key>
-	<string>ArcZip detected an unsafe or ambiguous file path.</string>
-	<key>ArcZip 正在等待你的操作</key>
-	<string>Action required</string>
-	<key>ArcZip 没有读取这个文件的权限，请检查文件权限后重试。</key>
-	<string>File access denied. Check permissions.</string>
-	<key>ArcZip：快速压缩（使用默认设置）</key>
-	<string>ArcZip: Quick Compress (Default Settings)</string>
-	<key>EXE 与 SWF 仍可通过“打开方式 → ArcZip”尝试打开，但不会提供默认应用开关。</key>
-	<string>Try EXE or SWF files using Open With → ArcZip. Default-app switches aren’t available for these formats.</string>
+	<key>EXE 与 SWF 仍可通过“打开方式 → ProZip”尝试打开，但不会提供默认应用开关。</key>
+	<string>Try EXE or SWF files using Open With → ProZip. Default-app switches aren’t available for these formats.</string>
 	<key>Extensible Archive 容器</key>
 	<string>Extensible Archive container</string>
-	<key>Finder 中的 ArcZip 右键菜单截图</key>
-	<string>ArcZip Finder context menu screenshot</string>
+	<key>Finder 中的 ProZip 右键菜单截图</key>
+	<string>ProZip Finder context menu screenshot</string>
 	<key>Finder 右键菜单</key>
 	<string>Finder Context Menu</string>
 	<key>Finder 后台任务不会检查软件更新</key>
@@ -130,6 +84,56 @@
 	<string>Preview</string>
 	<key>Pro</key>
 	<string>Pro</string>
+	<key>Pro 已解锁</key>
+	<string>Pro unlocked</string>
+	<key>ProZip</key>
+	<string>ProZip</string>
+	<key>ProZip %@</key>
+	<string>ProZip %@</string>
+	<key>ProZip Box</key>
+	<string>ProZip Box</string>
+	<key>ProZip Box：拖入文件，集中处理</key>
+	<string>ProZip Box: drop files and work with them together</string>
+	<key>ProZip Mini</key>
+	<string>ProZip Mini</string>
+	<key>ProZip Mini 窗口截图</key>
+	<string>ProZip Mini window screenshot</string>
+	<key>ProZip Preview</key>
+	<string>ProZip Preview</string>
+	<key>ProZip Pro</key>
+	<string>ProZip Pro</string>
+	<key>ProZip Pro 功能</key>
+	<string>ProZip Pro</string>
+	<key>ProZip 不会覆盖目标文件夹中的现有项目。</key>
+	<string>ProZip will not overwrite existing items in the destination folder.</string>
+	<key>ProZip 不直接操作链接或特殊项目</key>
+	<string>ProZip does not directly operate on links or special items</string>
+	<key>ProZip 仍有任务正在进行</key>
+	<string>Unfinished Tasks</string>
+	<key>ProZip 压缩服务不可用。请重试；如果仍然失败，请重新打开 ProZip。</key>
+	<string>The ProZip archive service is unavailable. Try again; if the problem continues, reopen ProZip.</string>
+	<key>ProZip 压缩服务连接已中断。请重试；如果仍然失败，请重新打开 ProZip。</key>
+	<string>The connection to the ProZip archive service was interrupted. Try again; if the problem continues, reopen ProZip.</string>
+	<key>ProZip 在扫描时已无法找到或检查该项目；它可能刚被移动、删除，或所在磁盘已断开。将一个未知状态的项目写入压缩包可能造成内容缺失。</key>
+	<string>Item unavailable. The archive could be incomplete.</string>
+	<key>ProZip 已准备好，现在就从一个压缩包开始。</key>
+	<string>ProZip is ready. Start with an archive.</string>
+	<key>ProZip 当前没有读取该项目所需的权限，继续处理可能得到不完整或损坏的压缩内容。</key>
+	<string>Cannot read this item. The archive could be incomplete or damaged.</string>
+	<key>ProZip 文件盒</key>
+	<string>ProZip Box</string>
+	<key>ProZip 暂存架</key>
+	<string>ProZip Shelf</string>
+	<key>ProZip 暂存架：拖入文件，集中处理</key>
+	<string>ProZip Shelf: collect files and work with them together</string>
+	<key>ProZip 检测到不安全或有歧义的文件路径。</key>
+	<string>ProZip detected an unsafe or ambiguous file path.</string>
+	<key>ProZip 正在等待你的操作</key>
+	<string>Action required</string>
+	<key>ProZip 没有读取这个文件的权限，请检查文件权限后重试。</key>
+	<string>File access denied. Check permissions.</string>
+	<key>ProZip：快速压缩（使用默认设置）</key>
+	<string>ProZip: Quick Compress (Default Settings)</string>
 	<key>Quick Look 只能预览普通文件</key>
 	<string>Quick Look can preview regular files only</string>
 	<key>RAR 压缩包</key>
@@ -169,7 +173,7 @@
 	<key>ZIP、7Z 等以 .001 开始的数字分卷</key>
 	<string>Numbered ZIP, 7Z, and other archive volumes starting with .001</string>
 	<key>app.name</key>
-	<string>ArcZip</string>
+	<string>ProZip</string>
 	<key>application.install.completion.close_detail</key>
 	<string>Close the window after installation completes and the archive is kept</string>
 	<key>application.install.completion.source_detail</key>
@@ -257,7 +261,7 @@ Error details:
 	<key>archive.progress.calculating_total</key>
 	<string>%@ / Calculating</string>
 	<key>archive.quit.wait.message</key>
-	<string>ArcZip will quit when the tasks finish. You can cancel quitting to continue managing them.</string>
+	<string>ProZip will quit when the tasks finish. You can cancel quitting to continue managing them.</string>
 	<key>archive.save</key>
 	<string>Save Archive</string>
 	<key>archive.save.source_changed.message</key>
@@ -285,12 +289,12 @@ Error details:
 	<key>archive.wrong_password</key>
 	<string>Incorrect Password</string>
 	<key>association.incomplete.message</key>
-	<string>The following formats were not associated with ArcZip:
+	<string>The following formats were not associated with ProZip:
 %@</string>
 	<key>association.incomplete.title</key>
 	<string>File associations incomplete</string>
 	<key>association.open_with.notice</key>
-	<string>PKG files open with Installer by default; ArcZip can view and extract them. Try EXE and SWF files using Open With → ArcZip.</string>
+	<string>PKG files open with Installer by default; ProZip can view and extract them. Try EXE and SWF files using Open With → ProZip.</string>
 	<key>batch.cancel</key>
 	<string>Cancel Batch</string>
 	<key>batch.open.browse</key>
@@ -342,7 +346,7 @@ Error details:
 	<key>box.color.yellow</key>
 	<string>Yellow</string>
 	<key>box.menu.open_app</key>
-	<string>Open ArcZip</string>
+	<string>Open ProZip</string>
 	<key>box.menu.quit</key>
 	<string>Quit</string>
 	<key>box.save.action</key>
@@ -370,7 +374,7 @@ Error details:
 	<key>box.settings.color_intensity</key>
 	<string>Color Intensity</string>
 	<key>box.settings.enabled</key>
-	<string>Enable ArcZip Box</string>
+	<string>Enable ProZip Box</string>
 	<key>box.settings.enabled_detail</key>
 	<string>Show the menu bar icon and accept files in Box.</string>
 	<key>box.settings.idle_delay</key>
@@ -378,21 +382,21 @@ Error details:
 	<key>box.settings.idle_detail</key>
 	<string>Keep Box open with the pin button. Dragging and processing pause the countdown.</string>
 	<key>box.settings.preview</key>
-	<string>ArcZip Box appearance preview</string>
+	<string>ProZip Box appearance preview</string>
 	<key>box.settings.seconds</key>
 	<string>%lld seconds</string>
 	<key>box.settings.subtitle</key>
 	<string>Collect files and process them from the menu bar</string>
 	<key>box.source_access.message</key>
-	<string>ArcZip cannot read the source file you dropped. In System Settings → Privacy &amp; Security → Files &amp; Folders, expand ArcZip and enable access to the source app, such as WeChat. Then drop the file again.</string>
+	<string>ProZip cannot read the source file you dropped. In System Settings → Privacy &amp; Security → Files &amp; Folders, expand ProZip and enable access to the source app, such as WeChat. Then drop the file again.</string>
 	<key>box.source_access.open_settings</key>
 	<string>Open Files &amp; Folders</string>
 	<key>box.source_access.title</key>
 	<string>Allow access to the source file</string>
 	<key>commercial.pro.about_prompt</key>
-	<string>What is ArcZip Pro?</string>
+	<string>What is ProZip Pro?</string>
 	<key>commercial.pro.activate</key>
-	<string>Activate ArcZip Pro</string>
+	<string>Activate ProZip Pro</string>
 	<key>commercial.pro.activate_license</key>
 	<string>Activate License</string>
 	<key>commercial.pro.activating</key>
@@ -408,15 +412,15 @@ Error details:
 	<key>commercial.pro.activation_subtitle</key>
 	<string>Enter your activation code.</string>
 	<key>commercial.pro.activation_success</key>
-	<string>ArcZip Pro is now active.</string>
+	<string>ProZip Pro is now active.</string>
 	<key>commercial.pro.activation_success_title</key>
-	<string>ArcZip Pro is activated</string>
+	<string>ProZip Pro is activated</string>
 	<key>commercial.pro.activation_support</key>
-	<string>Your support helps ArcZip keep getting better.</string>
+	<string>Your support helps ProZip keep getting better.</string>
 	<key>commercial.pro.activation_thanks</key>
-	<string>Thank you for purchasing ArcZip Pro.</string>
+	<string>Thank you for purchasing ProZip Pro.</string>
 	<key>commercial.pro.activation_title</key>
-	<string>Activate ArcZip Pro</string>
+	<string>Activate ProZip Pro</string>
 	<key>commercial.pro.already_purchased</key>
 	<string>Already purchased?</string>
 	<key>commercial.pro.back_to_purchase</key>
@@ -424,7 +428,7 @@ Error details:
 	<key>commercial.pro.brand_tagline</key>
 	<string>A complete, professional archive experience</string>
 	<key>commercial.pro.buy</key>
-	<string>Buy ArcZip Pro</string>
+	<string>Buy ProZip Pro</string>
 	<key>commercial.pro.buy_now</key>
 	<string>Buy Now</string>
 	<key>commercial.pro.choose_plan</key>
@@ -478,13 +482,13 @@ Error details:
 	<key>commercial.pro.device_usage_single_format</key>
 	<string>%1$lld of %2$lld device activated</string>
 	<key>commercial.pro.device_version_format</key>
-	<string>ArcZip %@</string>
+	<string>ProZip %@</string>
 	<key>commercial.pro.enter_activation_code</key>
 	<string>Enter Activation Code</string>
 	<key>commercial.pro.error_activation_limit</key>
 	<string>The activation limit has been reached. Try again or contact support.</string>
 	<key>commercial.pro.error_authorization_rejected</key>
-	<string>The license credential is no longer valid. Activate ArcZip Pro again.</string>
+	<string>The license credential is no longer valid. Activate ProZip Pro again.</string>
 	<key>commercial.pro.error_current_device_remote</key>
 	<string>Use “Deactivate This Mac” to remove the license safely from this Mac.</string>
 	<key>commercial.pro.error_device_not_found</key>
@@ -498,7 +502,7 @@ Error details:
 	<key>commercial.pro.error_invalid_key</key>
 	<string>The activation code is invalid. Check it and try again.</string>
 	<key>commercial.pro.error_network</key>
-	<string>ArcZip could not reach the license service. Check your network and try again.</string>
+	<string>ProZip could not reach the license service. Check your network and try again.</string>
 	<key>commercial.pro.error_no_stored_license</key>
 	<string>There is no local license to manage on this Mac.</string>
 	<key>commercial.pro.error_operation_in_progress</key>
@@ -510,13 +514,13 @@ Error details:
 	<key>commercial.pro.error_revoked</key>
 	<string>This license was revoked and cannot be activated.</string>
 	<key>commercial.pro.error_secure_storage</key>
-	<string>ArcZip could not securely save the license. Check Keychain access and try again.</string>
+	<string>ProZip could not securely save the license. Check Keychain access and try again.</string>
 	<key>commercial.pro.error_service</key>
 	<string>The activation code could not be verified. Try again later.</string>
 	<key>commercial.pro.error_unavailable_build</key>
 	<string>This preview build is not connected to the license service yet.</string>
 	<key>commercial.pro.error_version_not_covered</key>
-	<string>This activation code does not cover the current ArcZip major version.</string>
+	<string>This activation code does not cover the current ProZip major version.</string>
 	<key>commercial.pro.feature_creation_title</key>
 	<string>More Formats &amp; Presets</string>
 	<key>commercial.pro.feature_edit_title</key>
@@ -524,17 +528,17 @@ Error details:
 	<key>commercial.pro.feature_flows_title</key>
 	<string>All Pro Flows</string>
 	<key>commercial.pro.feature_requires_pro</key>
-	<string>“%@” requires ArcZip Pro. Free includes opening, browsing, previewing, full extraction, and basic ZIP creation with the General purpose and Balanced compression.</string>
+	<string>“%@” requires ProZip Pro. Free includes opening, browsing, previewing, full extraction, and basic ZIP creation with the General purpose and Balanced compression.</string>
 	<key>commercial.pro.feature_security_title</key>
 	<string>Advanced Compression &amp; Security</string>
 	<key>commercial.pro.last_verified</key>
 	<string>Last Verified</string>
 	<key>commercial.pro.learn_more</key>
-	<string>Learn About ArcZip Pro</string>
+	<string>Learn About ProZip Pro</string>
 	<key>commercial.pro.learn_more_action</key>
 	<string>Learn More</string>
 	<key>commercial.pro.learn_more_subtitle</key>
-	<string>Learn about ArcZip Pro features, purchasing, and activation</string>
+	<string>Learn about ProZip Pro features, purchasing, and activation</string>
 	<key>commercial.pro.license_management</key>
 	<string>License and Device Management</string>
 	<key>commercial.pro.license_management_detail</key>
@@ -568,7 +572,7 @@ Error details:
 	<key>commercial.pro.purchase_subtitle</key>
 	<string>Unlock archive search, all Flows, advanced compression options, and archive editing.</string>
 	<key>commercial.pro.purchase_title</key>
-	<string>Unlock ArcZip Pro</string>
+	<string>Unlock ProZip Pro</string>
 	<key>commercial.pro.recovery_detail</key>
 	<string>Enter the email used for your purchase. If support approves your request, a new activation code will be sent to that address.</string>
 	<key>commercial.pro.recovery_email_placeholder</key>
@@ -600,7 +604,7 @@ Error details:
 	<key>commercial.pro.retry</key>
 	<string>Retry</string>
 	<key>commercial.pro.search_requires_pro</key>
-	<string>Search by filename or path across your archive with ArcZip Pro, without opening each folder.</string>
+	<string>Search by filename or path across your archive with ProZip Pro, without opening each folder.</string>
 	<key>commercial.pro.settings_subtitle</key>
 	<string>Manage your license and activated Macs.</string>
 	<key>commercial.pro.settings_trial_active</key>
@@ -610,7 +614,7 @@ Error details:
 	<key>commercial.pro.settings_trial_remaining</key>
 	<string>Trial · %@</string>
 	<key>commercial.pro.start_using</key>
-	<string>Start Using ArcZip</string>
+	<string>Start Using ProZip</string>
 	<key>commercial.pro.status.invalid</key>
 	<string>could not be verified</string>
 	<key>commercial.pro.status.refunded</key>
@@ -620,9 +624,9 @@ Error details:
 	<key>commercial.pro.status_active</key>
 	<string>Activated</string>
 	<key>commercial.pro.status_active_detail</key>
-	<string>This Mac can use all ArcZip Pro features.</string>
+	<string>This Mac can use all ProZip Pro features.</string>
 	<key>commercial.pro.status_free</key>
-	<string>ArcZip Free</string>
+	<string>ProZip Free</string>
 	<key>commercial.pro.status_free_detail</key>
 	<string>Enter an activation code to unlock Pro features on this Mac.</string>
 	<key>commercial.pro.status_inactive</key>
@@ -630,7 +634,7 @@ Error details:
 	<key>commercial.pro.status_invalid</key>
 	<string>Local License Invalid</string>
 	<key>commercial.pro.status_invalid_detail</key>
-	<string>ArcZip cannot verify the local license. Remove it and activate again.</string>
+	<string>ProZip cannot verify the local license. Remove it and activate again.</string>
 	<key>commercial.pro.status_preview_detail</key>
 	<string>This internal preview build is not connected to the license service.</string>
 	<key>commercial.pro.status_refunded</key>
@@ -644,13 +648,13 @@ Error details:
 	<key>commercial.pro.submit_recovery</key>
 	<string>Submit Request</string>
 	<key>commercial.pro.transfer_explanation</key>
-	<string>When changing Macs, deactivate the old Mac first. If it is unavailable, open Device Management in ArcZip, deactivate it remotely, then enter the same activation code on the new Mac.</string>
+	<string>When changing Macs, deactivate the old Mac first. If it is unavailable, open Device Management in ProZip, deactivate it remotely, then enter the same activation code on the new Mac.</string>
 	<key>commercial.pro.trial_days_remaining</key>
 	<string>%lld days remaining</string>
 	<key>commercial.pro.trial_ended</key>
 	<string>Trial ended</string>
 	<key>commercial.pro.trial_ended_purchase_message</key>
-	<string>Your 7-day trial has ended. Purchase ArcZip Pro to keep all Pro features, or continue using the free features.</string>
+	<string>Your 7-day trial has ended. Purchase ProZip Pro to keep all Pro features, or continue using the free features.</string>
 	<key>commercial.pro.trial_error_network</key>
 	<string>Check your network connection</string>
 	<key>commercial.pro.trial_error_service</key>
@@ -672,7 +676,7 @@ Error details:
 	<key>commercial.pro.unnamed_device</key>
 	<string>Unnamed Mac</string>
 	<key>commercial.pro.upgrade_required</key>
-	<string>Your license covers ArcZip %lld.x and earlier. Upgrade for “%@”.</string>
+	<string>Your license covers ProZip %lld.x and earlier. Upgrade for “%@”.</string>
 	<key>commercial.pro.use_activation_code</key>
 	<string>Use activation code</string>
 	<key>commercial.pro.version_coverage</key>
@@ -702,7 +706,7 @@ Error details:
 	<key>creation.external_entry.issue.continuing</key>
 	<string>Skipping problem items and continuing</string>
 	<key>creation.external_entry.issue.message</key>
-	<string>ArcZip can skip items that cannot be represented or read safely and continue with the remaining content. Your source files will not be modified.</string>
+	<string>ProZip can skip items that cannot be represented or read safely and continue with the remaining content. Your source files will not be modified.</string>
 	<key>creation.external_entry.issue.more</key>
 	<string>…and %lld more items</string>
 	<key>creation.external_entry.issue.title</key>
@@ -790,11 +794,11 @@ Error details:
 	<key>disk_image.application.open_failed</key>
 	<string>Unable to open this application: %@</string>
 	<key>disk_image.application.warning.applications</key>
-	<string>The developer recommends dragging “%@” to Applications first, or using ArcZip Quick Install (Pro), and then opening it from Applications.</string>
+	<string>The developer recommends dragging “%@” to Applications first, or using ProZip Quick Install (Pro), and then opening it from Applications.</string>
 	<key>disk_image.application.warning.custom_destination</key>
 	<string>The developer specified “%@” as the installation location. Follow the image's instructions and drag “%@” there first.</string>
 	<key>disk_image.application.warning.destination_unavailable</key>
-	<string>ArcZip couldn't determine the installation location prepared by the developer for “%@”. Continuing will open the application directly.</string>
+	<string>ProZip couldn't determine the installation location prepared by the developer for “%@”. Continuing will open the application directly.</string>
 	<key>disk_image.application.warning.multiple_destinations</key>
 	<string>The developer provided multiple installation locations. Follow the drag instructions shown in the image before opening the application.</string>
 	<key>disk_image.drop.confirm.conflicts</key>
@@ -880,9 +884,9 @@ Error details:
 	<key>extraction.opening.browse_formats</key>
 	<string>Formats such as DMG and ISO are unaffected by this setting and always open for browsing.</string>
 	<key>extraction.opening.browse_menu</key>
-	<string>You can also choose “Browse with ArcZip” from the context menu or Services menu to view an archive’s contents.</string>
+	<string>You can also choose “Browse with ProZip” from the context menu or Services menu to view an archive’s contents.</string>
 	<key>extraction.opening.browse_shift</key>
-	<string>Hold Shift, then double-click an archive to temporarily browse it in ArcZip Mini or the full window.</string>
+	<string>Hold Shift, then double-click an archive to temporarily browse it in ProZip Mini or the full window.</string>
 	<key>extraction.opening.detail</key>
 	<string>Only Always Move to Trash removes the original after direct extraction. Other completion choices keep it silently.</string>
 	<key>extraction.opening.direct</key>
@@ -908,7 +912,7 @@ Error details:
 	<key>finder.batch_extract_to</key>
 	<string>Extract %@ Files to…</string>
 	<key>finder.browse_archive</key>
-	<string>Browse with ArcZip</string>
+	<string>Browse with ProZip</string>
 	<key>finder.compress_advanced</key>
 	<string>Compress As…</string>
 	<key>finder.compress_named</key>
@@ -924,15 +928,15 @@ Error details:
 	<key>finder.menu_repair_confirm</key>
 	<string>Repair</string>
 	<key>finder.menu_repair_confirmation_message</key>
-	<string>ArcZip will remove stale Finder Sync and Quick Look registrations, keep only the extensions inside Applications, and restart Finder.</string>
+	<string>ProZip will remove stale Finder Sync and Quick Look registrations, keep only the extensions inside Applications, and restart Finder.</string>
 	<key>finder.menu_repair_confirmation_title</key>
 	<string>Repair Finder Menu?</string>
 	<key>finder.menu_repair_description</key>
-	<string>Repair ArcZip’s extensions if its Finder menu is missing.</string>
+	<string>Repair ProZip’s extensions if its Finder menu is missing.</string>
 	<key>finder.menu_repair_failure</key>
-	<string>Repair failed. Confirm that ArcZip is installed in Applications and try again.</string>
+	<string>Repair failed. Confirm that ProZip is installed in Applications and try again.</string>
 	<key>finder.menu_repair_missing_application</key>
-	<string>The current ArcZip was not found in Applications. Install it there first.</string>
+	<string>The current ProZip was not found in Applications. Install it there first.</string>
 	<key>finder.menu_repair_ready</key>
 	<string>Finder will restart during repair.</string>
 	<key>finder.menu_repair_row_title</key>
@@ -948,9 +952,9 @@ Error details:
 	<key>finder.repair.invalid_signature</key>
 	<string>Untrusted signature for %@.</string>
 	<key>finder.repair.missing_application</key>
-	<string>%@ not found. Install ArcZip in Applications.</string>
+	<string>%@ not found. Install ProZip in Applications.</string>
 	<key>finder.repair.missing_extension</key>
-	<string>Missing %@ extension. Reinstall ArcZip.</string>
+	<string>Missing %@ extension. Reinstall ProZip.</string>
 	<key>finder.repair.read_registration</key>
 	<string>Check %@</string>
 	<key>finder.repair.register_extension</key>
@@ -1044,9 +1048,9 @@ Error details:
 	<key>onboarding.v2.access.confirmed</key>
 	<string>Setup confirmed</string>
 	<key>onboarding.v2.access.detail</key>
-	<string>Enable Full Disk Access so ArcZip can get files from more locations, such as WeChat.</string>
+	<string>Enable Full Disk Access so ProZip can get files from more locations, such as WeChat.</string>
 	<key>onboarding.v2.access.drag_hint</key>
-	<string>Drag ArcZip into the list above, then turn it on</string>
+	<string>Drag ProZip into the list above, then turn it on</string>
 	<key>onboarding.v2.access.open</key>
 	<string>Open Settings</string>
 	<key>onboarding.v2.access.optional</key>
@@ -1054,11 +1058,11 @@ Error details:
 	<key>onboarding.v2.access.step1</key>
 	<string>Click “Open Settings” in the bottom-right corner.</string>
 	<key>onboarding.v2.access.step2</key>
-	<string>Drag ArcZip from the guide into the app list, or use the + button to add it.</string>
+	<string>Drag ProZip from the guide into the app list, or use the + button to add it.</string>
 	<key>onboarding.v2.access.step3</key>
-	<string>Turn on ArcZip. If macOS asks to reopen the app, this guide resumes here.</string>
+	<string>Turn on ProZip. If macOS asks to reopen the app, this guide resumes here.</string>
 	<key>onboarding.v2.access.title</key>
-	<string>Let ArcZip access your files smoothly</string>
+	<string>Let ProZip access your files smoothly</string>
 	<key>onboarding.v2.associations.all</key>
 	<string>Show all formats</string>
 	<key>onboarding.v2.associations.common</key>
@@ -1086,11 +1090,11 @@ Error details:
 	<key>onboarding.v2.box.preview</key>
 	<string>Preview with ease</string>
 	<key>onboarding.v2.box.pro_note</key>
-	<string>Some features need ArcZip Pro</string>
+	<string>Some features need ProZip Pro</string>
 	<key>onboarding.v2.box.quick_actions</key>
 	<string>Quickly compress/extract</string>
 	<key>onboarding.v2.box.title</key>
-	<string>ArcZip Box</string>
+	<string>ProZip Box</string>
 	<key>onboarding.v2.box.try_hint</key>
 	<string>Try it yourself</string>
 	<key>onboarding.v2.complete.box_off</key>
@@ -1100,7 +1104,7 @@ Error details:
 	<key>onboarding.v2.complete.detail</key>
 	<string>Start with your first archive.</string>
 	<key>onboarding.v2.complete.mini</key>
-	<string>Archives open in ArcZip Mini</string>
+	<string>Archives open in ProZip Mini</string>
 	<key>onboarding.v2.complete.settings</key>
 	<string>You can change these choices in Settings at any time.</string>
 	<key>onboarding.v2.complete.title</key>
@@ -1110,13 +1114,13 @@ Error details:
 	<key>onboarding.v2.feature_guide</key>
 	<string>Discover Pro</string>
 	<key>onboarding.v2.finder.detail</key>
-	<string>Quickly access ArcZip from the context menu</string>
+	<string>Quickly access ProZip from the context menu</string>
 	<key>onboarding.v2.finder.instructions</key>
-	<string>Enable the ArcZip Finder extension in System Settings.</string>
+	<string>Enable the ProZip Finder extension in System Settings.</string>
 	<key>onboarding.v2.finder.open</key>
 	<string>Open extension settings</string>
 	<key>onboarding.v2.finder.optional</key>
-	<string>You can set this up later. Compression and extraction remain available in ArcZip.</string>
+	<string>You can set this up later. Compression and extraction remain available in ProZip.</string>
 	<key>onboarding.v2.finder.step1</key>
 	<string>Click “Open System Settings”.</string>
 	<key>onboarding.v2.finder.step2</key>
@@ -1124,21 +1128,21 @@ Error details:
 	<key>onboarding.v2.finder.title</key>
 	<string>Enable Finder menu items</string>
 	<key>onboarding.v2.finish</key>
-	<string>Start using ArcZip</string>
+	<string>Start using ProZip</string>
 	<key>onboarding.v2.mini.browse</key>
 	<string>Browse files and folders</string>
 	<key>onboarding.v2.mini.choice</key>
-	<string>Open archives in ArcZip Mini by default</string>
+	<string>Open archives in ProZip Mini by default</string>
 	<key>onboarding.v2.mini.choice_detail</key>
 	<string>Fully featured, quick to use, with fewer interruptions.</string>
 	<key>onboarding.v2.mini.detail</key>
-	<string>ArcZip Mini gives you a quick look inside. Expand to the workspace when you need more.</string>
+	<string>ProZip Mini gives you a quick look inside. Expand to the workspace when you need more.</string>
 	<key>onboarding.v2.mini.drag</key>
 	<string>Drag to extract</string>
 	<key>onboarding.v2.mini.preview</key>
 	<string>Preview with ease</string>
 	<key>onboarding.v2.mini.title</key>
-	<string>ArcZip Mini</string>
+	<string>ProZip Mini</string>
 	<key>onboarding.v2.mini.workspace</key>
 	<string>Full workspace anytime</string>
 	<key>onboarding.v2.next</key>
@@ -1146,7 +1150,7 @@ Error details:
 	<key>onboarding.v2.pro.activate</key>
 	<string>Already purchased? Activate</string>
 	<key>onboarding.v2.pro.active</key>
-	<string>ArcZip Pro is activated</string>
+	<string>ProZip Pro is activated</string>
 	<key>onboarding.v2.pro.box</key>
 	<string>The complete file box</string>
 	<key>onboarding.v2.pro.box_detail</key>
@@ -1158,7 +1162,7 @@ Error details:
 	<key>onboarding.v2.pro.edit_detail</key>
 	<string>Add, delete, replace or rename files inside an archive, then save your changes.</string>
 	<key>onboarding.v2.pro.feature_eyebrow</key>
-	<string>ArcZip Pro feature</string>
+	<string>ProZip Pro feature</string>
 	<key>onboarding.v2.pro.flow</key>
 	<string>All Flow features</string>
 	<key>onboarding.v2.pro.flow_detail</key>
@@ -1174,9 +1178,9 @@ Error details:
 	<key>onboarding.v2.pro.previous_feature</key>
 	<string>Previous feature</string>
 	<key>onboarding.v2.pro.purchase</key>
-	<string>Buy ArcZip Pro</string>
+	<string>Buy ProZip Pro</string>
 	<key>onboarding.v2.pro.purchase_or_trial</key>
-	<string>Buy or try ArcZip Pro</string>
+	<string>Buy or try ProZip Pro</string>
 	<key>onboarding.v2.pro.purpose</key>
 	<string>More compression options</string>
 	<key>onboarding.v2.pro.purpose_detail</key>
@@ -1208,7 +1212,7 @@ Error details:
 	<key>onboarding.v2.step.mini</key>
 	<string>Mini</string>
 	<key>onboarding.v2.step.pro</key>
-	<string>ArcZip Pro</string>
+	<string>ProZip Pro</string>
 	<key>onboarding.v2.step.welcome</key>
 	<string>Welcome</string>
 	<key>onboarding.v2.welcome.archives</key>
@@ -1220,7 +1224,7 @@ Error details:
 	<key>onboarding.v2.welcome.mini</key>
 	<string>A lighter Mini</string>
 	<key>onboarding.v2.welcome.title</key>
-	<string>Welcome to ArcZip</string>
+	<string>Welcome to ProZip</string>
 	<key>operation.cancelled</key>
 	<string>Operation Cancelled</string>
 	<key>operation.checking</key>
@@ -1244,7 +1248,7 @@ Error details:
 	<key>password.input_notice.title</key>
 	<string>Entering Non-English Passwords</string>
 	<key>password_book.archive.multiple</key>
-	<string>This archive uses multiple passwords. ArcZip matches them when reading its contents.</string>
+	<string>This archive uses multiple passwords. ProZip matches them when reading its contents.</string>
 	<key>password_book.extraction.partial</key>
 	<string>Extraction Partially Completed</string>
 	<key>password_book.extraction.skipped</key>
@@ -1262,7 +1266,7 @@ Error details:
 	<key>password_book.member.title</key>
 	<string>Enter the password for “%@”</string>
 	<key>password_book.pro_description</key>
-	<string>Automatic saving, automatic unlocking, password presets and password protection are included in ArcZip Pro. Saved records are kept; manually entering a password to open and extract archives remains free.</string>
+	<string>Automatic saving, automatic unlocking, password presets and password protection are included in ProZip Pro. Saved records are kept; manually entering a password to open and extract archives remains free.</string>
 	<key>password_book.records.count</key>
 	<string>%lld saved passwords</string>
 	<key>password_book.settings.loading</key>
@@ -1310,7 +1314,7 @@ Error details:
 	<key>release_overview.122.exfat.title</key>
 	<string>Better Extraction on exFAT Disks</string>
 	<key>release_overview.122.save.detail</key>
-	<string>After compressing or collecting items into a folder, save the result directly to a chosen location. ArcZip remembers the last location, supports saving across disks and numbers conflicting names automatically. This action is free to use.</string>
+	<string>After compressing or collecting items into a folder, save the result directly to a chosen location. ProZip remembers the last location, supports saving across disks and numbers conflicting names automatically. This action is free to use.</string>
 	<key>release_overview.122.save.title</key>
 	<string>Save To in File Box</string>
 	<key>release_overview.122.split.detail</key>
@@ -1342,7 +1346,7 @@ Error details:
 	<key>settings.about.licenses.unavailable</key>
 	<string>Could not load the open source licenses. Please reopen this window.</string>
 	<key>settings.about.menu</key>
-	<string>About ArcZip</string>
+	<string>About ProZip</string>
 	<key>settings.about.title</key>
 	<string>About</string>
 	<key>settings.about.version</key>
@@ -1430,9 +1434,9 @@ Error details:
 	<key>settings.finder.mobile_monitoring.confirm.enable</key>
 	<string>Enable Monitoring</string>
 	<key>settings.finder.mobile_monitoring.confirm.message</key>
-	<string>Enabling monitoring may change external device icons in Finder to the ArcZip icon. This is caused by macOS’s Finder extension behavior, not an ArcZip bug.
+	<string>Enabling monitoring may change external device icons in Finder to the ProZip icon. This is caused by macOS’s Finder extension behavior, not an ProZip bug.
 
-You can turn monitoring off at any time. ArcZip remains available from the Services context menu.</string>
+You can turn monitoring off at any time. ProZip remains available from the Services context menu.</string>
 	<key>settings.finder.mobile_monitoring.confirm.title</key>
 	<string>Enable External Storage Monitoring?</string>
 	<key>settings.finder.mobile_monitoring.detail</key>
@@ -1440,7 +1444,7 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<key>settings.finder.mobile_monitoring.title</key>
 	<string>Enable Context Menus on External Storage</string>
 	<key>settings.finder.subtitle</key>
-	<string>Manage ArcZip’s Finder integration and context menus</string>
+	<string>Manage ProZip’s Finder integration and context menus</string>
 	<key>settings.general.title</key>
 	<string>General</string>
 	<key>settings.heading</key>
@@ -1462,15 +1466,15 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<key>settings.hover.video.muted.detail</key>
 	<string>Muted by default. Turn off to play video audio</string>
 	<key>settings.language.detail</key>
-	<string>Follow the system language, or choose a language for ArcZip.</string>
+	<string>Follow the system language, or choose a language for ProZip.</string>
 	<key>settings.language.restart</key>
-	<string>Restart ArcZip</string>
+	<string>Restart ProZip</string>
 	<key>settings.language.restart_detail</key>
-	<string>Restart ArcZip to apply your language choice. Save your changes first.</string>
+	<string>Restart ProZip to apply your language choice. Save your changes first.</string>
 	<key>settings.language.restart_failed.detail</key>
-	<string>ArcZip will stay open. Try again later, or quit and reopen ArcZip manually.</string>
+	<string>ProZip will stay open. Try again later, or quit and reopen ProZip manually.</string>
 	<key>settings.language.restart_failed.title</key>
-	<string>Could Not Restart ArcZip</string>
+	<string>Could Not Restart ProZip</string>
 	<key>settings.language.section</key>
 	<string>Language</string>
 	<key>settings.language.system</key>
@@ -1478,11 +1482,11 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<key>settings.language.title</key>
 	<string>App Language</string>
 	<key>settings.launch_at_login.approval</key>
-	<string>Allow ArcZip in System Settings → Login Items</string>
+	<string>Allow ProZip in System Settings → Login Items</string>
 	<key>settings.launch_at_login.section</key>
 	<string>Startup</string>
 	<key>settings.launch_at_login.title</key>
-	<string>Launch ArcZip at login</string>
+	<string>Launch ProZip at login</string>
 	<key>settings.menu.title</key>
 	<string>Settings…</string>
 	<key>settings.mini.behavior.title</key>
@@ -1500,7 +1504,7 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<key>settings.mini.open.detail.short</key>
 	<string>Use Mini when opening archives from Finder</string>
 	<key>settings.mini.open.short</key>
-	<string>Open in ArcZip Mini by Default</string>
+	<string>Open in ProZip Mini by Default</string>
 	<key>settings.mini.subtitle</key>
 	<string>Choose how Mini windows open and look</string>
 	<key>settings.password.reveal.short</key>
@@ -1577,6 +1581,8 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<string>Unsupported special file</string>
 	<key>两次输入的密码不一致</key>
 	<string>Passwords Do Not Match</string>
+	<key>为外接硬盘、U盘等移动存储中的文件提供访达右键菜单</key>
+	<string>Show Finder context menus for files on external drives and USB storage</string>
 	<key>主工作区的“显示辅助文件”只影响浏览。明确选中辅助文件或辅助目录导出时会保留；.gitignore、.env 等用户文件不会被当作辅助文件。应用程序包内部保持原样，以免破坏签名。</key>
 	<string>Display settings do not affect extraction. Explicitly selected support files are kept.</string>
 	<key>了解</key>
@@ -1601,9 +1607,9 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<string>Install Anyway</string>
 	<key>仍要打开</key>
 	<string>Open Anyway</string>
-	<key>从 Finder 或 Quick Look 使用 ArcZip 打开时优先进入 Mini 窗口</key>
-	<string>Prefer the Mini window when opening with ArcZip from Finder or Quick Look</string>
-	<key>从 Finder 或 Quick Look 使用 ArcZip 打开时，先进入独立 Mini 窗口而不是完整工作区</key>
+	<key>从 Finder 或 Quick Look 使用 ProZip 打开时优先进入 Mini 窗口</key>
+	<string>Prefer the Mini window when opening with ProZip from Finder or Quick Look</string>
+	<key>从 Finder 或 Quick Look 使用 ProZip 打开时，先进入独立 Mini 窗口而不是完整工作区</key>
 	<string>Use Mini when opening archives from Finder or Quick Look.</string>
 	<key>从压缩包安装 macOS 应用</key>
 	<string>Install macOS apps from archives.</string>
@@ -1637,18 +1643,18 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<string>Optimized for cross-platform use</string>
 	<key>会与同一文件夹中的其他项目重名</key>
 	<string>This would duplicate another item in the same folder</string>
-	<key>会替代 Java 启动器；ArcZip 仅预览和解压</key>
-	<string>Replaces the Java launcher as the default app. ArcZip only previews and extracts.</string>
-	<key>会替代系统“安装器”打开 PKG；ArcZip 仅预览和解压</key>
-	<string>Replaces Installer as the default app. ArcZip only previews and extracts.</string>
+	<key>会替代 Java 启动器；ProZip 仅预览和解压</key>
+	<string>Replaces the Java launcher as the default app. ProZip only previews and extracts.</string>
+	<key>会替代系统“安装器”打开 PKG；ProZip 仅预览和解压</key>
+	<string>Replaces Installer as the default app. ProZip only previews and extracts.</string>
 	<key>传统 ARJ 压缩包</key>
 	<string>Legacy ARJ archive</string>
 	<key>传统 LHA 系列压缩包</key>
 	<string>Legacy LHA archive</string>
 	<key>你可以浏览文件列表，但预览或解压缩需要密码。点击此按钮输入密码，即可解锁并显示预览。</key>
 	<string>Browse the file list freely. Click the lock to enter a password for previewing or extracting.</string>
-	<key>你的选择仅用于本次打开；ArcZip 不会替你自动接受或保存协议选择。</key>
-	<string>Your choice applies only to this opening; ArcZip will not accept or save the agreement choice for you.</string>
+	<key>你的选择仅用于本次打开；ProZip 不会替你自动接受或保存协议选择。</key>
+	<string>Your choice applies only to this opening; ProZip will not accept or save the agreement choice for you.</string>
 	<key>使用 TAR 归档</key>
 	<string>Use TAR archiving</string>
 	<key>使用 Touch ID</key>
@@ -1687,12 +1693,16 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<string>The original archive stays unchanged until save succeeds</string>
 	<key>保存此密码</key>
 	<string>Save this password</string>
+	<key>保持置顶</key>
+	<string>Keep on top</string>
 	<key>保留 macOS 文件信息</key>
 	<string>Preserve macOS File Information</string>
 	<key>保留 macOS 辅助文件</key>
 	<string>Keep Mac support files</string>
 	<key>保留目录结构与 Unix 文件属性</key>
 	<string>Preserve directory structure and Unix file attributes</string>
+	<key>修复访达菜单项</key>
+	<string>Repair Finder menu items</string>
 	<key>修改仅应用于当前选中的用途</key>
 	<string>Applies to the selected preset.</string>
 	<key>修改密码…</key>
@@ -1715,10 +1725,14 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<string>Preferences</string>
 	<key>允许打开的文件格式</key>
 	<string>Enabled Formats</string>
+	<key>全功能已解锁</key>
+	<string>All features unlocked</string>
 	<key>全部取消</key>
 	<string>Deselect All</string>
 	<key>全部可用（%@）</key>
 	<string>All Available (%@)</string>
+	<key>全部可用（%ld）</key>
+	<string>All available (%ld)</string>
 	<key>全部拷贝</key>
 	<string>Copy All</string>
 	<key>全部解压</key>
@@ -1727,6 +1741,8 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<string>Skip All and Continue</string>
 	<key>共 </key>
 	<string>Total </string>
+	<key>关于</key>
+	<string>About</string>
 	<key>关联状态</key>
 	<string>Association Status</string>
 	<key>关闭</key>
@@ -1821,8 +1837,8 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<string>Encrypt File Names</string>
 	<key>包内搜索</key>
 	<string>Search archive</string>
-	<key>包内搜索属于 ArcZip Pro</key>
-	<string>Archive search requires ArcZip Pro</string>
+	<key>包内搜索属于 ProZip Pro</key>
+	<string>Archive search requires ProZip Pro</string>
 	<key>包含</key>
 	<string>Contains</string>
 	<key>包含同名记录</key>
@@ -1861,8 +1877,8 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<string>Path in archive: </string>
 	<key>压缩包包含不安全路径：</key>
 	<string>The archive contains an unsafe path: </string>
-	<key>压缩包发布失败，ArcZip 已保留回滚记录：</key>
-	<string>Could not publish the archive. ArcZip retained the rollback record: </string>
+	<key>压缩包发布失败，ProZip 已保留回滚记录：</key>
+	<string>Could not publish the archive. ProZip retained the rollback record: </string>
 	<key>压缩包名称</key>
 	<string>Archive Name</string>
 	<key>压缩包已被其他应用修改</key>
@@ -1943,6 +1959,10 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<string>Preview is available · extraction and search are unavailable</string>
 	<key>可能包含安装脚本的软件包格式</key>
 	<string>Package formats that may contain install scripts</string>
+	<key>可随时点击眼睛按钮隐藏</key>
+	<string>Click the eye button to hide a password at any time</string>
+	<key>可预览音视频大小上限：%ld MB</key>
+	<string>Maximum media preview size: %ld MB</string>
 	<key>合并</key>
 	<string>Merge</string>
 	<key>同一文件夹中已存在“</key>
@@ -1989,6 +2009,8 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<string>Contains characters that Windows does not support or that are unsafe</string>
 	<key>含有 Windows 不支持的字符</key>
 	<string>Contains characters that Windows does not support</string>
+	<key>启动</key>
+	<string>Startup</string>
 	<key>命名管道不是静态文件；读取它可能一直等待其他进程写入，导致压缩任务无法结束。</key>
 	<string>Reading a named pipe may never finish.</string>
 	<key>命名管道（FIFO）</key>
@@ -2005,6 +2027,10 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<string>Show in Finder</string>
 	<key>在完整窗口中打开此压缩包会放弃当前暂存内容。Mini 窗口可以继续独立使用。</key>
 	<string>Opening this archive in the full window will discard the current staged content. The Mini window can continue independently.</string>
+	<key>在悬浮预览中播放视频</key>
+	<string>Play video in hover previews</string>
+	<key>在移动存储中开启右键菜单</key>
+	<string>Enable context menus on removable volumes</string>
 	<key>在访达中显示</key>
 	<string>Show in Finder</string>
 	<key>均衡</key>
@@ -2025,6 +2051,8 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<string>Sockets contain no restorable file data.</string>
 	<key>好</key>
 	<string>OK</string>
+	<key>如果访达右键菜单中没有 ProZip，可以尝试修复。</key>
+	<string>If ProZip is missing from the Finder context menu, try repairing it.</string>
 	<key>字体安装完成</key>
 	<string>Font Installation Complete</string>
 	<key>存储位置</key>
@@ -2081,8 +2109,8 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<string>There are unsaved changes in the full window</string>
 	<key>完整索引完成前暂不能搜索、预览、拖出或解压</key>
 	<string>Search, preview, drag-out and extraction are unavailable until indexing completes</string>
-	<key>实践证明，保持 ArcZip 为最新版本有益于压缩包的身心健康</key>
-	<string>Keep ArcZip and your archives in good shape.</string>
+	<key>实践证明，保持 ProZip 为最新版本有益于压缩包的身心健康</key>
+	<string>Keep ProZip and your archives in good shape.</string>
 	<key>密码</key>
 	<string>Password</string>
 	<key>密码不正确</key>
@@ -2099,8 +2127,8 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<string>Password Actions</string>
 	<key>密码本</key>
 	<string>Password Book</string>
-	<key>密码本 · ArcZip Pro</key>
-	<string>Password Book · ArcZip Pro</string>
+	<key>密码本 · ProZip Pro</key>
+	<string>Password Book · ProZip Pro</string>
 	<key>密码本密码</key>
 	<string>Password Book password</string>
 	<key>密码本密码不正确。</key>
@@ -2110,6 +2138,8 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<key>密码本已锁定，本次不自动保存</key>
 	<string>Password Book is locked. This password will not be saved automatically.</string>
 	<key>密码记录</key>
+	<string>Password entry</string>
+	<key>密码输入</key>
 	<string>Password entry</string>
 	<key>密码错误</key>
 	<string>Incorrect Password</string>
@@ -2191,12 +2221,12 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<string>Hidden</string>
 	<key>已隐藏 </key>
 	<string>Hidden </string>
-	<key>带有签名，但 ArcZip 无法验证签名者的身份。</key>
-	<string>is signed, but ArcZip cannot verify the signer's identity.</string>
+	<key>带有签名，但 ProZip 无法验证签名者的身份。</key>
+	<string>is signed, but ProZip cannot verify the signer's identity.</string>
 	<key>常用压缩包</key>
 	<string>Common Archives</string>
-	<key>常用格式已设为使用 ArcZip 打开</key>
-	<string>Common formats are now set to open with ArcZip</string>
+	<key>常用格式已设为使用 ProZip 打开</key>
+	<string>Common formats are now set to open with ProZip</string>
 	<key>应用到新版本</key>
 	<string>Apply</string>
 	<key>应用安装</key>
@@ -2209,10 +2239,12 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<string>Applications folder</string>
 	<key>应用程序已从磁盘映像复制到临时目录</key>
 	<string>Ready</string>
-	<key>应用程序文件夹中的 ArcZip 不是有效的 ArcZip 安装。</key>
-	<string>Invalid ArcZip installation. Reinstall ArcZip.</string>
+	<key>应用程序文件夹中的 ProZip 不是有效的 ProZip 安装。</key>
+	<string>Invalid ProZip installation. Reinstall ProZip.</string>
 	<key>应用程序解压缩完成</key>
 	<string>Extracted</string>
+	<key>应用语言</key>
+	<string>App language</string>
 	<key>建议先安装此应用</key>
 	<string>Install This Application First</string>
 	<key>开启</key>
@@ -2221,22 +2253,30 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<string>Enable protection</string>
 	<key>开启保护…</key>
 	<string>Enable protection…</string>
-	<key>开启后 ArcZip 会记住成功使用的密码，并为你自动解锁。也可以选择不开启自动保存，并在创建压缩包时手动选择。密码仅保存在这台 Mac 上。</key>
-	<string>When enabled, ArcZip remembers passwords you successfully use and unlocks archives for you automatically. You can also leave automatic saving off and select passwords manually when creating archives. Passwords stay on this Mac.</string>
+	<key>开启后 ProZip 会记住成功使用的密码，并为你自动解锁。也可以选择不开启自动保存，并在创建压缩包时手动选择。密码仅保存在这台 Mac 上。</key>
+	<string>When enabled, ProZip remembers passwords you successfully use and unlocks archives for you automatically. You can also leave automatic saving off and select passwords manually when creating archives. Passwords stay on this Mac.</string>
 	<key>开启密码自动保存？</key>
 	<string>Automatically save passwords?</string>
 	<key>开启并使用密码保护</key>
 	<string>Enable with Password Protection</string>
-	<key>开始使用 ArcZip</key>
-	<string>Get Started with ArcZip</string>
+	<key>开启悬浮预览</key>
+	<string>Enable hover preview</string>
+	<key>开始使用 ProZip</key>
+	<string>Get Started with ProZip</string>
+	<key>开机自动启动 ProZip</key>
+	<string>Launch ProZip at login</string>
+	<key>开源无限制，专业功能全部可用</key>
+	<string>Open source, with all professional features included</string>
+	<key>开源许可与概览</key>
+	<string>License and overview</string>
 	<key>归拢位置不能位于源文件夹内</key>
 	<string>The destination cannot be inside a source folder.</string>
 	<key>归拢过程中源文件发生变化，请重新加入</key>
 	<string>A source changed during collection. Add it again.</string>
 	<key>归档</key>
 	<string>Archive</string>
-	<key>当前不是从 ArcZip.app 运行，格式关联开关已停用。</key>
-	<string>This is not running from ArcZip.app; format association controls are disabled.</string>
+	<key>当前不是从 ProZip.app 运行，格式关联开关已停用。</key>
+	<string>This is not running from ProZip.app; format association controls are disabled.</string>
 	<key>当前为只读格式</key>
 	<string>is currently read-only</string>
 	<key>当前工作区已有一个等待完成的保存或重命名操作。</key>
@@ -2245,8 +2285,8 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<string>The workspace is busy. Please drop the files again when it is ready.</string>
 	<key>当前工作区的文档占用状态已失效，请重新打开后再试。</key>
 	<string>This archive is temporarily unavailable. Reopen it and try again.</string>
-	<key>当前应用完整性验证失败，请从官方来源重新下载 ArcZip。</key>
-	<string>App verification failed. Redownload ArcZip from the official website.</string>
+	<key>当前应用完整性验证失败，请从官方来源重新下载 ProZip。</key>
+	<string>App verification failed. Redownload ProZip from the official website.</string>
 	<key>当前引擎不支持：</key>
 	<string>This engine does not support: </string>
 	<key>当前引擎不支持：自动识别为 GBK 的 ZIP 暂不支持编辑保存；请先解压后重新创建压缩包</key>
@@ -2255,8 +2295,8 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<string>Not a macOS installer.</string>
 	<key>当前文件夹为空 · 后台索引仍在核对</key>
 	<string>This folder is empty · background indexing is still checking</string>
-	<key>当前构建尚未配置 ArcZip 更新服务器</key>
-	<string>This build has no ArcZip update server configured</string>
+	<key>当前构建尚未配置 ProZip 更新服务器</key>
+	<string>This build has no ProZip update server configured</string>
 	<key>当前用户的字体库中已经存在“</key>
 	<string>The current user's font library already contains “</string>
 	<key>当前用途将默认使用 </key>
@@ -2303,6 +2343,8 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<string>Restore Defaults</string>
 	<key>恢复默认压缩设置</key>
 	<string>Restore Defaults</string>
+	<key>悬浮预览</key>
+	<string>Hover preview</string>
 	<key>悬浮高清预览</key>
 	<string>Hover Preview</string>
 	<key>意犹未尽？那就再看一遍，设置不会被重置，放心</key>
@@ -2317,7 +2359,7 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<string>Invalid selection.</string>
 	<key>所选内容只有已排除的系统辅助文件</key>
 	<string>The selected content contains only excluded system auxiliary files</string>
-	<key>所选文件不是 ArcZip 支持的可解压格式</key>
+	<key>所选文件不是 ProZip 支持的可解压格式</key>
 	<string>Unsupported file format.</string>
 	<key>所选文件夹中没有可解压的项目</key>
 	<string>The selected folder contains no extractable items</string>
@@ -2405,6 +2447,8 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<string>Operation Failed</string>
 	<key>操作已取消</key>
 	<string>Operation Cancelled</string>
+	<key>支持 MP4、MOV、M4V 等格式</key>
+	<string>Supports MP4, MOV, M4V and other formats</string>
 	<key>收起备选 Flow</key>
 	<string>Collapse Alternative Flows</string>
 	<key>收起搜索</key>
@@ -2505,8 +2549,8 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<string>Could not read the archive output identity: </string>
 	<key>无法读取密码本，请保留数据并重试。</key>
 	<string>Password Book could not be read. Keep its data and try again.</string>
-	<key>无法读取来源文件，请在系统设置的“隐私与安全性 → 文件与文件夹”中允许 ArcZip 访问来源应用，然后重新拖入</key>
-	<string>The source file cannot be read. Allow ArcZip to access the source app in System Settings → Privacy &amp; Security → Files &amp; Folders, then drop the file again.</string>
+	<key>无法读取来源文件，请在系统设置的“隐私与安全性 → 文件与文件夹”中允许 ProZip 访问来源应用，然后重新拖入</key>
+	<string>The source file cannot be read. Allow ProZip to access the source app in System Settings → Privacy &amp; Security → Files &amp; Folders, then drop the file again.</string>
 	<key>无法验证</key>
 	<string>could not be verified</string>
 	<key>日常最常用的压缩与归档格式</key>
@@ -2527,6 +2571,8 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<string>View</string>
 	<key>显示辅助项目</key>
 	<string>Show Auxiliary Items</string>
+	<key>显示通常隐藏的系统辅助文件</key>
+	<string>Show system files that are usually hidden</string>
 	<key>智能平衡速度与体积</key>
 	<string>Balance speed and size.</string>
 	<key>智能选择文件，使用 128 MB 固实块</key>
@@ -2603,8 +2649,8 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<string>Check for Updates</string>
 	<key>检查更新失败：</key>
 	<string>Update check failed: </string>
-	<key>欢迎使用ArcZip</key>
-	<string>Welcome to ArcZip</string>
+	<key>欢迎使用ProZip</key>
+	<string>Welcome to ProZip</string>
 	<key>欢迎页面</key>
 	<string>Welcome</string>
 	<key>欢迎！拖入文件以开始</key>
@@ -2681,8 +2727,8 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<string>Installing</string>
 	<key>正在安装 </key>
 	<string>Installing </string>
-	<key>正在安装 ArcZip </key>
-	<string>Installing ArcZip </string>
+	<key>正在安装 ProZip </key>
+	<string>Installing ProZip </string>
 	<key>正在安装…</key>
 	<string>Installing…</string>
 	<key>正在安装字体</key>
@@ -2869,8 +2915,8 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<string>Click to Enter Archive Password</string>
 	<key>特殊项目</key>
 	<string>Special Item</string>
-	<key>用 ArcZip 打开 </key>
-	<string>Open with ArcZip: </string>
+	<key>用 ProZip 打开 </key>
+	<string>Open with ProZip: </string>
 	<key>用途</key>
 	<string>Purpose</string>
 	<key>由 Apple 认证的开发者签名，但未经 Apple 公证。</key>
@@ -2953,7 +2999,7 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<string>Continue Extraction</string>
 	<key>维护</key>
 	<string>Maintenance</string>
-	<key>维护和恢复 ArcZip 偏好设置</key>
+	<key>维护和恢复 ProZip 偏好设置</key>
 	<string>Manage and reset your preferences.</string>
 	<key>编辑…</key>
 	<string>Edit…</string>
@@ -2965,12 +3011,16 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<string>Automatically save passwords</string>
 	<key>自动排除系统辅助文件</key>
 	<string>Skip System Metadata Files</string>
+	<key>自动播放音频</key>
+	<string>Autoplay audio</string>
 	<key>自动检查更新</key>
 	<string>Check for Updates Automatically</string>
 	<key>自动过滤 DMG 安装辅助文件</key>
 	<string>Skip DMG Installer Extras</string>
 	<key>视频</key>
 	<string>Video</string>
+	<key>视频默认静音</key>
+	<string>Mute video by default</string>
 	<key>解压</key>
 	<string>Extract</string>
 	<key>解压任务未生成“</key>
@@ -3003,8 +3053,8 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<string>Extraction Complete</string>
 	<key>解锁</key>
 	<string>Unlock</string>
-	<key>解锁 ArcZip 密码本</key>
-	<string>Unlock ArcZip Password Book</string>
+	<key>解锁 ProZip 密码本</key>
+	<string>Unlock ProZip Password Book</string>
 	<key>解锁压缩包</key>
 	<string>Unlock Archive</string>
 	<key>解锁后可使用密码本并保存本次密码。</key>
@@ -3025,16 +3075,20 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<string>Reading a device may expose data, affect the system, or never finish.</string>
 	<key>设置</key>
 	<string>Settings</string>
-	<key>设置 ArcZip 的外观与浏览方式</key>
-	<string>Configure ArcZip's appearance and browsing</string>
+	<key>设置 ProZip 的外观与浏览方式</key>
+	<string>Configure ProZip's appearance and browsing</string>
 	<key>设置创建压缩包时默认采用的用途与压缩强度</key>
 	<string>Choose the default preset and compression level for new archives.</string>
 	<key>设置独立的密码本密码</key>
 	<string>Set a separate Password Book password</string>
 	<key>访达压缩任务</key>
 	<string>Finder compression task</string>
+	<key>访达右键菜单</key>
+	<string>Finder context menu</string>
 	<key>访达快速创建 ZIP</key>
 	<string>Quickly create ZIP in Finder</string>
+	<key>访达扩展</key>
+	<string>Finder extension</string>
 	<key>访达解压任务</key>
 	<string>Finder extraction task</string>
 	<key>访达请求不存在或已被处理</key>
@@ -3051,17 +3105,19 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<string>Save or undo changes to continue.</string>
 	<key>详细信息：</key>
 	<string>Details: </string>
-	<key>请从已打包的 ArcZip.app 中修改格式关联</key>
-	<string>Change format associations from a packaged ArcZip.app</string>
-	<key>请使用 ArcZip 打开以查看完整内容。</key>
-	<string>Open with ArcZip to view the full contents.</string>
-	<key>请使用 ArcZip 打开并输入密码。</key>
-	<string>Open with ArcZip and enter the password.</string>
+	<key>语言</key>
+	<string>Language</string>
+	<key>请从已打包的 ProZip.app 中修改格式关联</key>
+	<string>Change format associations from a packaged ProZip.app</string>
+	<key>请使用 ProZip 打开以查看完整内容。</key>
+	<string>Open with ProZip to view the full contents.</string>
+	<key>请使用 ProZip 打开并输入密码。</key>
+	<string>Open with ProZip and enter the password.</string>
 	<key>请先修正所有 Windows 文件名问题</key>
 	<string>Fix all Windows filename issues first</string>
 	<key>请先完成当前任务并保存压缩包更改</key>
 	<string>Finish the current task and save archive changes first</string>
-	<key>请先完成或取消当前密码、确认或修复操作，再重新退出 ArcZip。</key>
+	<key>请先完成或取消当前密码、确认或修复操作，再重新退出 ProZip。</key>
 	<string>Finish or cancel this prompt before quitting.</string>
 	<key>请先解锁密码本。</key>
 	<string>Unlock Password Book first.</string>
@@ -3113,6 +3169,10 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<string>Choose the default archive view.</string>
 	<key>资源忙</key>
 	<string>Resource Busy</string>
+	<key>跟随系统</key>
+	<string>System default</string>
+	<key>跟随系统语言，或为 ProZip 单独指定语言。</key>
+	<string>Follow the system language, or choose a language for ProZip.</string>
 	<key>路径名称冲突</key>
 	<string>Path name conflict</string>
 	<key>跳过</key>
@@ -3120,7 +3180,7 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<key>跳过 </key>
 	<string>Skip </string>
 	<key>跳过后仍会只读挂载，但无法确认磁盘映像内容是否完整。</key>
-	<string>It will still be mounted read-only if you skip this, but ArcZip cannot verify that the disk image contents are complete.</string>
+	<string>It will still be mounted read-only if you skip this, but ProZip cannot verify that the disk image contents are complete.</string>
 	<key>跳过校验</key>
 	<string>Skip</string>
 	<key>软件包（谨慎）</key>
@@ -3145,12 +3205,14 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<string>What will this archive be used for?</string>
 	<key>这个项目无法放入文件夹</key>
 	<string>This item cannot be collected into a folder.</string>
-	<key>这些名称在 Windows 中可能消失、被改写或无法正常解压。ArcZip 已填入可用名称，你可以直接确认，也可以在这里修改。</key>
-	<string>These names may disappear, be altered, or fail to extract correctly on Windows. ArcZip has filled in safe names; confirm them as-is or edit them here.</string>
+	<key>这些名称在 Windows 中可能消失、被改写或无法正常解压。ProZip 已填入可用名称，你可以直接确认，也可以在这里修改。</key>
+	<string>These names may disappear, be altered, or fail to extract correctly on Windows. ProZip has filled in safe names; confirm them as-is or edit them here.</string>
 	<key>进入主工作区</key>
 	<string>Open in Workspace</string>
 	<key>进入完整工作区</key>
 	<string>Open Full Workspace</string>
+	<key>进度窗口</key>
+	<string>Progress window</string>
 	<key>进行中</key>
 	<string>Working</string>
 	<key>适合 Unix 目录归档</key>
@@ -3159,9 +3221,9 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<string>Suitable for sharing between Macs</string>
 	<key>选择</key>
 	<string>Choose</string>
-	<key>选择 ArcZip 的打开方式，并启用 Finder 快捷操作</key>
-	<string>Choose how ArcZip opens files and enable Finder quick actions</string>
-	<key>选择 ArcZip 窗口使用的明暗模式</key>
+	<key>选择 ProZip 的打开方式，并启用 Finder 快捷操作</key>
+	<string>Choose how ProZip opens files and enable Finder quick actions</string>
+	<key>选择 ProZip 窗口使用的明暗模式</key>
 	<string>Choose light, dark, or automatic.</string>
 	<key>选择全部</key>
 	<string>Select All</string>
@@ -3169,8 +3231,8 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<string>Choose Archive Location</string>
 	<key>选择压缩包格式</key>
 	<string>Choose an archive format</string>
-	<key>选择双击文件时由 ArcZip 打开的格式</key>
-	<string>Set ArcZip as the default app for selected formats.</string>
+	<key>选择双击文件时由 ProZip 打开的格式</key>
+	<string>Set ProZip as the default app for selected formats.</string>
 	<key>选择已有密码</key>
 	<string>Choose a saved password</string>
 	<key>选择文件</key>
@@ -3183,11 +3245,13 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<string>Choose Extraction Destination</string>
 	<key>通常用于下载和传输的压缩数据流</key>
 	<string>Compressed streams commonly used for downloads and transfers</string>
+	<key>通用</key>
+	<string>General</string>
 	<key>通用分享</key>
 	<string>General Sharing</string>
 	<key>部分关联</key>
 	<string>Partially Associated</string>
-	<key>配置 ArcZip 可扩展的智能操作</key>
+	<key>配置 ProZip 可扩展的智能操作</key>
 	<string>Customize Flow actions.</string>
 	<key>采用 Windows 兼容设置</key>
 	<string>Use Windows-compatible settings</string>
@@ -3213,6 +3277,10 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<string>Rename Folder</string>
 	<key>重新启动 Finder</key>
 	<string>Restart Finder</string>
+	<key>重新启动 ProZip</key>
+	<string>Restart ProZip</string>
+	<key>重新启动 ProZip 后，语言设置将生效。请先保存修改。</key>
+	<string>The language will change after restarting ProZip. Save your changes first.</string>
 	<key>重新打开</key>
 	<string>Reopen</string>
 	<key>重新打开 </key>
@@ -3221,6 +3289,8 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<string>Show Again</string>
 	<key>重新显示欢迎页面</key>
 	<string>Show Welcome Page</string>
+	<key>重新浏览介绍，不会重置设置</key>
+	<string>Revisit the introduction without resetting your settings</string>
 	<key>重新载入</key>
 	<string>Reload</string>
 	<key>重置</key>
@@ -3231,14 +3301,14 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<string>Reset and clear Password Book?</string>
 	<key>重试</key>
 	<string>Try Again</string>
-	<key>随时重新查看 ArcZip 的功能介绍与初始设置</key>
-	<string>Revisit ArcZip’s introduction and setup.</string>
+	<key>随时重新查看 ProZip 的功能介绍与初始设置</key>
+	<string>Revisit ProZip’s introduction and setup.</string>
 	<key>隐藏密码</key>
 	<string>Hide Password</string>
 	<key>隐藏辅助项目</key>
 	<string>Hide Auxiliary Items</string>
-	<key>需要在系统设置中启用 ArcZip Finder 扩展</key>
-	<string>Enable the ArcZip Finder extension in System Settings</string>
+	<key>需要在系统设置中启用 ProZip Finder 扩展</key>
+	<string>Enable the ProZip Finder extension in System Settings</string>
 	<key>音频</key>
 	<string>Audio</string>
 	<key>项目</key>
@@ -3270,21 +3340,25 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<key>高级选项</key>
 	<string>Advanced Options</string>
 	<key>默认使用 Mini 窗口预览压缩包</key>
-	<string>Open archives in ArcZip Mini by default</string>
+	<string>Open archives in ProZip Mini by default</string>
 	<key>默认关闭，保留系统安全检查</key>
 	<string>Off by default; keep system security checks</string>
 	<key>默认创建分卷压缩包</key>
 	<string>Split new archives by default</string>
 	<key>默认压缩强度</key>
 	<string>Compression Level</string>
-	<key>默认打开方式只能从已打包的 ArcZip.app 中修改。请先运行 dist/ArcZip.app。</key>
-	<string>Default app associations can only be changed from a packaged ArcZip.app. Run dist/ArcZip.app first.</string>
+	<key>默认打开方式只能从已打包的 ProZip.app 中修改。请先运行 dist/ProZip.app。</key>
+	<string>Default app associations can only be changed from a packaged ProZip.app. Run dist/ProZip.app first.</string>
+	<key>默认显示密码</key>
+	<string>Show passwords by default</string>
 	<key>默认浏览方式</key>
 	<string>Default View</string>
 	<key>默认用途与压缩强度</key>
 	<string>Compression Defaults</string>
 	<key>鼠标停留 1 秒后，在光标旁预览图片及支持的文档；适用于工作区和 Mini 窗口</key>
 	<string>Hover for 1 second to preview images and supported documents beside the pointer in the workspace and Mini windows.</string>
+	<key>鼠标停留时显示文件预览</key>
+	<string>Preview files when the pointer hovers over them</string>
 	<key>，已展开</key>
 	<string>, expanded</string>
 	<key>，已折叠</key>
@@ -3297,81 +3371,5 @@ You can turn monitoring off at any time. ArcZip remains available from the Servi
 	<string>; you can change it when creating an archive.</string>
 	<key>；回滚原因：</key>
 	<string>; Rollback error: </string>
-	<key>通用</key>
-	<string>General</string>
-	<key>ProZip Mini</key>
-	<string>ProZip Mini</string>
-	<key>ProZip 文件盒</key>
-	<string>ProZip Box</string>
-	<key>关于</key>
-	<string>About</string>
-	<key>全功能已解锁</key>
-	<string>All features unlocked</string>
-	<key>开源无限制，专业功能全部可用</key>
-	<string>Open source, with all professional features included</string>
-	<key>开源许可与概览</key>
-	<string>License and overview</string>
-	<key>启动</key>
-	<string>Startup</string>
-	<key>开机自动启动 ProZip</key>
-	<string>Launch ProZip at login</string>
-	<key>语言</key>
-	<string>Language</string>
-	<key>应用语言</key>
-	<string>App language</string>
-	<key>跟随系统语言，或为 ProZip 单独指定语言。</key>
-	<string>Follow the system language, or choose a language for ProZip.</string>
-	<key>跟随系统</key>
-	<string>System default</string>
-	<key>重新启动 ProZip 后，语言设置将生效。请先保存修改。</key>
-	<string>The language will change after restarting ProZip. Save your changes first.</string>
-	<key>重新启动 ProZip</key>
-	<string>Restart ProZip</string>
-	<key>进度窗口</key>
-	<string>Progress window</string>
-	<key>保持置顶</key>
-	<string>Keep on top</string>
-	<key>显示通常隐藏的系统辅助文件</key>
-	<string>Show system files that are usually hidden</string>
-	<key>悬浮预览</key>
-	<string>Hover preview</string>
-	<key>Pro 已解锁</key>
-	<string>Pro unlocked</string>
-	<key>开启悬浮预览</key>
-	<string>Enable hover preview</string>
-	<key>鼠标停留时显示文件预览</key>
-	<string>Preview files when the pointer hovers over them</string>
-	<key>在悬浮预览中播放视频</key>
-	<string>Play video in hover previews</string>
-	<key>支持 MP4、MOV、M4V 等格式</key>
-	<string>Supports MP4, MOV, M4V and other formats</string>
-	<key>自动播放音频</key>
-	<string>Autoplay audio</string>
-	<key>视频默认静音</key>
-	<string>Mute video by default</string>
-	<key>可预览音视频大小上限：%ld MB</key>
-	<string>Maximum media preview size: %ld MB</string>
-	<key>密码输入</key>
-	<string>Password entry</string>
-	<key>默认显示密码</key>
-	<string>Show passwords by default</string>
-	<key>可随时点击眼睛按钮隐藏</key>
-	<string>Click the eye button to hide a password at any time</string>
-	<key>全部可用（%ld）</key>
-	<string>All available (%ld)</string>
-	<key>访达扩展</key>
-	<string>Finder extension</string>
-	<key>在移动存储中开启右键菜单</key>
-	<string>Enable context menus on removable volumes</string>
-	<key>为外接硬盘、U盘等移动存储中的文件提供访达右键菜单</key>
-	<string>Show Finder context menus for files on external drives and USB storage</string>
-	<key>访达右键菜单</key>
-	<string>Finder context menu</string>
-	<key>如果访达右键菜单中没有 ProZip，可以尝试修复。</key>
-	<string>If ProZip is missing from the Finder context menu, try repairing it.</string>
-	<key>修复访达菜单项</key>
-	<string>Repair Finder menu items</string>
-	<key>重新浏览介绍，不会重置设置</key>
-	<string>Revisit the introduction without resetting your settings</string>
 </dict>
 </plist>

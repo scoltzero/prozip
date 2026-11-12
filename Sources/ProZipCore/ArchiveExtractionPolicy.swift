@@ -101,56 +101,85 @@ public enum ArchiveExtractionPolicy {
     /// Validates that `url` and all existing ancestor directory components are not symbolic links,
     /// and ensures the destination location is writable.
     public static func validateDestinationDirectory(_ url: URL) throws {
-        let standardizedPath = (url.standardizedFileURL.path as NSString).standardizingPath
+        var validator = DestinationDirectoryValidator()
+        try validator.validate(url)
+    }
 
-        // On macOS /tmp, /var, /etc are symlinks to /private/tmp, /private/var, /private/etc.
-        // Map these standard prefixes to their canonical roots before checking symlink components.
-        var checkablePath = standardizedPath
-        if checkablePath.hasPrefix("/tmp/") || checkablePath == "/tmp" {
-            checkablePath = "/private" + checkablePath
-        } else if checkablePath.hasPrefix("/var/") || checkablePath == "/var" {
-            checkablePath = "/private" + checkablePath
-        } else if checkablePath.hasPrefix("/etc/") || checkablePath == "/etc" {
-            checkablePath = "/private" + checkablePath
-        }
+    private struct DestinationDirectoryValidator {
+        private var validatedTargets: Set<String> = []
+        private var nonSymlinkComponents: Set<String> = []
+        private var writableAncestors: [String: Bool] = [:]
 
-        let components = (checkablePath as NSString).pathComponents
-        var currentPath = ""
-
-        for comp in components {
-            if comp == "/" {
-                currentPath = "/"
-                continue
-            }
-            currentPath = (currentPath as NSString).appendingPathComponent(comp)
-
-            // System roots allowed
-            if currentPath == "/private" ||
-                currentPath == "/private/tmp" ||
-                currentPath == "/private/var" ||
-                currentPath == "/private/etc" {
-                continue
+        mutating func validate(_ url: URL) throws {
+            let standardizedPath = (url.standardizedFileURL.path as NSString).standardizingPath
+            if validatedTargets.contains(standardizedPath) {
+                return
             }
 
-            var statBuf = stat()
-            if lstat(currentPath, &statBuf) == 0 {
-                if (statBuf.st_mode & S_IFMT) == S_IFLNK {
-                    throw ProZipError.destinationIsSymlink(url.path)
+            // On macOS /tmp, /var, /etc are symlinks to /private/tmp, /private/var, /private/etc.
+            // Map these standard prefixes to their canonical roots before checking symlink components.
+            var checkablePath = standardizedPath
+            if checkablePath.hasPrefix("/tmp/") || checkablePath == "/tmp" {
+                checkablePath = "/private" + checkablePath
+            } else if checkablePath.hasPrefix("/var/") || checkablePath == "/var" {
+                checkablePath = "/private" + checkablePath
+            } else if checkablePath.hasPrefix("/etc/") || checkablePath == "/etc" {
+                checkablePath = "/private" + checkablePath
+            }
+
+            let components = (checkablePath as NSString).pathComponents
+            var currentPath = ""
+
+            for comp in components {
+                if comp == "/" {
+                    currentPath = "/"
+                    continue
                 }
+                currentPath = (currentPath as NSString).appendingPathComponent(comp)
+
+                // System roots allowed
+                if currentPath == "/private" ||
+                    currentPath == "/private/tmp" ||
+                    currentPath == "/private/var" ||
+                    currentPath == "/private/etc" {
+                    continue
+                }
+
+                if nonSymlinkComponents.contains(currentPath) {
+                    continue
+                }
+
+                var statBuf = stat()
+                if lstat(currentPath, &statBuf) == 0 {
+                    if (statBuf.st_mode & S_IFMT) == S_IFLNK {
+                        throw ProZipError.destinationIsSymlink(url.path)
+                    }
+                }
+                nonSymlinkComponents.insert(currentPath)
             }
-        }
 
-        // Parent directory writability check
-        var existingAncestor = standardizedPath
-        while !FileManager.default.fileExists(atPath: existingAncestor) {
-            let parent = (existingAncestor as NSString).deletingLastPathComponent
-            if parent == existingAncestor || parent.isEmpty { break }
-            existingAncestor = parent
-        }
+            // Parent directory writability check
+            var existingAncestor = standardizedPath
+            while writableAncestors[existingAncestor] == nil && !FileManager.default.fileExists(atPath: existingAncestor) {
+                let parent = (existingAncestor as NSString).deletingLastPathComponent
+                if parent == existingAncestor || parent.isEmpty { break }
+                existingAncestor = parent
+            }
 
-        let isWritable = FileManager.default.isWritableFile(atPath: existingAncestor) || (access(existingAncestor, W_OK) == 0)
-        guard isWritable else {
-            throw ProZipError.destinationNotWritable(url.path)
+            let isWritable: Bool
+            if let cached = writableAncestors[existingAncestor] {
+                isWritable = cached
+            } else {
+                let computed = FileManager.default.isWritableFile(atPath: existingAncestor) || (access(existingAncestor, W_OK) == 0)
+                writableAncestors[existingAncestor] = computed
+                isWritable = computed
+            }
+
+            guard isWritable else {
+                throw ProZipError.destinationNotWritable(url.path)
+            }
+
+            validatedTargets.insert(standardizedPath)
         }
     }
 
@@ -243,7 +272,8 @@ public enum ArchiveExtractionPolicy {
         destinationURL: URL,
         options: ExtractionOptions
     ) throws -> ExtractionPlan {
-        try validateDestinationDirectory(destinationURL)
+        var directoryValidator = DestinationDirectoryValidator()
+        try directoryValidator.validate(destinationURL)
 
         var candidateEntries: [ArchiveEntry] = []
         var skippedEntries: [SkippedExtractionItem] = []
@@ -410,7 +440,7 @@ public enum ArchiveExtractionPolicy {
         for entry in filteredCandidates {
             guard let relPath = processedRelativePaths[entry.id] else { continue }
             let itemDestURL = destinationURL.appendingPathComponent(relPath)
-            try validateDestinationDirectory(entry.isDirectory ? itemDestURL : itemDestURL.deletingLastPathComponent())
+            try directoryValidator.validate(entry.isDirectory ? itemDestURL : itemDestURL.deletingLastPathComponent())
 
             var isDir: ObjCBool = false
             let existsOnDisk = fileManager.fileExists(atPath: itemDestURL.path, isDirectory: &isDir)

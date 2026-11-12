@@ -1,7 +1,40 @@
 import AppKit
+import Carbon.HIToolbox
 import ProZipCore
 import ProZipShared
 import SwiftUI
+
+// MARK: - ProZipKeyboardInputMonitor (Non-ASCII / CJK IME Detection for NSSecureTextField)
+
+public enum ProZipKeyboardInputMonitor {
+    @MainActor
+    public static func isCurrentInputSourceNonASCII() -> Bool {
+        guard let source = TISCopyCurrentKeyboardInputSource()?.takeRetainedValue() else {
+            return false
+        }
+        if let asciiPtr = TISGetInputSourceProperty(source, kTISPropertyInputSourceIsASCIICapable) {
+            let isASCII = Unmanaged<CFBoolean>.fromOpaque(asciiPtr).takeUnretainedValue()
+            if !CFBooleanGetValue(isASCII) {
+                return true
+            }
+        }
+        if let idPtr = TISGetInputSourceProperty(source, kTISPropertyInputSourceID) {
+            let sourceID = (Unmanaged<CFString>.fromOpaque(idPtr).takeUnretainedValue() as String).lowercased()
+            if sourceID.contains("inputmethod.scim")
+                || sourceID.contains("inputmethod.tcim")
+                || sourceID.contains("sogou")
+                || sourceID.contains("rime")
+                || sourceID.contains("wetype")
+                || sourceID.contains("baidu")
+                || sourceID.contains("pinyin")
+                || sourceID.contains("shuangpin")
+                || sourceID.contains("wubi") {
+                return true
+            }
+        }
+        return false
+    }
+}
 
 // MARK: - ArchiveCreationExpansionScrollState (doc/04 & doc/13 D-01)
 
@@ -24,38 +57,43 @@ public struct ArchiveCreationExpansionScrollState: Equatable, Sendable {
 // MARK: - ArcZipPasswordInputNoticePopover (D-03 Non-ASCII Input Method Popover)
 
 public struct ArcZipPasswordInputNoticePopover: View {
+    @Environment(\.dismiss) private var dismiss
     @AppStorage("archivePassword.inputNoticeSuppressed.v1") private var noticeSuppressed: Bool = false
     public var format: ArchiveFormat
     public var onSwitchTo7Z: (() -> Void)?
     public var onRevealPassword: (() -> Void)?
+    public var onDismiss: (() -> Void)?
 
     public init(
         format: ArchiveFormat = .zip,
         onSwitchTo7Z: (() -> Void)? = nil,
-        onRevealPassword: (() -> Void)? = nil
+        onRevealPassword: (() -> Void)? = nil,
+        onDismiss: (() -> Void)? = nil
     ) {
         self.format = format
         self.onSwitchTo7Z = onSwitchTo7Z
         self.onRevealPassword = onRevealPassword
+        self.onDismiss = onDismiss
     }
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 7) {
-                Image(systemName: "keyboard.badge.exclamationmark")
+                Image(systemName: "eye")
                     .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(.orange)
-                Text("输入非英文密码提示")
-                    .font(.system(size: 13, weight: .bold))
+                    .foregroundStyle(ProZipTheme.accent)
+                Text("输入非英文密码")
+                    .font(.system(size: 14, weight: .bold))
                     .foregroundStyle(.primary)
             }
 
-            Text("检测到当前密码包含非 ASCII 字符或处于中文/全角输入法状态。建议先点击眼睛图标显示密码再输入，或直接粘贴。")
-                .font(.system(size: 11.5))
+            Text("输入中文或其他语言的密码时，请先点击眼睛按钮显示内容，再进行输入；也可以直接粘贴。")
+                .font(.system(size: 12))
                 .foregroundStyle(.secondary)
+                .lineSpacing(2)
                 .fixedSize(horizontal: false, vertical: true)
 
-            if format == .zip {
+            if format == .zip && onSwitchTo7Z != nil {
                 HStack(alignment: .top, spacing: 6) {
                     Image(systemName: "exclamationmark.triangle.fill")
                         .font(.system(size: 11))
@@ -71,34 +109,40 @@ public struct ArcZipPasswordInputNoticePopover: View {
             }
 
             HStack(spacing: 8) {
-                if let onRevealPassword {
-                    Button("显示明文密码") {
-                        onRevealPassword()
-                    }
-                    .buttonStyle(.plain)
-                    .font(.system(size: 11, weight: .semibold))
-                    .foregroundStyle(ProZipTheme.accent)
-                }
-
                 if format == .zip, let onSwitchTo7Z {
                     Button("切换为 7Z 格式") {
                         onSwitchTo7Z()
                     }
                     .buttonStyle(.plain)
-                    .font(.system(size: 11, weight: .semibold))
+                    .font(.system(size: 11.5, weight: .semibold))
                     .foregroundStyle(ProZipTheme.accent)
                 }
 
                 Spacer()
 
-                Toggle("不再提示", isOn: $noticeSuppressed)
-                    .toggleStyle(.checkbox)
-                    .font(.system(size: 11))
-                    .foregroundStyle(.secondary)
+                Button {
+                    noticeSuppressed = true
+                    if let onDismiss {
+                        onDismiss()
+                    } else {
+                        dismiss()
+                    }
+                } label: {
+                    Text("不再提示")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundStyle(.primary)
+                        .padding(.horizontal, 12)
+                        .frame(height: 26)
+                        .background(
+                            RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                .fill(Color.primary.opacity(0.08))
+                        )
+                }
+                .buttonStyle(.plain)
             }
         }
         .padding(14)
-        .frame(width: 300)
+        .frame(width: 296)
     }
 }
 
@@ -150,7 +194,9 @@ public struct ArchiveCreationDialogView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
 
+    private let explicitInitialPurpose: CreationProfile.Purpose?
     @State private var selectedPurpose: CreationProfile.Purpose = .general
+    @State private var hoveredPurpose: CreationProfile.Purpose?
     @State private var archiveName: String = "归档"
     @State private var format: ArchiveFormat = .zip
     @State private var strength: CreationProfile.Strength = .balanced
@@ -184,6 +230,7 @@ public struct ArchiveCreationDialogView: View {
         let appViewModel = appViewModel ?? .shared
         self.appViewModel = appViewModel
         self.passwordBook = appViewModel.passwordBook
+        self.explicitInitialPurpose = initialPurpose
         _archiveName = State(initialValue: defaultName)
         if let initialPurpose {
             _selectedPurpose = State(initialValue: initialPurpose)
@@ -253,59 +300,75 @@ public struct ArchiveCreationDialogView: View {
         VStack(spacing: 0) {
             brandHeader
 
-            ScrollViewReader { scrollProxy in
-                ScrollView(.vertical, showsIndicators: true) {
-                    VStack(alignment: .leading, spacing: 0) {
-                        nameAndDestinationRow
-                            .padding(.top, 6)
+            ZStack(alignment: .bottom) {
+                ScrollViewReader { scrollProxy in
+                    ScrollView(.vertical, showsIndicators: true) {
+                        VStack(alignment: .leading, spacing: 0) {
+                            nameAndDestinationRow
+                                .padding(.top, 6)
 
-                        purposeSection
-                            .padding(.top, 14)
+                            purposeSection
+                                .padding(.top, 14)
 
-                        settingsAndOverviewRow
-                            .padding(.top, 16)
+                            settingsAndOverviewRow
+                                .padding(.top, 16)
 
-                        advancedOptionsSection
-                            .id("advanced-options-anchor")
-                            .padding(.top, 16)
+                            advancedOptionsSection
+                                .id("advanced-options-anchor")
+                                .padding(.top, 16)
+                        }
+                        .padding(.horizontal, 44)
+                        .padding(.bottom, validationErrorMessage == nil ? 90 : 126)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
-                    .padding(.horizontal, 44)
-                    .padding(.bottom, 20)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                .onChange(of: expansionState) { newState in
-                    if newState.isAdvancedExpanded {
-                        withAnimation(.spring(response: 0.28, dampingFraction: 0.82)) {
-                            scrollProxy.scrollTo("advanced-options-anchor", anchor: .bottom)
+                    .onChange(of: expansionState) { _, newState in
+                        if newState.isAdvancedExpanded {
+                            withAnimation(.spring(response: 0.28, dampingFraction: 0.82)) {
+                                scrollProxy.scrollTo("advanced-options-anchor", anchor: .bottom)
+                            }
                         }
                     }
                 }
-            }
 
-            if let errorMsg = validationErrorMessage {
-                validationBanner(errorMsg)
-            }
+                VStack(spacing: 0) {
+                    if let errorMsg = validationErrorMessage {
+                        validationBanner(errorMsg)
+                    }
 
-            footerBar
+                    footerBar
+                }
+            }
         }
         .frame(width: 900, height: 600)
-        .background(Color.white)
+        .background(creationSheetBackground)
         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .strokeBorder(Color.black.opacity(0.08), lineWidth: 1)
+                .strokeBorder(creationCardBorder, lineWidth: 1)
         )
-        .shadow(color: .black.opacity(0.18), radius: 28, y: 14)
-        .environment(\.colorScheme, .light)
+        .shadow(color: .black.opacity(colorScheme == .dark ? 0.36 : 0.18), radius: 28, y: 14)
         .onAppear {
-            let initialP = preferences.defaultPurpose
+            let initialP = explicitInitialPurpose ?? preferences.defaultPurpose
             selectedPurpose = initialP
             format = preferences.defaultFormat(for: initialP)
             strength = preferences.defaultStrength(for: initialP)
             expansionState.isSplitEnabled = preferences.defaultCreatesSplitVolumes
+            let defaultBytes = preferences.defaultVolumeSizeBytes
+            if defaultBytes > 0 {
+                let gb: Int64 = 1024 * 1024 * 1024
+                let mb: Int64 = 1024 * 1024
+                if defaultBytes % gb == 0 {
+                    splitSizeValue = String(defaultBytes / gb)
+                    splitSizeUnit = "GB"
+                } else {
+                    splitSizeValue = String(max(1, defaultBytes / mb))
+                    splitSizeUnit = "MB"
+                }
+            }
             excludeMacJunk = !preferences.defaultPreservesMacMetadata
             windowsCompatibleNames = preferences.windowsNameRepair
             isPasswordVisible = preferences.revealsPasswordByDefault
+            isConfirmationVisible = preferences.revealsPasswordByDefault
             savePasswordToBook = preferences.passwordBookAutoSave
 
             if let firstSource = appViewModel.creationOriginalSources?.first ?? selectedSourceItems.first {
@@ -365,7 +428,7 @@ public struct ArchiveCreationDialogView: View {
                 .overlay(
                     RoundedRectangle(cornerRadius: 8, style: .continuous)
                         .strokeBorder(
-                            isNameFieldFocused ? ProZipTheme.accent : Color.black.opacity(0.06),
+                            isNameFieldFocused ? ProZipTheme.accent : creationCardBorder,
                             lineWidth: isNameFieldFocused ? 1.6 : 1
                         )
                 )
@@ -393,7 +456,7 @@ public struct ArchiveCreationDialogView: View {
                     }
 
                     Button {
-                        setDestinationMode("custom")
+                        chooseOutputDirectory()
                     } label: {
                         Label("自定义目录…", systemImage: "folder")
                     }
@@ -432,7 +495,7 @@ public struct ArchiveCreationDialogView: View {
                     )
                     .overlay(
                         RoundedRectangle(cornerRadius: 8, style: .continuous)
-                            .strokeBorder(Color.black.opacity(0.06), lineWidth: 1)
+                            .strokeBorder(creationCardBorder, lineWidth: 1)
                     )
                     .frame(maxWidth: .infinity)
                     .contentShape(Rectangle())
@@ -441,21 +504,6 @@ public struct ArchiveCreationDialogView: View {
                 .menuIndicator(.hidden)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .frame(height: 40)
-                .background(
-                    RoundedRectangle(cornerRadius: 8, style: .continuous)
-                        .fill(creationFieldFill)
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8, style: .continuous)
-                        .strokeBorder(Color.black.opacity(0.06), lineWidth: 1)
-                )
-                .overlay(alignment: .trailing) {
-                    Image(systemName: "chevron.up.chevron.down")
-                        .font(.system(size: 9.5, weight: .bold))
-                        .foregroundStyle(creationMutedInk)
-                        .padding(.trailing, 14)
-                        .allowsHitTesting(false)
-                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
@@ -507,6 +555,7 @@ public struct ArchiveCreationDialogView: View {
 
     private func purposeCard(_ purpose: CreationProfile.Purpose) -> some View {
         let isSelected = selectedPurpose == purpose
+        let isHovered = hoveredPurpose == purpose
         return Button {
             withAnimation(.spring(response: 0.24, dampingFraction: 0.82)) {
                 applyPurpose(purpose)
@@ -532,14 +581,27 @@ public struct ArchiveCreationDialogView: View {
             .frame(width: 152, height: 106)
             .background(
                 RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .fill(isSelected ? ProZipTheme.accent : Color.white)
+                    .fill(
+                        isSelected
+                            ? ProZipTheme.accent
+                            : (isHovered
+                                ? (colorScheme == .dark ? Color.white.opacity(0.08) : Color(white: 0.978))
+                                : creationCardFill)
+                    )
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 12, style: .continuous)
                     .strokeBorder(
-                        isSelected ? Color.clear : Color.black.opacity(0.10),
+                        isSelected
+                            ? ProZipTheme.accentDeep.opacity(0.35)
+                            : (isHovered ? ProZipTheme.accent.opacity(0.42) : creationCardBorder),
                         lineWidth: 1
                     )
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .stroke(isSelected ? ProZipTheme.accent.opacity(0.30) : Color.clear, lineWidth: 2.5)
+                    .padding(-2)
             )
             .overlay(alignment: .topTrailing) {
                 if purpose != .general {
@@ -548,13 +610,20 @@ public struct ArchiveCreationDialogView: View {
                 }
             }
             .shadow(
-                color: isSelected ? ProZipTheme.accent.opacity(0.28) : .clear,
-                radius: 7,
-                y: 3
+                color: isSelected
+                    ? ProZipTheme.accent.opacity(0.28)
+                    : (isHovered ? Color.black.opacity(colorScheme == .dark ? 0.22 : 0.06) : .clear),
+                radius: isSelected ? 7 : 4,
+                y: isSelected ? 3 : 2
             )
             .contentShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         }
-        .buttonStyle(.plain)
+        .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.01, pressedScale: 0.97))
+        .onHover { hovering in
+            withAnimation(.easeOut(duration: 0.12)) {
+                hoveredPurpose = hovering ? purpose : (hoveredPurpose == purpose ? nil : hoveredPurpose)
+            }
+        }
     }
 
     private func proBadge(onAccent: Bool = false) -> some View {
@@ -676,7 +745,7 @@ public struct ArchiveCreationDialogView: View {
             )
             .background(
                 RoundedRectangle(cornerRadius: 7, style: .continuous)
-                    .fill(isSelected ? Color.white : Color.clear)
+                    .fill(isSelected ? creationCardFill : Color.clear)
             )
             .shadow(color: isSelected ? Color.black.opacity(0.08) : .clear, radius: 2, y: 1)
             .contentShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
@@ -700,7 +769,7 @@ public struct ArchiveCreationDialogView: View {
             .padding(.top, 14)
 
             Rectangle()
-                .fill(Color.black.opacity(0.07))
+                .fill(creationCardBorder)
                 .frame(height: 1)
                 .padding(.vertical, 14)
 
@@ -748,10 +817,10 @@ public struct ArchiveCreationDialogView: View {
 
     private var creationCardSurface: some View {
         RoundedRectangle(cornerRadius: 12, style: .continuous)
-            .fill(Color.white)
+            .fill(creationCardFill)
             .overlay(
                 RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .strokeBorder(Color.black.opacity(0.08), lineWidth: 1)
+                    .strokeBorder(creationCardBorder, lineWidth: 1)
             )
     }
 
@@ -895,10 +964,16 @@ public struct ArchiveCreationDialogView: View {
                         .textFieldStyle(.plain)
                         .font(.system(size: 12.5, design: .monospaced))
                         .foregroundStyle(.primary)
-                        .onChange(of: password) { newValue in
+                        .onChange(of: password) { _, newValue in
                             validationErrorMessage = nil
                             let suppressed = UserDefaults.standard.bool(forKey: "archivePassword.inputNoticeSuppressed.v1")
                             if !suppressed && newValue.unicodeScalars.contains(where: { !$0.isASCII }) {
+                                showNonASCIINoticePopover = true
+                            }
+                        }
+                        .onReceive(NotificationCenter.default.publisher(for: NSTextInputContext.keyboardSelectionDidChangeNotification)) { _ in
+                            let suppressed = UserDefaults.standard.bool(forKey: "archivePassword.inputNoticeSuppressed.v1")
+                            if !suppressed && !isPasswordVisible && ProZipKeyboardInputMonitor.isCurrentInputSourceNonASCII() {
                                 showNonASCIINoticePopover = true
                             }
                         }
@@ -934,6 +1009,10 @@ public struct ArchiveCreationDialogView: View {
                                 },
                                 onRevealPassword: {
                                     isPasswordVisible = true
+                                    showNonASCIINoticePopover = false
+                                },
+                                onDismiss: {
+                                    showNonASCIINoticePopover = false
                                 }
                             )
                         }
@@ -952,7 +1031,7 @@ public struct ArchiveCreationDialogView: View {
                     .padding(.vertical, 7)
                     .background(
                         RoundedRectangle(cornerRadius: 8, style: .continuous)
-                            .fill(Color(NSColor.textBackgroundColor))
+                            .fill(creationCardFill)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 8, style: .continuous)
                                     .strokeBorder(
@@ -971,13 +1050,14 @@ public struct ArchiveCreationDialogView: View {
                             }
                             .textFieldStyle(.plain)
                             .font(.system(size: 12.5, design: .monospaced))
+                            .foregroundStyle(.primary)
                             Button { isConfirmationVisible.toggle() } label: {
                                 Image(systemName: isConfirmationVisible ? "eye.slash" : "eye")
                                     .font(.system(size: 12, weight: .medium)).foregroundStyle(.secondary)
                             }.buttonStyle(.plain).help(isConfirmationVisible ? "隐藏确认密码" : "显示确认密码")
                         }
                         .padding(.horizontal, 10).padding(.vertical, 7)
-                        .background(RoundedRectangle(cornerRadius: 8).fill(Color(NSColor.textBackgroundColor)))
+                        .background(RoundedRectangle(cornerRadius: 8).fill(creationCardFill))
                         .overlay(RoundedRectangle(cornerRadius: 8).strokeBorder(Color.primary.opacity(0.14), lineWidth: 1))
                     }
 
@@ -1205,7 +1285,7 @@ public struct ArchiveCreationDialogView: View {
     private var footerBar: some View {
         VStack(spacing: 0) {
             Rectangle()
-                .fill(Color.black.opacity(0.07))
+                .fill(creationCardBorder)
                 .frame(height: 1)
 
             HStack(spacing: 22) {
@@ -1239,7 +1319,7 @@ public struct ArchiveCreationDialogView: View {
                 }
                 .buttonStyle(
                     CreationFooterButtonStyle(
-                        fill: Color(red: 0.0, green: 0.48, blue: 1.0),
+                        fill: ProZipTheme.accent,
                         foreground: .white
                     )
                 )
@@ -1250,20 +1330,54 @@ public struct ArchiveCreationDialogView: View {
             .padding(.top, 12)
             .padding(.bottom, 14)
         }
+        .background {
+            ZStack {
+                ProZipVariableBlurView(
+                    direction: .bottomToTop,
+                    material: colorScheme == .dark ? .hudWindow : .headerView
+                )
+                creationSheetBackground.opacity(0.84)
+            }
+            .allowsHitTesting(false)
+        }
     }
 
     // MARK: - Creation Layout Helpers
 
+    private var creationSheetBackground: Color {
+        colorScheme == .dark
+            ? Color(red: 0.110, green: 0.114, blue: 0.125)
+            : Color.white
+    }
+
+    private var creationCardFill: Color {
+        colorScheme == .dark
+            ? Color(red: 0.157, green: 0.161, blue: 0.176)
+            : Color.white
+    }
+
+    private var creationCardBorder: Color {
+        colorScheme == .dark
+            ? Color.white.opacity(0.08)
+            : Color.black.opacity(0.08)
+    }
+
     private var creationInk: Color {
-        Color(red: 0.07, green: 0.07, blue: 0.09)
+        colorScheme == .dark
+            ? Color.white.opacity(0.92)
+            : Color(red: 0.07, green: 0.07, blue: 0.09)
     }
 
     private var creationMutedInk: Color {
-        Color(red: 0.42, green: 0.42, blue: 0.46)
+        colorScheme == .dark
+            ? Color.white.opacity(0.56)
+            : Color(red: 0.42, green: 0.42, blue: 0.46)
     }
 
     private var creationFieldFill: Color {
-        Color(red: 0.949, green: 0.953, blue: 0.965)
+        colorScheme == .dark
+            ? Color.white.opacity(0.07)
+            : Color(red: 0.949, green: 0.953, blue: 0.965)
     }
 
     private var effectiveStrength: CreationProfile.Strength {
@@ -1369,9 +1483,22 @@ public struct ArchiveCreationDialogView: View {
         if expansionState.isSplitEnabled && format.supportsSplitVolumes {
             if splitModeByCount {
                 splitPlan = .byCount(splitTotalParts)
-            } else if let val = Int64(splitSizeValue), val > 0 {
-                let mult: Int64 = splitSizeUnit == "GB" ? (1024 * 1024 * 1024) : (1024 * 1024)
-                splitPlan = .bySize(val * mult)
+            } else {
+                let trimmedSplit = splitSizeValue.trimmingCharacters(in: .whitespacesAndNewlines)
+                let mult: Double = splitSizeUnit == "GB" ? (1024 * 1024 * 1024) : (1024 * 1024)
+                guard let numericSize = Double(trimmedSplit),
+                      numericSize.isFinite,
+                      numericSize > 0,
+                      numericSize * mult <= Double(Int64.max) else {
+                    validationErrorMessage = "请输入有效的每卷大小（大于 0 的数字）。"
+                    return
+                }
+                let bytes = Int64((numericSize * mult).rounded())
+                guard bytes >= 1024 * 1024 else {
+                    validationErrorMessage = "每卷大小至少为 1 MB。"
+                    return
+                }
+                splitPlan = .bySize(bytes)
             }
         }
 

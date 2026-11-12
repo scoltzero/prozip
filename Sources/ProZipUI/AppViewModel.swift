@@ -678,9 +678,19 @@ public final class ProZipAppViewModel: ObservableObject {
 
     private func observeSessionChanges() {
         sessionSubscriptions = sessions.map { session in
-            session.objectWillChange
-                .receive(on: RunLoop.main)
-                .sink { [weak self] _ in self?.objectWillChange.send() }
+            Publishers.MergeMany(
+                session.$isMiniMode.removeDuplicates().dropFirst().map { _ in () }.eraseToAnyPublisher(),
+                session.$viewMode.removeDuplicates().dropFirst().map { _ in () }.eraseToAnyPublisher(),
+                session.$showsAuxiliaryEntries.removeDuplicates().dropFirst().map { _ in () }.eraseToAnyPublisher(),
+                session.$isAlwaysOnTop.removeDuplicates().dropFirst().map { _ in () }.eraseToAnyPublisher(),
+                session.$selectedEntryIDs.map { min($0.count, 2) }.removeDuplicates().dropFirst().map { _ in () }.eraseToAnyPublisher(),
+                session.$pendingMutations.removeDuplicates().dropFirst().map { _ in () }.eraseToAnyPublisher(),
+                session.$redoMutations.removeDuplicates().dropFirst().map { _ in () }.eraseToAnyPublisher(),
+                session.$currentDirectoryPath.removeDuplicates().dropFirst().map { _ in () }.eraseToAnyPublisher(),
+                session.$descriptor.removeDuplicates().dropFirst().map { _ in () }.eraseToAnyPublisher()
+            )
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in self?.objectWillChange.send() }
         }
     }
     @Published public var activeSessionID: UUID? {
@@ -1079,7 +1089,7 @@ public final class ProZipAppViewModel: ObservableObject {
 
     @discardableResult
     public func createNewArchiveSession() -> ArchiveBrowsingSession {
-        let tempURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("ProZip-Drafts/\(UUID().uuidString)/未命名归档.zip")
+        let tempURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("ProZip-Drafts/\(UUID().uuidString)/未命名压缩包.zip")
         let session = ArchiveBrowsingSession(url: tempURL, descriptor: ArchiveDescriptor(url: tempURL, format: .zip))
         session.phase = .ready(totalCount: 0)
         session.isDraftEdited = true

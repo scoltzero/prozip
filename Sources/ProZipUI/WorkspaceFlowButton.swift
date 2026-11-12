@@ -9,6 +9,7 @@ struct WorkspaceFlowButton: View {
     let primaryAction: () -> Void
     @EnvironmentObject private var appViewModel: ProZipAppViewModel
     @State private var isExpanded = false
+    @State private var collapseTask: Task<Void, Never>?
 
     private var hasAlternative: Bool {
         recommendation.actionID == .openFile && selection.count == 1 && !selection[0].isDirectory
@@ -23,28 +24,34 @@ struct WorkspaceFlowButton: View {
                     }
             } else { controls }
         }
-        .onChange(of: session.selectedEntryIDs) { _, _ in setExpanded(false) }
+        .onChange(of: session.selectedEntryIDs) { _, _ in
+            collapseTask?.cancel()
+            setExpanded(false)
+        }
+        .onDisappear { collapseTask?.cancel() }
     }
 
     private var controls: some View {
         ZStack(alignment: .bottom) {
             if hasAlternative && !isExpanded {
                 Capsule()
-                    .fill(ProZipTheme.accent.opacity(0.65))
-                    .frame(width: 110, height: 40)
+                    .fill(ProZipTheme.accent.opacity(0.62))
+                    .frame(width: 112, height: 38)
                     .offset(y: -4)
                     .allowsHitTesting(false)
                     .accessibilityHidden(true)
             }
             VStack(spacing: 8) {
                 if hasAlternative && isExpanded {
-                    ProZipFlowOrbitButton(title: "解压", icon: "bolt.fill", shortcut: nil, minimumSize: CGSize(width: 116, height: 40)) {
+                    ProZipFlowOrbitButton(title: "解压", icon: "bolt.fill", shortcut: nil, minimumSize: CGSize(width: 116, height: 38)) {
+                        collapseTask?.cancel()
                         setExpanded(false)
                         appViewModel.extractSelection(selection, in: session)
                     }
                     .transition(.scale(scale: 0.94, anchor: .bottom).combined(with: .opacity))
                 }
-                ProZipFlowOrbitButton(title: recommendation.title, icon: "bolt.fill", shortcut: nil, isEnabled: recommendation.isEnabled, minimumSize: CGSize(width: 116, height: 40)) {
+                ProZipFlowOrbitButton(title: recommendation.title, icon: "bolt.fill", shortcut: nil, isEnabled: recommendation.isEnabled, minimumSize: CGSize(width: 120, height: 40)) {
+                    collapseTask?.cancel()
                     setExpanded(false)
                     primaryAction()
                 }
@@ -54,7 +61,18 @@ struct WorkspaceFlowButton: View {
         .contentShape(Rectangle())
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Flow")
-        .onHover { setExpanded(hasAlternative && $0) }
+        .onHover { hovering in
+            collapseTask?.cancel()
+            if hovering {
+                setExpanded(hasAlternative)
+            } else {
+                collapseTask = Task { @MainActor in
+                    try? await Task.sleep(for: .milliseconds(120))
+                    guard !Task.isCancelled else { return }
+                    setExpanded(false)
+                }
+            }
+        }
     }
 
     private func setExpanded(_ expanded: Bool) {

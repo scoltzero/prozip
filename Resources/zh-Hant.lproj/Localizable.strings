@@ -24,8 +24,8 @@
 	<string> 層</string>
 	<key> 已恢复原打开方式</key>
 	<string> 已恢復原開啟方式</string>
-	<key> 已设为使用 ArcZip 打开</key>
-	<string> 已設為使用 ArcZip 開啟</string>
+	<key> 已设为使用 ProZip 打开</key>
+	<string> 已設為使用 ProZip 開啟</string>
 	<key> 文件夹</key>
 	<string> 資料夾</string>
 	<key> 条记录，但不会删除任何压缩包文件。</key>
@@ -48,58 +48,12 @@
 	<string>7Z 壓縮檔</string>
 	<key>Android 应用软件包</key>
 	<string>Android 應用程式套件</string>
-	<key>ArcZip</key>
-	<string>ArcZip</string>
-	<key>ArcZip %@</key>
-	<string>ArcZip %@</string>
-	<key>ArcZip Box</key>
-	<string>ArcZip 檔案盒</string>
-	<key>ArcZip Box：拖入文件，集中处理</key>
-	<string>ArcZip 檔案盒：拖入檔案，集中處理</string>
-	<key>ArcZip Mini</key>
-	<string>ArcZip Mini</string>
-	<key>ArcZip Mini 窗口截图</key>
-	<string>ArcZip Mini 視窗截圖</string>
-	<key>ArcZip Preview</key>
-	<string>ArcZip Preview</string>
-	<key>ArcZip Pro</key>
-	<string>ArcZip Pro</string>
-	<key>ArcZip Pro 功能</key>
-	<string>ArcZip Pro 功能</string>
-	<key>ArcZip 不会覆盖目标文件夹中的现有项目。</key>
-	<string>ArcZip 不會覆蓋目標資料夾中的現有項目。</string>
-	<key>ArcZip 不直接操作链接或特殊项目</key>
-	<string>ArcZip 不直接操作連結或特殊項目</string>
-	<key>ArcZip 仍有任务正在进行</key>
-	<string>ArcZip 仍有作業正在進行</string>
-	<key>ArcZip 压缩服务不可用。请重试；如果仍然失败，请重新打开 ArcZip。</key>
-	<string>ArcZip 壓縮服務無法使用。請重試；如果仍然失敗，請重新開啟 ArcZip。</string>
-	<key>ArcZip 压缩服务连接已中断。请重试；如果仍然失败，请重新打开 ArcZip。</key>
-	<string>ArcZip 壓縮服務連線已中斷。請重試；如果仍然失敗，請重新開啟 ArcZip。</string>
-	<key>ArcZip 在扫描时已无法找到或检查该项目；它可能刚被移动、删除，或所在磁盘已断开。将一个未知状态的项目写入压缩包可能造成内容缺失。</key>
-	<string>ArcZip 在掃描時已無法找到或檢查該項目；它可能剛被移動、刪除，或所在磁碟已斷開。將一個未知狀態的項目寫入壓縮檔可能造成內容缺失。</string>
-	<key>ArcZip 已准备好，现在就从一个压缩包开始。</key>
-	<string>ArcZip 已準備好，現在就從一個壓縮檔開始。</string>
-	<key>ArcZip 当前没有读取该项目所需的权限，继续处理可能得到不完整或损坏的压缩内容。</key>
-	<string>ArcZip 目前沒有讀取該項目所需的權限，繼續處理可能得到不完整或損壞的壓縮內容。</string>
-	<key>ArcZip 暂存架</key>
-	<string>ArcZip 檔案盒</string>
-	<key>ArcZip 暂存架：拖入文件，集中处理</key>
-	<string>ArcZip 檔案盒：拖入檔案，集中處理</string>
-	<key>ArcZip 检测到不安全或有歧义的文件路径。</key>
-	<string>ArcZip 偵測到不安全或有歧義的檔案路徑。</string>
-	<key>ArcZip 正在等待你的操作</key>
-	<string>ArcZip 正在等待你的操作</string>
-	<key>ArcZip 没有读取这个文件的权限，请检查文件权限后重试。</key>
-	<string>ArcZip 沒有讀取這個檔案的權限，請檢查檔案權限後再試一次。</string>
-	<key>ArcZip：快速压缩（使用默认设置）</key>
-	<string>ArcZip：快速壓縮（使用預設設定）</string>
-	<key>EXE 与 SWF 仍可通过“打开方式 → ArcZip”尝试打开，但不会提供默认应用开关。</key>
-	<string>EXE 與 SWF 仍可透過「開啟方式 → ArcZip」嘗試開啟，但不會提供預設應用程式開關。</string>
+	<key>EXE 与 SWF 仍可通过“打开方式 → ProZip”尝试打开，但不会提供默认应用开关。</key>
+	<string>EXE 與 SWF 仍可透過「開啟方式 → ProZip」嘗試開啟，但不會提供預設應用程式開關。</string>
 	<key>Extensible Archive 容器</key>
 	<string>Extensible Archive 容器</string>
-	<key>Finder 中的 ArcZip 右键菜单截图</key>
-	<string>Finder 中的 ArcZip 快捷選單截圖</string>
+	<key>Finder 中的 ProZip 右键菜单截图</key>
+	<string>Finder 中的 ProZip 快捷選單截圖</string>
 	<key>Finder 右键菜单</key>
 	<string>Finder 快捷選單</string>
 	<key>Finder 后台任务不会检查软件更新</key>
@@ -123,13 +77,63 @@
 	<key>Mini</key>
 	<string>Mini</string>
 	<key>Mini 窗口</key>
-	<string>ArcZip Mini 視窗</string>
+	<string>ProZip Mini 視窗</string>
 	<key>Mini 窗口独立出现，不会打断主窗口中的工作。</key>
-	<string>ArcZip Mini 視窗獨立出現，不會打斷主視窗中的工作。</string>
+	<string>ProZip Mini 視窗獨立出現，不會打斷主視窗中的工作。</string>
 	<key>Preview</key>
 	<string>預覽</string>
 	<key>Pro</key>
 	<string>Pro</string>
+	<key>Pro 已解锁</key>
+	<string>Pro 已解鎖</string>
+	<key>ProZip</key>
+	<string>ProZip</string>
+	<key>ProZip %@</key>
+	<string>ProZip %@</string>
+	<key>ProZip Box</key>
+	<string>ProZip 檔案盒</string>
+	<key>ProZip Box：拖入文件，集中处理</key>
+	<string>ProZip 檔案盒：拖入檔案，集中處理</string>
+	<key>ProZip Mini</key>
+	<string>ProZip Mini</string>
+	<key>ProZip Mini 窗口截图</key>
+	<string>ProZip Mini 視窗截圖</string>
+	<key>ProZip Preview</key>
+	<string>ProZip Preview</string>
+	<key>ProZip Pro</key>
+	<string>ProZip Pro</string>
+	<key>ProZip Pro 功能</key>
+	<string>ProZip Pro 功能</string>
+	<key>ProZip 不会覆盖目标文件夹中的现有项目。</key>
+	<string>ProZip 不會覆蓋目標資料夾中的現有項目。</string>
+	<key>ProZip 不直接操作链接或特殊项目</key>
+	<string>ProZip 不直接操作連結或特殊項目</string>
+	<key>ProZip 仍有任务正在进行</key>
+	<string>ProZip 仍有作業正在進行</string>
+	<key>ProZip 压缩服务不可用。请重试；如果仍然失败，请重新打开 ProZip。</key>
+	<string>ProZip 壓縮服務無法使用。請重試；如果仍然失敗，請重新開啟 ProZip。</string>
+	<key>ProZip 压缩服务连接已中断。请重试；如果仍然失败，请重新打开 ProZip。</key>
+	<string>ProZip 壓縮服務連線已中斷。請重試；如果仍然失敗，請重新開啟 ProZip。</string>
+	<key>ProZip 在扫描时已无法找到或检查该项目；它可能刚被移动、删除，或所在磁盘已断开。将一个未知状态的项目写入压缩包可能造成内容缺失。</key>
+	<string>ProZip 在掃描時已無法找到或檢查該項目；它可能剛被移動、刪除，或所在磁碟已斷開。將一個未知狀態的項目寫入壓縮檔可能造成內容缺失。</string>
+	<key>ProZip 已准备好，现在就从一个压缩包开始。</key>
+	<string>ProZip 已準備好，現在就從一個壓縮檔開始。</string>
+	<key>ProZip 当前没有读取该项目所需的权限，继续处理可能得到不完整或损坏的压缩内容。</key>
+	<string>ProZip 目前沒有讀取該項目所需的權限，繼續處理可能得到不完整或損壞的壓縮內容。</string>
+	<key>ProZip 文件盒</key>
+	<string>ProZip 檔案盒</string>
+	<key>ProZip 暂存架</key>
+	<string>ProZip 檔案盒</string>
+	<key>ProZip 暂存架：拖入文件，集中处理</key>
+	<string>ProZip 檔案盒：拖入檔案，集中處理</string>
+	<key>ProZip 检测到不安全或有歧义的文件路径。</key>
+	<string>ProZip 偵測到不安全或有歧義的檔案路徑。</string>
+	<key>ProZip 正在等待你的操作</key>
+	<string>ProZip 正在等待你的操作</string>
+	<key>ProZip 没有读取这个文件的权限，请检查文件权限后重试。</key>
+	<string>ProZip 沒有讀取這個檔案的權限，請檢查檔案權限後再試一次。</string>
+	<key>ProZip：快速压缩（使用默认设置）</key>
+	<string>ProZip：快速壓縮（使用預設設定）</string>
 	<key>Quick Look 只能预览普通文件</key>
 	<string>快速查看 只能預覽一般檔案</string>
 	<key>RAR 压缩包</key>
@@ -169,7 +173,7 @@
 	<key>ZIP、7Z 等以 .001 开始的数字分卷</key>
 	<string>ZIP、7Z 等以 .001 開始的數字分卷</string>
 	<key>app.name</key>
-	<string>ArcZip</string>
+	<string>ProZip</string>
 	<key>application.install.completion.close_detail</key>
 	<string>應用程式安裝完成並保留壓縮檔後，自動關閉視窗</string>
 	<key>application.install.completion.source_detail</key>
@@ -285,12 +289,12 @@
 	<key>archive.wrong_password</key>
 	<string>密碼錯誤</string>
 	<key>association.incomplete.message</key>
-	<string>以下格式未成功關聯 ArcZip：
+	<string>以下格式未成功關聯 ProZip：
 %@</string>
 	<key>association.incomplete.title</key>
 	<string>格式關聯未完成</string>
 	<key>association.open_with.notice</key>
-	<string>PKG 預設由系統安裝程式開啟，仍可用 ArcZip 檢視和解壓縮。EXE、SWF 可透過「開啟方式 → ArcZip」嘗試開啟。</string>
+	<string>PKG 預設由系統安裝程式開啟，仍可用 ProZip 檢視和解壓縮。EXE、SWF 可透過「開啟方式 → ProZip」嘗試開啟。</string>
 	<key>batch.cancel</key>
 	<string>取消這批作業</string>
 	<key>batch.open.browse</key>
@@ -342,7 +346,7 @@
 	<key>box.color.yellow</key>
 	<string>黃色</string>
 	<key>box.menu.open_app</key>
-	<string>開啟 ArcZip</string>
+	<string>開啟 ProZip</string>
 	<key>box.menu.quit</key>
 	<string>結束</string>
 	<key>box.save.action</key>
@@ -370,7 +374,7 @@
 	<key>box.settings.color_intensity</key>
 	<string>色彩濃度</string>
 	<key>box.settings.enabled</key>
-	<string>啟用 ArcZip 檔案盒</string>
+	<string>啟用 ProZip 檔案盒</string>
 	<key>box.settings.enabled_detail</key>
 	<string>顯示選單欄圖示，並允許向檔案盒拖入檔案。</string>
 	<key>box.settings.idle_delay</key>
@@ -378,21 +382,21 @@
 	<key>box.settings.idle_detail</key>
 	<string>使用圖釘可讓檔案盒保持顯示；拖放和處理檔案時會暫停計時。</string>
 	<key>box.settings.preview</key>
-	<string>ArcZip 檔案盒外觀預覽</string>
+	<string>ProZip 檔案盒外觀預覽</string>
 	<key>box.settings.seconds</key>
 	<string>%lld 秒</string>
 	<key>box.settings.subtitle</key>
 	<string>在選單欄中暫存檔案，集中整理與處理</string>
 	<key>box.source_access.message</key>
-	<string>ArcZip 無法讀取這次拖入的來源檔案。請在系統設定的「隱私權與安全性 → 檔案與檔案夾」中展開 ArcZip，並開啟對應來源應用程式（例如 WeChat）的存取權限，然後重新拖入檔案。</string>
+	<string>ProZip 無法讀取這次拖入的來源檔案。請在系統設定的「隱私權與安全性 → 檔案與檔案夾」中展開 ProZip，並開啟對應來源應用程式（例如 WeChat）的存取權限，然後重新拖入檔案。</string>
 	<key>box.source_access.open_settings</key>
 	<string>開啟「檔案與檔案夾」</string>
 	<key>box.source_access.title</key>
 	<string>需要存取來源檔案的權限</string>
 	<key>commercial.pro.about_prompt</key>
-	<string>什麼是 ArcZip Pro？</string>
+	<string>什麼是 ProZip Pro？</string>
 	<key>commercial.pro.activate</key>
-	<string>啟用 ArcZip Pro</string>
+	<string>啟用 ProZip Pro</string>
 	<key>commercial.pro.activate_license</key>
 	<string>啟用授權</string>
 	<key>commercial.pro.activating</key>
@@ -408,15 +412,15 @@
 	<key>commercial.pro.activation_subtitle</key>
 	<string>輸入購買後收到的啟用碼</string>
 	<key>commercial.pro.activation_success</key>
-	<string>啟用成功，ArcZip Pro 已解鎖。</string>
+	<string>啟用成功，ProZip Pro 已解鎖。</string>
 	<key>commercial.pro.activation_success_title</key>
-	<string>ArcZip Pro 已啟用</string>
+	<string>ProZip Pro 已啟用</string>
 	<key>commercial.pro.activation_support</key>
-	<string>你的支持，讓 ArcZip 持續變得更好。</string>
+	<string>你的支持，讓 ProZip 持續變得更好。</string>
 	<key>commercial.pro.activation_thanks</key>
-	<string>感謝你購買 ArcZip Pro。</string>
+	<string>感謝你購買 ProZip Pro。</string>
 	<key>commercial.pro.activation_title</key>
-	<string>啟用 ArcZip Pro</string>
+	<string>啟用 ProZip Pro</string>
 	<key>commercial.pro.already_purchased</key>
 	<string>已經購買？</string>
 	<key>commercial.pro.back_to_purchase</key>
@@ -424,7 +428,7 @@
 	<key>commercial.pro.brand_tagline</key>
 	<string>完整、專業的壓縮體驗</string>
 	<key>commercial.pro.buy</key>
-	<string>購買 ArcZip Pro</string>
+	<string>購買 ProZip Pro</string>
 	<key>commercial.pro.buy_now</key>
 	<string>立即購買</string>
 	<key>commercial.pro.choose_plan</key>
@@ -478,13 +482,13 @@
 	<key>commercial.pro.device_usage_single_format</key>
 	<string>已使用 %lld / %lld 台</string>
 	<key>commercial.pro.device_version_format</key>
-	<string>ArcZip %@</string>
+	<string>ProZip %@</string>
 	<key>commercial.pro.enter_activation_code</key>
 	<string>輸入啟用碼</string>
 	<key>commercial.pro.error_activation_limit</key>
 	<string>可啟用的裝置數量已達上限，請再試一次或聯絡支援人員。</string>
 	<key>commercial.pro.error_authorization_rejected</key>
-	<string>啟用資訊已失效，請重新啟用 ArcZip Pro。</string>
+	<string>啟用資訊已失效，請重新啟用 ProZip Pro。</string>
 	<key>commercial.pro.error_current_device_remote</key>
 	<string>請使用「停用目前 Mac」安全移除本機授權。</string>
 	<key>commercial.pro.error_device_not_found</key>
@@ -516,7 +520,7 @@
 	<key>commercial.pro.error_unavailable_build</key>
 	<string>目前預覽版本尚未連線至授權服務。</string>
 	<key>commercial.pro.error_version_not_covered</key>
-	<string>此啟用碼不適用於目前 ArcZip 主版本。</string>
+	<string>此啟用碼不適用於目前 ProZip 主版本。</string>
 	<key>commercial.pro.feature_creation_title</key>
 	<string>更多格式與壓縮預設</string>
 	<key>commercial.pro.feature_edit_title</key>
@@ -524,17 +528,17 @@
 	<key>commercial.pro.feature_flows_title</key>
 	<string>全部專業 Flow</string>
 	<key>commercial.pro.feature_requires_pro</key>
-	<string>「%@」屬於 ArcZip Pro。免費版仍可開啟、瀏覽、預覽及完整解壓縮，並使用「一般分享 + ZIP + 均衡強度」進行基本壓縮。</string>
+	<string>「%@」屬於 ProZip Pro。免費版仍可開啟、瀏覽、預覽及完整解壓縮，並使用「一般分享 + ZIP + 均衡強度」進行基本壓縮。</string>
 	<key>commercial.pro.feature_security_title</key>
 	<string>進階壓縮與安全選項</string>
 	<key>commercial.pro.last_verified</key>
 	<string>上次驗證</string>
 	<key>commercial.pro.learn_more</key>
-	<string>瞭解 ArcZip Pro</string>
+	<string>瞭解 ProZip Pro</string>
 	<key>commercial.pro.learn_more_action</key>
 	<string>按一下瞭解</string>
 	<key>commercial.pro.learn_more_subtitle</key>
-	<string>瞭解 ArcZip Pro 的功能、購買方式與啟用流程</string>
+	<string>瞭解 ProZip Pro 的功能、購買方式與啟用流程</string>
 	<key>commercial.pro.license_management</key>
 	<string>授權與裝置管理</string>
 	<key>commercial.pro.license_management_detail</key>
@@ -568,9 +572,9 @@
 	<key>commercial.pro.purchase_subtitle</key>
 	<string>解鎖壓縮檔內搜尋、完整 Flow、進階壓縮選項與壓縮檔編輯。</string>
 	<key>commercial.pro.purchase_title</key>
-	<string>解鎖 ArcZip Pro</string>
+	<string>解鎖 ProZip Pro</string>
 	<key>commercial.pro.recovery_detail</key>
-	<string>請輸入購買 ArcZip Pro 時使用的電子郵件地址。客服審核通過後，新的啟用碼會寄到該地址。</string>
+	<string>請輸入購買 ProZip Pro 時使用的電子郵件地址。客服審核通過後，新的啟用碼會寄到該地址。</string>
 	<key>commercial.pro.recovery_email_placeholder</key>
 	<string>購買時使用的電子郵件地址</string>
 	<key>commercial.pro.recovery_submitted_button</key>
@@ -600,13 +604,13 @@
 	<key>commercial.pro.retry</key>
 	<string>再試一次</string>
 	<key>commercial.pro.search_requires_pro</key>
-	<string>壓縮檔內搜尋屬於 ArcZip Pro。依檔名或路徑尋找壓縮檔內的檔案，無需逐層開啟資料夾。</string>
+	<string>壓縮檔內搜尋屬於 ProZip Pro。依檔名或路徑尋找壓縮檔內的檔案，無需逐層開啟資料夾。</string>
 	<key>commercial.pro.settings_subtitle</key>
 	<string>查看啟用狀態，管理已啟用的裝置。</string>
 	<key>commercial.pro.settings_trial_active</key>
-	<string>ArcZip Pro 試用中</string>
+	<string>ProZip Pro 試用中</string>
 	<key>commercial.pro.settings_trial_ended</key>
-	<string>ArcZip Pro 試用已結束</string>
+	<string>ProZip Pro 試用已結束</string>
 	<key>commercial.pro.settings_trial_remaining</key>
 	<string>試用中 · %@</string>
 	<key>commercial.pro.start_using</key>
@@ -618,19 +622,19 @@
 	<key>commercial.pro.status.revoked</key>
 	<string>已撤銷</string>
 	<key>commercial.pro.status_active</key>
-	<string>ArcZip Pro 已啟用</string>
+	<string>ProZip Pro 已啟用</string>
 	<key>commercial.pro.status_active_detail</key>
-	<string>此 Mac 目前可以使用全部 ArcZip Pro 功能。</string>
+	<string>此 Mac 目前可以使用全部 ProZip Pro 功能。</string>
 	<key>commercial.pro.status_free</key>
-	<string>ArcZip Free</string>
+	<string>ProZip Free</string>
 	<key>commercial.pro.status_free_detail</key>
 	<string>輸入啟用碼即可在此 Mac 解鎖 Pro 功能。</string>
 	<key>commercial.pro.status_inactive</key>
-	<string>ArcZip Pro 未啟用</string>
+	<string>ProZip Pro 未啟用</string>
 	<key>commercial.pro.status_invalid</key>
 	<string>本地授權無效</string>
 	<key>commercial.pro.status_invalid_detail</key>
-	<string>ArcZip 無法驗證本地授權，請移除後重新啟用。</string>
+	<string>ProZip 無法驗證本地授權，請移除後重新啟用。</string>
 	<key>commercial.pro.status_preview_detail</key>
 	<string>目前內部預覽建置版本未連線至授權服務。</string>
 	<key>commercial.pro.status_refunded</key>
@@ -644,13 +648,13 @@
 	<key>commercial.pro.submit_recovery</key>
 	<string>送出申請</string>
 	<key>commercial.pro.transfer_explanation</key>
-	<string>更換 Mac 時，先在舊 Mac 按一下「停用目前 Mac」；如果舊 Mac 已不可用，請在 ArcZip 的「裝置管理」中遠端停用，再在新 Mac 輸入同一啟用碼。</string>
+	<string>更換 Mac 時，先在舊 Mac 按一下「停用目前 Mac」；如果舊 Mac 已不可用，請在 ProZip 的「裝置管理」中遠端停用，再在新 Mac 輸入同一啟用碼。</string>
 	<key>commercial.pro.trial_days_remaining</key>
 	<string>剩餘 %lld 天</string>
 	<key>commercial.pro.trial_ended</key>
 	<string>試用已結束</string>
 	<key>commercial.pro.trial_ended_purchase_message</key>
-	<string>7 天免費試用已結束。購買 ArcZip Pro 以繼續使用全部專業功能，或繼續使用免費功能。</string>
+	<string>7 天免費試用已結束。購買 ProZip Pro 以繼續使用全部專業功能，或繼續使用免費功能。</string>
 	<key>commercial.pro.trial_error_network</key>
 	<string>請檢查網路</string>
 	<key>commercial.pro.trial_error_service</key>
@@ -672,7 +676,7 @@
 	<key>commercial.pro.unnamed_device</key>
 	<string>未命名 Mac</string>
 	<key>commercial.pro.upgrade_required</key>
-	<string>目前授權適用於 ArcZip %lld.x 及更早版本。使用「%@」需要升級授權。</string>
+	<string>目前授權適用於 ProZip %lld.x 及更早版本。使用「%@」需要升級授權。</string>
 	<key>commercial.pro.use_activation_code</key>
 	<string>使用啟用碼</string>
 	<key>commercial.pro.version_coverage</key>
@@ -790,11 +794,11 @@
 	<key>disk_image.application.open_failed</key>
 	<string>無法開啟此應用程式：%@</string>
 	<key>disk_image.application.warning.applications</key>
-	<string>開發者建議先將「%@」拖到「應用程式」資料夾，或使用 ArcZip 的快速安裝（Pro），再從「應用程式」資料夾開啟。</string>
+	<string>開發者建議先將「%@」拖到「應用程式」資料夾，或使用 ProZip 的快速安裝（Pro），再從「應用程式」資料夾開啟。</string>
 	<key>disk_image.application.warning.custom_destination</key>
 	<string>開發者為此應用程式指定了安裝位置「%@」。建議先按照映像中的指引將「%@」拖到該位置。</string>
 	<key>disk_image.application.warning.destination_unavailable</key>
-	<string>ArcZip 無法確認開發者為「%@」準備的安裝位置。繼續將直接開啟此應用程式。</string>
+	<string>ProZip 無法確認開發者為「%@」準備的安裝位置。繼續將直接開啟此應用程式。</string>
 	<key>disk_image.application.warning.multiple_destinations</key>
 	<string>開發者為此應用程式提供了多個安裝位置。建議先按照映像中的拖動指引完成安裝。</string>
 	<key>disk_image.drop.confirm.conflicts</key>
@@ -880,9 +884,9 @@
 	<key>extraction.opening.browse_formats</key>
 	<string>DMG、ISO 等格式不受此設定影響，一律開啟供瀏覽。</string>
 	<key>extraction.opening.browse_menu</key>
-	<string>也可透過快捷選單或「服務」選單中的「使用 ArcZip 瀏覽」，查看壓縮檔內容。</string>
+	<string>也可透過快捷選單或「服務」選單中的「使用 ProZip 瀏覽」，查看壓縮檔內容。</string>
 	<key>extraction.opening.browse_shift</key>
-	<string>按住 Shift 鍵，再按兩下壓縮檔，即可暫時使用 ArcZip Mini 或完整視窗瀏覽。</string>
+	<string>按住 Shift 鍵，再按兩下壓縮檔，即可暫時使用 ProZip Mini 或完整視窗瀏覽。</string>
 	<key>extraction.opening.detail</key>
 	<string>直接解壓縮完成後，僅「一律移到垃圾桶」會處理原始壓縮檔；其他選項均保留且不提示。</string>
 	<key>extraction.opening.direct</key>
@@ -908,7 +912,7 @@
 	<key>finder.batch_extract_to</key>
 	<string>將 %@ 個檔案解壓縮到指定目錄</string>
 	<key>finder.browse_archive</key>
-	<string>使用 ArcZip 瀏覽</string>
+	<string>使用 ProZip 瀏覽</string>
 	<key>finder.compress_advanced</key>
 	<string>壓縮為…</string>
 	<key>finder.compress_named</key>
@@ -924,17 +928,17 @@
 	<key>finder.menu_repair_confirm</key>
 	<string>修復</string>
 	<key>finder.menu_repair_confirmation_message</key>
-	<string>將修復 ArcZip 延伸功能，並重新啟動 Finder。</string>
+	<string>將修復 ProZip 延伸功能，並重新啟動 Finder。</string>
 	<key>finder.menu_repair_confirmation_title</key>
 	<string>修復 Finder 選單項目？</string>
 	<key>finder.menu_repair_description</key>
-	<string>修復 Finder 中缺失的 ArcZip 快捷選單。</string>
+	<string>修復 Finder 中缺失的 ProZip 快捷選單。</string>
 	<key>finder.menu_repair_failure</key>
-	<string>修復失敗，請確認 ArcZip 已安裝到「應用程式」資料夾後再試一次。</string>
+	<string>修復失敗，請確認 ProZip 已安裝到「應用程式」資料夾後再試一次。</string>
 	<key>finder.menu_repair_missing_application</key>
-	<string>未在「應用程式」資料夾中找到目前 ArcZip，請先完成安裝。</string>
+	<string>未在「應用程式」資料夾中找到目前 ProZip，請先完成安裝。</string>
 	<key>finder.menu_repair_ready</key>
-	<string>如果 Finder 快捷選單中沒有 ArcZip，可以嘗試修復。</string>
+	<string>如果 Finder 快捷選單中沒有 ProZip，可以嘗試修復。</string>
 	<key>finder.menu_repair_row_title</key>
 	<string>Finder 快捷選單</string>
 	<key>finder.menu_repair_running</key>
@@ -942,15 +946,15 @@
 	<key>finder.menu_repair_success</key>
 	<string>Finder 選單項目已修復，Finder 已重新啟動。</string>
 	<key>finder.repair.command_failed</key>
-	<string>無法完成 ArcZip Finder 延伸功能修復：%@。</string>
+	<string>無法完成 ProZip Finder 延伸功能修復：%@。</string>
 	<key>finder.repair.enable_extension</key>
 	<string>啟用 %@ 延伸功能</string>
 	<key>finder.repair.invalid_signature</key>
-	<string>應用程式資料夾中的 %@ 不是 ArcZip 的正式簽章版本。</string>
+	<string>應用程式資料夾中的 %@ 不是 ProZip 的正式簽章版本。</string>
 	<key>finder.repair.missing_application</key>
-	<string>未找到 %@。請先將目前 ArcZip 安裝到應用程式資料夾。</string>
+	<string>未找到 %@。請先將目前 ProZip 安裝到應用程式資料夾。</string>
 	<key>finder.repair.missing_extension</key>
-	<string>目前 ArcZip 缺少 %@ 延伸功能。請重新打包並安裝 ArcZip。</string>
+	<string>目前 ProZip 缺少 %@ 延伸功能。請重新打包並安裝 ProZip。</string>
 	<key>finder.repair.read_registration</key>
 	<string>讀取 %@ 註冊狀態</string>
 	<key>finder.repair.register_extension</key>
@@ -958,7 +962,7 @@
 	<key>finder.repair.remove_registration</key>
 	<string>清理 %@ 註冊</string>
 	<key>finder.repair.verification_failed</key>
-	<string>ArcZip 延伸功能註冊未完成：%@。</string>
+	<string>ProZip 延伸功能註冊未完成：%@。</string>
 	<key>flow.alternative_count</key>
 	<string>另有 %lld 個 Flow 可選</string>
 	<key>flow.extract_selection.help</key>
@@ -1044,9 +1048,9 @@
 	<key>onboarding.v2.access.confirmed</key>
 	<string>已確認完成設定</string>
 	<key>onboarding.v2.access.detail</key>
-	<string>開啟「完整磁碟存取權」，讓 ArcZip 能從更多位置讀取檔案，例如 WeChat。</string>
+	<string>開啟「完整磁碟存取權」，讓 ProZip 能從更多位置讀取檔案，例如 WeChat。</string>
 	<key>onboarding.v2.access.drag_hint</key>
-	<string>將 ArcZip 拖到上方列表，然後開啟開關</string>
+	<string>將 ProZip 拖到上方列表，然後開啟開關</string>
 	<key>onboarding.v2.access.open</key>
 	<string>開啟設定</string>
 	<key>onboarding.v2.access.optional</key>
@@ -1054,11 +1058,11 @@
 	<key>onboarding.v2.access.step1</key>
 	<string>按一下右下角的「開啟設定」按鈕</string>
 	<key>onboarding.v2.access.step2</key>
-	<string>將引導列中的 ArcZip 圖示拖到應用程式列表，也可以按「＋」加入。</string>
+	<string>將引導列中的 ProZip 圖示拖到應用程式列表，也可以按「＋」加入。</string>
 	<key>onboarding.v2.access.step3</key>
-	<string>開啟 ArcZip 的開關；如果系統要求重新開啟，流程會從這一頁繼續。</string>
+	<string>開啟 ProZip 的開關；如果系統要求重新開啟，流程會從這一頁繼續。</string>
 	<key>onboarding.v2.access.title</key>
-	<string>讓 ArcZip 順暢存取你的檔案</string>
+	<string>讓 ProZip 順暢存取你的檔案</string>
 	<key>onboarding.v2.associations.all</key>
 	<string>查看全部格式</string>
 	<key>onboarding.v2.associations.common</key>
@@ -1086,11 +1090,11 @@
 	<key>onboarding.v2.box.preview</key>
 	<string>輕鬆預覽</string>
 	<key>onboarding.v2.box.pro_note</key>
-	<string>部分功能需要 ArcZip Pro</string>
+	<string>部分功能需要 ProZip Pro</string>
 	<key>onboarding.v2.box.quick_actions</key>
 	<string>快速壓縮/解壓縮</string>
 	<key>onboarding.v2.box.title</key>
-	<string>ArcZip 檔案盒</string>
+	<string>ProZip 檔案盒</string>
 	<key>onboarding.v2.box.try_hint</key>
 	<string>你也可以試試看</string>
 	<key>onboarding.v2.complete.box_off</key>
@@ -1100,7 +1104,7 @@
 	<key>onboarding.v2.complete.detail</key>
 	<string>現在，就從一個壓縮檔開始。</string>
 	<key>onboarding.v2.complete.mini</key>
-	<string>預設使用 ArcZip Mini</string>
+	<string>預設使用 ProZip Mini</string>
 	<key>onboarding.v2.complete.settings</key>
 	<string>這些選擇隨時可以在設定中調整。</string>
 	<key>onboarding.v2.complete.title</key>
@@ -1110,13 +1114,13 @@
 	<key>onboarding.v2.feature_guide</key>
 	<string>功能介紹</string>
 	<key>onboarding.v2.finder.detail</key>
-	<string>從快捷選單快速使用 ArcZip</string>
+	<string>從快捷選單快速使用 ProZip</string>
 	<key>onboarding.v2.finder.instructions</key>
-	<string>在系統設定的延伸功能管理中，啟用 ArcZip 的 Finder 延伸功能。</string>
+	<string>在系統設定的延伸功能管理中，啟用 ProZip 的 Finder 延伸功能。</string>
 	<key>onboarding.v2.finder.open</key>
 	<string>前往延伸功能設定</string>
 	<key>onboarding.v2.finder.optional</key>
-	<string>暫時略過也可以，ArcZip 內的壓縮與解壓縮隨時可用。</string>
+	<string>暫時略過也可以，ProZip 內的壓縮與解壓縮隨時可用。</string>
 	<key>onboarding.v2.finder.step1</key>
 	<string>按一下「開啟系統設定」按鈕</string>
 	<key>onboarding.v2.finder.step2</key>
@@ -1128,17 +1132,17 @@
 	<key>onboarding.v2.mini.browse</key>
 	<string>瀏覽檔案與資料夾</string>
 	<key>onboarding.v2.mini.choice</key>
-	<string>預設用 ArcZip Mini 開啟壓縮檔</string>
+	<string>預設用 ProZip Mini 開啟壓縮檔</string>
 	<key>onboarding.v2.mini.choice_detail</key>
 	<string>功能齊全，隨開隨用，減少打擾</string>
 	<key>onboarding.v2.mini.detail</key>
-	<string>ArcZip Mini 讓你快速查看壓縮檔，需要時再展開工作區。</string>
+	<string>ProZip Mini 讓你快速查看壓縮檔，需要時再展開工作區。</string>
 	<key>onboarding.v2.mini.drag</key>
 	<string>拖曳以解壓縮</string>
 	<key>onboarding.v2.mini.preview</key>
 	<string>輕鬆預覽</string>
 	<key>onboarding.v2.mini.title</key>
-	<string>ArcZip Mini</string>
+	<string>ProZip Mini</string>
 	<key>onboarding.v2.mini.workspace</key>
 	<string>隨時切換到完整介面</string>
 	<key>onboarding.v2.next</key>
@@ -1146,7 +1150,7 @@
 	<key>onboarding.v2.pro.activate</key>
 	<string>已購買？立即啟用</string>
 	<key>onboarding.v2.pro.active</key>
-	<string>ArcZip Pro 已啟用</string>
+	<string>ProZip Pro 已啟用</string>
 	<key>onboarding.v2.pro.box</key>
 	<string>完整的檔案盒功能</string>
 	<key>onboarding.v2.pro.box_detail</key>
@@ -1158,7 +1162,7 @@
 	<key>onboarding.v2.pro.edit_detail</key>
 	<string>加入、刪除、取代或重新命名內部檔案，並儲存變更。</string>
 	<key>onboarding.v2.pro.feature_eyebrow</key>
-	<string>ArcZip Pro 功能</string>
+	<string>ProZip Pro 功能</string>
 	<key>onboarding.v2.pro.flow</key>
 	<string>全部 Flow 功能</string>
 	<key>onboarding.v2.pro.flow_detail</key>
@@ -1174,9 +1178,9 @@
 	<key>onboarding.v2.pro.previous_feature</key>
 	<string>上一項功能</string>
 	<key>onboarding.v2.pro.purchase</key>
-	<string>購買 ArcZip Pro</string>
+	<string>購買 ProZip Pro</string>
 	<key>onboarding.v2.pro.purchase_or_trial</key>
-	<string>購買或試用 ArcZip Pro</string>
+	<string>購買或試用 ProZip Pro</string>
 	<key>onboarding.v2.pro.purpose</key>
 	<string>更多壓縮選項</string>
 	<key>onboarding.v2.pro.purpose_detail</key>
@@ -1208,7 +1212,7 @@
 	<key>onboarding.v2.step.mini</key>
 	<string>Mini</string>
 	<key>onboarding.v2.step.pro</key>
-	<string>ArcZip Pro</string>
+	<string>ProZip Pro</string>
 	<key>onboarding.v2.step.welcome</key>
 	<string>歡迎</string>
 	<key>onboarding.v2.welcome.archives</key>
@@ -1220,7 +1224,7 @@
 	<key>onboarding.v2.welcome.mini</key>
 	<string>輕巧的 Mini</string>
 	<key>onboarding.v2.welcome.title</key>
-	<string>歡迎使用 ArcZip</string>
+	<string>歡迎使用 ProZip</string>
 	<key>operation.cancelled</key>
 	<string>操作已取消</string>
 	<key>operation.checking</key>
@@ -1262,7 +1266,7 @@
 	<key>password_book.member.title</key>
 	<string>請輸入「%@」的密碼</string>
 	<key>password_book.pro_description</key>
-	<string>自動儲存、自動解鎖、密碼預設和密碼保護均屬於 ArcZip Pro。已有記錄會保留；手動輸入密碼開啟和解壓縮仍可免費使用。</string>
+	<string>自動儲存、自動解鎖、密碼預設和密碼保護均屬於 ProZip Pro。已有記錄會保留；手動輸入密碼開啟和解壓縮仍可免費使用。</string>
 	<key>password_book.records.count</key>
 	<string>共 %lld 個密碼</string>
 	<key>password_book.settings.loading</key>
@@ -1310,7 +1314,7 @@
 	<key>release_overview.122.exfat.title</key>
 	<string>改善 exFAT 磁碟解壓縮</string>
 	<key>release_overview.122.save.detail</key>
-	<string>壓縮或收集到資料夾後，可以直接把結果儲存到指定位置。ArcZip 會記住上次的位置，支援跨磁碟儲存，同名結果自動編號。此操作可免費使用。</string>
+	<string>壓縮或收集到資料夾後，可以直接把結果儲存到指定位置。ProZip 會記住上次的位置，支援跨磁碟儲存，同名結果自動編號。此操作可免費使用。</string>
 	<key>release_overview.122.save.title</key>
 	<string>檔案盒新增「儲存到」</string>
 	<key>release_overview.122.split.detail</key>
@@ -1342,7 +1346,7 @@
 	<key>settings.about.licenses.unavailable</key>
 	<string>無法讀取開放原始碼授權，請重新開啟此視窗。</string>
 	<key>settings.about.menu</key>
-	<string>關於 ArcZip</string>
+	<string>關於 ProZip</string>
 	<key>settings.about.title</key>
 	<string>關於</string>
 	<key>settings.about.version</key>
@@ -1430,9 +1434,9 @@
 	<key>settings.finder.mobile_monitoring.confirm.enable</key>
 	<string>啟用監看</string>
 	<key>settings.finder.mobile_monitoring.confirm.message</key>
-	<string>啟用後，Finder 中的外接儲存裝置圖示可能變為 ArcZip 圖示。這是 macOS 的 Finder 延伸功能機制所致，並非 ArcZip 的錯誤。
+	<string>啟用後，Finder 中的外接儲存裝置圖示可能變為 ProZip 圖示。這是 macOS 的 Finder 延伸功能機制所致，並非 ProZip 的錯誤。
 
-你可以隨時關閉此選項以停止監看。關閉後仍可透過快捷選單中的「服務」使用 ArcZip。</string>
+你可以隨時關閉此選項以停止監看。關閉後仍可透過快捷選單中的「服務」使用 ProZip。</string>
 	<key>settings.finder.mobile_monitoring.confirm.title</key>
 	<string>啟用外接儲存裝置監看？</string>
 	<key>settings.finder.mobile_monitoring.detail</key>
@@ -1440,7 +1444,7 @@
 	<key>settings.finder.mobile_monitoring.title</key>
 	<string>在外接儲存裝置中啟用快捷選單</string>
 	<key>settings.finder.subtitle</key>
-	<string>管理 ArcZip 的 Finder 整合與快捷選單</string>
+	<string>管理 ProZip 的 Finder 整合與快捷選單</string>
 	<key>settings.general.title</key>
 	<string>一般</string>
 	<key>settings.heading</key>
@@ -1462,15 +1466,15 @@
 	<key>settings.hover.video.muted.detail</key>
 	<string>預設靜音，關閉後播放影片聲音</string>
 	<key>settings.language.detail</key>
-	<string>跟隨系統語言，或為 ArcZip 指定其他語言。</string>
+	<string>跟隨系統語言，或為 ProZip 指定其他語言。</string>
 	<key>settings.language.restart</key>
-	<string>重新啟動 ArcZip</string>
+	<string>重新啟動 ProZip</string>
 	<key>settings.language.restart_detail</key>
-	<string>重新啟動 ArcZip 後，語言設定將生效。請先儲存變更。</string>
+	<string>重新啟動 ProZip 後，語言設定將生效。請先儲存變更。</string>
 	<key>settings.language.restart_failed.detail</key>
-	<string>ArcZip 將保持開啟。請稍後再試，或手動結束後重新開啟 ArcZip。</string>
+	<string>ProZip 將保持開啟。請稍後再試，或手動結束後重新開啟 ProZip。</string>
 	<key>settings.language.restart_failed.title</key>
-	<string>無法重新啟動 ArcZip</string>
+	<string>無法重新啟動 ProZip</string>
 	<key>settings.language.section</key>
 	<string>語言</string>
 	<key>settings.language.system</key>
@@ -1478,11 +1482,11 @@
 	<key>settings.language.title</key>
 	<string>應用程式語言</string>
 	<key>settings.launch_at_login.approval</key>
-	<string>請在系統設定的「登入項目」中允許 ArcZip</string>
+	<string>請在系統設定的「登入項目」中允許 ProZip</string>
 	<key>settings.launch_at_login.section</key>
 	<string>啟動</string>
 	<key>settings.launch_at_login.title</key>
-	<string>登入時自動啟動 ArcZip</string>
+	<string>登入時自動啟動 ProZip</string>
 	<key>settings.menu.title</key>
 	<string>設定…</string>
 	<key>settings.mini.behavior.title</key>
@@ -1500,7 +1504,7 @@
 	<key>settings.mini.open.detail.short</key>
 	<string>從 Finder 開啟壓縮檔時優先使用 Mini</string>
 	<key>settings.mini.open.short</key>
-	<string>預設用 ArcZip Mini 開啟</string>
+	<string>預設用 ProZip Mini 開啟</string>
 	<key>settings.mini.subtitle</key>
 	<string>設定 Mini 視窗的開啟方式與外觀</string>
 	<key>settings.password.reveal.short</key>
@@ -1577,6 +1581,8 @@
 	<string>不支援的特殊檔案</string>
 	<key>两次输入的密码不一致</key>
 	<string>兩次輸入的密碼不一致</string>
+	<key>为外接硬盘、U盘等移动存储中的文件提供访达右键菜单</key>
+	<string>為外接硬碟、USB 隨身碟等行動儲存裝置中的檔案提供 Finder 右鍵選單</string>
 	<key>主工作区的“显示辅助文件”只影响浏览。明确选中辅助文件或辅助目录导出时会保留；.gitignore、.env 等用户文件不会被当作辅助文件。应用程序包内部保持原样，以免破坏签名。</key>
 	<string>列表中的顯示設定不影響解壓縮。手動選取的輔助檔案仍會保留。</string>
 	<key>了解</key>
@@ -1601,9 +1607,9 @@
 	<string>仍要安裝</string>
 	<key>仍要打开</key>
 	<string>仍要開啟</string>
-	<key>从 Finder 或 Quick Look 使用 ArcZip 打开时优先进入 Mini 窗口</key>
-	<string>從 Finder 或快速查看開啟時，使用 ArcZip Mini。</string>
-	<key>从 Finder 或 Quick Look 使用 ArcZip 打开时，先进入独立 Mini 窗口而不是完整工作区</key>
+	<key>从 Finder 或 Quick Look 使用 ProZip 打开时优先进入 Mini 窗口</key>
+	<string>從 Finder 或快速查看開啟時，使用 ProZip Mini。</string>
+	<key>从 Finder 或 Quick Look 使用 ProZip 打开时，先进入独立 Mini 窗口而不是完整工作区</key>
 	<string>從 Finder 或快速查看開啟時，使用獨立的小視窗。</string>
 	<key>从压缩包安装 macOS 应用</key>
 	<string>從壓縮檔安裝 macOS 應用程式</string>
@@ -1637,18 +1643,18 @@
 	<string>優化跨平台使用</string>
 	<key>会与同一文件夹中的其他项目重名</key>
 	<string>會與同一資料夾中的其他項目重名</string>
-	<key>会替代 Java 启动器；ArcZip 仅预览和解压</key>
-	<string>會取代 Java 啟動程式；ArcZip 僅提供預覽與解壓縮</string>
-	<key>会替代系统“安装器”打开 PKG；ArcZip 仅预览和解压</key>
-	<string>會替代系統「安裝程式」開啟 PKG；ArcZip 僅預覽和解壓縮</string>
+	<key>会替代 Java 启动器；ProZip 仅预览和解压</key>
+	<string>會取代 Java 啟動程式；ProZip 僅提供預覽與解壓縮</string>
+	<key>会替代系统“安装器”打开 PKG；ProZip 仅预览和解压</key>
+	<string>會替代系統「安裝程式」開啟 PKG；ProZip 僅預覽和解壓縮</string>
 	<key>传统 ARJ 压缩包</key>
 	<string>傳統 ARJ 壓縮檔</string>
 	<key>传统 LHA 系列压缩包</key>
 	<string>傳統 LHA 系列壓縮檔</string>
 	<key>你可以浏览文件列表，但预览或解压缩需要密码。点击此按钮输入密码，即可解锁并显示预览。</key>
 	<string>可瀏覽檔案列表；預覽或解壓縮需要密碼。按一下鎖定按鈕輸入密碼。</string>
-	<key>你的选择仅用于本次打开；ArcZip 不会替你自动接受或保存协议选择。</key>
-	<string>你的選擇僅用於本次開啟；ArcZip 不會替你自動接受或儲存協議選擇。</string>
+	<key>你的选择仅用于本次打开；ProZip 不会替你自动接受或保存协议选择。</key>
+	<string>你的選擇僅用於本次開啟；ProZip 不會替你自動接受或儲存協議選擇。</string>
 	<key>使用 TAR 归档</key>
 	<string>使用 TAR 封存</string>
 	<key>使用 Touch ID</key>
@@ -1687,12 +1693,16 @@
 	<string>儲存成功前不會修改原壓縮檔</string>
 	<key>保存此密码</key>
 	<string>儲存此密碼</string>
+	<key>保持置顶</key>
+	<string>保持置頂</string>
 	<key>保留 macOS 文件信息</key>
 	<string>保留 macOS 檔案資訊</string>
 	<key>保留 macOS 辅助文件</key>
 	<string>保留 macOS 輔助檔案</string>
 	<key>保留目录结构与 Unix 文件属性</key>
 	<string>保留目錄結構與 Unix 檔案屬性</string>
+	<key>修复访达菜单项</key>
+	<string>修復 Finder 選單項目</string>
 	<key>修改仅应用于当前选中的用途</key>
 	<string>修改僅套用於目前選中的用途</string>
 	<key>修改密码…</key>
@@ -1715,10 +1725,14 @@
 	<string>設定</string>
 	<key>允许打开的文件格式</key>
 	<string>允許開啟的檔案格式</string>
+	<key>全功能已解锁</key>
+	<string>全功能已解鎖</string>
 	<key>全部取消</key>
 	<string>全部取消</string>
 	<key>全部可用（%@）</key>
 	<string>全部可用（%@）</string>
+	<key>全部可用（%ld）</key>
+	<string>全部可用（%ld）</string>
 	<key>全部拷贝</key>
 	<string>全部拷貝</string>
 	<key>全部解压</key>
@@ -1727,6 +1741,8 @@
 	<string>全部略過並繼續</string>
 	<key>共 </key>
 	<string>共 </string>
+	<key>关于</key>
+	<string>關於</string>
 	<key>关联状态</key>
 	<string>關聯狀態</string>
 	<key>关闭</key>
@@ -1821,8 +1837,8 @@
 	<string>加密檔名</string>
 	<key>包内搜索</key>
 	<string>壓縮檔內搜尋</string>
-	<key>包内搜索属于 ArcZip Pro</key>
-	<string>壓縮檔內搜尋屬於 ArcZip Pro</string>
+	<key>包内搜索属于 ProZip Pro</key>
+	<string>壓縮檔內搜尋屬於 ProZip Pro</string>
 	<key>包含</key>
 	<string>包含</string>
 	<key>包含同名记录</key>
@@ -1861,8 +1877,8 @@
 	<string>壓縮檔內路徑：</string>
 	<key>压缩包包含不安全路径：</key>
 	<string>壓縮檔包含不安全路徑：</string>
-	<key>压缩包发布失败，ArcZip 已保留回滚记录：</key>
-	<string>壓縮檔發佈失敗，ArcZip 已保留還原記錄：</string>
+	<key>压缩包发布失败，ProZip 已保留回滚记录：</key>
+	<string>壓縮檔發佈失敗，ProZip 已保留還原記錄：</string>
 	<key>压缩包名称</key>
 	<string>壓縮檔名稱</string>
 	<key>压缩包已被其他应用修改</key>
@@ -1943,6 +1959,10 @@
 	<string>可瀏覽預覽 · 解壓縮和搜尋暫不可用</string>
 	<key>可能包含安装脚本的软件包格式</key>
 	<string>可能包含安裝腳本的套件格式</string>
+	<key>可随时点击眼睛按钮隐藏</key>
+	<string>可隨時點選眼睛按鈕隱藏</string>
+	<key>可预览音视频大小上限：%ld MB</key>
+	<string>可預覽影音大小上限：%ld MB</string>
 	<key>合并</key>
 	<string>合併</string>
 	<key>同一文件夹中已存在“</key>
@@ -1989,6 +2009,8 @@
 	<string>含有 Windows 不支援或不安全的字元</string>
 	<key>含有 Windows 不支持的字符</key>
 	<string>含有 Windows 不支援的字元</string>
+	<key>启动</key>
+	<string>啟動</string>
 	<key>命名管道不是静态文件；读取它可能一直等待其他进程写入，导致压缩任务无法结束。</key>
 	<string>具名管道並非靜態檔案；讀取時可能持續等待其他程序寫入，導致壓縮作業無法結束。</string>
 	<key>命名管道（FIFO）</key>
@@ -2004,7 +2026,11 @@
 	<key>在 Finder 中显示</key>
 	<string>在 Finder 中顯示</string>
 	<key>在完整窗口中打开此压缩包会放弃当前暂存内容。Mini 窗口可以继续独立使用。</key>
-	<string>在完整視窗中開啟此壓縮檔會放棄目前暫存內容。ArcZip Mini 視窗可以繼續獨立使用。</string>
+	<string>在完整視窗中開啟此壓縮檔會放棄目前暫存內容。ProZip Mini 視窗可以繼續獨立使用。</string>
+	<key>在悬浮预览中播放视频</key>
+	<string>在懸浮預覽中播放影片</string>
+	<key>在移动存储中开启右键菜单</key>
+	<string>在行動儲存裝置中開啟右鍵選單</string>
 	<key>在访达中显示</key>
 	<string>在 Finder 中顯示</string>
 	<key>均衡</key>
@@ -2025,6 +2051,8 @@
 	<string>通訊端是程序間通訊端點，不包含可恢復的檔案內容，離開目前系統後也無法使用。</string>
 	<key>好</key>
 	<string>好</string>
+	<key>如果访达右键菜单中没有 ProZip，可以尝试修复。</key>
+	<string>如果 Finder 右鍵選單中沒有 ProZip，可以嘗試修復。</string>
 	<key>字体安装完成</key>
 	<string>字型安裝完成</string>
 	<key>存储位置</key>
@@ -2081,8 +2109,8 @@
 	<string>完整視窗中有尚未儲存的更改</string>
 	<key>完整索引完成前暂不能搜索、预览、拖出或解压</key>
 	<string>完整索引完成前暫不能搜尋、預覽、拖出或解壓縮</string>
-	<key>实践证明，保持 ArcZip 为最新版本有益于压缩包的身心健康</key>
-	<string>讓 ArcZip 保持最新版本，壓縮與解壓縮更安心。</string>
+	<key>实践证明，保持 ProZip 为最新版本有益于压缩包的身心健康</key>
+	<string>讓 ProZip 保持最新版本，壓縮與解壓縮更安心。</string>
 	<key>密码</key>
 	<string>密碼</string>
 	<key>密码不正确</key>
@@ -2099,8 +2127,8 @@
 	<string>密碼操作</string>
 	<key>密码本</key>
 	<string>密碼本</string>
-	<key>密码本 · ArcZip Pro</key>
-	<string>密碼本 · ArcZip Pro</string>
+	<key>密码本 · ProZip Pro</key>
+	<string>密碼本 · ProZip Pro</string>
 	<key>密码本密码</key>
 	<string>密碼本密碼</string>
 	<key>密码本密码不正确。</key>
@@ -2111,6 +2139,8 @@
 	<string>密碼本已鎖定，本次不自動儲存</string>
 	<key>密码记录</key>
 	<string>密碼記錄</string>
+	<key>密码输入</key>
+	<string>密碼輸入</string>
 	<key>密码错误</key>
 	<string>密碼錯誤</string>
 	<key>将压缩包拆分成多个文件</key>
@@ -2191,12 +2221,12 @@
 	<string>已隱藏</string>
 	<key>已隐藏 </key>
 	<string>已隱藏 </string>
-	<key>带有签名，但 ArcZip 无法验证签名者的身份。</key>
-	<string>帶有簽章，但 ArcZip 無法驗證簽署者的身份。</string>
+	<key>带有签名，但 ProZip 无法验证签名者的身份。</key>
+	<string>帶有簽章，但 ProZip 無法驗證簽署者的身份。</string>
 	<key>常用压缩包</key>
 	<string>常用壓縮檔</string>
-	<key>常用格式已设为使用 ArcZip 打开</key>
-	<string>常用格式已設為使用 ArcZip 開啟</string>
+	<key>常用格式已设为使用 ProZip 打开</key>
+	<string>常用格式已設為使用 ProZip 開啟</string>
 	<key>应用到新版本</key>
 	<string>套用至新版本</string>
 	<key>应用安装</key>
@@ -2209,10 +2239,12 @@
 	<string>應用程式」資料夾</string>
 	<key>应用程序已从磁盘映像复制到临时目录</key>
 	<string>應用程式已從磁碟映像檔複製到暫存目錄</string>
-	<key>应用程序文件夹中的 ArcZip 不是有效的 ArcZip 安装。</key>
-	<string>應用程式資料夾中的 ArcZip 不是有效的 ArcZip 安裝。</string>
+	<key>应用程序文件夹中的 ProZip 不是有效的 ProZip 安装。</key>
+	<string>應用程式資料夾中的 ProZip 不是有效的 ProZip 安裝。</string>
 	<key>应用程序解压缩完成</key>
 	<string>應用程式解壓縮完成</string>
+	<key>应用语言</key>
+	<string>應用程式語言</string>
 	<key>建议先安装此应用</key>
 	<string>建議先安裝此應用程式</string>
 	<key>开启</key>
@@ -2221,22 +2253,30 @@
 	<string>開啟保護</string>
 	<key>开启保护…</key>
 	<string>開啟保護…</string>
-	<key>开启后 ArcZip 会记住成功使用的密码，并为你自动解锁。也可以选择不开启自动保存，并在创建压缩包时手动选择。密码仅保存在这台 Mac 上。</key>
-	<string>開啟後 ArcZip 會記住成功使用的密碼，並為你自動解鎖。也可以選擇不開啟自動儲存，並在建立壓縮檔時手動選擇。密碼僅儲存在這台 Mac 上。</string>
+	<key>开启后 ProZip 会记住成功使用的密码，并为你自动解锁。也可以选择不开启自动保存，并在创建压缩包时手动选择。密码仅保存在这台 Mac 上。</key>
+	<string>開啟後 ProZip 會記住成功使用的密碼，並為你自動解鎖。也可以選擇不開啟自動儲存，並在建立壓縮檔時手動選擇。密碼僅儲存在這台 Mac 上。</string>
 	<key>开启密码自动保存？</key>
 	<string>開啟密碼自動儲存？</string>
 	<key>开启并使用密码保护</key>
 	<string>開啟並使用密碼保護</string>
-	<key>开始使用 ArcZip</key>
-	<string>開始使用 ArcZip</string>
+	<key>开启悬浮预览</key>
+	<string>開啟懸浮預覽</string>
+	<key>开始使用 ProZip</key>
+	<string>開始使用 ProZip</string>
+	<key>开机自动启动 ProZip</key>
+	<string>登入時自動啟動 ProZip</string>
+	<key>开源无限制，专业功能全部可用</key>
+	<string>開源無限制，專業功能全部可用</string>
+	<key>开源许可与概览</key>
+	<string>開源授權與概覽</string>
 	<key>归拢位置不能位于源文件夹内</key>
 	<string>彙整位置不能位於來源資料夾內</string>
 	<key>归拢过程中源文件发生变化，请重新加入</key>
 	<string>彙整過程中來源檔案已變更，請重新加入</string>
 	<key>归档</key>
 	<string>封存</string>
-	<key>当前不是从 ArcZip.app 运行，格式关联开关已停用。</key>
-	<string>目前不是從 ArcZip.app 執行，格式關聯開關已停用。</string>
+	<key>当前不是从 ProZip.app 运行，格式关联开关已停用。</key>
+	<string>目前不是從 ProZip.app 執行，格式關聯開關已停用。</string>
 	<key>当前为只读格式</key>
 	<string>目前為唯讀格式</string>
 	<key>当前工作区已有一个等待完成的保存或重命名操作。</key>
@@ -2245,8 +2285,8 @@
 	<string>目前工作區正在處理其他作業，請稍後重新拖入</string>
 	<key>当前工作区的文档占用状态已失效，请重新打开后再试。</key>
 	<string>暫時無法操作此壓縮檔，請重新開啟後再試一次。</string>
-	<key>当前应用完整性验证失败，请从官方来源重新下载 ArcZip。</key>
-	<string>目前應用程式完整性驗證失敗，請從官方來源重新下載 ArcZip。</string>
+	<key>当前应用完整性验证失败，请从官方来源重新下载 ProZip。</key>
+	<string>目前應用程式完整性驗證失敗，請從官方來源重新下載 ProZip。</string>
 	<key>当前引擎不支持：</key>
 	<string>目前引擎不支援：</string>
 	<key>当前引擎不支持：自动识别为 GBK 的 ZIP 暂不支持编辑保存；请先解压后重新创建压缩包</key>
@@ -2255,8 +2295,8 @@
 	<string>目前檔案不是 macOS 安裝套件</string>
 	<key>当前文件夹为空 · 后台索引仍在核对</key>
 	<string>目前資料夾為空 · 背景索引仍在核對</string>
-	<key>当前构建尚未配置 ArcZip 更新服务器</key>
-	<string>目前建置版本尚未設定 ArcZip 更新伺服器</string>
+	<key>当前构建尚未配置 ProZip 更新服务器</key>
+	<string>目前建置版本尚未設定 ProZip 更新伺服器</string>
 	<key>当前用户的字体库中已经存在“</key>
 	<string>目前使用者的字型資料庫中已經存在「</string>
 	<key>当前用途将默认使用 </key>
@@ -2303,6 +2343,8 @@
 	<string>恢復預設值</string>
 	<key>恢复默认压缩设置</key>
 	<string>恢復預設壓縮設定</string>
+	<key>悬浮预览</key>
+	<string>懸浮預覽</string>
 	<key>悬浮高清预览</key>
 	<string>懸浮預覽</string>
 	<key>意犹未尽？那就再看一遍，设置不会被重置，放心</key>
@@ -2317,8 +2359,8 @@
 	<string>所選內容包含無效項目</string>
 	<key>所选内容只有已排除的系统辅助文件</key>
 	<string>所選內容只有已排除的系統輔助檔案</string>
-	<key>所选文件不是 ArcZip 支持的可解压格式</key>
-	<string>所選檔案不是 ArcZip 支援的可解壓縮格式</string>
+	<key>所选文件不是 ProZip 支持的可解压格式</key>
+	<string>所選檔案不是 ProZip 支援的可解壓縮格式</string>
 	<key>所选文件夹中没有可解压的项目</key>
 	<string>所選資料夾中沒有可解壓縮的項目</string>
 	<key>所选解压目标文件夹不可用</key>
@@ -2405,6 +2447,8 @@
 	<string>操作失敗</string>
 	<key>操作已取消</key>
 	<string>操作已取消</string>
+	<key>支持 MP4、MOV、M4V 等格式</key>
+	<string>支援 MP4、MOV、M4V 等格式</string>
 	<key>收起备选 Flow</key>
 	<string>收合其他 Flow</string>
 	<key>收起搜索</key>
@@ -2505,8 +2549,8 @@
 	<string>無法讀取壓縮結果身份：</string>
 	<key>无法读取密码本，请保留数据并重试。</key>
 	<string>無法讀取密碼本，請保留資料並重試。</string>
-	<key>无法读取来源文件，请在系统设置的“隐私与安全性 → 文件与文件夹”中允许 ArcZip 访问来源应用，然后重新拖入</key>
-	<string>無法讀取來源檔案，請在系統設定的「隱私權與安全性 → 檔案與檔案夾」中允許 ArcZip 存取來源應用程式，然後重新拖入</string>
+	<key>无法读取来源文件，请在系统设置的“隐私与安全性 → 文件与文件夹”中允许 ProZip 访问来源应用，然后重新拖入</key>
+	<string>無法讀取來源檔案，請在系統設定的「隱私權與安全性 → 檔案與檔案夾」中允許 ProZip 存取來源應用程式，然後重新拖入</string>
 	<key>无法验证</key>
 	<string>無法驗證</string>
 	<key>日常最常用的压缩与归档格式</key>
@@ -2527,6 +2571,8 @@
 	<string>顯示方式</string>
 	<key>显示辅助项目</key>
 	<string>顯示輔助項目</string>
+	<key>显示通常隐藏的系统辅助文件</key>
+	<string>顯示通常隱藏的系統輔助檔案</string>
 	<key>智能平衡速度与体积</key>
 	<string>兼顧速度和大小</string>
 	<key>智能选择文件，使用 128 MB 固实块</key>
@@ -2603,8 +2649,8 @@
 	<string>檢查更新</string>
 	<key>检查更新失败：</key>
 	<string>檢查更新失敗：</string>
-	<key>欢迎使用ArcZip</key>
-	<string>歡迎使用 ArcZip</string>
+	<key>欢迎使用ProZip</key>
+	<string>歡迎使用 ProZip</string>
 	<key>欢迎页面</key>
 	<string>歡迎頁面</string>
 	<key>欢迎！拖入文件以开始</key>
@@ -2681,8 +2727,8 @@
 	<string>正在安裝</string>
 	<key>正在安装 </key>
 	<string>正在安裝 </string>
-	<key>正在安装 ArcZip </key>
-	<string>正在安裝 ArcZip </string>
+	<key>正在安装 ProZip </key>
+	<string>正在安裝 ProZip </string>
 	<key>正在安装…</key>
 	<string>正在安裝…</string>
 	<key>正在安装字体</key>
@@ -2869,8 +2915,8 @@
 	<string>按一下輸入壓縮檔密碼</string>
 	<key>特殊项目</key>
 	<string>特殊項目</string>
-	<key>用 ArcZip 打开 </key>
-	<string>用 ArcZip 開啟 </string>
+	<key>用 ProZip 打开 </key>
+	<string>用 ProZip 開啟 </string>
 	<key>用途</key>
 	<string>用途</string>
 	<key>由 Apple 认证的开发者签名，但未经 Apple 公证。</key>
@@ -2953,8 +2999,8 @@
 	<string>繼續解壓縮</string>
 	<key>维护</key>
 	<string>維護</string>
-	<key>维护和恢复 ArcZip 偏好设置</key>
-	<string>維護和恢復 ArcZip 設定</string>
+	<key>维护和恢复 ProZip 偏好设置</key>
+	<string>維護和恢復 ProZip 設定</string>
 	<key>编辑…</key>
 	<string>編輯…</string>
 	<key>自动</key>
@@ -2965,12 +3011,16 @@
 	<string>自動儲存到密碼本</string>
 	<key>自动排除系统辅助文件</key>
 	<string>自動排除系統輔助檔案</string>
+	<key>自动播放音频</key>
+	<string>自動播放音訊</string>
 	<key>自动检查更新</key>
 	<string>自動檢查更新</string>
 	<key>自动过滤 DMG 安装辅助文件</key>
 	<string>自動過濾 DMG 安裝輔助檔案</string>
 	<key>视频</key>
 	<string>影片</string>
+	<key>视频默认静音</key>
+	<string>影片預設靜音</string>
 	<key>解压</key>
 	<string>解壓縮</string>
 	<key>解压任务未生成“</key>
@@ -3003,8 +3053,8 @@
 	<string>解壓縮完成</string>
 	<key>解锁</key>
 	<string>解鎖</string>
-	<key>解锁 ArcZip 密码本</key>
-	<string>解鎖 ArcZip 密碼本</string>
+	<key>解锁 ProZip 密码本</key>
+	<string>解鎖 ProZip 密碼本</string>
 	<key>解锁压缩包</key>
 	<string>解鎖壓縮檔</string>
 	<key>解锁后可使用密码本并保存本次密码。</key>
@@ -3025,16 +3075,20 @@
 	<string>裝置節點可能連接磁碟、終端或無限資料流；讀取它可能洩露系統資料、產生副作用或永不結束。</string>
 	<key>设置</key>
 	<string>設定</string>
-	<key>设置 ArcZip 的外观与浏览方式</key>
-	<string>設定 ArcZip 的外觀與瀏覽方式</string>
+	<key>设置 ProZip 的外观与浏览方式</key>
+	<string>設定 ProZip 的外觀與瀏覽方式</string>
 	<key>设置创建压缩包时默认采用的用途与压缩强度</key>
 	<string>設定建立壓縮檔時預設採用的用途與壓縮強度</string>
 	<key>设置独立的密码本密码</key>
 	<string>設定獨立的密碼本密碼</string>
 	<key>访达压缩任务</key>
 	<string>Finder 壓縮作業</string>
+	<key>访达右键菜单</key>
+	<string>Finder 右鍵選單</string>
 	<key>访达快速创建 ZIP</key>
 	<string>Finder 快速建立 ZIP</string>
+	<key>访达扩展</key>
+	<string>Finder 延伸功能</string>
 	<key>访达解压任务</key>
 	<string>Finder 解壓縮作業</string>
 	<key>访达请求不存在或已被处理</key>
@@ -3051,18 +3105,20 @@
 	<string>該項目包含未儲存的修改，請先儲存或復原修改後再繼續。</string>
 	<key>详细信息：</key>
 	<string>詳細資訊：</string>
-	<key>请从已打包的 ArcZip.app 中修改格式关联</key>
-	<string>請從已封裝的 ArcZip.app 中修改格式關聯</string>
-	<key>请使用 ArcZip 打开以查看完整内容。</key>
-	<string>請使用 ArcZip 開啟以查看完整內容。</string>
-	<key>请使用 ArcZip 打开并输入密码。</key>
-	<string>請使用 ArcZip 開啟並輸入密碼。</string>
+	<key>语言</key>
+	<string>語言</string>
+	<key>请从已打包的 ProZip.app 中修改格式关联</key>
+	<string>請從已封裝的 ProZip.app 中修改格式關聯</string>
+	<key>请使用 ProZip 打开以查看完整内容。</key>
+	<string>請使用 ProZip 開啟以查看完整內容。</string>
+	<key>请使用 ProZip 打开并输入密码。</key>
+	<string>請使用 ProZip 開啟並輸入密碼。</string>
 	<key>请先修正所有 Windows 文件名问题</key>
 	<string>請先修正所有 Windows 檔名問題</string>
 	<key>请先完成当前任务并保存压缩包更改</key>
 	<string>請先完成目前作業並儲存壓縮檔更改</string>
-	<key>请先完成或取消当前密码、确认或修复操作，再重新退出 ArcZip。</key>
-	<string>請先完成或取消目前密碼、確認或修復操作，再重新結束 ArcZip。</string>
+	<key>请先完成或取消当前密码、确认或修复操作，再重新退出 ProZip。</key>
+	<string>請先完成或取消目前密碼、確認或修復操作，再重新結束 ProZip。</string>
 	<key>请先解锁密码本。</key>
 	<string>請先解鎖密碼本。</string>
 	<key>请再次输入密码</key>
@@ -3113,6 +3169,10 @@
 	<string>調整壓縮檔視窗的預設呈現方式</string>
 	<key>资源忙</key>
 	<string>資源使用中</string>
+	<key>跟随系统</key>
+	<string>跟隨系統</string>
+	<key>跟随系统语言，或为 ProZip 单独指定语言。</key>
+	<string>跟隨系統語言，或為 ProZip 個別指定語言。</string>
 	<key>路径名称冲突</key>
 	<string>路徑名稱衝突</string>
 	<key>跳过</key>
@@ -3145,12 +3205,14 @@
 	<string>這個壓縮檔將用於什麼？</string>
 	<key>这个项目无法放入文件夹</key>
 	<string>這個項目無法放入資料夾</string>
-	<key>这些名称在 Windows 中可能消失、被改写或无法正常解压。ArcZip 已填入可用名称，你可以直接确认，也可以在这里修改。</key>
+	<key>这些名称在 Windows 中可能消失、被改写或无法正常解压。ProZip 已填入可用名称，你可以直接确认，也可以在这里修改。</key>
 	<string>部分檔名無法在 Windows 中正常使用。已填入建議名稱，你可以直接使用或修改；原始檔名不會改變。</string>
 	<key>进入主工作区</key>
 	<string>進入主工作區</string>
 	<key>进入完整工作区</key>
 	<string>開啟完整視窗</string>
+	<key>进度窗口</key>
+	<string>進度視窗</string>
 	<key>进行中</key>
 	<string>進行中</string>
 	<key>适合 Unix 目录归档</key>
@@ -3159,18 +3221,18 @@
 	<string>適合在 Mac 之間傳遞</string>
 	<key>选择</key>
 	<string>選擇</string>
-	<key>选择 ArcZip 的打开方式，并启用 Finder 快捷操作</key>
-	<string>選擇 ArcZip 的開啟方式，並啟用 Finder 快速操作</string>
-	<key>选择 ArcZip 窗口使用的明暗模式</key>
-	<string>選擇 ArcZip 視窗使用的明暗模式</string>
+	<key>选择 ProZip 的打开方式，并启用 Finder 快捷操作</key>
+	<string>選擇 ProZip 的開啟方式，並啟用 Finder 快速操作</string>
+	<key>选择 ProZip 窗口使用的明暗模式</key>
+	<string>選擇 ProZip 視窗使用的明暗模式</string>
 	<key>选择全部</key>
 	<string>全選</string>
 	<key>选择压缩包存储位置</key>
 	<string>選擇壓縮檔儲存位置</string>
 	<key>选择压缩包格式</key>
 	<string>選擇壓縮檔格式</string>
-	<key>选择双击文件时由 ArcZip 打开的格式</key>
-	<string>選擇按兩下檔案時由 ArcZip 開啟的格式</string>
+	<key>选择双击文件时由 ProZip 打开的格式</key>
+	<string>選擇按兩下檔案時由 ProZip 開啟的格式</string>
 	<key>选择已有密码</key>
 	<string>選擇已有密碼</string>
 	<key>选择文件</key>
@@ -3183,11 +3245,13 @@
 	<string>選擇解壓縮目標資料夾</string>
 	<key>通常用于下载和传输的压缩数据流</key>
 	<string>一次壓縮一個檔案的格式</string>
+	<key>通用</key>
+	<string>一般</string>
 	<key>通用分享</key>
 	<string>一般分享</string>
 	<key>部分关联</key>
 	<string>部分關聯</string>
-	<key>配置 ArcZip 可扩展的智能操作</key>
+	<key>配置 ProZip 可扩展的智能操作</key>
 	<string>設定 Flow 推薦的快速操作</string>
 	<key>采用 Windows 兼容设置</key>
 	<string>採用 Windows 相容設定</string>
@@ -3213,6 +3277,10 @@
 	<string>重新命名資料夾</string>
 	<key>重新启动 Finder</key>
 	<string>重新啟動 Finder</string>
+	<key>重新启动 ProZip</key>
+	<string>重新啟動 ProZip</string>
+	<key>重新启动 ProZip 后，语言设置将生效。请先保存修改。</key>
+	<string>重新啟動 ProZip 後，語言設定將生效。請先儲存修改。</string>
 	<key>重新打开</key>
 	<string>重新開啟</string>
 	<key>重新打开 </key>
@@ -3221,6 +3289,8 @@
 	<string>重新顯示</string>
 	<key>重新显示欢迎页面</key>
 	<string>重新顯示歡迎頁面</string>
+	<key>重新浏览介绍，不会重置设置</key>
+	<string>重新瀏覽介紹，不會重設設定</string>
 	<key>重新载入</key>
 	<string>重新載入</string>
 	<key>重置</key>
@@ -3231,14 +3301,14 @@
 	<string>重設並清空密碼本？</string>
 	<key>重试</key>
 	<string>再試一次</string>
-	<key>随时重新查看 ArcZip 的功能介绍与初始设置</key>
-	<string>隨時重新查看 ArcZip 的功能介紹與初始設定</string>
+	<key>随时重新查看 ProZip 的功能介绍与初始设置</key>
+	<string>隨時重新查看 ProZip 的功能介紹與初始設定</string>
 	<key>隐藏密码</key>
 	<string>隱藏密碼</string>
 	<key>隐藏辅助项目</key>
 	<string>隱藏輔助項目</string>
-	<key>需要在系统设置中启用 ArcZip Finder 扩展</key>
-	<string>需要在系統設定中啟用 ArcZip 的 Finder 延伸功能</string>
+	<key>需要在系统设置中启用 ProZip Finder 扩展</key>
+	<string>需要在系統設定中啟用 ProZip 的 Finder 延伸功能</string>
 	<key>音频</key>
 	<string>音訊</string>
 	<key>项目</key>
@@ -3270,21 +3340,25 @@
 	<key>高级选项</key>
 	<string>進階選項</string>
 	<key>默认使用 Mini 窗口预览压缩包</key>
-	<string>預設用 ArcZip Mini 開啟壓縮檔</string>
+	<string>預設用 ProZip Mini 開啟壓縮檔</string>
 	<key>默认关闭，保留系统安全检查</key>
 	<string>開啟後可能減少 macOS 的安全提示，僅在信任應用程式來源時開啟。</string>
 	<key>默认创建分卷压缩包</key>
 	<string>預設建立分卷壓縮檔</string>
 	<key>默认压缩强度</key>
 	<string>預設壓縮強度</string>
-	<key>默认打开方式只能从已打包的 ArcZip.app 中修改。请先运行 dist/ArcZip.app。</key>
-	<string>預設開啟方式只能從已打包的 ArcZip.app 中修改。請先執行 dist/ArcZip.app。</string>
+	<key>默认打开方式只能从已打包的 ProZip.app 中修改。请先运行 dist/ProZip.app。</key>
+	<string>預設開啟方式只能從已打包的 ProZip.app 中修改。請先執行 dist/ProZip.app。</string>
+	<key>默认显示密码</key>
+	<string>預設顯示密碼</string>
 	<key>默认浏览方式</key>
 	<string>預設瀏覽方式</string>
 	<key>默认用途与压缩强度</key>
 	<string>預設用途與壓縮強度</string>
 	<key>鼠标停留 1 秒后，在光标旁预览图片及支持的文档；适用于工作区和 Mini 窗口</key>
 	<string>滑鼠停留 1 秒後，在游標旁預覽圖片及支援的文件；適用於工作區和 Mini 視窗</string>
+	<key>鼠标停留时显示文件预览</key>
+	<string>滑鼠停留時顯示檔案預覽</string>
 	<key>，已展开</key>
 	<string>，已展開</string>
 	<key>，已折叠</key>
@@ -3297,81 +3371,5 @@
 	<string>；仍可在建立壓縮檔時暫時更改。</string>
 	<key>；回滚原因：</key>
 	<string>；還原原因：</string>
-	<key>通用</key>
-	<string>一般</string>
-	<key>ProZip Mini</key>
-	<string>ProZip Mini</string>
-	<key>ProZip 文件盒</key>
-	<string>ProZip 檔案盒</string>
-	<key>关于</key>
-	<string>關於</string>
-	<key>全功能已解锁</key>
-	<string>全功能已解鎖</string>
-	<key>开源无限制，专业功能全部可用</key>
-	<string>開源無限制，專業功能全部可用</string>
-	<key>开源许可与概览</key>
-	<string>開源授權與概覽</string>
-	<key>启动</key>
-	<string>啟動</string>
-	<key>开机自动启动 ProZip</key>
-	<string>登入時自動啟動 ProZip</string>
-	<key>语言</key>
-	<string>語言</string>
-	<key>应用语言</key>
-	<string>應用程式語言</string>
-	<key>跟随系统语言，或为 ProZip 单独指定语言。</key>
-	<string>跟隨系統語言，或為 ProZip 個別指定語言。</string>
-	<key>跟随系统</key>
-	<string>跟隨系統</string>
-	<key>重新启动 ProZip 后，语言设置将生效。请先保存修改。</key>
-	<string>重新啟動 ProZip 後，語言設定將生效。請先儲存修改。</string>
-	<key>重新启动 ProZip</key>
-	<string>重新啟動 ProZip</string>
-	<key>进度窗口</key>
-	<string>進度視窗</string>
-	<key>保持置顶</key>
-	<string>保持置頂</string>
-	<key>显示通常隐藏的系统辅助文件</key>
-	<string>顯示通常隱藏的系統輔助檔案</string>
-	<key>悬浮预览</key>
-	<string>懸浮預覽</string>
-	<key>Pro 已解锁</key>
-	<string>Pro 已解鎖</string>
-	<key>开启悬浮预览</key>
-	<string>開啟懸浮預覽</string>
-	<key>鼠标停留时显示文件预览</key>
-	<string>滑鼠停留時顯示檔案預覽</string>
-	<key>在悬浮预览中播放视频</key>
-	<string>在懸浮預覽中播放影片</string>
-	<key>支持 MP4、MOV、M4V 等格式</key>
-	<string>支援 MP4、MOV、M4V 等格式</string>
-	<key>自动播放音频</key>
-	<string>自動播放音訊</string>
-	<key>视频默认静音</key>
-	<string>影片預設靜音</string>
-	<key>可预览音视频大小上限：%ld MB</key>
-	<string>可預覽影音大小上限：%ld MB</string>
-	<key>密码输入</key>
-	<string>密碼輸入</string>
-	<key>默认显示密码</key>
-	<string>預設顯示密碼</string>
-	<key>可随时点击眼睛按钮隐藏</key>
-	<string>可隨時點選眼睛按鈕隱藏</string>
-	<key>全部可用（%ld）</key>
-	<string>全部可用（%ld）</string>
-	<key>访达扩展</key>
-	<string>Finder 延伸功能</string>
-	<key>在移动存储中开启右键菜单</key>
-	<string>在行動儲存裝置中開啟右鍵選單</string>
-	<key>为外接硬盘、U盘等移动存储中的文件提供访达右键菜单</key>
-	<string>為外接硬碟、USB 隨身碟等行動儲存裝置中的檔案提供 Finder 右鍵選單</string>
-	<key>访达右键菜单</key>
-	<string>Finder 右鍵選單</string>
-	<key>如果访达右键菜单中没有 ProZip，可以尝试修复。</key>
-	<string>如果 Finder 右鍵選單中沒有 ProZip，可以嘗試修復。</string>
-	<key>修复访达菜单项</key>
-	<string>修復 Finder 選單項目</string>
-	<key>重新浏览介绍，不会重置设置</key>
-	<string>重新瀏覽介紹，不會重設設定</string>
 </dict>
 </plist>

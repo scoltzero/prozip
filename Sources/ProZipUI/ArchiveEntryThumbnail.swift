@@ -69,7 +69,7 @@ struct ArchiveEntryThumbnail: View {
     private func loadThumbnail() async {
         image = nil
         text = nil
-        guard !entry.isDirectory else { return }
+        guard !entry.isDirectory, min(size.width, size.height) >= 40 else { return }
         let key = cacheKey as NSString
         if let cached = ArchiveThumbnailCache.texts.object(forKey: key) { text = cached as String; return }
         if let cached = ArchiveThumbnailCache.images.object(forKey: key) { image = cached; return }

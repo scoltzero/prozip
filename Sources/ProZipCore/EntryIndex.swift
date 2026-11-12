@@ -223,7 +223,7 @@ public actor EntryIndex {
                         if synthesizedVirtualDirs.insert(dirPath).inserted {
                             let parentPath = i == 0 ? "" : parts[0..<i].joined(separator: "/")
                             let sortName = parts[i]
-                            let virtualEntry = ArchiveEntry(path: dirPath, type: .directory)
+                            let virtualEntry = ArchiveEntry(path: dirPath, type: .directory, modifiedAt: .distantPast)
                             let virtualPayload = try encoder.encode(virtualEntry)
 
                             sqlite3_reset(dirStmt)

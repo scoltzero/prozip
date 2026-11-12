@@ -60,6 +60,10 @@ public struct ProZipSettingsView: View {
         SettingsTab.allCases.firstIndex(of: selectedTab) ?? 0
     }
 
+    private var settingsWindowTarget: NSWindow? {
+        NSApp.windows.first { $0.identifier?.rawValue == "ProZip.SettingsWindow" } ?? NSApp.keyWindow
+    }
+
     public var body: some View {
         HStack(spacing: 0) {
             settingsSidebar
@@ -68,17 +72,30 @@ public struct ProZipSettingsView: View {
             settingsDetailPane
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .frame(minWidth: SettingsMetrics.windowWidth, idealWidth: SettingsMetrics.windowWidth, maxWidth: .infinity, minHeight: SettingsMetrics.windowHeight, idealHeight: SettingsMetrics.windowHeight, maxHeight: .infinity)
+        .frame(minWidth: SettingsMetrics.windowWidth, idealWidth: SettingsMetrics.windowWidth, maxWidth: .infinity, minHeight: SettingsMetrics.windowMinHeight, idealHeight: SettingsMetrics.windowHeight, maxHeight: .infinity)
         .background(SettingsSkin.contentBackground(colorScheme))
         .ignoresSafeArea(.container, edges: .top)
+        .overlay(alignment: .top) {
+            WindowDragArea()
+                .frame(maxWidth: .infinity)
+                .frame(height: 44)
+        }
         .overlay(alignment: .topLeading) {
             MainWindowTrafficLightsView(
-                onClose: { NSApp.keyWindow?.close() },
-                onMinimize: { NSApp.keyWindow?.miniaturize(nil) },
-                onZoom: { NSApp.keyWindow?.zoom(nil) }
+                onClose: { settingsWindowTarget?.close() },
+                onMinimize: { settingsWindowTarget?.miniaturize(nil) },
+                onZoom: {
+                    guard let win = settingsWindowTarget, win.styleMask.contains(.resizable) else { return }
+                    win.zoom(nil)
+                }
             )
             .padding(.leading, 12)
             .padding(.top, 13)
+        }
+        .onAppear {
+            if appViewModel.settingsSelectedTab != selectedTab {
+                appViewModel.settingsSelectedTab = selectedTab
+            }
         }
         .onChange(of: appViewModel.settingsSelectedTab) { _, tab in selectedTab = tab }
         .onChange(of: selectedTab) { _, tab in appViewModel.settingsSelectedTab = tab }
@@ -100,10 +117,6 @@ public struct ProZipSettingsView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(SettingsSkin.sidebarBackground(colorScheme))
-        .overlay(alignment: .topLeading) {
-            WindowDragArea()
-                .frame(width: 210, height: 44)
-        }
     }
 
     private var brandHeader: some View {
@@ -253,65 +266,69 @@ public struct ProZipSettingsView: View {
         .padding(.bottom, 12)
         .frame(width: SettingsMetrics.proCardWidth, height: SettingsMetrics.proCardHeight, alignment: .topLeading)
         .background(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
+            RoundedRectangle(cornerRadius: SettingsMetrics.cardRadius, style: .continuous)
                 .fill(SettingsSkin.proCardGradient(colorScheme))
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .stroke(SettingsSkin.proCardBorder(colorScheme), lineWidth: 1)
+            RoundedRectangle(cornerRadius: SettingsMetrics.cardRadius, style: .continuous)
+                .strokeBorder(SettingsSkin.proCardBorder(colorScheme), lineWidth: 1)
         )
     }
 
     // MARK: - Right Detail Pane (title @ x=240 y=33, scroll x=240..852)
 
     private var settingsDetailPane: some View {
-        VStack(spacing: 0) {
+        Group {
             if selectedTab == .about {
                 AboutSettingsPane()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
-            detailHeader
-
-            ScrollView(.vertical, showsIndicators: true) {
-                VStack(alignment: .leading, spacing: SettingsMetrics.groupSpacing) {
-                    switch selectedTab {
-                    case .general:
-                        GeneralSettingsPane(preferences: preferences, selectedTab: $selectedTab)
-                    case .compression:
-                        CompressionSettingsPane(preferences: preferences, selectedTab: $selectedTab)
-                    case .extraction:
-                        ExtractionSettingsPane(preferences: preferences, selectedTab: $selectedTab)
-                    case .passwordBook:
-                        PasswordBookSettingsPane(preferences: preferences)
-                    case .flow:
-                        FlowSettingsPane(preferences: preferences)
-                    case .mini:
-                        MiniSettingsPane(preferences: preferences)
-                    case .shelf:
-                        ShelfSettingsPane(preferences: preferences)
-                    case .fileAssociation:
-                        FileAssociationSettingsPane()
-                    case .advanced:
-                        AdvancedSettingsPane(preferences: preferences)
-                    case .about:
-                        AboutSettingsPane()
+                ZStack(alignment: .top) {
+                    ScrollView(.vertical, showsIndicators: true) {
+                        VStack(alignment: .leading, spacing: SettingsMetrics.groupSpacing) {
+                            switch selectedTab {
+                            case .general:
+                                GeneralSettingsPane(preferences: preferences, selectedTab: $selectedTab)
+                            case .compression:
+                                CompressionSettingsPane(preferences: preferences, selectedTab: $selectedTab)
+                            case .extraction:
+                                ExtractionSettingsPane(preferences: preferences, selectedTab: $selectedTab)
+                            case .passwordBook:
+                                PasswordBookSettingsPane(preferences: preferences)
+                            case .flow:
+                                FlowSettingsPane(preferences: preferences)
+                            case .mini:
+                                MiniSettingsPane(preferences: preferences)
+                            case .shelf:
+                                ShelfSettingsPane(preferences: preferences)
+                            case .fileAssociation:
+                                FileAssociationSettingsPane()
+                            case .advanced:
+                                AdvancedSettingsPane(preferences: preferences)
+                            case .about:
+                                AboutSettingsPane()
+                            }
+                        }
+                        .frame(maxWidth: 800, alignment: .leading)
+                        .padding(.top, SettingsMetrics.headerHeight)
+                        .padding(.leading, SettingsMetrics.contentLeading)
+                        .padding(.trailing, SettingsMetrics.contentTrailing)
+                        .padding(.bottom, 34)
+                        .frame(maxWidth: .infinity, alignment: .top)
                     }
+
+                    detailHeader
                 }
-                .frame(maxWidth: 800, alignment: .leading)
-                .padding(.leading, SettingsMetrics.contentLeading)
-                .padding(.trailing, SettingsMetrics.contentTrailing)
-                .padding(.bottom, 34)
-                .frame(maxWidth: .infinity, alignment: .top)
-            }
             }
         }
         .background(SettingsSkin.contentBackground(colorScheme))
     }
 
     private var detailHeader: some View {
-        HStack(alignment: .center, spacing: 8) {
+        let bg = SettingsSkin.contentBackground(colorScheme)
+        return HStack(alignment: .center, spacing: 8) {
             Text(preferences.localizedString(selectedTab.rawValue))
-                .font(.system(size: 28, weight: .bold))
+                .font(.system(size: 26, weight: .bold))
                 .foregroundStyle(SettingsSkin.primaryText(colorScheme))
                 .lineLimit(1)
                 .frame(height: 33, alignment: .center)
@@ -327,7 +344,24 @@ public struct ProZipSettingsView: View {
         .padding(.top, SettingsMetrics.titleTop)
         .frame(height: SettingsMetrics.headerHeight, alignment: .top)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(SettingsSkin.headerGradient(colorScheme))
+        .background {
+            ZStack {
+                ProZipVariableBlurView(
+                    direction: .topToBottom,
+                    material: colorScheme == .dark ? .hudWindow : .headerView
+                )
+                LinearGradient(
+                    stops: [
+                        .init(color: bg.opacity(0.95), location: 0.0),
+                        .init(color: bg.opacity(0.86), location: 0.52),
+                        .init(color: bg.opacity(0.0), location: 1.0)
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            }
+            .allowsHitTesting(false)
+        }
     }
 }
 // MARK: - 1. General Settings Pane (Matching settings.png + Integration & Status Bar)
@@ -403,8 +437,8 @@ public struct GeneralSettingsPane: View {
                         options: [
                             ("system", localized("跟随系统")),
                             ("zh-Hans", "简体中文"),
-                            ("zh-Hant", "繁體中文"),
-                            ("en", "English")
+                            ("en", "English"),
+                            ("zh-Hant", "繁體中文")
                         ]
                     )
                 }
@@ -470,7 +504,7 @@ public struct GeneralSettingsPane: View {
                                     .foregroundStyle(isSelected ? ProZipTheme.accentDeep : Color.primary.opacity(0.75))
                                     .frame(width: 88, height: 30)
                                     .background(
-                                        RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                        RoundedRectangle(cornerRadius: 8.5, style: .continuous)
                                             .fill(isSelected ? (colorScheme == .dark ? Color.white.opacity(0.14) : Color.white) : Color.clear)
                                     )
                                     .shadow(color: isSelected ? Color.black.opacity(0.06) : .clear, radius: 2, y: 1)
@@ -480,7 +514,7 @@ public struct GeneralSettingsPane: View {
                         }
                         .padding(3)
                         .background(
-                            RoundedRectangle(cornerRadius: 9, style: .continuous)
+                            RoundedRectangle(cornerRadius: 11, style: .continuous)
                                 .fill(Color.primary.opacity(0.06))
                         )
                     }
@@ -501,15 +535,15 @@ public struct GeneralSettingsPane: View {
                 }
             }
 
-            // 5. 悬浮预览 (Matching bottom of settings.png)
+            // 5. 悬浮预览 (Pro unlocked — all 4 sub-controls enabled when hoverPreviewEnabled is ON)
             settingsCard(title: localized("悬浮预览"), badge: localized("Pro 已解锁")) {
                 SettingsRowLayout {
                     HStack {
                         VStack(alignment: .leading, spacing: 2) {
                             Text(localized("开启悬浮预览"))
-                                .font(.system(size: 13, weight: .semibold))
+                                .font(.system(size: 13, weight: .medium))
                             Text(localized("鼠标停留时显示文件预览"))
-                                .font(.system(size: 11))
+                                .font(.system(size: 11.5))
                                 .foregroundStyle(.secondary)
                         }
                         Spacer()
@@ -518,51 +552,52 @@ public struct GeneralSettingsPane: View {
 
                     if preferences.hoverPreviewEnabled {
                         SettingsRowLayout {
-                        SettingsSeparator()
+                            SettingsSeparator()
 
-                        HStack {
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(localized("在悬浮预览中播放视频"))
-                                    .font(.system(size: 13, weight: .medium))
-                                Text(localized("支持 MP4、MOV、M4V 等格式"))
-                                    .font(.system(size: 11))
-                                    .foregroundStyle(.secondary)
+                            HStack {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(localized("在悬浮预览中播放视频"))
+                                        .font(.system(size: 13, weight: .medium))
+                                    Text(localized("支持 MP4、MOV、M4V 等格式，部分编码或文件无法预览"))
+                                        .font(.system(size: 11.5))
+                                        .foregroundStyle(.secondary)
+                                }
+                                Spacer()
+                                settingsSwitch(isOn: $preferences.hoverVideoEnabled)
                             }
-                            Spacer()
-                            settingsSwitch(isOn: $preferences.hoverVideoEnabled)
-                        }
 
-                        SettingsSeparator()
+                            SettingsSeparator()
 
-                        HStack {
-                            Text(localized("自动播放音频"))
-                                .font(.system(size: 13, weight: .medium))
-                            Spacer()
-                            settingsSwitch(isOn: $preferences.hoverAudioAutoplay)
-                        }
+                            HoverMediaLimitSliderRow(limitMB: $preferences.hoverVideoLimitMB)
+                                .padding(.vertical, 12)
 
-                        SettingsSeparator()
+                            SettingsSeparator()
 
-                        HStack {
-                            Text(localized("视频默认静音"))
-                                .font(.system(size: 13, weight: .medium))
-                            Spacer()
-                            settingsSwitch(isOn: $preferences.hoverVideoMuted)
-                        }
+                            HStack {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(localized("视频默认静音"))
+                                        .font(.system(size: 13, weight: .medium))
+                                    Text(localized("默认静音，关闭后播放视频声音"))
+                                        .font(.system(size: 11.5))
+                                        .foregroundStyle(.secondary)
+                                }
+                                Spacer()
+                                settingsSwitch(isOn: $preferences.hoverVideoMuted)
+                            }
 
-                        SettingsSeparator()
+                            SettingsSeparator()
 
-                        HStack {
-                            Text(preferences.localizedString("可预览音视频大小上限：%ld MB", preferences.hoverVideoLimitMB))
-                                .font(.system(size: 13, weight: .medium))
-                            Spacer()
-                            Slider(value: Binding(
-                                get: { Double(preferences.hoverVideoLimitMB) },
-                                set: { preferences.hoverVideoLimitMB = Int($0) }
-                            ), in: 10...500, step: 10)
-                            .frame(width: 160)
-                            .tint(ProZipTheme.accent)
-                        }
+                            HStack {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(localized("自动播放音频"))
+                                        .font(.system(size: 13, weight: .medium))
+                                    Text(localized("悬停后自动播放音频，关闭后点击播放按钮开始试听"))
+                                        .font(.system(size: 11.5))
+                                        .foregroundStyle(.secondary)
+                                }
+                                Spacer()
+                                settingsSwitch(isOn: $preferences.hoverAudioAutoplay)
+                            }
                         }
                     }
                 }
@@ -631,7 +666,7 @@ public struct GeneralSettingsPane: View {
             }
         }
         .sheet(isPresented: $isOnboardingSheetPresented) {
-            FirstLaunchOnboardingView()
+            FirstLaunchOnboardingView(dismissesSheetOnFinish: true)
         }
         .sheet(isPresented: $isCheckUpdateSheetPresented) {
             CheckForUpdatesDialogView()
@@ -644,18 +679,11 @@ public struct GeneralSettingsPane: View {
             preferences.appearance = mode
         } label: {
             VStack(spacing: 0) {
-                // Actual PNG artwork from Resources/ (AppearanceLight.png, AppearanceDark.png, AppearanceAutomatic.png)
-                ZStack {
-                    Color(colorScheme == .dark ? NSColor(white: 0.16, alpha: 1) : NSColor(white: 0.96, alpha: 1))
-                    ProZipBundledImage(name: imageName, fallbackSymbol: "macwindow", contentMode: .fill)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 82)
-                        .clipped()
-                }
-                .frame(maxWidth: .infinity)
-                .frame(height: 82)
-                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-                .padding(6)
+                AppearanceWorkspaceMiniPreview(mode: mode)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 82)
+                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                    .padding(6)
 
                 HStack(spacing: 5) {
                     Text(localized(title))
@@ -672,12 +700,12 @@ public struct GeneralSettingsPane: View {
             }
             .frame(maxWidth: .infinity)
             .background(
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
                     .fill(colorScheme == .dark ? Color(white: 0.15) : Color.white)
             )
             .overlay(
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .stroke(isSelected ? ProZipTheme.accent : Color.primary.opacity(0.10), lineWidth: isSelected ? 2 : 1)
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .strokeBorder(isSelected ? ProZipTheme.accent : Color.primary.opacity(0.10), lineWidth: isSelected ? 2 : 1)
             )
         }
         .buttonStyle(.plain)
@@ -686,12 +714,252 @@ public struct GeneralSettingsPane: View {
     private func localized(_ key: String) -> String { preferences.localizedString(key) }
 }
 
+private struct AppearanceWorkspaceMiniPreview: View {
+    let mode: AppearancePreference
+
+    var body: some View {
+        switch mode {
+        case .light:
+            singleCanvas(isDark: false, title: "浅色.zip")
+        case .dark:
+            singleCanvas(isDark: true, title: "深色.zip")
+        case .automatic:
+            GeometryReader { geo in
+                let half = geo.size.width * 0.5
+                ZStack(alignment: .leading) {
+                    singleCanvas(isDark: true, title: "自动.zip")
+                        .frame(width: geo.size.width, height: geo.size.height)
+
+                    singleCanvas(isDark: false, title: "自动.zip")
+                        .frame(width: geo.size.width, height: geo.size.height)
+                        .mask(alignment: .leading) {
+                            Rectangle()
+                                .frame(width: half, height: geo.size.height)
+                        }
+
+                    Rectangle()
+                        .fill(Color.primary.opacity(0.16))
+                        .frame(width: 0.75, height: geo.size.height)
+                        .offset(x: half)
+                }
+            }
+        }
+    }
+
+    private func singleCanvas(isDark: Bool, title: String) -> some View {
+        let outerPlate = isDark ? Color(red: 0.12, green: 0.13, blue: 0.15) : Color(red: 0.94, green: 0.95, blue: 0.96)
+        let windowBg = isDark ? Color(red: 0.16, green: 0.17, blue: 0.19) : Color.white
+        let ink = isDark ? Color.white.opacity(0.88) : Color.black.opacity(0.82)
+        let muted = isDark ? Color.white.opacity(0.42) : Color.black.opacity(0.38)
+        let stripe = isDark ? Color.white.opacity(0.04) : Color.black.opacity(0.032)
+
+        return ZStack(alignment: .topLeading) {
+            outerPlate
+
+            VStack(spacing: 0) {
+                HStack(spacing: 3.5) {
+                    Circle().fill(Color(red: 1.0, green: 0.37, blue: 0.34)).frame(width: 4.5, height: 4.5)
+                    Circle().fill(Color(red: 1.0, green: 0.74, blue: 0.18)).frame(width: 4.5, height: 4.5)
+                    Circle().fill(Color(red: 0.16, green: 0.78, blue: 0.25)).frame(width: 4.5, height: 4.5)
+
+                    Text(title)
+                        .font(.system(size: 6.5, weight: .semibold))
+                        .foregroundStyle(ink)
+                        .padding(.leading, 3)
+
+                    Spacer(minLength: 4)
+
+                    HStack(spacing: 3) {
+                        Image(systemName: "square.grid.2x2")
+                            .font(.system(size: 5))
+                            .foregroundStyle(muted)
+                        Image(systemName: "list.bullet")
+                            .font(.system(size: 5, weight: .bold))
+                            .foregroundStyle(ProZipTheme.accent)
+                        Image(systemName: "rectangle.split.3x1")
+                            .font(.system(size: 5))
+                            .foregroundStyle(muted)
+                    }
+                    .padding(.horizontal, 4)
+                    .padding(.vertical, 2)
+                    .background(
+                        RoundedRectangle(cornerRadius: 3, style: .continuous)
+                            .fill(isDark ? Color.white.opacity(0.07) : Color.black.opacity(0.045))
+                    )
+
+                    Circle()
+                        .fill(ProZipTheme.accent)
+                        .frame(width: 8, height: 8)
+                        .overlay(
+                            Image(systemName: "arrow.down.doc.fill")
+                                .font(.system(size: 4.2, weight: .bold))
+                                .foregroundStyle(.white)
+                        )
+                }
+                .padding(.horizontal, 7)
+                .frame(height: 16)
+
+                HStack(spacing: 4) {
+                    Image(systemName: "chevron.left").font(.system(size: 4.5)).foregroundStyle(muted)
+                    Image(systemName: "chevron.right").font(.system(size: 4.5)).foregroundStyle(muted)
+                    Image(systemName: "folder.fill")
+                        .font(.system(size: 5))
+                        .foregroundStyle(Color(red: 0.35, green: 0.68, blue: 0.96))
+                    Text("归档")
+                        .font(.system(size: 5.5, weight: .medium))
+                        .foregroundStyle(muted)
+                    Spacer()
+                }
+                .padding(.horizontal, 7)
+                .frame(height: 11)
+                .background(isDark ? Color.white.opacity(0.03) : Color.black.opacity(0.02))
+
+                ZStack(alignment: .bottom) {
+                    VStack(spacing: 5) {
+                        Rectangle().fill(stripe).frame(height: 7)
+                        Rectangle().fill(stripe).frame(height: 7)
+                        Rectangle().fill(stripe).frame(height: 7)
+                    }
+                    .padding(.top, 5)
+
+                    VStack(spacing: 2) {
+                        Image(systemName: "plus.square.on.square")
+                            .font(.system(size: 7.5, weight: .medium))
+                            .foregroundStyle(ink.opacity(0.72))
+                        Text("添加文件到压缩包")
+                            .font(.system(size: 5, weight: .semibold))
+                            .foregroundStyle(ink.opacity(0.75))
+                    }
+                    .frame(width: 88, height: 26)
+                    .background(
+                        RoundedRectangle(cornerRadius: 5, style: .continuous)
+                            .fill(isDark ? Color(red: 0.20, green: 0.21, blue: 0.24) : Color.white)
+                            .shadow(color: .black.opacity(isDark ? 0.25 : 0.06), radius: 2, y: 1)
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 5, style: .continuous)
+                            .strokeBorder(
+                                isDark ? Color.white.opacity(0.14) : Color.black.opacity(0.10),
+                                style: StrokeStyle(lineWidth: 0.6, dash: [2, 1.5])
+                            )
+                    )
+                    .padding(.bottom, 4)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+            .background(windowBg)
+            .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 6, style: .continuous)
+                    .strokeBorder(isDark ? Color.white.opacity(0.12) : Color.black.opacity(0.08), lineWidth: 0.7)
+            )
+            .shadow(color: .black.opacity(isDark ? 0.28 : 0.06), radius: 3, y: 1)
+            .padding(.leading, 6)
+            .padding(.top, 6)
+            .padding(.trailing, 6)
+            .padding(.bottom, 4)
+        }
+    }
+}
+
+private struct HoverMediaLimitSliderRow: View {
+    @Binding var limitMB: Int
+    @Environment(\.colorScheme) private var colorScheme
+
+    private let stopsMB: [Int] = [10, 50, 100, 500, 1024, 2048]
+    private let labels: [String] = ["10 MB", "50 MB", "100 MB", "500 MB", "1 GB", "2 GB"]
+
+    private var activeStopIndex: Int {
+        stopsMB.enumerated().min(by: { abs($0.element - limitMB) < abs($1.element - limitMB) })?.offset ?? 2
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Text("可预览音视频大小上限")
+                    .font(.system(size: 13, weight: .medium))
+                Spacer()
+                Text(labels[activeStopIndex])
+                    .font(.system(size: 13))
+                    .foregroundStyle(.secondary)
+            }
+
+            GeometryReader { geo in
+                let thumbDiameter: CGFloat = 22
+                let trackHeight: CGFloat = 14
+                let usableWidth = max(1, geo.size.width - thumbDiameter)
+                let fraction = CGFloat(activeStopIndex) / CGFloat(stopsMB.count - 1)
+                let thumbCenterX = (thumbDiameter / 2.0) + usableWidth * fraction
+
+                ZStack(alignment: .leading) {
+                    Capsule()
+                        .fill(
+                            colorScheme == .dark
+                                ? Color.white.opacity(0.12)
+                                : Color(red: 230.0 / 255.0, green: 231.0 / 255.0, blue: 234.0 / 255.0)
+                        )
+                        .frame(height: trackHeight)
+
+                    Capsule()
+                        .fill(ProZipTheme.accent)
+                        .frame(width: max(trackHeight, thumbCenterX + 2), height: trackHeight)
+
+                    HStack(spacing: 0) {
+                        ForEach(0..<stopsMB.count, id: \.self) { idx in
+                            Circle()
+                                .fill(idx <= activeStopIndex ? Color.white.opacity(0.92) : Color.secondary.opacity(0.45))
+                                .frame(width: 3, height: 3)
+                            if idx < stopsMB.count - 1 {
+                                Spacer()
+                            }
+                        }
+                    }
+                    .padding(.horizontal, thumbDiameter / 2.0)
+
+                    Circle()
+                        .fill(Color.white)
+                        .frame(width: thumbDiameter, height: thumbDiameter)
+                        .shadow(color: .black.opacity(0.16), radius: 3, y: 1)
+                        .overlay(Circle().stroke(Color.black.opacity(0.08), lineWidth: 0.5))
+                        .offset(x: thumbCenterX - (thumbDiameter / 2.0))
+                }
+                .frame(height: thumbDiameter)
+                .contentShape(Rectangle())
+                .gesture(
+                    DragGesture(minimumDistance: 0)
+                        .onChanged { value in
+                            let clamped = min(max(0, value.location.x - thumbDiameter / 2.0), usableWidth)
+                            let step = Int(((clamped / usableWidth) * CGFloat(stopsMB.count - 1)).rounded())
+                            withAnimation(.spring(response: 0.20, dampingFraction: 0.80)) {
+                                limitMB = stopsMB[min(stopsMB.count - 1, max(0, step))]
+                            }
+                        }
+                )
+            }
+            .frame(height: 22)
+
+            HStack {
+                ForEach(Array(labels.enumerated()), id: \.offset) { idx, label in
+                    Text(label)
+                        .font(.system(size: 11))
+                        .foregroundStyle(.secondary)
+                    if idx < labels.count - 1 {
+                        Spacer()
+                    }
+                }
+            }
+        }
+    }
+}
+
 private struct SettingsPopoverPicker<Value: Hashable>: View {
     let title: String
     @Binding var selection: Value
     let options: [(value: Value, title: String)]
     @State private var isPresented = false
+    @State private var isButtonHovered = false
     @State private var hoveredValue: Value?
+    @Environment(\.colorScheme) private var colorScheme
 
     private var selectedTitle: String {
         options.first(where: { $0.value == selection })?.title ?? String(describing: selection)
@@ -701,53 +969,75 @@ private struct SettingsPopoverPicker<Value: Hashable>: View {
         Button { isPresented.toggle() } label: {
             HStack {
                 Text(selectedTitle)
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(.system(size: 13, weight: .medium))
                     .lineLimit(1)
                 Spacer(minLength: 4)
-                Image(systemName: "chevron.down")
+                Image(systemName: isPresented ? "chevron.up" : "chevron.down")
                     .font(.system(size: 11, weight: .semibold))
                     .foregroundStyle(.secondary)
             }
             .padding(.horizontal, 14)
             .frame(width: 190, height: 36)
-            .background(RoundedRectangle(cornerRadius: 10).fill(Color.primary.opacity(0.055)))
-            .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(Color.primary.opacity(0.10), lineWidth: 1))
+            .background(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .fill(
+                        colorScheme == .dark
+                            ? Color.white.opacity(isButtonHovered ? 0.12 : 0.08)
+                            : (isButtonHovered
+                                ? Color(red: 234.0 / 255.0, green: 236.0 / 255.0, blue: 239.0 / 255.0)
+                                : Color(red: 242.0 / 255.0, green: 243.0 / 255.0, blue: 245.0 / 255.0))
+                    )
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .strokeBorder(
+                        isPresented ? ProZipTheme.accent : Color.primary.opacity(0.08),
+                        lineWidth: isPresented ? 1.5 : 1
+                    )
+            )
         }
         .buttonStyle(.plain)
+        .onHover { isButtonHovered = $0 }
         .accessibilityLabel(title)
         .accessibilityValue(selectedTitle)
-        .popover(isPresented: $isPresented, arrowEdge: .bottom) {
+        .popover(isPresented: $isPresented, arrowEdge: .top) {
             ScrollView {
                 VStack(spacing: 2) {
                     ForEach(options.indices, id: \.self) { index in
                         let option = options[index]
+                        let isSelected = selection == option.value
                         Button {
                             selection = option.value
                             isPresented = false
                         } label: {
                             HStack(spacing: 8) {
                                 Text(option.title)
+                                    .font(.system(size: 13, weight: isSelected ? .semibold : .medium))
+                                    .foregroundStyle(isSelected ? ProZipTheme.accentDeep : .primary)
                                 Spacer(minLength: 4)
                                 Image(systemName: "checkmark")
-                                    .opacity(selection == option.value ? 1 : 0)
+                                    .font(.system(size: 11.5, weight: .bold))
+                                    .foregroundStyle(ProZipTheme.accentDeep)
+                                    .opacity(isSelected ? 1 : 0)
                             }
-                            .font(.system(size: 13))
                             .padding(.horizontal, 10)
-                            .frame(maxWidth: .infinity, minHeight: 30)
-                            .background(RoundedRectangle(cornerRadius: 6).fill(
-                                selection == option.value ? ProZipTheme.accent.opacity(0.14)
-                                    : hoveredValue == option.value ? Color.primary.opacity(0.06) : .clear
-                            ))
+                            .frame(maxWidth: .infinity, minHeight: 32)
+                            .background(
+                                RoundedRectangle(cornerRadius: 8, style: .continuous).fill(
+                                    isSelected ? ProZipTheme.accent.opacity(0.14)
+                                        : hoveredValue == option.value ? Color.primary.opacity(0.06) : .clear
+                                )
+                            )
                             .contentShape(Rectangle())
                         }
                         .buttonStyle(.plain)
-                        .accessibilityAddTraits(selection == option.value ? .isSelected : [])
+                        .accessibilityAddTraits(isSelected ? .isSelected : [])
                         .onHover { hoveredValue = $0 ? option.value : nil }
                     }
                 }
                 .padding(6)
             }
-            .frame(width: 210, height: min(CGFloat(options.count) * 32 + 10, 300))
+            .frame(width: 196, height: min(CGFloat(options.count) * 34 + 12, 300))
         }
     }
 }
@@ -758,23 +1048,26 @@ public struct CompressionSettingsPane: View {
     @ObservedObject public var preferences: ProZipPreferences
     @Binding public var selectedTab: SettingsTab
     @Environment(\.colorScheme) private var colorScheme
-    @State private var selectedPurpose: CreationProfile.Purpose = .general
+    @State private var selectedPurpose: CreationProfile.Purpose
+    @State private var hoveredPurpose: CreationProfile.Purpose?
     public init(preferences: ProZipPreferences, selectedTab: Binding<SettingsTab> = .constant(.compression)) {
         self.preferences = preferences
         self._selectedTab = selectedTab
+        self._selectedPurpose = State(initialValue: preferences.defaultPurpose)
     }
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             // 1. 默认用途、格式与压缩强度 (Exact match to compression.png)
-            settingsCard(title: "默认用途、格式与压缩强度") {
-                SettingsRowLayout {
+            settingsCard(title: "默认用途、格式与压缩强度", minRowHeight: 0) {
+                VStack(alignment: .leading, spacing: 0) {
                     // 5 Purpose Cards
-                    HStack(spacing: 10) {
+                    HStack(spacing: 9) {
                         ForEach(CreationProfile.Purpose.allCases, id: \.self) { purpose in
                             purposeOptionCard(purpose)
                         }
                     }
+                    .padding(.top, 14)
 
                     // 默认压缩格式
                     HStack {
@@ -811,9 +1104,9 @@ public struct CompressionSettingsPane: View {
                                                 .clipShape(Capsule())
                                         }
                                     }
-                                    .frame(width: 90, height: 28)
+                                    .frame(width: 90, height: 29)
                                     .background(
-                                        RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                        RoundedRectangle(cornerRadius: 8.5, style: .continuous)
                                             .fill(isSelected ? (colorScheme == .dark ? Color.white.opacity(0.14) : Color.white) : Color.clear)
                                     )
                                     .shadow(color: isSelected ? Color.black.opacity(0.06) : .clear, radius: 2, y: 1)
@@ -824,15 +1117,17 @@ public struct CompressionSettingsPane: View {
                         }
                         .padding(3)
                         .background(
-                            RoundedRectangle(cornerRadius: 9, style: .continuous)
+                            RoundedRectangle(cornerRadius: 11, style: .continuous)
                                 .fill(Color.primary.opacity(0.06))
                         )
                     }
+                    .padding(.top, 28)
+                    .padding(.bottom, 26)
 
                     SettingsSeparator()
 
                     // 默认压缩强度
-                    VStack(alignment: .leading, spacing: 10) {
+                    VStack(alignment: .leading, spacing: 14) {
                         HStack {
                             VStack(alignment: .leading, spacing: 3) {
                                 HStack(spacing: 6) {
@@ -856,14 +1151,21 @@ public struct CompressionSettingsPane: View {
                                 get: { curStrength },
                                 set: { preferences.setDefaultStrength($0, for: selectedPurpose) }
                             ),
-                            isDisabled: selectedPurpose == .smallest || preferences.defaultFormat(for: selectedPurpose) == .tar
+                            isDisabled: selectedPurpose == .smallest || preferences.defaultFormat(for: selectedPurpose) == .tar,
+                            thumbDiameter: 28,
+                            trackHeight: 20,
+                            rowSpacing: 5,
+                            subtitleFontSize: 11.5
                         )
+                        .padding(.horizontal, 4)
                     }
+                    .padding(.top, 15.5)
+                    .padding(.bottom, 12)
                 }
             }
 
             // 2. 分卷压缩 (Exact match to compression.png)
-            settingsCard(title: "分卷压缩") {
+            settingsCard(title: "分卷压缩", minRowHeight: 58) {
                 HStack {
                     VStack(alignment: .leading, spacing: 3) {
                         Text("默认创建分卷压缩包")
@@ -902,19 +1204,28 @@ public struct CompressionSettingsPane: View {
                     )
                     .shadow(color: Color.black.opacity(0.04), radius: 2, y: 1)
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.02, pressedScale: 0.97))
             }
+        }
+        .onAppear {
+            selectedPurpose = preferences.defaultPurpose
+        }
+        .onChange(of: preferences.defaultPurpose) { _, newValue in
+            selectedPurpose = newValue
         }
     }
 
     private func purposeOptionCard(_ purpose: CreationProfile.Purpose) -> some View {
         let isSelected = selectedPurpose == purpose
+        let isHovered = hoveredPurpose == purpose
         return Button {
-            selectedPurpose = purpose
-            preferences.defaultPurpose = purpose
+            withAnimation(.spring(response: 0.24, dampingFraction: 0.82)) {
+                selectedPurpose = purpose
+                preferences.defaultPurpose = purpose
+            }
         } label: {
             ZStack(alignment: .topTrailing) {
-                VStack(spacing: 7) {
+                VStack(spacing: 6) {
                     Image(systemName: purpose.sfSymbol)
                         .font(.system(size: 21, weight: .medium))
                         .foregroundStyle(isSelected ? Color.white : Color.primary)
@@ -929,17 +1240,29 @@ public struct CompressionSettingsPane: View {
                         .foregroundStyle(isSelected ? Color.white.opacity(0.9) : Color.secondary)
                         .multilineTextAlignment(.center)
                         .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
-                .frame(maxWidth: .infinity, minHeight: 84)
                 .padding(.horizontal, 6)
-                .padding(.vertical, 10)
-                .background(
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .fill(isSelected ? ProZipTheme.accent : (colorScheme == .dark ? Color.white.opacity(0.05) : Color.white))
-                )
+                .frame(maxWidth: .infinity, minHeight: 102, maxHeight: 102)
+                .background {
+                    RoundedRectangle(cornerRadius: isSelected ? 12.5 : 14, style: .continuous)
+                        .fill(
+                            isSelected
+                                ? ProZipTheme.accent
+                                : (colorScheme == .dark
+                                    ? Color.white.opacity(isHovered ? 0.09 : 0.05)
+                                    : (isHovered ? Color(white: 0.975) : Color.white))
+                        )
+                        .padding(isSelected ? 1.5 : 0)
+                }
                 .overlay(
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .stroke(isSelected ? ProZipTheme.accentDeep : Color.primary.opacity(0.10), lineWidth: 1)
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .strokeBorder(
+                            isSelected
+                                ? ProZipTheme.accent.opacity(0.42)
+                                : Color.primary.opacity(isHovered ? 0.18 : 0.10),
+                            lineWidth: 1
+                        )
                 )
 
                 if purpose != .general {
@@ -956,7 +1279,12 @@ public struct CompressionSettingsPane: View {
                 }
             }
         }
-        .buttonStyle(.plain)
+        .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.01, pressedScale: 0.97))
+        .onHover { hovering in
+            withAnimation(.easeOut(duration: 0.12)) {
+                hoveredPurpose = hovering ? purpose : (hoveredPurpose == purpose ? nil : hoveredPurpose)
+            }
+        }
     }
 }
 
@@ -972,32 +1300,46 @@ public struct ExtractionSettingsPane: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 24) {
-            // 1. 打开压缩包 (Exact match to extraction.png)
-            settingsCard(title: "打开压缩包") {
-                VStack(alignment: .leading, spacing: 10) {
-                HStack {
-                    VStack(alignment: .leading, spacing: 3) {
-                        Text("双击时快速解压")
-                            .font(.system(size: 13, weight: .semibold))
-                        Text("开启此选项后，双击压缩包会将它立刻解压到所在文件夹，跳过浏览步骤。")
-                            .font(.system(size: 11))
-                            .foregroundStyle(.secondary)
+            // 1. 打开压缩包 (Exact match to extraction.png / arczip-settings-extraction)
+            settingsCard(title: "打开压缩包", minRowHeight: 0) {
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack {
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text("双击时快速解压")
+                                .font(.system(size: 13, weight: .semibold))
+                            Text("开启此选项后，双击压缩包会将它立刻解压到所在文件夹，跳过浏览步骤。")
+                                .font(.system(size: 12))
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        settingsSwitch(isOn: $preferences.directExtractOnDoubleClick)
                     }
-                    Spacer()
-                    settingsSwitch(isOn: $preferences.directExtractOnDoubleClick)
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack(alignment: .center, spacing: 9.5) {
+                            Circle()
+                                .fill(Color.secondary.opacity(0.75))
+                                .frame(width: 3, height: 3)
+                                .padding(.leading, 1.5)
+                            Text("按住 Shift 键，再双击压缩包，即可临时快速解压到所在文件夹。")
+                        }
+                        HStack(alignment: .center, spacing: 9.5) {
+                            Circle()
+                                .fill(Color.secondary.opacity(0.75))
+                                .frame(width: 3, height: 3)
+                                .padding(.leading, 1.5)
+                            Text("DMG、ISO 等格式不受此设置影响，始终以浏览方式打开。")
+                        }
+                    }
+                    .font(.system(size: 12))
+                    .foregroundStyle(.secondary)
                 }
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("·  按住 Shift 键，再双击压缩包，即可临时快速解压到所在文件夹。")
-                    Text("·  DMG、ISO 等格式不受此设置影响，始终以浏览方式打开。")
-                }
-                .font(.system(size: 12))
-                .foregroundStyle(.secondary)
-                }
+                .padding(.top, 12.5)
+                .padding(.bottom, 11.5)
             }
 
             // 2. 解压完成后 (Exact match to extraction.png)
-            settingsCard(title: "解压完成后") {
-                SettingsRowLayout {
+            settingsCard(title: "解压完成后", minRowHeight: 59) {
+                SettingsRowLayout(minRowHeight: 59) {
                     HStack {
                         VStack(alignment: .leading, spacing: 3) {
                             Text("自动选中解压结果")
@@ -1046,8 +1388,8 @@ public struct ExtractionSettingsPane: View {
 
             // 3. 内容过滤 (Exact match to extraction.png)
             VStack(alignment: .leading, spacing: 8) {
-                settingsCard(title: "内容过滤") {
-                    SettingsRowLayout {
+                settingsCard(title: "内容过滤", minRowHeight: 58) {
+                    SettingsRowLayout(minRowHeight: 58) {
                         HStack {
                             VStack(alignment: .leading, spacing: 3) {
                                 Text("自动排除系统辅助文件")
@@ -1221,7 +1563,8 @@ public struct PasswordBookSettingsPane: View {
                         let filtered = passwordBook.entries.filter {
                             searchKeyword.isEmpty ||
                             $0.title.localizedCaseInsensitiveContains(searchKeyword) ||
-                            $0.note.localizedCaseInsensitiveContains(searchKeyword)
+                            $0.note.localizedCaseInsensitiveContains(searchKeyword) ||
+                            $0.password.localizedCaseInsensitiveContains(searchKeyword)
                         }
                         ForEach(filtered) { entry in
                             let isRevealed = revealedEntryIDs.contains(entry.id)
@@ -1372,14 +1715,11 @@ public struct FlowSettingsPane: View {
                                 .foregroundStyle(.secondary)
                         }
                         Spacer()
-                        Picker("", selection: $preferences.installCompletionAction) {
-                            ForEach(ArchiveCompletionAction.allCases, id: \.self) { act in
-                                Text(act.title).tag(act)
-                            }
-                        }
-                        .labelsHidden()
-                        .controlSize(.large)
-                        .frame(width: 190, height: 36)
+                        SettingsPopoverPicker(
+                            title: "如何处理压缩包",
+                            selection: $preferences.installCompletionAction,
+                            options: ArchiveCompletionAction.allCases.map { ($0, $0.title) }
+                        )
                     }
 
                     SettingsSeparator()
@@ -1427,7 +1767,7 @@ public struct FlowSettingsPane: View {
                             preferences.allowedOpenFormats.removeAll()
                         }
                         .buttonStyle(.plain)
-                        .font(.system(size: 15, weight: .medium))
+                        .font(.system(size: 12, weight: .semibold))
                         .foregroundStyle(.secondary)
                     }
 
@@ -1474,6 +1814,7 @@ public struct FlowSettingsPane: View {
                             }
                         }
                         .padding(.top, 4)
+                        .padding(.bottom, cat == OpenFileCategory.allCases.last ? 16 : 0)
                     }
                 }
             }
@@ -1525,7 +1866,7 @@ public struct MiniSettingsPane: View {
                         VStack(alignment: .leading, spacing: 2) {
                             Text("使用彩色窗口控制按钮")
                                 .font(.system(size: 13, weight: .semibold))
-                            Text("关闭后按钮恢复未着色外观，置顶时仍保留高亮按钮和圆环")
+                            Text("关闭后按钮恢复未着色外观，置顶时仍保留淡蓝色按钮和圆环")
                                 .font(.system(size: 11))
                                 .foregroundStyle(.secondary)
                         }
@@ -1549,10 +1890,11 @@ public struct ShelfSettingsPane: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 18) {
-            MenuBarShelfView(model: previewModel)
+            MenuBarShelfView(model: previewModel, isInteractive: false)
                 .offset(x: -221, y: -25)
                 .frame(width: 260, height: 267, alignment: .topLeading)
                 .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
+                .allowsHitTesting(false)
                 .accessibilityElement(children: .ignore)
                 .accessibilityAddTraits(.isImage)
                 .allowsHitTesting(false)
@@ -1566,22 +1908,26 @@ public struct ShelfSettingsPane: View {
                     HStack {
                         Text("颜色").font(.system(size: 13, weight: .semibold))
                         Spacer()
-                        HStack(spacing: 23.5) {
+                        HStack(spacing: 18) {
                             ForEach(colors, id: \.self) { color in
+                                let swatch = colorForName(color)
                                 Button { preferences.boxColor = color } label: {
-                                    Circle().fill(colorForName(color)).frame(width: 32, height: 32)
+                                    Circle()
+                                        .fill(swatch)
+                                        .frame(width: 28, height: 28)
                                         .overlay {
                                             if preferences.boxColor == color {
-                                                Circle().strokeBorder(Color.white, lineWidth: 2).padding(-3)
-                                                Circle().strokeBorder(Color.accentColor, lineWidth: 2).padding(-7)
+                                                Circle().strokeBorder(Color.white, lineWidth: 2).padding(-2.5)
+                                                Circle().strokeBorder(swatch, lineWidth: 2).padding(-5)
                                             }
                                         }
                                 }
                                 .buttonStyle(.plain)
                                 .accessibilityLabel(colorName(color))
                             }
-                        }.padding(.trailing, 6)
+                        }.padding(.trailing, 4)
                     }
+                    .padding(.vertical, 14)
                     SettingsSeparator()
                     VStack(spacing: 12) {
                         HStack {
@@ -1589,7 +1935,12 @@ public struct ShelfSettingsPane: View {
                             Spacer()
                             Text("\(Int(preferences.boxShellColorOpacity * 100))%").font(.system(size: 13)).foregroundStyle(.secondary)
                         }
-                        SettingsCapsuleSlider(value: $preferences.boxShellColorOpacity, in: 0...1, showsFill: false)
+                        SettingsCapsuleSlider(
+                            value: $preferences.boxShellColorOpacity,
+                            in: 0...1,
+                            showsFill: false,
+                            gradientTint: colorForName(preferences.boxColor)
+                        )
                             .accessibilityLabel("色彩浓度")
                             .accessibilityValue("\(Int(preferences.boxShellColorOpacity * 100))%")
                         HStack {
@@ -1611,6 +1962,7 @@ public struct ShelfSettingsPane: View {
                         Spacer()
                         settingsSwitch(isOn: $preferences.boxEnabled)
                     }
+                    .padding(.vertical, 13)
                     SettingsSeparator()
                     VStack(spacing: 12) {
                         HStack {
@@ -1632,6 +1984,7 @@ public struct ShelfSettingsPane: View {
     private func colorName(_ name: String) -> String {
         switch name {
         case "chartreuse": return "黄绿"
+        case "lavender": return "薰衣草紫"
         case "blue": return "蓝色"
         case "pink": return "粉色"
         case "red": return "红色"
@@ -1645,13 +1998,14 @@ public struct ShelfSettingsPane: View {
     private func colorForName(_ name: String) -> Color {
         switch name {
         case "chartreuse": return ProZipTheme.accent
-        case "blue": return .blue
-        case "pink": return .pink
-        case "red": return .red
-        case "orange": return .orange
-        case "yellow": return .yellow
-        case "green": return .green
-        default: return .gray
+        case "lavender": return Color(red: 0.56, green: 0.50, blue: 0.85)
+        case "blue": return Color(red: 0.25, green: 0.49, blue: 0.90)
+        case "pink": return Color(red: 0.86, green: 0.30, blue: 0.58)
+        case "red": return Color(red: 0.84, green: 0.28, blue: 0.27)
+        case "orange": return Color(red: 0.89, green: 0.53, blue: 0.23)
+        case "yellow": return Color(red: 0.93, green: 0.76, blue: 0.31)
+        case "green": return Color(red: 0.39, green: 0.67, blue: 0.35)
+        default: return Color(red: 0.52, green: 0.53, blue: 0.55)
         }
     }
 }
@@ -1986,6 +2340,7 @@ public struct AboutSettingsPane: View {
 private enum SettingsMetrics {
     static let windowWidth: CGFloat = 900
     static let windowHeight: CGFloat = 712
+    static let windowMinHeight: CGFloat = 680
 
     static let sidebarWidth: CGFloat = 210
     static let brandTop: CGFloat = 63
@@ -1994,7 +2349,7 @@ private enum SettingsMetrics {
     static let navHeight: CGFloat = 36
     static let navSpacing: CGFloat = 2
     static let navStride: CGFloat = navHeight + navSpacing
-    static let navCornerRadius: CGFloat = 12
+    static let navCornerRadius: CGFloat = 10
 
     static let proCardWidth: CGFloat = 182
     static let proCardHeight: CGFloat = 131
@@ -2009,7 +2364,7 @@ private enum SettingsMetrics {
     static let groupSpacing: CGFloat = 14
     static let groupTitleSpacing: CGFloat = 10
     static let rowMinHeight: CGFloat = 60
-    static let cardRadius: CGFloat = 16
+    static let cardRadius: CGFloat = 18
     static let cardPadding: CGFloat = 20
 }
 
@@ -2017,13 +2372,13 @@ private enum SettingsSkin {
     static func sidebarBackground(_ scheme: ColorScheme) -> Color {
         scheme == .dark
             ? Color(red: 0.106, green: 0.110, blue: 0.118)
-            : Color(red: 0.937, green: 0.941, blue: 0.945)
+            : Color(red: 242.0 / 255.0, green: 243.0 / 255.0, blue: 244.0 / 255.0) // #F2F3F4
     }
 
     static func contentBackground(_ scheme: ColorScheme) -> Color {
         scheme == .dark
             ? Color(red: 0.071, green: 0.075, blue: 0.078)
-            : Color(red: 0.965, green: 0.965, blue: 0.969)
+            : Color(red: 248.0 / 255.0, green: 248.0 / 255.0, blue: 249.0 / 255.0) // #F8F8F9
     }
 
     static func headerGradient(_ scheme: ColorScheme) -> LinearGradient {
@@ -2039,11 +2394,11 @@ private enum SettingsSkin {
     }
 
     static func cardBorder(_ scheme: ColorScheme) -> Color {
-        scheme == .dark ? Color.white.opacity(0.06) : Color.black.opacity(0.045)
+        scheme == .dark ? Color.white.opacity(0.06) : Color.clear
     }
 
     static func cardShadow(_ scheme: ColorScheme) -> Color {
-        scheme == .dark ? Color.black.opacity(0.42) : Color.black.opacity(0.045)
+        scheme == .dark ? Color.black.opacity(0.42) : Color.clear
     }
 
     static func separator(_ scheme: ColorScheme) -> Color {
@@ -2153,12 +2508,20 @@ private struct SettingsCapsuleSlider: View {
     let range: ClosedRange<Double>
     let step: Double?
     let showsFill: Bool
+    var gradientTint: Color?
 
-    init(value: Binding<Double>, in range: ClosedRange<Double>, step: Double? = nil, showsFill: Bool = true) {
+    init(
+        value: Binding<Double>,
+        in range: ClosedRange<Double>,
+        step: Double? = nil,
+        showsFill: Bool = true,
+        gradientTint: Color? = nil
+    ) {
         _value = value
         self.range = range
         self.step = step
         self.showsFill = showsFill
+        self.gradientTint = gradientTint
     }
 
     private var fraction: Double {
@@ -2167,15 +2530,25 @@ private struct SettingsCapsuleSlider: View {
 
     var body: some View {
         GeometryReader { geometry in
-            let travel = max(1, geometry.size.width - 26)
+            let travel = max(1, geometry.size.width - 24)
             ZStack(alignment: .leading) {
-                Capsule().fill(Color.primary.opacity(0.055)).frame(height: 22)
-                if showsFill {
-                    Capsule().fill(ProZipTheme.accent.opacity(0.45)).frame(width: 13 + travel * fraction, height: 22)
+                Capsule().fill(Color.primary.opacity(0.065)).frame(height: 18)
+                if let gradientTint {
+                    Capsule()
+                        .fill(
+                            LinearGradient(
+                                colors: [Color.white.opacity(0.95), gradientTint.opacity(0.42)],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .frame(width: 12 + travel * fraction, height: 18)
+                } else if showsFill {
+                    Capsule().fill(ProZipTheme.accent.opacity(0.45)).frame(width: 12 + travel * fraction, height: 18)
                 } else {
-                    Capsule().fill(LinearGradient(colors: [.white, Color.primary.opacity(0.05)], startPoint: .leading, endPoint: .trailing)).frame(height: 22)
+                    Capsule().fill(LinearGradient(colors: [.white, Color.primary.opacity(0.05)], startPoint: .leading, endPoint: .trailing)).frame(height: 18)
                 }
-                Circle().fill(.white).frame(width: 26, height: 26)
+                Circle().fill(.white).frame(width: 24, height: 24)
                     .overlay(Circle().strokeBorder(Color.primary.opacity(0.06), lineWidth: 0.7))
                     .shadow(color: .black.opacity(0.14), radius: 2, y: 1)
                     .offset(x: travel * fraction)
@@ -2183,10 +2556,10 @@ private struct SettingsCapsuleSlider: View {
             .frame(maxHeight: .infinity)
             .contentShape(Rectangle())
             .gesture(DragGesture(minimumDistance: 0).onChanged { gesture in
-                setValue(range.lowerBound + Double(min(1, max(0, (gesture.location.x - 13) / travel))) * (range.upperBound - range.lowerBound))
+                setValue(range.lowerBound + Double(min(1, max(0, (gesture.location.x - 12) / travel))) * (range.upperBound - range.lowerBound))
             })
         }
-        .frame(height: 34)
+        .frame(height: 30)
         .accessibilityElement()
         .accessibilityValue(value.formatted())
         .accessibilityAdjustableAction { direction in
@@ -2319,7 +2692,7 @@ private struct SettingsCardShell<Content: View>: View {
             )
             .overlay(
                 RoundedRectangle(cornerRadius: SettingsMetrics.cardRadius, style: .continuous)
-                    .stroke(SettingsSkin.cardBorder(colorScheme), lineWidth: 1)
+                    .strokeBorder(SettingsSkin.cardBorder(colorScheme), lineWidth: 1)
             )
         }
     }

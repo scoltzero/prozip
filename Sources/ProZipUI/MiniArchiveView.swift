@@ -23,6 +23,9 @@ public struct MiniArchiveView: View {
     @State private var hoveredEntryID: String?
     @State private var isHeaderHovered: Bool = false
     @State private var isBreadcrumbHovered: Bool = false
+    @State private var isNavBackHovered: Bool = false
+    @State private var isNavForwardHovered: Bool = false
+    @State private var isNavUpHovered: Bool = false
     @State private var isCloseHovered: Bool = false
     @State private var isExpandHovered: Bool = false
     @State private var isRenamingArchiveInline: Bool = false
@@ -108,47 +111,48 @@ public struct MiniArchiveView: View {
 
     public var body: some View {
         VStack(spacing: 0) {
-            // 1. Top Header Bar
+            // 1. Top Header Bar (y = 14..47)
             miniTopBar
-                .padding(.horizontal, 14)
-                .padding(.top, 14)
+                .padding(.leading, 14)
+                .padding(.trailing, 19)
+                .padding(.top, 13)
                 .padding(.bottom, 9)
 
-            // 2. Breadcrumb & Navigation Pill Bar
+            // 2. Breadcrumb & Navigation Pill Bar (16, 56, 528, 36, r=11)
             miniBreadcrumbBar
-                .padding(.horizontal, 10)
-                .padding(.bottom, showColumnHeaders ? 4 : 0)
+                .padding(.horizontal, 16)
+                .padding(.bottom, showColumnHeaders ? 4 : 5)
 
             // 3. Optional Sortable Column Header Strip
             if showColumnHeaders {
                 miniSortableColumnHeader
-                    .padding(.horizontal, 18)
+                    .padding(.horizontal, 16)
                     .padding(.bottom, 4)
                     .transition(.opacity.combined(with: .move(edge: .top)))
             }
 
-            // 4. Central Scrollable File List
-            miniFileListView
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            // 4. Central Scrollable File List + Floating Bottom Bar (y = 97..422)
+            ZStack(alignment: .bottom) {
+                miniFileListView
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-            // 5. Bottom Action & Flow Bar
-            miniBottomBar
-                .padding(.horizontal, 10)
-                .padding(.top, 8)
-                .padding(.bottom, 8)
+                miniBottomBar
+                    .padding(.horizontal, 10)
+                    .padding(.bottom, 9.5)
+            }
         }
         .frame(width: 560, height: 422)
         .onAppear { refreshSortCache() }
         .onChange(of: sortInput) { _, _ in refreshSortCache() }
         .background(miniWindowSurface)
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: 26, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
+            RoundedRectangle(cornerRadius: 26, style: .continuous)
                 .strokeBorder(
                     LinearGradient(
                         colors: [
-                            Color.white.opacity(colorScheme == .dark ? 0.22 : 0.72),
-                            Color.white.opacity(colorScheme == .dark ? 0.08 : 0.35)
+                            Color.white.opacity(colorScheme == .dark ? 0.24 : 0.65),
+                            Color.white.opacity(colorScheme == .dark ? 0.08 : 0.32)
                         ],
                         startPoint: .top,
                         endPoint: .bottom
@@ -157,12 +161,16 @@ public struct MiniArchiveView: View {
                 )
         )
         .overlay(
+            RoundedRectangle(cornerRadius: 26, style: .continuous)
+                .stroke(Color.black.opacity(colorScheme == .dark ? 0.35 : 0.12), lineWidth: 1.0)
+        )
+        .overlay(
             Group {
                 if isDropTargeted {
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    RoundedRectangle(cornerRadius: 26, style: .continuous)
                         .strokeBorder(ProZipTheme.accentBright, style: StrokeStyle(lineWidth: 2, dash: [6, 4]))
                         .background(
-                            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                            RoundedRectangle(cornerRadius: 26, style: .continuous)
                                 .fill(ProZipTheme.accentSoft.opacity(0.4))
                         )
                         .padding(3)
@@ -171,8 +179,8 @@ public struct MiniArchiveView: View {
         )
         .background(alignment: .topLeading) {
             WindowDragArea()
-                .frame(width: 360, height: 50)
-                .offset(x: 80, y: 0)
+                .frame(width: 440, height: 52)
+                .offset(x: 10, y: 0)
         }
         .onDrop(of: [.fileURL], isTargeted: $isDropTargeted) { providers in
             handleDrop(providers: providers)
@@ -191,32 +199,17 @@ public struct MiniArchiveView: View {
     @ViewBuilder
     private var miniWindowSurface: some View {
         ZStack {
-            if preferences.miniUsesLiquidGlass {
-                VisualEffectView(
-                    material: colorScheme == .dark ? .hudWindow : .popover,
-                    blendingMode: .behindWindow
-                )
-            }
+            VisualEffectView(
+                material: preferences.miniUsesLiquidGlass
+                    ? (colorScheme == .dark ? .hudWindow : .underWindowBackground)
+                    : (colorScheme == .dark ? .windowBackground : .sidebar),
+                blendingMode: .behindWindow
+            )
 
             if colorScheme == .dark {
-                LinearGradient(
-                    colors: [
-                        Color(red: 0.16, green: 0.18, blue: 0.15).opacity(0.95),
-                        Color(red: 0.12, green: 0.14, blue: 0.12).opacity(0.97)
-                    ],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
+                ProZipTheme.miniDarkSurface.opacity(preferences.miniUsesLiquidGlass ? 0.56 : 0.88)
             } else {
-                // Keep the light surface near white while allowing the system material through.
-                LinearGradient(
-                    colors: [
-                        Color.white.opacity(preferences.miniUsesLiquidGlass ? 0.94 : 1),
-                        Color(red: 0.985, green: 0.985, blue: 0.99).opacity(preferences.miniUsesLiquidGlass ? 0.96 : 1)
-                    ],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
+                Color.white.opacity(preferences.miniUsesLiquidGlass ? 0.50 : 0.88)
             }
         }
     }
@@ -257,7 +250,7 @@ public struct MiniArchiveView: View {
                             }
                     } else {
                         Text(session.archiveName)
-                            .font(.system(size: 13.5, weight: .bold))
+                            .font(.system(size: 14, weight: .semibold))
                             .foregroundStyle(colorScheme == .dark ? Color.white : Color(red: 0.10, green: 0.10, blue: 0.11))
                             .lineLimit(1)
                     }
@@ -270,16 +263,16 @@ public struct MiniArchiveView: View {
                             .help("存在未保存的修改")
                     }
 
-                    // Encryption Lock Badge with Popover
+                    // Encryption Lock Badge with Popover (20x20 #E69D35 amber circle)
                     if session.safeDescriptor.isEncrypted || session.displayedEntries.contains(where: \.isEncrypted) {
                         Button {
                             isEncryptionPopoverPresented.toggle()
                         } label: {
                             Image(systemName: "lock.fill")
-                                .font(.system(size: 11, weight: .bold))
+                                .font(.system(size: 10, weight: .bold))
                                 .foregroundStyle(.white)
-                                .frame(width: 24, height: 24)
-                                .background(Circle().fill(Color(red: 0.96, green: 0.66, blue: 0.13)))
+                                .frame(width: 20, height: 20)
+                                .background(Circle().fill(Color(red: 230.0 / 255.0, green: 157.0 / 255.0, blue: 53.0 / 255.0)))
                         }
                         .buttonStyle(.plain)
                         .help("加密压缩包详情")
@@ -365,7 +358,7 @@ public struct MiniArchiveView: View {
                 }
             }
 
-            // Right Brand Cluster: ProZip 3D 'P' Icon + "ProZip" + "Mini" Capsule
+            // Right Brand Cluster: ProZip 3D 'P' Icon + "ProZip" + "Mini" Capsule (84x34)
             HStack(spacing: 8) {
                 ProZipBrandIcon(size: 28, showAppSquircle: true)
 
@@ -376,20 +369,20 @@ public struct MiniArchiveView: View {
 
                     Text("Mini")
                         .font(.system(size: 10, weight: .semibold))
-                        .foregroundStyle(colorScheme == .dark ? ProZipTheme.accentBright : Color(red: 0.28, green: 0.31, blue: 0.26))
+                        .foregroundStyle(colorScheme == .dark ? Color.white.opacity(0.75) : Color(red: 0.25, green: 0.26, blue: 0.28))
                         .padding(.horizontal, 8)
                         .padding(.vertical, 1.5)
                         .background(
                             Capsule()
                                 .fill(
                                     colorScheme == .dark
-                                        ? ProZipTheme.accentSoft
-                                        : Color.primary.opacity(0.055)
+                                        ? Color.white.opacity(0.14)
+                                        : Color.white.opacity(0.56)
                                 )
                         )
                         .overlay(
                             Capsule()
-                                .stroke(Color.white.opacity(colorScheme == .dark ? 0.18 : 0.65), lineWidth: 0.6)
+                                .stroke(Color.white.opacity(colorScheme == .dark ? 0.18 : 0.68), lineWidth: 0.6)
                         )
                 }
             }
@@ -406,8 +399,8 @@ public struct MiniArchiveView: View {
     // MARK: - 2. Breadcrumb & Navigation Pill Bar
 
     private var miniBreadcrumbBar: some View {
-        HStack(spacing: 6) {
-            // Back Button (<)
+        HStack(spacing: 5) {
+            // Back Button (<) (20, 60, 28, 28)
             Button {
                 Task { await session.goBack() }
             } label: {
@@ -419,10 +412,15 @@ public struct MiniArchiveView: View {
                             ? (colorScheme == .dark ? Color.white.opacity(0.88) : Color(red: 0.26, green: 0.27, blue: 0.29))
                             : (colorScheme == .dark ? Color.white.opacity(0.32) : Color(red: 0.52, green: 0.53, blue: 0.55))
                     )
+                    .background(
+                        RoundedRectangle(cornerRadius: 7, style: .continuous)
+                            .fill(isNavBackHovered && session.canGoBack ? (colorScheme == .dark ? Color.white.opacity(0.10) : Color.black.opacity(0.06)) : Color.clear)
+                    )
                     .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
             .disabled(!session.canGoBack)
+            .onHover { isNavBackHovered = $0 }
             .help("后退")
 
             // Forward Button (>) when available
@@ -434,13 +432,18 @@ public struct MiniArchiveView: View {
                         .font(.system(size: 12.5, weight: .semibold))
                         .frame(width: 28, height: 28)
                         .foregroundStyle(colorScheme == .dark ? Color.white.opacity(0.88) : Color(red: 0.26, green: 0.27, blue: 0.29))
+                        .background(
+                            RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                .fill(isNavForwardHovered ? (colorScheme == .dark ? Color.white.opacity(0.10) : Color.black.opacity(0.06)) : Color.clear)
+                        )
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
+                .onHover { isNavForwardHovered = $0 }
                 .help("前进")
             }
 
-            // Up / Parent Directory Button (^)
+            // Up / Parent Directory Button (^) (53, 60, 28, 28)
             Button {
                 Task { await session.goUp() }
             } label: {
@@ -452,10 +455,15 @@ public struct MiniArchiveView: View {
                             ? (colorScheme == .dark ? Color.white.opacity(0.88) : Color(red: 0.26, green: 0.27, blue: 0.29))
                             : (colorScheme == .dark ? Color.white.opacity(0.32) : Color(red: 0.52, green: 0.53, blue: 0.55))
                     )
+                    .background(
+                        RoundedRectangle(cornerRadius: 7, style: .continuous)
+                            .fill(isNavUpHovered && session.canGoUp ? (colorScheme == .dark ? Color.white.opacity(0.10) : Color.black.opacity(0.06)) : Color.clear)
+                    )
                     .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
             .disabled(!session.canGoUp)
+            .onHover { isNavUpHovered = $0 }
             .help("返回上一级")
 
             // Clickable Breadcrumb Segments
@@ -570,18 +578,23 @@ public struct MiniArchiveView: View {
                 .transition(.opacity)
             }
         }
-        .padding(.horizontal, 9)
-        .frame(height: 34)
+        .padding(.leading, 4)
+        .padding(.trailing, 9)
+        .frame(height: 36)
         .background(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
+            RoundedRectangle(cornerRadius: 11, style: .continuous)
                 .fill(
                     colorScheme == .dark
                         ? Color.white.opacity(0.10)
-                        : Color.primary.opacity(0.025)
+                        : Color.white.opacity(0.42)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 11, style: .continuous)
+                        .fill(colorScheme == .dark ? Color.clear : Color.black.opacity(0.04))
                 )
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
+            RoundedRectangle(cornerRadius: 11, style: .continuous)
                 .strokeBorder(
                     Color.white.opacity(colorScheme == .dark ? 0.14 : 0.48),
                     lineWidth: 0.8
@@ -640,17 +653,32 @@ public struct MiniArchiveView: View {
     // MARK: - 4. Central File List & Context Menu
 
     private var miniFileListView: some View {
-        ScrollView {
-            LazyVStack(spacing: 0) {
-                let entries = sortedEntries
-                ForEach(Array(entries.enumerated()), id: \.element.id) { index, entry in
-                    miniFileRow(entry: entry, index: index)
+        let entries = sortedEntries
+        return Group {
+            if entries.isEmpty {
+                VStack(spacing: 12) {
+                    Image(systemName: "folder")
+                        .font(.system(size: 46, weight: .regular))
+                        .foregroundStyle(colorScheme == .dark ? Color.white.opacity(0.32) : Color.black.opacity(0.24))
+                    Text("文件夹为空")
+                        .font(.system(size: 16, weight: .bold))
+                        .foregroundStyle(colorScheme == .dark ? Color.white.opacity(0.88) : Color(red: 0.11, green: 0.11, blue: 0.12))
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .padding(.bottom, 42)
+            } else {
+                ScrollView {
+                    LazyVStack(spacing: 0) {
+                        ForEach(Array(entries.enumerated()), id: \.element.id) { index, entry in
+                            miniFileRow(entry: entry, index: index)
+                        }
+                    }
+                    .padding(.top, 10)
+                    .padding(.bottom, 52)
                 }
             }
-            .padding(.top, 12)
-            .padding(.bottom, 8)
         }
-        .modifier(ArchiveKeyboardNavigation(session: session, entries: sortedEntries))
+        .modifier(ArchiveKeyboardNavigation(session: session, entries: entries))
     }
 
     private func activateMiniEntry(_ entry: ArchiveEntry) {
@@ -695,7 +723,7 @@ public struct MiniArchiveView: View {
                 .font(.system(size: 13.5, weight: isSelected ? .medium : .regular))
                 .foregroundStyle(
                     isSelected
-                        ? ProZipTheme.darkInk
+                        ? Color.white
                         : (colorScheme == .dark ? Color.white.opacity(0.92) : Color(red: 0.10, green: 0.11, blue: 0.12))
                 )
                 .lineLimit(1)
@@ -703,35 +731,35 @@ public struct MiniArchiveView: View {
             if entry.type == .symlink {
                 Image(systemName: "arrow.turn.up.right")
                     .font(.system(size: 10, weight: .semibold))
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(isSelected ? Color.white.opacity(0.85) : .secondary)
             }
 
             Spacer()
 
             // Optional Modified Date column when header strip is visible
             if showColumnHeaders {
-                Text(Self.dateFormatter.string(from: entry.modifiedAt))
+                Text(formattedMiniDate(for: entry))
                     .font(.system(size: 11.5))
                     .foregroundStyle(
                         isSelected
-                            ? ProZipTheme.darkInk.opacity(0.75)
+                            ? Color.white.opacity(0.88)
                             : (colorScheme == .dark ? Color.white.opacity(0.55) : Color(red: 0.30, green: 0.31, blue: 0.33))
                     )
                     .frame(width: 110, alignment: .leading)
             }
 
-            // Right Size Column (Left-aligned at x ≈ 462pt matching mini.png's 2-column NSTableView)
+            // Right Size Column (Name w=454, Size x=470, w=86)
             Text(formattedMiniSize(for: entry))
                 .font(.system(size: 13, weight: isSelected ? .medium : .regular))
                 .foregroundStyle(
                     isSelected
-                        ? ProZipTheme.darkInk.opacity(0.88)
+                        ? Color.white.opacity(0.94)
                         : (colorScheme == .dark ? Color.white.opacity(0.62) : Color(red: 0.28, green: 0.29, blue: 0.31))
                 )
-                .frame(width: 86, alignment: .trailing)
+                .frame(width: 86, alignment: .leading)
         }
-        .padding(.leading, 15)
-        .padding(.trailing, 45)
+        .padding(.leading, 16)
+        .padding(.trailing, 4)
         .frame(height: 38)
         .background(
             Rectangle()
@@ -831,12 +859,12 @@ public struct MiniArchiveView: View {
 
     private func rowBackgroundFill(isSelected: Bool, isHovered: Bool, index: Int) -> Color {
         if isSelected {
-            return ProZipTheme.accentBright
+            return Color(red: 0.0, green: 0.396, blue: 0.898) // #0065E5 macOS selection blue
         }
         if isHovered {
             return colorScheme == .dark
                 ? Color.white.opacity(0.08)
-                : Color.white.opacity(0.28)
+                : Color.black.opacity(0.04)
         }
         return Color.clear
     }
@@ -845,35 +873,42 @@ public struct MiniArchiveView: View {
 
     private var miniBottomBar: some View {
         HStack(spacing: 10) {
-            // Left 3 Circular Glass Control Buttons: Close (×), Pin (📌), Expand (⤢)
+            // Left 3 Circular Glass Control Buttons (28x28 @ x=10, 46, 82, y=383.5)
             HStack(spacing: 8) {
                 // 1. Close Window Button
                 ArcZipMiniRoundActionButton(
                     icon: "xmark",
                     tooltip: "关闭窗口",
                     size: 28,
-                    tintColor: (isCloseHovered && preferences.miniUsesColoredControlButtons)
-                        ? Color(red: 0.90, green: 0.22, blue: 0.20)
+                    tintColor: preferences.miniUsesColoredControlButtons
+                        ? Color(red: 0.90, green: 0.22, blue: 0.20).opacity(isCloseHovered ? 1.0 : 0.88)
+                        : nil,
+                    fillTint: preferences.miniUsesColoredControlButtons
+                        ? Color(red: 0.95, green: 0.28, blue: 0.26)
                         : nil
                 ) {
                     appViewModel.closeSession(id: session.id)
                 }
                 .onHover { isCloseHovered = $0 }
 
-                // 2. Pin Window Button (Always-on-Top with animated pin rotation & yellow-green active ring)
+                // 2. Pin Window Button (#40A9FF sky-blue + outer ring when pinned)
                 ArcZipMiniPinButton(
                     isPinned: $session.isAlwaysOnTop,
                     size: 28,
+                    isColored: preferences.miniUsesColoredControlButtons,
                     tooltip: session.isAlwaysOnTop ? "取消窗口置顶" : "窗口置顶"
                 )
 
                 // 3. Expand to Full Workspace Button
                 ArcZipMiniRoundActionButton(
                     icon: "arrow.up.left.and.arrow.down.right",
-                    tooltip: "展开为完整工作区",
+                    tooltip: "打开完整窗口",
                     size: 28,
-                    tintColor: (isExpandHovered && preferences.miniUsesColoredControlButtons)
-                        ? ProZipTheme.accentDeep
+                    tintColor: preferences.miniUsesColoredControlButtons
+                        ? Color(red: 0.14, green: 0.68, blue: 0.22).opacity(isExpandHovered ? 1.0 : 0.88)
+                        : nil,
+                    fillTint: preferences.miniUsesColoredControlButtons
+                        ? Color(red: 0.18, green: 0.78, blue: 0.30)
                         : nil
                 ) {
                     withAnimation(.spring(response: 0.26, dampingFraction: 0.80)) {
@@ -966,28 +1001,15 @@ public struct MiniArchiveView: View {
         isEnabled: Bool,
         action: @escaping () -> Void
     ) -> some View {
-        Button(action: action) {
-            HStack(spacing: 5) {
-                Image(systemName: icon)
-                    .font(.system(size: 12, weight: .medium))
-                Text(title)
-                    .font(.system(size: 13, weight: .medium))
-                    .lineLimit(1)
-                Text(shortcut)
-                    .font(.system(size: 10, weight: .medium))
-                    .padding(.horizontal, 5)
-                    .padding(.vertical, 2)
-                    .background(
-                        RoundedRectangle(cornerRadius: 4, style: .continuous)
-                            .fill(colorScheme == .dark ? Color.white.opacity(0.16) : Color.white.opacity(0.72))
-                    )
-            }
-            .frame(width: width, height: 27)
-            .foregroundStyle(isEnabled ? Color.primary.opacity(0.86) : Color.secondary.opacity(0.45))
-            .contentShape(Capsule())
-        }
-        .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.02, pressedScale: 0.96))
-        .disabled(!isEnabled)
+        MiniCapsuleSegmentButton(
+            title: title,
+            icon: icon,
+            shortcut: shortcut,
+            width: width,
+            isEnabled: isEnabled,
+            colorScheme: colorScheme,
+            action: action
+        )
     }
 
     // MARK: - Encryption Info Popover
@@ -1095,11 +1117,65 @@ public struct MiniArchiveView: View {
         return ProZipResourceLoader.systemFileIcon(for: entry.name, isDirectory: false)
     }
 
+    private func formattedMiniDate(for entry: ArchiveEntry) -> String {
+        entry.modifiedAt <= .distantPast ? "—" : Self.dateFormatter.string(from: entry.modifiedAt)
+    }
+
     private static let dateFormatter: DateFormatter = {
         let df = DateFormatter()
         df.dateFormat = "yyyy-MM-dd HH:mm"
         return df
     }()
+}
+
+private struct MiniCapsuleSegmentButton: View {
+    let title: String
+    let icon: String
+    let shortcut: String
+    let width: CGFloat
+    let isEnabled: Bool
+    let colorScheme: ColorScheme
+    let action: () -> Void
+
+    @State private var isHovered = false
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 5) {
+                Image(systemName: icon)
+                    .font(.system(size: 12, weight: .medium))
+                Text(title)
+                    .font(.system(size: 13, weight: .medium))
+                    .lineLimit(1)
+                Text(shortcut)
+                    .font(.system(size: 10, weight: .medium))
+                    .padding(.horizontal, 5)
+                    .padding(.vertical, 2)
+                    .background(
+                        RoundedRectangle(cornerRadius: 4, style: .continuous)
+                            .fill(colorScheme == .dark ? Color.white.opacity(0.16) : Color.white.opacity(0.72))
+                    )
+            }
+            .frame(width: width, height: 27)
+            .foregroundStyle(isEnabled ? Color.primary.opacity(isHovered ? 0.98 : 0.86) : Color.secondary.opacity(0.45))
+            .background(
+                Capsule()
+                    .fill(
+                        isHovered && isEnabled
+                            ? (colorScheme == .dark ? Color.white.opacity(0.10) : Color.black.opacity(0.06))
+                            : Color.clear
+                    )
+            )
+            .contentShape(Capsule())
+        }
+        .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.02, pressedScale: 0.96))
+        .disabled(!isEnabled)
+        .onHover { hovering in
+            withAnimation(.easeOut(duration: 0.12)) {
+                isHovered = hovering
+            }
+        }
+    }
 }
 
 // MARK: - Visual Effect View Helper for Liquid Glass

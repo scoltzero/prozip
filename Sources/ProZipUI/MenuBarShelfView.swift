@@ -15,14 +15,23 @@ public struct MenuBarShelfView: View {
     @Environment(\.colorScheme) private var colorScheme
 
     @State private var isDropTargeted: Bool = false
-    @State private var isHoveringActionArea: Bool = false
+    @State private var isHoveringActionBridge: Bool = false
+    @State private var hoveredOrbitIndices: Set<Int> = []
     @State private var holdsActionsOpen: Bool = false
     @State private var actionCollapseTask: Task<Void, Never>?
     @State private var isHoveringLightning: Bool = false
+    @State private var isHoveringCountCapsule: Bool = false
+    @State private var isHoveringTrash: Bool = false
     @State private var isFileListVisible = false
+    public var isInteractive: Bool
 
-    public init(model: MenuBarShelfModel? = nil) {
+    public init(model: MenuBarShelfModel? = nil, isInteractive: Bool = true) {
         self.model = model ?? ProZipAppViewModel.shared.shelfModel
+        self.isInteractive = isInteractive
+    }
+
+    private var isHoveringActionArea: Bool {
+        isHoveringActionBridge || !hoveredOrbitIndices.isEmpty
     }
 
     private var isActionsPanelVisible: Bool {
@@ -33,79 +42,129 @@ public struct MenuBarShelfView: View {
 
     public var body: some View {
         ZStack(alignment: .topLeading) {
-            shelfCard
-                .frame(width: 260, height: 267)
-                .offset(x: 221, y: 25)
+            if !model.collectedFiles.isEmpty && isActionsPanelVisible {
+                Color.clear
+                    .frame(width: 104, height: 104)
+                    .contentShape(Rectangle())
+                    .onHover { hovering in
+                        isHoveringActionBridge = hovering
+                        updateActionHover()
+                    }
+                    .offset(x: 166, y: 242)
+            }
+
+            Group {
+                if isInteractive {
+                    ShelfDropHostingContainer(
+                        rootView: shelfCardContent.environment(\.colorScheme, colorScheme),
+                        onTargetChanged: { targeted in
+                            if isDropTargeted != targeted {
+                                isDropTargeted = targeted
+                            }
+                        },
+                        onDropURLs: { urls in
+                            acceptDroppedURLs(urls)
+                        },
+                        onError: { error in
+                            showShelfError(error, title: "无法加入文件盒")
+                        }
+                    )
+                } else {
+                    shelfCardContent
+                }
+            }
+            .frame(width: 260, height: 267)
+            .shadow(color: .black.opacity(0.14), radius: 14, y: 6)
+            .offset(x: 221, y: 25)
 
             if !model.collectedFiles.isEmpty {
-                ZStack {
-                    arcActionButton(index: 0, title: "放入工作区", icon: "macwindow") { moveStagedFilesToWorkspace() }
-                    arcActionButton(index: 1, title: "快速压缩", icon: "archivebox") { performQuickCompress() }
-                    arcActionButton(index: 2, title: "解压到文件夹", icon: "arrow.down.to.line") { performBatchExtractToOneFolder() }
-                    arcActionButton(index: 3, title: "放入文件夹", icon: "folder") { collectStagedFilesIntoFolder() }
-                }
-                .frame(width: 136, height: 136, alignment: .topTrailing)
-                .contentShape(Rectangle())
-                .position(x: 197, y: 314)
-                .allowsHitTesting(isActionsPanelVisible)
-                .onHover { hovering in
-                    isHoveringActionArea = hovering
-                    updateActionHover()
-                }
+                arcActionButton(index: 0, title: "放入工作区", icon: "macwindow") { moveStagedFilesToWorkspace() }
+                arcActionButton(index: 1, title: "快速压缩", icon: "bolt.square") { performQuickCompress() }
+                arcActionButton(index: 2, title: "压缩", icon: "arrow.down.square") { openCreationDialogForStagedFiles() }
+                arcActionButton(index: 3, title: "放入文件夹", icon: "folder.badge.plus") { collectStagedFilesIntoFolder() }
             }
         }
         .frame(width: 521, height: 497, alignment: .topLeading)
-        .onDrop(of: [.fileURL], isTargeted: $isDropTargeted) { providers in
-            handleDroppedProviders(providers)
+        .onChange(of: model.collectedFiles.isEmpty) { _, empty in
+            if empty {
+                isHoveringActionBridge = false
+                hoveredOrbitIndices.removeAll()
+                holdsActionsOpen = false
+            }
         }
         .onDisappear {
             actionCollapseTask?.cancel()
             isHoveringLightning = false
-            isHoveringActionArea = false
+            isHoveringActionBridge = false
+            hoveredOrbitIndices.removeAll()
             holdsActionsOpen = false
+            isDropTargeted = false
         }
     }
 
-    private var shelfCard: some View {
+    private var shelfCardContent: some View {
         VStack(spacing: 0) {
             shelfHeaderBar
 
             if model.collectedFiles.isEmpty {
                 emptyDropZoneView
             } else {
-                VStack(spacing: 0) {
+                ZStack(alignment: .bottom) {
                     if isFileListVisible {
                         stagedItemsScrollView
                     } else if let file = model.collectedFiles.first {
                         ShelfFilePreview(fileURL: file)
+                            .padding(.bottom, 46)
                     }
                     shelfBottomBar
                 }
-                .background(colorScheme == .dark ? Color(white: 0.12) : .white)
-                .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(shelfInnerGlassFill)
+                .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                        .strokeBorder(
+                            Color.white.opacity(colorScheme == .dark ? 0.18 : 0.85),
+                            lineWidth: 1
+                        )
+                )
                 .padding(.horizontal, 4)
                 .padding(.bottom, 4)
             }
         }
+        .frame(width: 260, height: 267)
         .background(
             ZStack {
-                if colorScheme == .dark {
-                    Color(red: 0.13, green: 0.14, blue: 0.13)
-                } else {
-                    Color(red: 0.97, green: 0.98, blue: 0.96)
-                }
-                shelfColor.opacity(min(1, max(0, preferences.boxShellColorOpacity)) * (colorScheme == .dark ? 0.4 : 1.0))
+                ProZipGlassMaterialView(
+                    material: colorScheme == .dark ? .hudWindow : .underWindowBackground,
+                    blendingMode: .behindWindow
+                )
+                Color.white.opacity(colorScheme == .dark ? 0.05 : 0.44)
+                shelfColor.opacity(min(1, max(0, preferences.boxShellColorOpacity)) * (colorScheme == .dark ? 0.44 : 0.85))
                 if isDropTargeted {
-                    ProZipTheme.accent.opacity(0.12)
+                    ProZipTheme.accent.opacity(0.14)
                 }
             }
         )
         .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
-        .shadow(color: .black.opacity(0.12), radius: 12, y: 6)
         .overlay(
             RoundedRectangle(cornerRadius: 28, style: .continuous)
-                .strokeBorder(Color.primary.opacity(0.10), lineWidth: 1)
+                .strokeBorder(
+                    LinearGradient(
+                        colors: [
+                            Color.white.opacity(colorScheme == .dark ? 0.24 : 0.72),
+                            Color.black.opacity(colorScheme == .dark ? 0.28 : 0.12)
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    ),
+                    lineWidth: 1
+                )
         )
+    }
+
+    private var shelfInnerGlassFill: Color {
+        colorScheme == .dark ? Color.white.opacity(0.08) : Color.white.opacity(0.58)
     }
 
     private func arcActionButton(index: Int, title: String, icon: String, action: @escaping () -> Void) -> some View {
@@ -115,6 +174,14 @@ public struct MenuBarShelfView: View {
             icon: icon,
             isExpanded: isActionsPanelVisible,
             colorScheme: colorScheme,
+            onHoverChange: { hovering in
+                if hovering {
+                    hoveredOrbitIndices.insert(index)
+                } else {
+                    hoveredOrbitIndices.remove(index)
+                }
+                updateActionHover()
+            },
             action: action
         )
     }
@@ -127,23 +194,17 @@ public struct MenuBarShelfView: View {
                 }
             } label: {
                 Image(systemName: "bolt.fill")
-                    .font(.system(size: 12, weight: .bold))
+                    .font(.system(size: 13, weight: .bold))
                     .foregroundStyle(.white)
-                    .frame(width: 34, height: 34)
+                    .frame(width: 32, height: 32)
                     .background(
                         Circle()
-                            .fill(
-                                LinearGradient(
-                                    colors: [ProZipTheme.accentBright, ProZipTheme.accent],
-                                    startPoint: .top,
-                                    endPoint: .bottom
-                                )
-                            )
-                            .shadow(color: ProZipTheme.accent.opacity(0.30), radius: 3, y: 1)
+                            .fill(ProZipTheme.accent)
+                            .shadow(color: ProZipTheme.accent.opacity(0.32), radius: 3, y: 1)
                     )
-                    .overlay(Circle().strokeBorder(Color.white.opacity(0.35), lineWidth: 1))
+                    .overlay(Circle().strokeBorder(Color.white.opacity(0.32), lineWidth: 1))
             }
-            .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.05, pressedScale: 0.93))
+            .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.032, pressedScale: 0.94))
             .onHover { hovering in
                 isHoveringLightning = hovering
                 updateActionHover()
@@ -153,62 +214,99 @@ public struct MenuBarShelfView: View {
             Spacer(minLength: 0)
 
             Button {
-                isFileListVisible.toggle()
+                withAnimation(.spring(response: 0.24, dampingFraction: 0.82)) {
+                    isFileListVisible.toggle()
+                }
             } label: {
                 HStack(spacing: 5) {
                     Text("\(model.collectedFiles.count) 个文件")
                         .font(.system(size: 12, weight: .medium))
-                    Image(systemName: "chevron.right")
+                    Image(systemName: isFileListVisible ? "chevron.up" : "chevron.right")
                         .font(.system(size: 9, weight: .bold))
                         .foregroundStyle(.secondary)
                 }
                 .foregroundStyle(.primary)
-                .padding(.horizontal, 6)
-                .frame(height: 30)
-                .background(Capsule().fill(Color.white.opacity(colorScheme == .dark ? 0.14 : 0.94)))
-                .overlay(Capsule().strokeBorder(Color.primary.opacity(0.06), lineWidth: 1))
+                .padding(.horizontal, 11)
+                .frame(minWidth: 83.5, minHeight: 29, maxHeight: 29)
+                .background(
+                    Capsule()
+                        .fill(
+                            Color.white.opacity(
+                                colorScheme == .dark
+                                    ? (isHoveringCountCapsule ? 0.22 : 0.15)
+                                    : (isHoveringCountCapsule ? 1.0 : 0.94)
+                            )
+                        )
+                        .shadow(color: .black.opacity(0.06), radius: 2, y: 1)
+                )
+                .overlay(
+                    Capsule()
+                        .strokeBorder(
+                            Color.primary.opacity(isHoveringCountCapsule ? 0.12 : 0.06),
+                            lineWidth: 1
+                        )
+                )
             }
-            .buttonStyle(.plain)
+            .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.02, pressedScale: 0.96))
+            .onHover { hovering in
+                withAnimation(.easeOut(duration: 0.12)) {
+                    isHoveringCountCapsule = hovering
+                }
+            }
 
-            Spacer()
+            Spacer(minLength: 0)
 
             Button {
                 withAnimation(.spring(response: 0.24, dampingFraction: 0.8)) { model.clear() }
             } label: {
                 Image(systemName: "trash")
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundStyle(.primary.opacity(0.8))
-                    .frame(width: 34, height: 34)
-                    .background(Circle().fill(Color.white.opacity(colorScheme == .dark ? 0.14 : 0.94)))
-                    .overlay(Circle().strokeBorder(Color.primary.opacity(0.06), lineWidth: 1))
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundStyle(.primary.opacity(0.86))
+                    .frame(width: 32, height: 32)
+                    .background(
+                        Circle()
+                            .fill(
+                                colorScheme == .dark
+                                    ? Color.white.opacity(isHoveringTrash ? 0.22 : 0.14)
+                                    : (isHoveringTrash ? Color(white: 0.91) : Color.white.opacity(0.92))
+                            )
+                            .shadow(color: .black.opacity(0.06), radius: 2, y: 1)
+                    )
+                    .overlay(Circle().strokeBorder(Color.primary.opacity(0.08), lineWidth: 1))
             }
-            .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.05, pressedScale: 0.94))
+            .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.03, pressedScale: 0.95))
+            .onHover { hovering in
+                withAnimation(.easeOut(duration: 0.12)) {
+                    isHoveringTrash = hovering
+                }
+            }
             .help("清空文件盒")
         }
-        .padding(.horizontal, 6)
-        .padding(.vertical, 8)
+        .padding(.horizontal, 12)
+        .padding(.bottom, 11)
+        .padding(.top, 6)
     }
 
     private var shelfHeaderBar: some View {
-        HStack(spacing: 6) {
+        let pinSkyBlue = Color(red: 0.251, green: 0.663, blue: 1.0) // #40A9FF
+        return HStack(spacing: 7) {
             Button { presentMainWindow() } label: {
-            HStack(spacing: 6) {
-            ProZipBrandIcon(size: 28, showAppSquircle: true)
+                HStack(spacing: 6) {
+                    ProZipBrandIcon(size: 26, showAppSquircle: true)
 
-            VStack(alignment: .leading, spacing: 1) {
-                Text("ProZip")
-                    .font(.system(size: 13, weight: .bold))
-                Text("文件盒")
-                    .font(.system(size: 8, weight: .medium))
-                    .foregroundStyle(.secondary)
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 1)
-                    .background(
-                        Capsule().fill(Color.white.opacity(colorScheme == .dark ? 0.12 : 0.62))
-                    )
-            }
-
-            }
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text("ProZip")
+                            .font(.system(size: 13, weight: .bold))
+                        Text("文件盒")
+                            .font(.system(size: 8.5, weight: .medium))
+                            .foregroundStyle(.secondary)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 1)
+                            .background(
+                                Capsule().fill(Color.white.opacity(colorScheme == .dark ? 0.14 : 0.56))
+                            )
+                    }
+                }
             }
             .buttonStyle(.plain)
             .accessibilityLabel("打开 ProZip")
@@ -226,13 +324,19 @@ public struct MenuBarShelfView: View {
                     .frame(width: 26, height: 26)
                     .background(
                         Circle()
-                            .fill(model.isPinned ? ProZipTheme.accent : Color.white.opacity(colorScheme == .dark ? 0.16 : 0.45))
-                            .shadow(color: .black.opacity(0.08), radius: 2, y: 1)
+                            .fill(model.isPinned ? pinSkyBlue : Color.white.opacity(colorScheme == .dark ? 0.16 : 0.48))
+                            .shadow(color: model.isPinned ? pinSkyBlue.opacity(0.28) : .black.opacity(0.08), radius: 2, y: 1)
                     )
-                    .overlay(Circle().strokeBorder(Color.primary.opacity(0.08), lineWidth: 0.8))
+                    .overlay(
+                        Circle()
+                            .strokeBorder(
+                                model.isPinned ? Color.white.opacity(0.65) : Color.primary.opacity(0.10),
+                                lineWidth: 0.8
+                            )
+                    )
             }
             .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.04, pressedScale: 0.94))
-            .help("固定文件盒")
+            .help(model.isPinned ? "取消固定文件盒" : "固定文件盒")
 
             Button {
                 NotificationCenter.default.post(name: .proZipCloseShelf, object: nil)
@@ -243,48 +347,62 @@ public struct MenuBarShelfView: View {
                     .frame(width: 26, height: 26)
                     .background(
                         Circle()
-                            .fill(Color.white.opacity(colorScheme == .dark ? 0.16 : 0.45))
+                            .fill(Color.white.opacity(colorScheme == .dark ? 0.16 : 0.48))
                             .shadow(color: .black.opacity(0.08), radius: 2, y: 1)
                     )
-                    .overlay(Circle().strokeBorder(Color.primary.opacity(0.08), lineWidth: 0.8))
+                    .overlay(Circle().strokeBorder(Color.primary.opacity(0.10), lineWidth: 0.8))
             }
             .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.04, pressedScale: 0.94))
             .help("收起文件盒")
         }
         .padding(.horizontal, 12)
-        .padding(.vertical, 10)
-        .frame(height: 50)
+        .padding(.vertical, 9)
+        .frame(height: 49)
     }
 
-    // MARK: - Empty Dashed Drop Zone (BoxOutline.png + Vector Fallback)
+    // MARK: - Empty Frosted Liquid Glass Drop Zone
 
     private var emptyDropZoneView: some View {
         Image(systemName: "tray.and.arrow.down")
-            .font(.system(size: 42, weight: .light))
-            .foregroundStyle(.primary.opacity(0.22))
+            .font(.system(size: 44, weight: .regular))
+            .foregroundStyle(.primary.opacity(0.25))
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(colorScheme == .dark ? Color(white: 0.12) : .white)
-            .overlay { if isDropTargeted { shelfColor.opacity(0.12) } }
-            .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
+            .background(shelfInnerGlassFill)
+            .overlay { if isDropTargeted { shelfColor.opacity(0.14) } }
+            .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 22, style: .continuous)
+                    .strokeBorder(
+                        Color.white.opacity(colorScheme == .dark ? 0.18 : 0.85),
+                        lineWidth: 1
+                    )
+            )
             .padding(.horizontal, 4)
             .padding(.bottom, 4)
             .accessibilityLabel("ProZip 文件盒")
     }
 
-    // MARK: - Staged Items List & Inline Folder Browser (ShelfFolderBrowser)
+    // MARK: - Staged Items 2-Column Tile Gallery (2x 114x104)
 
     private var stagedItemsScrollView: some View {
         ScrollView {
-            LazyVStack(spacing: 6) {
+            LazyVGrid(
+                columns: [
+                    GridItem(.fixed(114), spacing: 8),
+                    GridItem(.fixed(114), spacing: 8)
+                ],
+                spacing: 8
+            ) {
                 ForEach(model.collectedFiles, id: \.path) { fileURL in
-                    ShelfStagedItemRow(
+                    ShelfGalleryTileView(
                         fileURL: fileURL,
-                        shelfColor: shelfColor,
                         model: model
                     )
                 }
             }
-            .padding(10)
+            .padding(.horizontal, 8)
+            .padding(.top, 8)
+            .padding(.bottom, 50)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -294,6 +412,7 @@ public struct MenuBarShelfView: View {
     private var shelfColor: Color {
         switch preferences.boxColor {
         case "chartreuse": return ProZipTheme.accent
+        case "lavender": return Color(red: 0.56, green: 0.50, blue: 0.85)
         case "blue": return .blue
         case "purple": return .purple
         case "orange": return .orange
@@ -324,16 +443,14 @@ public struct MenuBarShelfView: View {
         }
     }
 
-    private func handleDroppedProviders(_ providers: [NSItemProvider]) -> Bool {
-        guard providers.contains(where: { $0.hasItemConformingToTypeIdentifier(UTType.fileURL.identifier) }) else { return false }
-        Task { @MainActor in
-            let urls = await FileURLDrop.loadURLs(from: providers)
-            do {
-                try ShelfFileActions.validateSources(urls)
-                model.addFiles(urls)
-            } catch { showShelfError(error, title: "无法加入文件盒") }
+    private func acceptDroppedURLs(_ urls: [URL]) {
+        guard !urls.isEmpty else { return }
+        do {
+            try ShelfFileActions.validateSources(urls)
+            model.addFiles(urls)
+        } catch {
+            showShelfError(error, title: "无法加入文件盒")
         }
-        return true
     }
 
     private func performQuickCompress() {
@@ -344,6 +461,22 @@ public struct MenuBarShelfView: View {
             let destination = try ShelfFileActions.quickArchiveDestination(for: sources, format: profile.format)
             presentMainWindow()
             appViewModel.createArchive(sources: sources, destinationURL: destination, profile: profile)
+        } catch {
+            showShelfError(error, title: "无法压缩文件")
+        }
+    }
+
+    private func openCreationDialogForStagedFiles() {
+        let sources = model.collectedFiles
+        guard !sources.isEmpty else { return }
+        do {
+            try ShelfFileActions.validateSources(sources)
+            presentMainWindow()
+            appViewModel.beginCreation(
+                sources: sources,
+                originalSources: sources,
+                ownerSessionID: appViewModel.activeSessionID
+            )
         } catch {
             showShelfError(error, title: "无法压缩文件")
         }
@@ -365,10 +498,14 @@ public struct MenuBarShelfView: View {
             var completedCount = 0
             for source in sources {
                 do {
-                    let descriptor = try await ArchiveEngineBroker.shared.probe(source)
-                    let session = ArchiveBrowsingSession(url: source, descriptor: descriptor)
+                    _ = try await ArchiveEngineBroker.shared.probe(source)
+                    let session = appViewModel.sessionForExternalExtraction(at: source)
+                    let previousTopTaskID = appViewModel.tasks.first?.id
                     appViewModel.extractAll(in: session, to: destination)
-                    guard let task = appViewModel.tasks.first else { return }
+                    guard let task = appViewModel.tasks.first, task.id != previousTopTaskID else {
+                        model.statusMessage = "已完成 \(completedCount) / \(sources.count) 个压缩包"
+                        return
+                    }
                     for await phase in task.$phase.values {
                         if phase == .completed || phase == .failed || phase == .cancelled { break }
                     }
@@ -520,15 +657,15 @@ private struct ShelfFilePreview: View {
             Image(nsImage: thumbnail ?? NSWorkspace.shared.icon(forFile: fileURL.path))
                 .resizable()
                 .scaledToFit()
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .padding(.top, 6)
-                .padding(.horizontal, 16)
+                .frame(maxWidth: 164, maxHeight: 112)
+                .shadow(color: .black.opacity(0.12), radius: 5, y: 2)
+                .padding(.top, 10)
             Text(fileURL.lastPathComponent)
-                .font(.system(size: 10, weight: .semibold))
+                .font(.system(size: 12, weight: .medium))
                 .lineLimit(1)
                 .truncationMode(.middle)
-                .padding(.horizontal, 10)
-                .padding(.bottom, 2)
+                .padding(.horizontal, 12)
+                .padding(.bottom, 4)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .task(id: fileURL) {
@@ -540,118 +677,91 @@ private struct ShelfFilePreview: View {
     }
 }
 
-// MARK: - ShelfStagedItemRow & Inline ShelfFolderBrowser
-
-private struct ShelfStagedItemRow: View {
+private struct ShelfGalleryTileView: View {
     let fileURL: URL
-    let shelfColor: Color
     @ObservedObject var model: MenuBarShelfModel
-
-    private var isDirectoryOrArchive: Bool {
-        let isDir = (try? fileURL.resourceValues(forKeys: [.isDirectoryKey]))?.isDirectory ?? false
-        if isDir { return true }
-        let ext = fileURL.pathExtension.lowercased()
-        return ["zip", "7z", "rar", "tar", "gz", "dmg", "iso"].contains(ext)
-    }
-
-    private var isExpanded: Bool {
-        model.expandedItemPaths.contains(fileURL.path)
-    }
-
-    private var formattedItemSize: String {
-        let values = try? fileURL.resourceValues(forKeys: [.fileSizeKey, .isDirectoryKey])
-        if values?.isDirectory == true { return "文件夹" }
-        return ByteCountFormatter.string(fromByteCount: Int64(values?.fileSize ?? 0), countStyle: .file)
-    }
+    @State private var thumbnail: NSImage?
+    @State private var isHovered = false
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            HStack(spacing: 8) {
-                if isDirectoryOrArchive {
+        VStack(spacing: 6) {
+            Image(nsImage: thumbnail ?? NSWorkspace.shared.icon(forFile: fileURL.path))
+                .resizable()
+                .scaledToFit()
+                .frame(width: 62, height: 62)
+                .shadow(color: .black.opacity(0.10), radius: 3, y: 1.5)
+
+            Text(fileURL.lastPathComponent)
+                .font(.system(size: 11, weight: .medium))
+                .foregroundStyle(.primary)
+                .lineLimit(1)
+                .truncationMode(.middle)
+                .padding(.horizontal, 6)
+        }
+        .frame(width: 114, height: 104)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(
+                    isHovered
+                        ? (colorScheme == .dark ? Color.white.opacity(0.12) : Color.white.opacity(0.65))
+                        : Color.clear
+                )
+        )
+        .overlay(alignment: .topTrailing) {
+            if isHovered {
+                HStack(spacing: 3) {
                     Button {
-                        withAnimation(.spring(response: 0.24, dampingFraction: 0.80)) {
-                            model.toggleExpand(fileURL)
-                        }
+                        NSWorkspace.shared.activateFileViewerSelecting([fileURL])
                     } label: {
-                        Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
-                            .font(.system(size: 10, weight: .bold))
-                            .foregroundStyle(shelfColor)
-                            .frame(width: 14, height: 14)
+                        Image(systemName: "magnifyingglass")
+                            .font(.system(size: 9.5, weight: .semibold))
+                            .foregroundStyle(.primary.opacity(0.75))
+                            .frame(width: 18, height: 18)
+                            .background(Circle().fill(Color.white.opacity(colorScheme == .dark ? 0.22 : 0.92)))
                     }
                     .buttonStyle(.plain)
-                    .help(isExpanded ? "收起内联目录浏览" : "展开浏览文件夹或归档内容")
-                } else {
-                    Spacer()
-                        .frame(width: 14)
-                }
+                    .help("在访达中显示")
 
-                Image(
-                    nsImage: ProZipResourceLoader.systemFileIcon(
-                        for: fileURL.path,
-                        isDirectory: ((try? fileURL.resourceValues(forKeys: [.isDirectoryKey]))?.isDirectory ?? false)
-                    )
-                )
-                .resizable()
-                .frame(width: 18, height: 18)
-
-                VStack(alignment: .leading, spacing: 1) {
-                    Text(fileURL.lastPathComponent)
-                        .font(.system(size: 12, weight: .semibold))
-                        .foregroundStyle(.primary)
-                        .lineLimit(1)
-                    Text(formattedItemSize)
-                        .font(.system(size: 10))
-                        .foregroundStyle(.secondary)
-                }
-
-                Spacer()
-
-                // Reveal in Finder button
-                Button {
-                    NSWorkspace.shared.activateFileViewerSelecting([fileURL])
-                } label: {
-                    Image(systemName: "magnifyingglass")
-                        .font(.system(size: 11))
-                        .foregroundStyle(.secondary)
-                        .frame(width: 20, height: 20)
-                }
-                .buttonStyle(.plain)
-                .help("在访达中显示")
-
-                // Remove from Shelf button
-                Button {
-                    withAnimation(.spring(response: 0.22, dampingFraction: 0.82)) {
-                        model.removeFile(fileURL)
+                    Button {
+                        withAnimation(.spring(response: 0.22, dampingFraction: 0.82)) {
+                            model.removeFile(fileURL)
+                        }
+                    } label: {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 9, weight: .bold))
+                            .foregroundStyle(.primary.opacity(0.75))
+                            .frame(width: 18, height: 18)
+                            .background(Circle().fill(Color.white.opacity(colorScheme == .dark ? 0.22 : 0.92)))
                     }
-                } label: {
-                    Image(systemName: "xmark")
-                        .font(.system(size: 10, weight: .bold))
-                        .foregroundStyle(.secondary)
-                        .frame(width: 20, height: 20)
+                    .buttonStyle(.plain)
+                    .help("从文件盒移除")
                 }
-                .buttonStyle(.plain)
-                .help("从暂存盒移除")
-            }
-            .padding(.horizontal, 8)
-            .padding(.vertical, 6)
-
-            // Inline Folder/Archive Browser (ShelfFolderBrowser)
-            if isExpanded {
-                Divider()
-                    .padding(.leading, 26)
-                ShelfFolderBrowser(rootURL: fileURL, shelfColor: shelfColor, model: model)
+                .padding(5)
             }
         }
-        .background(
-            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .fill(Color(NSColor.controlBackgroundColor).opacity(0.75))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .strokeBorder(isExpanded ? shelfColor.opacity(0.45) : Color.primary.opacity(0.06), lineWidth: 0.8)
-        )
+        .contentShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .onHover { hovering in
+            withAnimation(.easeOut(duration: 0.12)) {
+                isHovered = hovering
+            }
+        }
+        .task(id: fileURL) {
+            let request = QLThumbnailGenerator.Request(
+                fileAt: fileURL,
+                size: CGSize(width: 128, height: 128),
+                scale: NSScreen.main?.backingScaleFactor ?? 2,
+                representationTypes: .thumbnail
+            )
+            if let representation = try? await QLThumbnailGenerator.shared.generateBestRepresentation(for: request),
+               !Task.isCancelled {
+                thumbnail = representation.nsImage
+            }
+        }
     }
 }
+
+// MARK: - Inline ShelfFolderBrowser
 
 public struct ShelfFolderBrowser: View {
     public let rootURL: URL
@@ -756,6 +866,7 @@ private struct ArcActionButton: View {
     let icon: String
     let isExpanded: Bool
     let colorScheme: ColorScheme
+    let onHoverChange: (Bool) -> Void
     let action: () -> Void
 
     @State private var isHovered = false
@@ -768,35 +879,54 @@ private struct ArcActionButton: View {
     var body: some View {
         Button(action: action) {
             Image(systemName: icon)
-                .font(.system(size: 13, weight: .medium))
-                .foregroundStyle(.primary.opacity(0.85))
+                .font(.system(size: 13.5, weight: .semibold))
+                .foregroundStyle(.primary.opacity(isHovered ? 1.0 : 0.88))
                 .frame(width: 30, height: 30)
                 .background(
-                    Circle()
-                        .fill(Color.white.opacity(colorScheme == .dark ? 0.16 : 0.97))
-                        .shadow(color: .black.opacity(0.16), radius: 3, y: 1)
+                    ZStack {
+                        ProZipGlassMaterialView(
+                            material: colorScheme == .dark ? .hudWindow : .popover,
+                            blendingMode: .behindWindow
+                        )
+                        Color.white.opacity(colorScheme == .dark ? (isHovered ? 0.22 : 0.14) : (isHovered ? 0.82 : 0.68))
+                    }
+                    .clipShape(Circle())
+                    .shadow(color: .black.opacity(isHovered ? 0.22 : 0.15), radius: isHovered ? 5 : 3, y: 1.5)
                 )
-                .overlay(Circle().strokeBorder(Color.primary.opacity(0.06), lineWidth: 1))
+                .overlay(
+                    Circle()
+                        .strokeBorder(
+                            LinearGradient(
+                                colors: [
+                                    Color.white.opacity(colorScheme == .dark ? 0.36 : 0.90),
+                                    Color.black.opacity(colorScheme == .dark ? 0.24 : 0.14)
+                                ],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            ),
+                            lineWidth: 1
+                        )
+                )
         }
-        .buttonStyle(.plain)
+        .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.03, pressedScale: 0.93))
         .accessibilityLabel(title)
         .help(title)
-        .overlay(alignment: .center) {
+        .overlay(alignment: .trailing) {
             if isHovered {
                 Text(title)
-                    .font(.system(size: 10.5, weight: .medium))
-                    .foregroundStyle(.primary.opacity(0.9))
+                    .font(.system(size: 11.5, weight: .medium))
+                    .foregroundStyle(.primary.opacity(0.92))
                     .lineLimit(1)
                     .fixedSize()
-                    .padding(.horizontal, 9)
-                    .frame(height: 22)
+                    .padding(.horizontal, 11)
+                    .frame(height: 26)
                     .background(
                         Capsule()
-                            .fill(Color.white.opacity(colorScheme == .dark ? 0.18 : 0.97))
+                            .fill(Color.white.opacity(colorScheme == .dark ? 0.20 : 0.97))
                             .shadow(color: .black.opacity(0.14), radius: 4, y: 2)
                     )
                     .overlay(Capsule().strokeBorder(Color.primary.opacity(0.06), lineWidth: 1))
-                    .alignmentGuide(.leading) { $0[.trailing] + 4 }
+                    .offset(x: -38)
                     .transition(.opacity.combined(with: .move(edge: .trailing)))
                     .allowsHitTesting(false)
             }
@@ -805,17 +935,209 @@ private struct ArcActionButton: View {
             withAnimation(.spring(response: 0.22, dampingFraction: 0.85)) {
                 isHovered = hovering
             }
+            onHoverChange(hovering)
         }
-        .offset(
-            x: isExpanded ? CGFloat(cos(geometry.angle)) * geometry.radius : 0,
-            y: isExpanded ? CGFloat(sin(geometry.angle)) * geometry.radius : 0
-        )
         .scaleEffect(isExpanded ? 1 : 0.25)
         .opacity(isExpanded ? 1 : 0)
+        .offset(
+            x: 238 + (isExpanded ? CGFloat(cos(geometry.angle)) * geometry.radius : 0),
+            y: 245 + (isExpanded ? CGFloat(sin(geometry.angle)) * geometry.radius : 0)
+        )
+        .allowsHitTesting(isExpanded)
         .animation(
             .spring(response: 0.34, dampingFraction: 0.72)
                 .delay(Double(index) * 0.035),
             value: isExpanded
         )
+    }
+}
+
+// MARK: - AppKit Drop-Hosting Container (Preserves 100% SwiftUI Hit-Testing + Accepts NSURL & NSFilePromiseReceiver)
+
+private struct ShelfDropHostingContainer<Content: View>: NSViewRepresentable {
+    var rootView: Content
+    var onTargetChanged: @MainActor (Bool) -> Void
+    var onDropURLs: @MainActor ([URL]) -> Void
+    var onError: @MainActor (Error) -> Void
+
+    func makeNSView(context: Context) -> ShelfDropHostingView<Content> {
+        let view = ShelfDropHostingView(rootView: rootView)
+        view.onTargetChanged = onTargetChanged
+        view.onDropURLs = onDropURLs
+        view.onError = onError
+        return view
+    }
+
+    func updateNSView(_ nsView: ShelfDropHostingView<Content>, context: Context) {
+        nsView.onTargetChanged = onTargetChanged
+        nsView.onDropURLs = onDropURLs
+        nsView.onError = onError
+        nsView.update(rootView: rootView)
+    }
+}
+
+private enum ShelfDropSupport {
+    static let legacyFilenamesType = NSPasteboard.PasteboardType("NSFilenamesPboardType")
+    static let promiseQueue: OperationQueue = {
+        let queue = OperationQueue()
+        queue.name = "org.prozip.ProZip.shelfPromiseReceiver"
+        queue.qualityOfService = .userInitiated
+        return queue
+    }()
+}
+
+@MainActor
+private final class ShelfFirstMouseHostingView<Content: View>: NSHostingView<Content> {
+    override func acceptsFirstMouse(for event: NSEvent?) -> Bool { true }
+}
+
+@MainActor
+private final class ShelfDropHostingView<Content: View>: NSView {
+    var onTargetChanged: (@MainActor (Bool) -> Void)?
+    var onDropURLs: (@MainActor ([URL]) -> Void)?
+    var onError: (@MainActor (Error) -> Void)?
+
+    private let hostingView: ShelfFirstMouseHostingView<Content>
+
+    override var mouseDownCanMoveWindow: Bool { false }
+    override func acceptsFirstMouse(for event: NSEvent?) -> Bool { true }
+
+    init(rootView: Content) {
+        self.hostingView = ShelfFirstMouseHostingView(rootView: rootView)
+        super.init(frame: NSRect(x: 0, y: 0, width: 260, height: 267))
+        wantsLayer = true
+        layer?.backgroundColor = .clear
+
+        hostingView.frame = bounds
+        hostingView.autoresizingMask = [.width, .height]
+        hostingView.sizingOptions = []
+        hostingView.wantsLayer = true
+        hostingView.layer?.backgroundColor = .clear
+        if !hostingView.registeredDraggedTypes.isEmpty {
+            hostingView.unregisterDraggedTypes()
+        }
+        addSubview(hostingView)
+        registerDropTypes()
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    func update(rootView: Content) {
+        hostingView.rootView = rootView
+        if !hostingView.registeredDraggedTypes.isEmpty {
+            hostingView.unregisterDraggedTypes()
+        }
+    }
+
+    override func layout() {
+        super.layout()
+        if hostingView.frame != bounds {
+            hostingView.frame = bounds
+        }
+    }
+
+    private func registerDropTypes() {
+        let promiseTypes = NSFilePromiseReceiver.readableDraggedTypes.map { NSPasteboard.PasteboardType($0) }
+        let allTypes = Array(Set(promiseTypes + [.fileURL, ShelfDropSupport.legacyFilenamesType]))
+        registerForDraggedTypes(allTypes)
+    }
+
+    private func canAccept(_ sender: NSDraggingInfo) -> Bool {
+        let pb = sender.draggingPasteboard
+        if let types = pb.types {
+            let promiseSet = Set(NSFilePromiseReceiver.readableDraggedTypes.map { NSPasteboard.PasteboardType($0) })
+            if !promiseSet.isDisjoint(with: types) {
+                return true
+            }
+        }
+        if let urls = pb.readObjects(forClasses: [NSURL.self], options: [.urlReadingFileURLsOnly: true]) as? [URL],
+           urls.contains(where: \.isFileURL) {
+            return true
+        }
+        if let paths = pb.propertyList(forType: ShelfDropSupport.legacyFilenamesType) as? [String],
+           !paths.isEmpty {
+            return true
+        }
+        return false
+    }
+
+    override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
+        let valid = canAccept(sender)
+        onTargetChanged?(valid)
+        return valid ? .copy : []
+    }
+
+    override func draggingUpdated(_ sender: NSDraggingInfo) -> NSDragOperation {
+        let valid = canAccept(sender)
+        onTargetChanged?(valid)
+        return valid ? .copy : []
+    }
+
+    override func draggingExited(_ sender: NSDraggingInfo?) {
+        onTargetChanged?(false)
+    }
+
+    override func prepareForDragOperation(_ sender: NSDraggingInfo) -> Bool {
+        canAccept(sender)
+    }
+
+    override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
+        onTargetChanged?(false)
+        let pb = sender.draggingPasteboard
+        let receivers = (pb.readObjects(forClasses: [NSFilePromiseReceiver.self], options: nil) as? [NSFilePromiseReceiver]) ?? []
+
+        if !receivers.isEmpty {
+            let tempDir = FileManager.default.temporaryDirectory
+                .appendingPathComponent("org.prozip.ProZip-shelf-promise-\(UUID().uuidString)", isDirectory: true)
+            do {
+                try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
+            } catch {
+                onError?(error)
+                return false
+            }
+            Task {
+                _ = try? await ManagedTemporaryArtifactRegistry.shared.registerArtifact(
+                    at: tempDir,
+                    purpose: .previewMaterialization,
+                    sessionID: "managed-temp:shelf-promise:\(UUID().uuidString)"
+                )
+            }
+            for receiver in receivers {
+                receiver.receivePromisedFiles(
+                    atDestination: tempDir,
+                    options: [:],
+                    operationQueue: ShelfDropSupport.promiseQueue
+                ) { [weak self] fileURL, error in
+                    Task { @MainActor in
+                        if let error {
+                            self?.onError?(error)
+                            return
+                        }
+                        self?.onDropURLs?([fileURL])
+                    }
+                }
+            }
+            return true
+        }
+
+        var directURLs = ((pb.readObjects(forClasses: [NSURL.self], options: [.urlReadingFileURLsOnly: true]) as? [URL]) ?? [])
+            .filter(\.isFileURL)
+        if directURLs.isEmpty,
+           let paths = pb.propertyList(forType: ShelfDropSupport.legacyFilenamesType) as? [String] {
+            directURLs = paths.map { URL(fileURLWithPath: $0) }
+        }
+
+        var seen = Set<String>()
+        let uniqueURLs = directURLs.filter { seen.insert($0.standardizedFileURL.path).inserted }
+        guard !uniqueURLs.isEmpty else { return false }
+        onDropURLs?(uniqueURLs)
+        return true
+    }
+
+    override func concludeDragOperation(_ sender: NSDraggingInfo?) {
+        onTargetChanged?(false)
     }
 }

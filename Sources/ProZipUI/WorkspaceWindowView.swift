@@ -26,15 +26,16 @@ public struct WorkspaceWindowView: View {
     @Environment(\.colorScheme) private var colorScheme
 
     // UI States
-    @State private var isLeftSidebarVisible: Bool = false
     @State private var isRightInspectorVisible: Bool = true
-    @State private var isTreeExpansionEnabled: Bool = false
     @State private var expandedFolderPaths: Set<String> = []
     @State private var columnDirectoryEntry: ArchiveEntry?
+    @State private var isWindowFullScreen: Bool = false
 
     // Inline Archive Rename State
     @State private var isRenamingArchiveInline: Bool = false
     @State private var inlineArchiveNameDraft: String = ""
+    @State private var isHoveringTitleRename: Bool = false
+    @State private var isHoveringAuxPill: Bool = false
 
     // Encryption Notice Popover State
     @State private var isEncryptionPopoverPresented: Bool = false
@@ -44,7 +45,7 @@ public struct WorkspaceWindowView: View {
     @State private var sortAscending: Bool = true
 
     // Hover & Floating Preview State
-    @State private var hoveredEntryID: String?
+    @State private var hasActiveRowHover: Bool = false
     @State private var hoverPreviewEntry: ArchiveEntry?
     @State private var isHoverPreviewHovered = false
     @State private var hoverDebounceTask: Task<Void, Never>?
@@ -60,44 +61,37 @@ public struct WorkspaceWindowView: View {
     }
 
     public var body: some View {
-        HStack(spacing: 0) {
-            // 1. Collapsible Left Sidebar (210pt width)
-            if isLeftSidebarVisible {
-                WorkspaceLeftSidebarView(
-                    session: session,
-                    expandedFolderPaths: $expandedFolderPaths
-                )
-                .frame(width: 210)
-                .transition(.move(edge: .leading).combined(with: .opacity))
+        let outerCornerRadius: CGFloat = isWindowFullScreen ? 0 : 28
+        let mainCardShape = RoundedRectangle(cornerRadius: 22, style: .continuous)
 
-                Divider()
-            }
-
-            // 2. Main Center Workspace Area
+        HStack(spacing: 6) {
+            // 1. Left Main Workspace Card: (6, 6, W - 282, H - 12), r = 22
             VStack(spacing: 0) {
-                // Unified Top Toolbar: ArcZip measures 38pt high, top edge at y=13
+                // Unified Top Toolbar: window y = 13..51 (7pt inside y=6 card)
                 workspaceToolbar
                     .frame(height: 38)
-                    .padding(.top, 13)
-                    .padding(.horizontal, 20)
-
-                // Sub-toolbar / Breadcrumb Pill Bar: 36pt pill at y=58
-                breadcrumbBarContainer
-                    .padding(.horizontal, 20)
                     .padding(.top, 7)
+                    .padding(.leading, 86)
+                    .padding(.trailing, 14)
 
-                // Preliminary Phase Banner
+                // Sub-toolbar / Breadcrumb Pill Bar: window y = 58..94 (36pt high)
+                breadcrumbBarContainer
+                    .frame(height: 36)
+                    .padding(.top, 7)
+                    .padding(.horizontal, 14)
+
+                // Preliminary / Error Banner
                 if case .preliminary = session.phase {
                     phaseBanner
-                        .padding(.horizontal, 18)
-                        .padding(.bottom, 8)
+                        .padding(.horizontal, 14)
+                        .padding(.top, 8)
                 } else if case .failed(let message) = session.phase {
                     errorBanner(message: message)
-                        .padding(.horizontal, 18)
-                        .padding(.bottom, 8)
+                        .padding(.horizontal, 14)
+                        .padding(.top, 8)
                 }
 
-                // Main Content Area (FoldspaceLanding / List / Tree / Icons / Columns)
+                // Main Content Area (scrolls all the way under bottom progressive blur + Flow bar)
                 ZStack(alignment: .bottomLeading) {
                     Group {
                         if session.displayedEntries.isEmpty && !session.hasUnsavedChanges && session.currentDirectoryPath.isEmpty && session.searchQuery.isEmpty {
@@ -112,9 +106,7 @@ public struct WorkspaceWindowView: View {
                                     session: session,
                                     sortField: $sortField,
                                     sortAscending: $sortAscending,
-                                    isTreeMode: isTreeExpansionEnabled,
                                     expandedFolderPaths: $expandedFolderPaths,
-                                    hoveredEntryID: $hoveredEntryID,
                                     onHoverEntryChanged: { entry in
                                         handleEntryHover(entry)
                                     }
@@ -122,7 +114,6 @@ public struct WorkspaceWindowView: View {
                             case .icons:
                                 WorkspaceIconsGridView(
                                     session: session,
-                                    hoveredEntryID: $hoveredEntryID,
                                     onHoverEntryChanged: { entry in
                                         handleEntryHover(entry)
                                     }
@@ -131,7 +122,6 @@ public struct WorkspaceWindowView: View {
                                 WorkspaceColumnsView(
                                     session: session,
                                     directoryEntry: $columnDirectoryEntry,
-                                    hoveredEntryID: $hoveredEntryID,
                                     onHoverEntryChanged: { entry in
                                         handleEntryHover(entry)
                                     }
@@ -140,9 +130,25 @@ public struct WorkspaceWindowView: View {
                         }
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .padding(.horizontal, 6)
                     .padding(.top, 16)
-                    .padding(.bottom, 72)
+
+                    // 56pt Bottom Progressive Blur + Soft Surface Veil (FoldspaceBottomProgressiveBlur)
+                    ZStack {
+                        ProZipVariableBlurView(direction: .bottomToTop, material: .headerView)
+                        LinearGradient(
+                            colors: [
+                                mainCardFill.opacity(0.0),
+                                mainCardFill.opacity(0.58),
+                                mainCardFill.opacity(0.90)
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    }
+                    .frame(height: 56)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+                    .allowsHitTesting(false)
+                    .zIndex(5)
 
                     // Floating Hover Preview Panel (ArchiveHoverPreviewOverlay)
                     if preferences.hoverPreviewEnabled, let previewEntry = hoverPreviewEntry {
@@ -155,12 +161,12 @@ public struct WorkspaceWindowView: View {
                                 }
                             }
                         )
-                        .padding(.leading, 18)
+                        .padding(.leading, 14)
                         .padding(.bottom, 66)
                         .onHover { hovering in
                             isHoverPreviewHovered = hovering
                             if hovering { hoverDebounceTask?.cancel() }
-                            else if hoveredEntryID == nil { handleEntryHover(nil) }
+                            else if !hasActiveRowHover { handleEntryHover(nil) }
                         }
                         .transition(.asymmetric(
                             insertion: .scale(scale: 0.94, anchor: .bottomLeading).combined(with: .opacity),
@@ -171,14 +177,24 @@ public struct WorkspaceWindowView: View {
 
                     // Bottom Anchored Flow Bar (WorkspaceFlowOrbitBar)
                     WorkspaceFlowOrbitBar(session: session, navigationEntry: session.viewMode == .columns ? columnDirectoryEntry : nil)
-                        .padding(.leading, 20)
-                        .padding(.bottom, 21)
+                        .padding(.leading, 13)
+                        .padding(.bottom, 15)
                         .zIndex(10)
                 }
             }
             .frame(minWidth: 520, maxWidth: .infinity, maxHeight: .infinity)
+            .background(mainCardShape.fill(mainCardFill))
+            .clipShape(mainCardShape)
+            .overlay {
+                mainCardShape
+                    .strokeBorder(
+                        colorScheme == .dark ? Color.white.opacity(0.07) : Color.black.opacity(0.055),
+                        lineWidth: 1
+                    )
+                    .allowsHitTesting(false)
+            }
 
-            // 3. Right Inspector Pane (Matching workspace.png pixel-for-pixel)
+            // 2. Right Inspector Card: fixed 270pt width, (W - 276, 6, 270, H - 12), r = 22
             if isRightInspectorVisible {
                 WorkspaceInspectorPane(
                     session: session,
@@ -186,13 +202,30 @@ public struct WorkspaceWindowView: View {
                     isEncryptionPopoverPresented: $isEncryptionPopoverPresented
                 )
                 .frame(width: 270)
-                .padding(.vertical, 6)
-                .padding(.trailing, 6)
+                .frame(maxHeight: .infinity)
                 .transition(.move(edge: .trailing).combined(with: .opacity))
             }
         }
-        .frame(minWidth: 880, idealWidth: 900, maxWidth: .infinity, minHeight: 600, idealHeight: 600, maxHeight: .infinity)
+        .padding(6)
+        .frame(minWidth: 900, idealWidth: 1040, maxWidth: .infinity, minHeight: 600, idealHeight: 740, maxHeight: .infinity)
         .ignoresSafeArea(.container, edges: .top)
+        .background {
+            ZStack {
+                bezelFill
+                WorkspaceFullScreenObserver(isFullScreen: $isWindowFullScreen)
+                Button("") {
+                    guard session.phase.canSearch else { return }
+                    withAnimation(.spring(response: 0.24, dampingFraction: 0.82)) {
+                        session.isSearchExpanded = true
+                    }
+                    isSearchFocused = true
+                }
+                .keyboardShortcut("f", modifiers: [.command])
+                .opacity(0)
+                .frame(width: 0, height: 0)
+                .accessibilityHidden(true)
+            }
+        }
         .overlay(alignment: .topLeading) {
             MainWindowTrafficLightsView(
                 zoomBehaviorIsFullScreen: true,
@@ -206,12 +239,13 @@ public struct WorkspaceWindowView: View {
             .padding(.leading, 19)
             .padding(.top, 24)
         }
-        .background(colorScheme == .dark ? Color(red: 0.11, green: 0.12, blue: 0.11) : Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: 32, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: outerCornerRadius, style: .continuous))
         .overlay {
-            RoundedRectangle(cornerRadius: 32, style: .continuous)
-                .strokeBorder(Color.primary.opacity(0.10), lineWidth: 1)
-                .allowsHitTesting(false)
+            if !isWindowFullScreen {
+                RoundedRectangle(cornerRadius: outerCornerRadius, style: .continuous)
+                    .strokeBorder(Color.primary.opacity(0.10), lineWidth: 1)
+                    .allowsHitTesting(false)
+            }
         }
         .onDrop(of: [.fileURL], isTargeted: $isDropTargeted) { providers in
             handleDrop(providers: providers)
@@ -228,15 +262,28 @@ public struct WorkspaceWindowView: View {
         }
     }
 
+    private var bezelFill: Color {
+        colorScheme == .dark
+            ? Color(red: 28.0 / 255.0, green: 29.0 / 255.0, blue: 32.0 / 255.0)     // #1C1D20
+            : Color(red: 237.0 / 255.0, green: 238.0 / 255.0, blue: 241.0 / 255.0) // #EDEEF1
+    }
+
+    private var mainCardFill: Color {
+        colorScheme == .dark
+            ? Color(red: 30.0 / 255.0, green: 31.0 / 255.0, blue: 34.0 / 255.0)     // #1E1F22
+            : Color.white
+    }
+
     // MARK: - Unified Top Toolbar
 
     private var workspaceToolbar: some View {
-        HStack(spacing: 10) {
-            // Left Cluster: Native traffic lights are used (ArcZip parity); reserve 74pt.
-            HStack(spacing: 12) {
-                // Archive Title + Draft Dot + Inline Rename + Encryption Badge
-                HStack(spacing: 6) {
-                    if isRenamingArchiveInline {
+        let canDelete = !session.selectedEntryIDs.isEmpty && session.safeDescriptor.editingEligibility.allowed
+
+        return HStack(spacing: 10) {
+            // Left Cluster: Archive Title + Pencil @ x = 92, maxWidth = 248 + Encryption Badge
+            HStack(spacing: 6) {
+                if isRenamingArchiveInline {
+                    HStack(spacing: 6) {
                         TextField("压缩包名称", text: $inlineArchiveNameDraft)
                             .textFieldStyle(.plain)
                             .font(.system(size: 15, weight: .bold))
@@ -246,126 +293,155 @@ public struct WorkspaceWindowView: View {
                             .clipShape(RoundedRectangle(cornerRadius: 5, style: .continuous))
                             .overlay(
                                 RoundedRectangle(cornerRadius: 5, style: .continuous)
-                                    .stroke(ProZipTheme.accent, lineWidth: 1)
+                                    .stroke(ProZipTheme.accent, lineWidth: 1.2)
                             )
-                            .frame(width: 160)
+                            .frame(width: 176)
                             .onSubmit {
                                 commitInlineArchiveRename()
                             }
-                    } else {
-                        Text(session.archiveName)
-                            .font(.system(size: 16, weight: .bold))
-                            .foregroundStyle(.primary)
-                            .lineLimit(1)
-                    }
-
-                    if session.hasUnsavedChanges {
-                        Circle()
-                            .fill(ProZipTheme.accent)
-                            .frame(width: 7, height: 7)
-                            .help("存在未保存的修改")
-                    }
-
-                    // Inline Rename Pencil Button
-                    Button {
-                        if isRenamingArchiveInline {
-                            commitInlineArchiveRename()
-                        } else {
-                            inlineArchiveNameDraft = session.archiveName
-                            isRenamingArchiveInline = true
-                        }
-                    } label: {
-                        Image(systemName: "pencil")
-                            .font(.system(size: 11, weight: .medium))
-                            .foregroundStyle(.tertiary)
-                    }
-                    .buttonStyle(.plain)
-                    .help("重命名压缩包")
-
-                    // Encryption Status Lock Badge -> ArchiveEncryptionNoticePopover
-                    if session.safeDescriptor.isEncrypted || session.displayedEntries.contains(where: \.isEncrypted) {
-                        Button {
-                            isEncryptionPopoverPresented.toggle()
-                        } label: {
-                            HStack(spacing: 3) {
-                                Image(systemName: "lock.fill")
-                                    .font(.system(size: 10, weight: .semibold))
-                                Text(session.safeDescriptor.hasEncryptedHeaders ? "加密头" : "已加密")
-                                    .font(.system(size: 10, weight: .medium))
+                            .onExitCommand {
+                                isRenamingArchiveInline = false
                             }
-                            .foregroundStyle(ProZipTheme.accentDeep)
-                            .padding(.horizontal, 6)
-                            .padding(.vertical, 2)
-                            .background(ProZipTheme.accentSoft)
-                            .clipShape(Capsule())
+
+                        Button {
+                            commitInlineArchiveRename()
+                        } label: {
+                            Image(systemName: "checkmark")
+                                .font(.system(size: 11, weight: .semibold))
+                                .foregroundStyle(ProZipTheme.accent)
+                                .frame(width: 22, height: 22)
                         }
                         .buttonStyle(.plain)
-                        .popover(isPresented: $isEncryptionPopoverPresented, arrowEdge: .bottom) {
-                            WorkspaceArchiveEncryptionPopover(session: session)
-                                .environmentObject(appViewModel)
+                        .help("确认重命名")
+                    }
+                } else {
+                    Button {
+                        inlineArchiveNameDraft = session.archiveName
+                        isRenamingArchiveInline = true
+                    } label: {
+                        HStack(spacing: 6) {
+                            Text(session.archiveName)
+                                .font(.system(size: 16, weight: .bold))
+                                .foregroundStyle(.primary)
+                                .lineLimit(1)
+                                .truncationMode(.middle)
+
+                            Image(systemName: "pencil")
+                                .font(.system(size: 11, weight: .medium))
+                                .foregroundStyle(isHoveringTitleRename ? .secondary : .tertiary)
                         }
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 3)
+                        .background(
+                            RoundedRectangle(cornerRadius: 6, style: .continuous)
+                                .fill(isHoveringTitleRename ? Color.primary.opacity(0.05) : Color.clear)
+                        )
+                    }
+                    .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.0, pressedScale: 0.98, hoverBrightness: 0))
+                    .frame(maxWidth: 248, alignment: .leading)
+                    .offset(x: -6)
+                    .onHover { hovering in
+                        withAnimation(.easeOut(duration: 0.12)) { isHoveringTitleRename = hovering }
+                    }
+                    .accessibilityLabel("重命名压缩包")
+                    .help("重命名压缩包")
+                }
+
+                // Encryption Status Lock Badge -> ArchiveEncryptionNoticePopover
+                if session.safeDescriptor.isEncrypted || session.displayedEntries.contains(where: \.isEncrypted) {
+                    Button {
+                        isEncryptionPopoverPresented.toggle()
+                    } label: {
+                        HStack(spacing: 3) {
+                            Image(systemName: "lock.fill")
+                                .font(.system(size: 10, weight: .semibold))
+                            Text(session.safeDescriptor.hasEncryptedHeaders ? "加密头" : "已加密")
+                                .font(.system(size: 10, weight: .medium))
+                        }
+                        .foregroundStyle(Color(red: 0.78, green: 0.48, blue: 0.08))
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(Color(red: 0.90, green: 0.62, blue: 0.21).opacity(0.16))
+                        .clipShape(Capsule())
+                    }
+                    .buttonStyle(.plain)
+                    .popover(isPresented: $isEncryptionPopoverPresented, arrowEdge: .bottom) {
+                        WorkspaceArchiveEncryptionPopover(session: session)
+                            .environmentObject(appViewModel)
                     }
                 }
-                .padding(.leading, 74)
             }
 
             Spacer(minLength: 8)
                 .overlay { WindowDragArea() }
 
-            // Right Cluster: View Mode Capsule + Action Circle Buttons
+            // Right Cluster: View Mode Capsule (108×38) + Delete (38×38) + Save (38×38) + Search (38×38 / 220×38)
             HStack(spacing: 8) {
-                // View Mode Switcher Capsule (Matching workspace.png)
                 HStack(spacing: 2) {
-                    viewModeCapsuleButton(.icons, icon: "square.grid.2x2", tooltip: "图标视图 (⌘1)")
-                    viewModeCapsuleButton(.list, icon: "list.bullet", tooltip: "列表视图 (⌘2)")
-                    viewModeCapsuleButton(.columns, icon: "rectangle.split.3x1", tooltip: "分栏视图 (⌘3)")
+                    viewModeCapsuleButton(.icons, icon: "square.grid.2x2", label: "图标视图", tooltip: "图标视图 (⌘1)")
+                    viewModeCapsuleButton(.list, icon: "list.bullet", label: "列表视图", tooltip: "列表视图 (⌘2)")
+                    viewModeCapsuleButton(.columns, icon: "rectangle.split.3x1", label: "分栏视图", tooltip: "分栏视图 (⌘3)")
                 }
-                .padding(4)
+                .padding(.horizontal, 4)
+                .padding(.vertical, 3)
+                .frame(width: 108, height: 38)
                 .background(
                     Capsule()
-                        .fill(colorScheme == .dark ? Color.white.opacity(0.06) : Color(white: 0.96))
+                        .fill(colorScheme == .dark ? Color.white.opacity(0.06) : Color(red: 0.961, green: 0.961, blue: 0.969))
                 )
                 .overlay(
                     Capsule()
-                        .stroke(Color.primary.opacity(0.08), lineWidth: 1)
+                        .strokeBorder(Color.primary.opacity(0.06), lineWidth: 1)
                 )
+                .accessibilityElement(children: .contain)
+                .accessibilityLabel("显示方式")
 
-                // Delete Button (Matching workspace.png trash circle button; turns #F2264B crimson when items selected)
+                // Delete Button: SOLID #E1385A crimson-pink + WHITE trash icon when items selected
                 toolbarCircleButton(
                     icon: "trash",
-                    tooltip: "删除所选项目",
-                    isEnabled: !session.selectedEntryIDs.isEmpty,
-                    activeSolidFill: !session.selectedEntryIDs.isEmpty ? Color(red: 0.949, green: 0.149, blue: 0.294) : nil
+                    accessibilityID: "trash",
+                    label: "删除",
+                    tooltip: "删除",
+                    isEnabled: canDelete,
+                    activeSolidFill: canDelete ? Color(red: 0.882, green: 0.220, blue: 0.353) : nil
                 ) {
                     session.removeSelectedDraftEntries()
                 }
 
-                // Save Button (Matching workspace.png floppy/save circle button; turns #16A34A green when draft modified)
+                // Save Button: SOLID #1EA854 emerald-green + WHITE floppy icon when dirty
                 toolbarCircleButton(
                     icon: "externaldrive.badge.checkmark",
                     customFloppyGraphic: true,
-                    tooltip: "保存对压缩包的修改 (⌘S)",
+                    accessibilityID: nil,
+                    label: "保存",
+                    tooltip: "保存",
                     isEnabled: session.hasUnsavedChanges,
-                    activeSolidFill: session.hasUnsavedChanges ? Color(red: 0.086, green: 0.639, blue: 0.290) : nil
+                    activeSolidFill: session.hasUnsavedChanges ? Color(red: 0.118, green: 0.659, blue: 0.329) : nil
                 ) {
                     Task {
                         appViewModel.saveChanges(for: session)
                     }
                 }
 
-                // Expandable Search Bar or Search Circle Button
+                // Expandable Search Bar (220×38) or Collapsed Search Circle Button (38×38)
                 if session.isSearchExpanded {
-                    HStack(spacing: 6) {
+                    HStack(spacing: 8) {
                         Image(systemName: "magnifyingglass")
-                            .font(.system(size: 12, weight: .medium))
-                            .foregroundStyle(.secondary)
+                            .font(.system(size: 13, weight: .medium))
+                            .foregroundStyle(ProZipTheme.accent)
 
-                        TextField("搜索包内文件…", text: $session.searchQuery)
+                        TextField("搜索压缩包", text: $session.searchQuery)
                             .textFieldStyle(.plain)
                             .focused($isSearchFocused)
                             .onAppear { isSearchFocused = true }
-                            .font(.system(size: 12))
-                            .frame(width: 136)
+                            .onExitCommand {
+                                session.searchQuery = ""
+                                withAnimation(.spring(response: 0.24, dampingFraction: 0.82)) {
+                                    session.isSearchExpanded = false
+                                }
+                            }
+                            .font(.system(size: 13))
+                            .frame(maxWidth: .infinity)
 
                         Button {
                             session.searchQuery = ""
@@ -373,22 +449,41 @@ public struct WorkspaceWindowView: View {
                                 session.isSearchExpanded = false
                             }
                         } label: {
-                            Image(systemName: "xmark.circle.fill")
-                                .font(.system(size: 12))
-                                .foregroundStyle(.secondary)
+                            ZStack {
+                                Circle()
+                                    .fill(colorScheme == .dark ? Color.white.opacity(0.12) : Color.white)
+                                    .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.2 : 0.05), radius: 2, y: 1)
+                                Circle()
+                                    .strokeBorder(Color.primary.opacity(0.08), lineWidth: 1)
+                                Image(systemName: "xmark")
+                                    .font(.system(size: 10, weight: .semibold))
+                                    .foregroundStyle(.primary.opacity(0.75))
+                            }
+                            .frame(width: 28, height: 28)
                         }
-                        .buttonStyle(.plain)
+                        .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.04, pressedScale: 0.94))
+                        .accessibilityLabel("清除并关闭搜索")
+                        .help("关闭搜索")
                     }
-                    .padding(.horizontal, 10)
-                    .frame(height: 32)
-                    .background(colorScheme == .dark ? Color.white.opacity(0.08) : Color(white: 0.96))
-                    .clipShape(Capsule())
-                    .overlay(Capsule().stroke(ProZipTheme.accent.opacity(0.45), lineWidth: 1))
-                    .transition(.scale(scale: 0.9, anchor: .trailing).combined(with: .opacity))
+                    .padding(.leading, 12)
+                    .padding(.trailing, 5)
+                    .frame(width: 220, height: 38)
+                    .background(
+                        Capsule()
+                            .fill(colorScheme == .dark ? Color.white.opacity(0.08) : Color(red: 0.965, green: 0.965, blue: 0.973))
+                            .shadow(color: ProZipTheme.accent.opacity(0.14), radius: 6, y: 1)
+                    )
+                    .overlay(
+                        Capsule()
+                            .strokeBorder(ProZipTheme.accent, lineWidth: 1.5)
+                    )
+                    .transition(.scale(scale: 0.92, anchor: .trailing).combined(with: .opacity))
                 } else {
                     toolbarCircleButton(
                         icon: "magnifyingglass",
-                        tooltip: "搜索压缩包 (⌘F)",
+                        accessibilityID: "ProZip.WorkspaceSearch",
+                        label: "搜索压缩包",
+                        tooltip: "搜索压缩包",
                         isEnabled: true
                     ) {
                         withAnimation(.spring(response: 0.24, dampingFraction: 0.82)) {
@@ -400,7 +495,7 @@ public struct WorkspaceWindowView: View {
         }
     }
 
-    private func viewModeCapsuleButton(_ mode: WorkspaceViewMode, icon: String, tooltip: String) -> some View {
+    private func viewModeCapsuleButton(_ mode: WorkspaceViewMode, icon: String, label: String, tooltip: String) -> some View {
         let isSelected = session.viewMode == mode
         return Button {
             withAnimation(.spring(response: 0.24, dampingFraction: 0.82)) {
@@ -411,59 +506,69 @@ public struct WorkspaceWindowView: View {
                 if isSelected {
                     Circle()
                         .fill(ProZipTheme.accent)
-                        .frame(width: 28, height: 28)
+                        .frame(width: 32, height: 32)
+                        .shadow(color: ProZipTheme.accent.opacity(0.28), radius: 4, y: 1)
                         .matchedGeometryEffect(id: "ViewModeActivePill", in: viewModeAnimationNamespace)
                 }
                 Image(systemName: icon)
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(.system(size: 12.5, weight: .semibold))
                     .foregroundStyle(isSelected ? Color.white : Color.primary.opacity(0.68))
             }
             .frame(width: 32, height: 32)
-            .contentShape(Rectangle())
+            .contentShape(Circle())
         }
         .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.04, pressedScale: 0.94))
+        .accessibilityIdentifier(icon)
+        .accessibilityLabel(label)
+        .accessibilityAddTraits(isSelected ? [.isSelected] : [])
         .help(tooltip)
     }
 
     private func toolbarCircleButton(
         icon: String,
         customFloppyGraphic: Bool = false,
+        accessibilityID: String? = nil,
+        label: String,
         tooltip: String,
         isEnabled: Bool = true,
         isActive: Bool = false,
         activeSolidFill: Color? = nil,
         action: @escaping () -> Void
     ) -> some View {
-        Button(action: action) {
+        let button = Button(action: action) {
             ZStack {
                 Circle()
                     .fill(
                         activeSolidFill
                             ?? (isActive
                                 ? ProZipTheme.accentSoft
-                                : (colorScheme == .dark ? Color.white.opacity(0.06) : Color(white: 0.965)))
+                                : (colorScheme == .dark ? Color.white.opacity(0.06) : Color(red: 0.961, green: 0.961, blue: 0.969)))
                     )
                     .frame(width: 38, height: 38)
+                    .shadow(
+                        color: activeSolidFill?.opacity(0.26) ?? Color.black.opacity(colorScheme == .dark ? 0.16 : 0.03),
+                        radius: activeSolidFill != nil ? 5 : 2,
+                        y: 1
+                    )
                     .overlay(
                         Circle()
-                            .stroke(
+                            .strokeBorder(
                                 activeSolidFill != nil
-                                    ? Color.clear
-                                    : (isActive ? ProZipTheme.accent.opacity(0.5) : Color.primary.opacity(0.08)),
+                                    ? Color.white.opacity(0.22)
+                                    : (isActive ? ProZipTheme.accent.opacity(0.5) : Color.primary.opacity(0.06)),
                                 lineWidth: 1
                             )
                     )
 
                 if customFloppyGraphic {
-                    if activeSolidFill != nil {
-                        FloppyDiskSaveIcon(isEnabled: true)
-                            .colorInvert()
-                    } else {
-                        FloppyDiskSaveIcon(isEnabled: isEnabled)
-                    }
+                    FloppyDiskSaveIcon(
+                        strokeColor: activeSolidFill != nil
+                            ? Color.white
+                            : (isEnabled ? Color.primary.opacity(0.75) : Color.primary.opacity(0.32))
+                    )
                 } else {
                     Image(systemName: icon)
-                        .font(.system(size: 13, weight: .medium))
+                        .font(.system(size: 13.5, weight: activeSolidFill != nil ? .semibold : .medium))
                         .foregroundStyle(
                             activeSolidFill != nil
                                 ? Color.white
@@ -476,174 +581,162 @@ public struct WorkspaceWindowView: View {
         }
         .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.04, pressedScale: 0.94))
         .disabled(!isEnabled)
+        .accessibilityLabel(label)
         .help(tooltip)
+
+        return Group {
+            if let accessibilityID {
+                button.accessibilityIdentifier(accessibilityID)
+            } else {
+                button
+            }
+        }
     }
 
-    // MARK: - Sub-Toolbar / Breadcrumb Pill Bar (Matching workspace.png)
+    // MARK: - Sub-Toolbar / Breadcrumb Pill Bar & Auxiliary Entries Toggle
 
     private var breadcrumbBarContainer: some View {
-        HStack(spacing: 10) {
-            // Rounded White/Glass Pill with Back / Forward / Up + Archive Path Segments
+        HStack(spacing: 12) {
+            // Intrinsic content-hugging Breadcrumb Capsule (expands via horizontal ScrollView only on deep paths)
             HStack(spacing: 10) {
-                // Navigation Arrows
                 HStack(spacing: 6) {
-                    Button {
+                    breadcrumbNavButton(icon: "chevron.left", id: "chevron.left", label: "后退", isEnabled: session.canGoBack) {
                         Task { await session.goBack() }
-                    } label: {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 11, weight: .semibold))
-                            .frame(width: 28, height: 28)
-                            .foregroundStyle(session.canGoBack ? Color.primary.opacity(0.75) : Color.secondary.opacity(0.35))
                     }
-                    .buttonStyle(.plain)
-                    .disabled(!session.canGoBack)
-                    .help("后退")
-
-                    Button {
+                    breadcrumbNavButton(icon: "chevron.right", id: "chevron.right", label: "前进", isEnabled: session.canGoForward) {
                         Task { await session.goForward() }
-                    } label: {
-                        Image(systemName: "chevron.right")
-                            .font(.system(size: 11, weight: .semibold))
-                            .frame(width: 28, height: 28)
-                            .foregroundStyle(session.canGoForward ? Color.primary.opacity(0.75) : Color.secondary.opacity(0.35))
                     }
-                    .buttonStyle(.plain)
-                    .disabled(!session.canGoForward)
-                    .help("前进")
-
-                    Button {
+                    breadcrumbNavButton(icon: "arrow.up", id: "arrow.up", label: "上一级", isEnabled: session.canGoUp) {
                         Task { await session.goUp() }
-                    } label: {
-                        Image(systemName: "arrow.up")
-                            .font(.system(size: 11, weight: .semibold))
-                            .frame(width: 28, height: 28)
-                            .foregroundStyle(session.canGoUp ? Color.primary.opacity(0.75) : Color.secondary.opacity(0.35))
                     }
-                    .buttonStyle(.plain)
-                    .disabled(!session.canGoUp)
-                    .help("返回上一级目录")
                 }
 
                 Divider()
                     .frame(height: 14)
 
-                // Clickable Breadcrumb Segments
-                HStack(spacing: 4) {
-                    let crumbs = session.breadcrumbs
-                    ForEach(Array(crumbs.indices), id: \.self) { idx in
-                        let crumb = crumbs[idx]
-                        let isLast = idx == crumbs.count - 1
-
-                        if idx > 0 {
-                            Image(systemName: "chevron.right")
-                                .font(.system(size: 9, weight: .semibold))
-                                .foregroundStyle(.tertiary)
-                        }
-
-                        Button {
-                            Task { await session.enterDirectory(crumb.path) }
-                        } label: {
-                            HStack(spacing: 5) {
-                                if idx == 0 {
-                                    ArchiveMiniDocBadgeIcon()
-                                } else {
-                                    Image(systemName: "folder.fill")
-                                        .font(.system(size: 11))
-                                        .foregroundStyle(Color(red: 0.33, green: 0.68, blue: 0.96))
-                                }
-
-                                Text(crumb.title)
-                                    .font(.system(size: 11, weight: isLast ? .semibold : .medium))
-                                    .foregroundStyle(isLast ? .primary : .secondary)
-                                    .lineLimit(1)
-                            }
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
-                            .background(
-                                isLast
-                                    ? (colorScheme == .dark ? Color.white.opacity(0.08) : Color.black.opacity(0.045))
-                                    : Color.clear
-                            )
-                            .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
-                        }
-                        .buttonStyle(.plain)
+                ViewThatFits(in: .horizontal) {
+                    breadcrumbSegmentsRow
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        breadcrumbSegmentsRow
                     }
                 }
             }
             .padding(.horizontal, 10)
-            .padding(.vertical, 5)
-            .frame(maxWidth: 470, alignment: .leading)
-            .fixedSize(horizontal: true, vertical: false)
             .frame(height: 36)
             .background(
                 Capsule()
                     .fill(colorScheme == .dark ? Color.white.opacity(0.05) : Color.white)
-                    .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.25 : 0.06), radius: 6, x: 0, y: 2)
+                    .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.25 : 0.05), radius: 6, x: 0, y: 2)
             )
             .overlay(
                 Capsule()
-                    .stroke(Color.primary.opacity(0.06), lineWidth: 1)
+                    .strokeBorder(Color.primary.opacity(0.06), lineWidth: 1)
             )
+            .accessibilityElement(children: .contain)
+            .accessibilityLabel("文件夹导航")
 
-            // Modified Draft Banner if session has unsaved mutations
-            if session.hasUnsavedChanges {
-                HStack(spacing: 8) {
-                    Circle()
-                        .fill(ProZipTheme.accent)
-                        .frame(width: 6, height: 6)
-
-                    Text("已修改 — 待保存 (\(session.pendingMutations.count))")
-                        .font(.system(size: 11, weight: .medium))
-                        .foregroundStyle(.secondary)
-
-                    if session.canUndo {
-                        Button("撤销") {
-                            Task { await session.undo() }
-                        }
-                        .font(.system(size: 11, weight: .semibold))
-                        .foregroundStyle(ProZipTheme.accent)
-                        .buttonStyle(.plain)
-                    }
-
-                    Button("保存") {
-                        appViewModel.saveChanges(for: session)
-                    }
-                    .font(.system(size: 11, weight: .semibold))
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 2)
-                    .background(ProZipTheme.accent)
-                    .foregroundStyle(.white)
-                    .clipShape(Capsule())
-                    .buttonStyle(.plain)
-                }
-                .padding(.horizontal, 10)
-                .padding(.vertical, 5)
-                .background(ProZipTheme.accentSoft)
-                .clipShape(Capsule())
-            }
-
-            Spacer()
+            Spacer(minLength: 12)
 
             if session.auxiliaryEntryCount > 0 {
+                let showingAux = preferences.showsAuxiliaryEntries
                 Button {
-                    preferences.showsAuxiliaryEntries.toggle()
+                    withAnimation(.spring(response: 0.22, dampingFraction: 0.82)) {
+                        preferences.showsAuxiliaryEntries.toggle()
+                    }
                 } label: {
-                    HStack(spacing: 6) {
-                        Image(systemName: preferences.showsAuxiliaryEntries ? "eye" : "eye.slash")
-                            .font(.system(size: 12, weight: .medium))
-                        Text("\(preferences.showsAuxiliaryEntries ? "已显示" : "已隐藏") \(session.auxiliaryEntryCount) 项")
-                            .font(.system(size: 10, weight: .semibold))
+                    HStack(spacing: 5) {
+                        Image(systemName: showingAux ? "eye" : "eye.slash")
+                            .font(.system(size: 11, weight: .medium))
+                        Text("\(showingAux ? "已显示" : "已隐藏") \(session.auxiliaryEntryCount) 项")
+                            .font(.system(size: 11.5, weight: .medium))
                     }
                     .padding(.horizontal, 10)
-                    .frame(height: 24)
-                    .foregroundStyle(preferences.showsAuxiliaryEntries ? ProZipTheme.accent : .secondary)
-                    .background(preferences.showsAuxiliaryEntries ? ProZipTheme.accentSoft : Color.clear, in: Capsule())
-                    .overlay(Capsule().stroke(preferences.showsAuxiliaryEntries ? ProZipTheme.accent.opacity(0.25) : Color.primary.opacity(0.06), lineWidth: 1))
+                    .frame(height: 25)
+                    .foregroundStyle(
+                        showingAux
+                            ? (colorScheme == .dark ? ProZipTheme.accentBright : ProZipTheme.accentDeep)
+                            : (colorScheme == .dark ? Color.white.opacity(0.72) : Color(red: 0.373, green: 0.388, blue: 0.408))
+                    )
+                    .background(
+                        Capsule().fill(
+                            showingAux
+                                ? ProZipTheme.accent.opacity(isHoveringAuxPill ? 0.20 : 0.14)
+                                : (colorScheme == .dark
+                                    ? Color.white.opacity(isHoveringAuxPill ? 0.12 : 0.07)
+                                    : (isHoveringAuxPill
+                                        ? Color(red: 0.914, green: 0.922, blue: 0.937)
+                                        : Color(red: 0.953, green: 0.957, blue: 0.965)))
+                        )
+                    )
+                    .overlay(
+                        Capsule().strokeBorder(
+                            showingAux ? ProZipTheme.accent.opacity(0.30) : Color.primary.opacity(0.06),
+                            lineWidth: 1
+                        )
+                    )
+                }
+                .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.02, pressedScale: 0.96, hoverBrightness: 0))
+                .fixedSize()
+                .onHover { hovering in
+                    withAnimation(.easeOut(duration: 0.12)) { isHoveringAuxPill = hovering }
+                }
+                .accessibilityLabel(showingAux ? "隐藏辅助项目" : "显示辅助项目")
+                .accessibilityValue("\(session.auxiliaryEntryCount) 个辅助项目")
+            }
+        }
+    }
+
+    private func breadcrumbNavButton(
+        icon: String,
+        id: String,
+        label: String,
+        isEnabled: Bool,
+        action: @escaping () -> Void
+    ) -> some View {
+        BreadcrumbNavButton(icon: icon, id: id, label: label, isEnabled: isEnabled, action: action)
+    }
+
+    private var breadcrumbSegmentsRow: some View {
+        let crumbs = session.breadcrumbs
+        return HStack(spacing: 4) {
+            ForEach(Array(crumbs.indices), id: \.self) { idx in
+                let crumb = crumbs[idx]
+                let isLast = idx == crumbs.count - 1
+
+                if idx > 0 {
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 9, weight: .semibold))
+                        .foregroundStyle(.tertiary)
+                }
+
+                Button {
+                    Task { await session.enterDirectory(crumb.path) }
+                } label: {
+                    HStack(spacing: 5) {
+                        if idx == 0 {
+                            ArchiveMiniDocBadgeIcon()
+                        } else {
+                            Image(systemName: "folder.fill")
+                                .font(.system(size: 11))
+                                .foregroundStyle(Color(red: 0.33, green: 0.68, blue: 0.96))
+                        }
+
+                        Text(crumb.title)
+                            .font(.system(size: 11.5, weight: isLast ? .semibold : .medium))
+                            .foregroundStyle(isLast ? .primary : .secondary)
+                            .lineLimit(1)
+                    }
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(
+                        isLast
+                            ? (colorScheme == .dark ? Color.white.opacity(0.08) : Color.black.opacity(0.045))
+                            : Color.clear
+                    )
+                    .clipShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
                 }
                 .buttonStyle(.plain)
-                .fixedSize()
-                .accessibilityLabel(preferences.showsAuxiliaryEntries ? "隐藏辅助项目" : "显示辅助项目")
-                .accessibilityValue("\(session.auxiliaryEntryCount) 个辅助项目")
+                .accessibilityLabel(crumb.title)
             }
         }
     }
@@ -664,8 +757,8 @@ public struct WorkspaceWindowView: View {
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 6)
-        .background(ProZipTheme.accentSoft)
-        .clipShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
+        .background(Color.primary.opacity(0.045))
+        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
     }
 
     private func errorBanner(message: String) -> some View {
@@ -683,7 +776,7 @@ public struct WorkspaceWindowView: View {
         .padding(.horizontal, 12)
         .padding(.vertical, 6)
         .background(Color.orange.opacity(0.14))
-        .clipShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
     }
 
     // MARK: - Helpers
@@ -700,11 +793,12 @@ public struct WorkspaceWindowView: View {
     }
 
     private func handleEntryHover(_ entry: ArchiveEntry?) {
+        hasActiveRowHover = (entry != nil)
         hoverDebounceTask?.cancel()
         guard preferences.hoverPreviewEnabled, let entry = entry, !entry.isDirectory else {
             hoverDebounceTask = Task { @MainActor in
                 try? await Task.sleep(nanoseconds: 180_000_000)
-                if !Task.isCancelled && hoveredEntryID == nil && !isHoverPreviewHovered {
+                if !Task.isCancelled && !hasActiveRowHover && !isHoverPreviewHovered {
                     withAnimation(.spring(response: 0.25, dampingFraction: 0.82)) {
                         hoverPreviewEntry = nil
                     }
@@ -737,62 +831,156 @@ public struct WorkspaceWindowView: View {
     }
 }
 
-// MARK: - Interactive macOS Window Traffic Lights (#FF5F57, #FEBC2E, #28C840)
+private struct BreadcrumbNavButton: View {
+    let icon: String
+    let id: String
+    let label: String
+    let isEnabled: Bool
+    let action: () -> Void
+    @State private var isHovering = false
+
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: icon)
+                .font(.system(size: 11, weight: .semibold))
+                .frame(width: 28, height: 28)
+                .foregroundStyle(isEnabled ? Color.primary.opacity(0.76) : Color.secondary.opacity(0.35))
+                .background(
+                    Circle()
+                        .fill(isEnabled && isHovering ? Color.primary.opacity(0.06) : Color.clear)
+                )
+        }
+        .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.0, pressedScale: 0.94, hoverBrightness: 0))
+        .disabled(!isEnabled)
+        .onHover { hovering in
+            withAnimation(.easeOut(duration: 0.12)) { isHovering = hovering }
+        }
+        .accessibilityIdentifier(id)
+        .accessibilityLabel(label)
+        .help(label)
+    }
+}
+
+private struct WorkspaceFullScreenObserver: NSViewRepresentable {
+    @Binding var isFullScreen: Bool
+
+    func makeNSView(context: Context) -> NSView {
+        let view = ObserverView()
+        view.onChange = { fullScreen in
+            if isFullScreen != fullScreen {
+                isFullScreen = fullScreen
+            }
+        }
+        return view
+    }
+
+    func updateNSView(_ nsView: NSView, context: Context) {
+        (nsView as? ObserverView)?.onChange = { fullScreen in
+            if isFullScreen != fullScreen {
+                isFullScreen = fullScreen
+            }
+        }
+    }
+
+    private final class ObserverView: NSView {
+        var onChange: ((Bool) -> Void)?
+        private var tokens: [NSObjectProtocol] = []
+
+        override func viewDidMoveToWindow() {
+            super.viewDidMoveToWindow()
+            tokens.forEach { NotificationCenter.default.removeObserver($0) }
+            tokens.removeAll()
+            guard let window else { return }
+            let report: (Bool) -> Void = { [weak self] value in
+                DispatchQueue.main.async { self?.onChange?(value) }
+            }
+            report(window.styleMask.contains(.fullScreen))
+            let center = NotificationCenter.default
+            tokens.append(center.addObserver(forName: NSWindow.willEnterFullScreenNotification, object: window, queue: .main) { _ in report(true) })
+            tokens.append(center.addObserver(forName: NSWindow.didEnterFullScreenNotification, object: window, queue: .main) { _ in report(true) })
+            tokens.append(center.addObserver(forName: NSWindow.didExitFullScreenNotification, object: window, queue: .main) { _ in report(false) })
+        }
+
+        deinit {
+            tokens.forEach { NotificationCenter.default.removeObserver($0) }
+        }
+    }
+}
+
+// MARK: - Interactive macOS Window Traffic Lights (Offscreen Fallback; Hidden in Native Titled Windows)
 
 public struct MainWindowTrafficLightsView: View {
     public var zoomBehaviorIsFullScreen: Bool
+    public var isZoomEnabled: Bool
     public var onClose: () -> Void
     public var onMinimize: () -> Void
     public var onZoom: () -> Void
 
     @State private var isHoveringCluster: Bool = false
+    @State private var isOptionHeld: Bool = false
 
     public init(
         zoomBehaviorIsFullScreen: Bool = false,
+        isZoomEnabled: Bool = true,
         onClose: @escaping () -> Void = {},
         onMinimize: @escaping () -> Void = {},
         onZoom: @escaping () -> Void = {}
     ) {
         self.zoomBehaviorIsFullScreen = zoomBehaviorIsFullScreen
+        self.isZoomEnabled = isZoomEnabled
         self.onClose = onClose
         self.onMinimize = onMinimize
         self.onZoom = onZoom
     }
 
     public var body: some View {
-        HStack(spacing: 4) {
-            trafficLightButton(
-                fill: Color(red: 1.0, green: 0.373, blue: 0.341), // #FF5F57
-                stroke: Color(red: 0.88, green: 0.27, blue: 0.25),
-                symbol: "xmark",
-                action: onClose
-            )
+        TrafficLightsFallbackHost {
+            HStack(spacing: 4) {
+                trafficLightButton(
+                    fill: Color(red: 1.0, green: 0.373, blue: 0.341), // #FF5F57
+                    stroke: Color(red: 0.88, green: 0.27, blue: 0.25),
+                    symbol: "xmark",
+                    isEnabled: true,
+                    action: onClose
+                )
 
-            trafficLightButton(
-                fill: Color(red: 0.996, green: 0.737, blue: 0.180), // #FEBC2E
-                stroke: Color(red: 0.87, green: 0.62, blue: 0.10),
-                symbol: "minus",
-                action: onMinimize
-            )
+                trafficLightButton(
+                    fill: Color(red: 0.996, green: 0.737, blue: 0.180), // #FEBC2E
+                    stroke: Color(red: 0.87, green: 0.62, blue: 0.10),
+                    symbol: "minus",
+                    isEnabled: true,
+                    action: onMinimize
+                )
 
-            trafficLightButton(
-                fill: Color(red: 0.157, green: 0.784, blue: 0.251), // #28C840
-                stroke: Color(red: 0.11, green: 0.66, blue: 0.18),
-                symbol: zoomBehaviorIsFullScreen ? "arrow.up.left.and.arrow.down.right" : "plus",
-                action: onZoom
-            )
-        }
-        .onHover { hovering in
-            withAnimation(.easeInOut(duration: 0.12)) {
-                isHoveringCluster = hovering
+                trafficLightButton(
+                    fill: isZoomEnabled
+                        ? Color(red: 0.157, green: 0.784, blue: 0.251)
+                        : Color.secondary.opacity(0.28),
+                    stroke: isZoomEnabled
+                        ? Color(red: 0.11, green: 0.66, blue: 0.18)
+                        : Color.secondary.opacity(0.22),
+                    symbol: (zoomBehaviorIsFullScreen && !isOptionHeld)
+                        ? "arrow.up.left.and.arrow.down.right"
+                        : "plus",
+                    isEnabled: isZoomEnabled,
+                    action: onZoom
+                )
+            }
+            .onHover { hovering in
+                isOptionHeld = NSEvent.modifierFlags.contains(.option)
+                withAnimation(.easeInOut(duration: 0.12)) {
+                    isHoveringCluster = hovering
+                }
             }
         }
+        .fixedSize()
     }
 
     private func trafficLightButton(
         fill: Color,
         stroke: Color,
         symbol: String,
+        isEnabled: Bool,
         action: @escaping () -> Void
     ) -> some View {
         Button(action: action) {
@@ -805,23 +993,64 @@ public struct MainWindowTrafficLightsView: View {
                             .stroke(stroke.opacity(0.65), lineWidth: 0.5)
                     )
 
-                if isHoveringCluster {
+                if isHoveringCluster && isEnabled {
                     Image(systemName: symbol)
-                        .font(.system(size: 9, weight: .bold))
+                        .font(.system(size: 8.5, weight: .bold))
                         .foregroundStyle(Color.black.opacity(0.65))
                 }
             }
         }
         .buttonStyle(.plain)
+        .disabled(!isEnabled)
         .frame(width: 16, height: 16)
         .accessibilityLabel(symbol == "xmark" ? "关闭" : symbol == "minus" ? "最小化" : zoomBehaviorIsFullScreen ? "全屏幕" : "缩放窗口")
     }
 }
 
-// MARK: - Custom Toolbar & Breadcrumb Graphics (Matching workspace.png)
+private struct TrafficLightsFallbackHost<Content: View>: NSViewRepresentable {
+    let content: Content
+
+    init(@ViewBuilder content: () -> Content) {
+        self.content = content()
+    }
+
+    func makeNSView(context: Context) -> FallbackHostingView<Content> {
+        let view = FallbackHostingView(rootView: content)
+        view.syncVisibility()
+        return view
+    }
+
+    func updateNSView(_ nsView: FallbackHostingView<Content>, context: Context) {
+        nsView.rootView = content
+        nsView.syncVisibility()
+    }
+
+    final class FallbackHostingView<Hosted: View>: NSHostingView<Hosted> {
+        override func viewDidMoveToWindow() {
+            super.viewDidMoveToWindow()
+            syncVisibility()
+        }
+
+        override func layout() {
+            syncVisibility()
+            super.layout()
+        }
+
+        func syncVisibility() {
+            let hideForNativeWindow = window.map {
+                $0.styleMask.contains(.titled) || $0.styleMask.contains(.fullScreen)
+            } ?? false
+            if isHidden != hideForNativeWindow {
+                isHidden = hideForNativeWindow
+            }
+        }
+    }
+}
+
+// MARK: - Custom Toolbar & Breadcrumb Graphics
 
 private struct FloppyDiskSaveIcon: View {
-    let isEnabled: Bool
+    let strokeColor: Color
 
     var body: some View {
         Canvas { context, size in
@@ -832,10 +1061,9 @@ private struct FloppyDiskSaveIcon: View {
             let shutterRect = CGRect(x: w * 0.33, y: h * 0.22, width: w * 0.34, height: h * 0.20)
             let labelRect = CGRect(x: w * 0.31, y: h * 0.52, width: w * 0.38, height: h * 0.26)
 
-            let strokeColor = isEnabled ? Color.primary.opacity(0.75) : Color.primary.opacity(0.32)
-            context.stroke(bodyPath, with: .color(strokeColor), lineWidth: 1.3)
-            context.stroke(Path(roundedRect: shutterRect, cornerRadius: 1), with: .color(strokeColor), lineWidth: 1.1)
-            context.stroke(Path(roundedRect: labelRect, cornerRadius: 1), with: .color(strokeColor), lineWidth: 1.1)
+            context.stroke(bodyPath, with: .color(strokeColor), lineWidth: 1.4)
+            context.stroke(Path(roundedRect: shutterRect, cornerRadius: 1), with: .color(strokeColor), lineWidth: 1.15)
+            context.stroke(Path(roundedRect: labelRect, cornerRadius: 1), with: .color(strokeColor), lineWidth: 1.15)
         }
         .frame(width: 24, height: 24)
     }
@@ -843,190 +1071,10 @@ private struct FloppyDiskSaveIcon: View {
 
 private struct ArchiveMiniDocBadgeIcon: View {
     var body: some View {
-        Image(nsImage: NSWorkspace.shared.icon(for: .zip))
-            .resizable()
-            .scaledToFit()
+        Image(systemName: "doc.zipper")
+            .font(.system(size: 11, weight: .medium))
+            .foregroundStyle(.secondary)
             .frame(width: 14, height: 14)
-    }
-}
-
-// MARK: - Left Sidebar View (210pt Width)
-
-public struct WorkspaceLeftSidebarView: View {
-    @ObservedObject public var session: ArchiveBrowsingSession
-    @Binding public var expandedFolderPaths: Set<String>
-    @EnvironmentObject public var appViewModel: ProZipAppViewModel
-    @Environment(\.colorScheme) private var colorScheme
-
-    public var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            // Section 1: Directory Tree
-            VStack(alignment: .leading, spacing: 6) {
-                Text("当前位置")
-                    .font(.system(size: 11, weight: .semibold))
-                    .foregroundStyle(.secondary)
-                    .padding(.horizontal, 12)
-
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 2) {
-                        sidebarFolderRow(
-                            title: session.archiveName,
-                            path: "",
-                            icon: "doc.zipper",
-                            depth: 0
-                        )
-
-                        ForEach(topLevelFolders, id: \.id) { folder in
-                            sidebarFolderRow(
-                                title: folder.name,
-                                path: folder.path,
-                                icon: "folder.fill",
-                                depth: 1
-                            )
-                        }
-                    }
-                    .padding(.horizontal, 8)
-                }
-                .frame(maxHeight: 200)
-            }
-
-            Divider()
-
-            // Section 2: Quick Shortcuts
-            VStack(alignment: .leading, spacing: 6) {
-                Text("快捷入口")
-                    .font(.system(size: 11, weight: .semibold))
-                    .foregroundStyle(.secondary)
-                    .padding(.horizontal, 12)
-
-                VStack(spacing: 2) {
-                    sidebarActionButton(title: "添加文件到压缩包…", icon: "plus.circle") {
-                        appViewModel.promptAddFiles(to: session)
-                    }
-                    sidebarActionButton(title: "新建压缩包…", icon: "doc.badge.plus") {
-                        appViewModel.beginCreation(sources: [], ownerSessionID: session.id)
-                    }
-                    sidebarActionButton(title: "切换到 Mini 窗口", icon: "pip.enter") {
-                        session.isMiniMode = true
-                    }
-                    sidebarActionButton(title: "打开任务队列", icon: "checklist") {
-                        appViewModel.isTaskProgressPresented = true
-                    }
-                }
-                .padding(.horizontal, 8)
-            }
-
-            Divider()
-
-            // Section 3: Archive Statistics
-            VStack(alignment: .leading, spacing: 8) {
-                Text("统计信息")
-                    .font(.system(size: 11, weight: .semibold))
-                    .foregroundStyle(.secondary)
-
-                let totalUncompressed = session.displayedEntries.reduce(Int64(0)) { $0 + $1.uncompressedSize }
-                let totalCompressed = max(session.safeDescriptor.totalCompressedSize, session.displayedEntries.reduce(Int64(0)) { $0 + $1.compressedSize })
-                let ratio = totalUncompressed > 0 ? min(1.0, max(0.0, Double(totalCompressed) / Double(totalUncompressed))) : 1.0
-
-                VStack(spacing: 6) {
-                    statRow(label: "当前目录条目", value: "\(session.displayedEntries.count)")
-                    statRow(label: "原始大小", value: ByteCountFormatter.string(fromByteCount: totalUncompressed, countStyle: .file))
-                    statRow(label: "压缩后大小", value: ByteCountFormatter.string(fromByteCount: totalCompressed, countStyle: .file))
-
-                    VStack(alignment: .leading, spacing: 4) {
-                        HStack {
-                            Text("压缩体积占比")
-                                .font(.system(size: 10))
-                                .foregroundStyle(.secondary)
-                            Spacer()
-                            Text("\(Int((ratio * 100).rounded()))%")
-                                .font(.system(size: 10, weight: .semibold))
-                                .foregroundStyle(ProZipTheme.accent)
-                        }
-
-                        GeometryReader { geo in
-                            ZStack(alignment: .leading) {
-                                Capsule()
-                                    .fill(Color.primary.opacity(0.08))
-                                    .frame(height: 5)
-                                Capsule()
-                                    .fill(ProZipTheme.accent)
-                                    .frame(width: max(6, geo.size.width * ratio), height: 5)
-                            }
-                        }
-                        .frame(height: 5)
-                    }
-                    .padding(.top, 2)
-                }
-                .padding(10)
-                .background(colorScheme == .dark ? Color.white.opacity(0.04) : Color.black.opacity(0.03))
-                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-            }
-            .padding(.horizontal, 12)
-
-            Spacer()
-        }
-        .padding(.vertical, 14)
-        .background(colorScheme == .dark ? Color(red: 0.13, green: 0.14, blue: 0.13) : Color(white: 0.975))
-    }
-
-    private var topLevelFolders: [ArchiveEntry] {
-        session.displayedEntries.filter(\.isDirectory)
-    }
-
-    private func sidebarFolderRow(title: String, path: String, icon: String, depth: Int) -> some View {
-        let isCurrent = session.currentDirectoryPath == path
-        return Button {
-            Task { await session.enterDirectory(path) }
-        } label: {
-            HStack(spacing: 6) {
-                Image(systemName: icon)
-                    .font(.system(size: 12))
-                    .foregroundStyle(isCurrent ? ProZipTheme.accent : Color(red: 0.33, green: 0.68, blue: 0.96))
-                Text(title)
-                    .font(.system(size: 12, weight: isCurrent ? .semibold : .regular))
-                    .foregroundStyle(isCurrent ? .primary : .secondary)
-                    .lineLimit(1)
-                Spacer()
-            }
-            .padding(.leading, CGFloat(depth * 14) + 8)
-            .padding(.trailing, 8)
-            .padding(.vertical, 5)
-            .background(isCurrent ? ProZipTheme.accentSoft : Color.clear)
-            .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
-        }
-        .buttonStyle(.plain)
-    }
-
-    private func sidebarActionButton(title: String, icon: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            HStack(spacing: 8) {
-                Image(systemName: icon)
-                    .font(.system(size: 12))
-                    .foregroundStyle(ProZipTheme.accent)
-                    .frame(width: 16)
-                Text(title)
-                    .font(.system(size: 12))
-                    .foregroundStyle(.primary)
-                Spacer()
-            }
-            .padding(.horizontal, 8)
-            .padding(.vertical, 5)
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
-    }
-
-    private func statRow(label: String, value: String) -> some View {
-        HStack {
-            Text(label)
-                .font(.system(size: 11))
-                .foregroundStyle(.secondary)
-            Spacer()
-            Text(value)
-                .font(.system(size: 11, weight: .medium))
-                .foregroundStyle(.primary)
-        }
     }
 }
 
@@ -1037,6 +1085,7 @@ public struct FoldspaceLandingView: View {
     @Binding public var isDropTargeted: Bool
     @EnvironmentObject public var appViewModel: ProZipAppViewModel
     @Environment(\.colorScheme) private var colorScheme
+    @State private var isHoveringCard = false
 
     public init(session: ArchiveBrowsingSession, isDropTargeted: Binding<Bool>) {
         self.session = session
@@ -1044,81 +1093,105 @@ public struct FoldspaceLandingView: View {
     }
 
     public var body: some View {
-        ZStack(alignment: .top) {
-            // Faint list skeleton (ArcZip shows the header + zebra rhythm behind the card)
-            VStack(spacing: 0) {
-                HStack(spacing: 0) {
-                    Text("名称")
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.leading, 16)
-                    Text("大小")
-                        .frame(width: 96, alignment: .leading)
-                        .padding(.leading, 10)
-                    Text("修改时间")
-                        .frame(width: 144, alignment: .leading)
-                        .padding(.leading, 1)
-                }
-                .font(.system(size: 12, weight: .medium))
-                .foregroundStyle(.primary.opacity(0.18))
-                .frame(height: 28)
-
-                Divider().padding(.horizontal, 8)
-
-                VStack(spacing: 24) {
-                    ForEach(0..<12, id: \.self) { _ in
-                        RoundedRectangle(cornerRadius: 7, style: .continuous)
-                            .fill(colorScheme == .dark ? Color.white.opacity(0.03) : Color.black.opacity(0.028))
-                            .frame(height: 24)
-                            .padding(.horizontal, 10)
-                    }
-                }
-                .padding(.top, 2)
-                Spacer(minLength: 0)
+        GeometryReader { geo in
+            let cardTop = max(24, (geo.size.height - 104 - 187) / 2)
+            ZStack(alignment: .top) {
+                Color.clear
+                dropCard
+                    .padding(.top, cardTop)
             }
-            .allowsHitTesting(false)
-
-            // 420×187 dashed drop card at y=166 inside the content area
-            VStack(spacing: 8) {
-                Image(systemName: "doc.on.doc")
-                    .font(.system(size: 38, weight: .light))
-                    .foregroundStyle(.secondary)
-                    .overlay(alignment: .bottomTrailing) {
-                        Image(systemName: "cursorarrow")
-                            .font(.system(size: 16, weight: .semibold))
-                            .foregroundStyle(.secondary)
-                            .offset(x: 8, y: 4)
-                    }
-                    .padding(.bottom, 4)
-
-                Text("添加文件到压缩包")
-                    .font(.system(size: 17, weight: .semibold))
-                    .foregroundStyle(.primary)
-
-                Text("点击添加文件，或直接将文件拖到这里")
-                    .font(.system(size: 13))
-                    .foregroundStyle(.secondary)
-            }
-            .frame(width: 420, height: 187)
-            .background(
-                RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .fill(colorScheme == .dark ? Color.white.opacity(0.04) : Color.white.opacity(0.55))
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .strokeBorder(
-                        isDropTargeted ? ProZipTheme.accent : Color.secondary.opacity(0.32),
-                        style: StrokeStyle(lineWidth: isDropTargeted ? 2 : 1.5, dash: [6, 4])
-                    )
-            )
-            .contentShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-            .onTapGesture {
-                appViewModel.promptAddFiles(to: session)
-            }
-            .padding(.top, 166)
+            .frame(width: geo.size.width, height: geo.size.height, alignment: .top)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(alignment: .top) {
+            skeletonBackdrop
+                .allowsHitTesting(false)
+        }
+        .clipped()
+        .contentShape(Rectangle())
         .onDrop(of: [.fileURL], isTargeted: $isDropTargeted) { providers in
             handleDrop(providers)
+        }
+    }
+
+    private var skeletonBackdrop: some View {
+        // Faint list skeleton (exact 107pt / 154pt columns + 30pt-pitch #F4F5F5 odd zebra rhythm)
+        VStack(spacing: 0) {
+            HStack(spacing: 0) {
+                Text("名称")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.leading, 10)
+                Text("大小")
+                    .frame(width: 107, alignment: .leading)
+                    .padding(.leading, 8)
+                Text("修改时间")
+                    .frame(width: 154, alignment: .leading)
+                    .padding(.leading, 8)
+            }
+            .padding(.horizontal, 10)
+            .font(.system(size: 11.5, weight: .medium))
+            .foregroundStyle(.primary.opacity(0.20))
+            .frame(height: 28)
+
+            Divider()
+
+            VStack(spacing: 30) {
+                ForEach(0..<12, id: \.self) { _ in
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .fill(colorScheme == .dark ? Color.white.opacity(0.03) : Color.black.opacity(0.028))
+                        .frame(height: 30)
+                        .padding(.horizontal, 10)
+                }
+            }
+            .padding(.top, 30)
+        }
+    }
+
+    private var dropCard: some View {
+        // 420×187 dashed drop card
+        VStack(spacing: 8) {
+            Image(systemName: "doc.on.doc")
+                .font(.system(size: 38, weight: .light))
+                .foregroundStyle(.secondary)
+                .overlay(alignment: .bottomTrailing) {
+                    Image(systemName: "cursorarrow")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundStyle(.secondary)
+                        .offset(x: 8, y: 4)
+                }
+                .padding(.bottom, 4)
+
+            Text("添加文件到压缩包")
+                .font(.system(size: 17, weight: .semibold))
+                .foregroundStyle(.primary)
+
+            Text("点击添加文件，或直接将文件拖到这里")
+                .font(.system(size: 13))
+                .foregroundStyle(.secondary)
+        }
+        .frame(width: 420, height: 187)
+        .background(
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .fill(
+                    colorScheme == .dark
+                        ? Color.white.opacity(isHoveringCard ? 0.07 : 0.04)
+                        : Color.white.opacity(isHoveringCard ? 0.90 : 0.78)
+                )
+                .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.22 : 0.04), radius: 10, y: 3)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .strokeBorder(
+                    isDropTargeted ? ProZipTheme.accent : Color.secondary.opacity(isHoveringCard ? 0.44 : 0.30),
+                    style: StrokeStyle(lineWidth: isDropTargeted ? 2 : 1.5, dash: [6, 4])
+                )
+        )
+        .contentShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .onHover { hovering in
+            withAnimation(.easeOut(duration: 0.14)) { isHoveringCard = hovering }
+        }
+        .onTapGesture {
+            appViewModel.promptAddFiles(to: session)
         }
     }
 
@@ -1215,7 +1288,7 @@ public struct ArchiveHoverPreviewOverlay: View {
             HStack(spacing: 10) {
                 ZStack {
                     RoundedRectangle(cornerRadius: 8, style: .continuous)
-                        .fill(ProZipTheme.accentSoft)
+                        .fill(colorScheme == .dark ? Color.white.opacity(0.08) : Color.black.opacity(0.045))
                         .frame(width: 44, height: 44)
 
                     EntryRichFileIconView(entry: entry, size: 26)
@@ -1230,17 +1303,17 @@ public struct ArchiveHoverPreviewOverlay: View {
                         if entry.isEncrypted {
                             Image(systemName: "lock.fill")
                                 .font(.system(size: 10))
-                                .foregroundStyle(ProZipTheme.accent)
+                                .foregroundStyle(Color(red: 0.78, green: 0.48, blue: 0.08))
                         }
                     }
 
                     HStack(spacing: 6) {
                         Text(entry.fileExtension.isEmpty ? "文件" : entry.fileExtension.uppercased())
                             .font(.system(size: 9, weight: .bold))
-                            .foregroundStyle(ProZipTheme.accentDeep)
+                            .foregroundStyle(.secondary)
                             .padding(.horizontal, 5)
                             .padding(.vertical, 1.5)
-                            .background(ProZipTheme.accentSoft)
+                            .background(Color.primary.opacity(0.06))
                             .clipShape(Capsule())
 
                         Text(ByteCountFormatter.string(fromByteCount: entry.uncompressedSize, countStyle: .file))
@@ -1302,7 +1375,7 @@ public struct ArchiveHoverPreviewOverlay: View {
                     .background(Color.primary.opacity(0.06))
                     .clipShape(Capsule())
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.02, pressedScale: 0.96, hoverBrightness: 0))
 
                 Button {
                     appViewModel.extractSelection([entry], in: session)
@@ -1319,20 +1392,38 @@ public struct ArchiveHoverPreviewOverlay: View {
                     .foregroundStyle(.white)
                     .clipShape(Capsule())
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.02, pressedScale: 0.96, hoverBrightness: 0))
             }
         }
         .padding(14)
-        .frame(width: 280)
-        .background(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .fill(colorScheme == .dark ? Color(red: 0.16, green: 0.18, blue: 0.15).opacity(0.96) : Color.white.opacity(0.97))
-                .shadow(color: Color.black.opacity(0.18), radius: 14, x: 0, y: 6)
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .stroke(ProZipTheme.accent.opacity(0.35), lineWidth: 1)
-        )
+        .frame(width: 300)
+        .background {
+            let shape = RoundedRectangle(cornerRadius: 16, style: .continuous)
+            ZStack {
+                WorkspacePassThroughGlassView(material: .hudWindow, blendingMode: .withinWindow)
+                (colorScheme == .dark
+                    ? Color(red: 0.14, green: 0.15, blue: 0.17).opacity(0.92)
+                    : Color.white.opacity(0.94))
+            }
+            .clipShape(shape)
+            .allowsHitTesting(false)
+        }
+        .overlay {
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .strokeBorder(
+                    LinearGradient(
+                        colors: [
+                            Color.white.opacity(colorScheme == .dark ? 0.24 : 0.68),
+                            Color.primary.opacity(0.08)
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    ),
+                    lineWidth: 1
+                )
+                .allowsHitTesting(false)
+        }
+        .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.34 : 0.14), radius: 16, x: 0, y: 6)
     }
 
     private func hoverMetaRow(label: String, value: String) -> some View {
@@ -1354,14 +1445,13 @@ public struct ArchiveHoverPreviewOverlay: View {
     }
 }
 
-// MARK: - Bottom Anchored Flow Bar (WorkspaceFlowOrbitBar, Matching workspace.png)
+// MARK: - Bottom Anchored Flow Bar (WorkspaceFlowOrbitBar)
 
 public struct WorkspaceFlowOrbitBar: View {
     @ObservedObject public var session: ArchiveBrowsingSession
     public var navigationEntry: ArchiveEntry?
     @EnvironmentObject public var appViewModel: ProZipAppViewModel
     @Environment(\.colorScheme) private var colorScheme
-    @State private var orbitPoint: CGPoint?
 
     public init(session: ArchiveBrowsingSession, navigationEntry: ArchiveEntry? = nil) {
         self.session = session
@@ -1376,97 +1466,71 @@ public struct WorkspaceFlowOrbitBar: View {
             allowedFormats: ProZipPreferences.shared.allowedOpenFormats
         )
 
-        HStack(alignment: .bottom, spacing: 10) {
-            // Left White Capsule: [⤡] [↑ 全部解压 ⏎] [👁 预览 空格]
-            HStack(spacing: 1) {
-                if session.initialSourceStat != nil {
-                Button {
-                    session.isMiniMode = true
-                } label: {
-                    Image(systemName: "arrow.down.right.and.arrow.up.left")
-                        .font(.system(size: 11, weight: .semibold))
-                        .foregroundStyle(Color.primary.opacity(0.72))
-                        .frame(width: 34, height: 34)
-                        .contentShape(Circle())
-                }
-                .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.05, pressedScale: 0.93))
-                .help("切换到 Mini 窗口 (⌥⌘M)")
-
-                }
-
-                Button {
-                    appViewModel.extractAll(in: session)
-                } label: {
-                    HStack(spacing: 7) {
-                        Image(systemName: "arrow.up.square")
-                            .font(.system(size: 13, weight: .semibold))
-                            .foregroundStyle(.primary)
-
-                        Text("全部解压")
-                            .font(.system(size: 13, weight: .semibold))
-                            .foregroundStyle(.primary)
-
-                        keyboardShortcutBadge("⏎", isHighlighted: false)
+        HStack(alignment: .bottom, spacing: 9) {
+            // Left Liquid Glass Capsule: [⤡ 34×34] [↑ 全部解压 ⏎ 129×34] [👁 预览 空格 118×34]
+            FlowOrbitCapsule {
+                HStack(spacing: 1) {
+                    if session.initialSourceStat != nil {
+                        Button {
+                            session.isMiniMode = true
+                        } label: {
+                            Image(systemName: "arrow.down.right.and.arrow.up.left")
+                                .font(.system(size: 11, weight: .semibold))
+                                .foregroundStyle(Color.primary.opacity(0.74))
+                                .frame(width: 34, height: 34)
+                                .contentShape(Circle())
+                        }
+                        .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.05, pressedScale: 0.93))
+                        .accessibilityIdentifier("ProZip.SwitchToMini")
+                        .accessibilityLabel("切换到 Mini")
+                        .help("切换到 Mini")
                     }
-                    .frame(width: 129, height: 34)
-                    .contentShape(Capsule())
-                }
-                .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.02, pressedScale: 0.97))
-                .disabled(session.initialSourceStat == nil || !session.phase.canExtractAll)
-                .help("解压全部文件 (回车)")
 
-                Button {
-                    appViewModel.previewSelected(in: session)
-                } label: {
-                    let hasSelection = !session.selectedEntryIDs.isEmpty
-                    HStack(spacing: 6) {
-                        Image(systemName: "eye")
-                            .font(.system(size: 12, weight: .medium))
-                        Text("预览")
-                            .font(.system(size: 13, weight: .medium))
-                        keyboardShortcutBadge("空格", isHighlighted: false)
+                    Button {
+                        appViewModel.extractAll(in: session)
+                    } label: {
+                        let canExtract = session.initialSourceStat != nil && session.phase.canExtractAll
+                        HStack(spacing: 7) {
+                            Image(systemName: "arrow.up.square")
+                                .font(.system(size: 13, weight: .semibold))
+
+                            Text("全部解压")
+                                .font(.system(size: 13, weight: .semibold))
+
+                            keyboardShortcutBadge("⏎", isHighlighted: false)
+                        }
+                        .frame(width: 129, height: 34)
+                        .foregroundStyle(canExtract ? Color.primary : Color.secondary.opacity(0.55))
+                        .contentShape(Capsule())
                     }
-                    .frame(width: 108, height: 34)
-                    .foregroundStyle(hasSelection ? Color.primary.opacity(0.85) : Color.secondary.opacity(0.55))
-                    .contentShape(Capsule())
-                }
-                .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.02, pressedScale: 0.97))
-                .disabled(session.selectedEntryIDs.isEmpty)
-                .help("使用快速查看预览所选文件 (空格)")
-            }
-            .padding(.leading, 3)
-            .padding(.trailing, 14)
-            .padding(.vertical, 4)
-            .background(
-                Capsule()
-                    .fill(colorScheme == .dark ? Color(red: 0.16, green: 0.17, blue: 0.16).opacity(0.96) : Color.white.opacity(0.96))
-                    .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.32 : 0.08), radius: 8, x: 0, y: 3)
-            )
-            .overlay(
-                Capsule()
-                    .stroke(Color.primary.opacity(0.08), lineWidth: 1)
-            )
-            .overlay(alignment: .leading) {
-                if let point = orbitPoint {
-                    Circle()
-                        .fill(ProZipTheme.accent.opacity(0.20))
-                        .frame(width: 86, height: 86)
-                        .blur(radius: 18)
-                        .offset(x: max(0, point.x - 43), y: 0)
-                        .allowsHitTesting(false)
-                }
-            }
-            .clipShape(Capsule())
-            .onContinuousHover { phase in
-                switch phase {
-                case .active(let point):
-                    withAnimation(.easeOut(duration: 0.10)) { orbitPoint = point }
-                case .ended:
-                    withAnimation(.easeOut(duration: 0.18)) { orbitPoint = nil }
+                    .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.02, pressedScale: 0.97))
+                    .disabled(session.initialSourceStat == nil || !session.phase.canExtractAll)
+                    .accessibilityLabel("全部解压")
+                    .help("按回车键执行")
+
+                    Button {
+                        appViewModel.previewSelected(in: session)
+                    } label: {
+                        let hasSelection = !session.selectedEntryIDs.isEmpty
+                        HStack(spacing: 6) {
+                            Image(systemName: "eye")
+                                .font(.system(size: 12, weight: .medium))
+                            Text("预览")
+                                .font(.system(size: 13, weight: .medium))
+                            keyboardShortcutBadge("空格", isHighlighted: false)
+                        }
+                        .frame(width: 118, height: 34)
+                        .foregroundStyle(hasSelection ? Color.primary.opacity(0.85) : Color.secondary.opacity(0.55))
+                        .contentShape(Capsule())
+                    }
+                    .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.02, pressedScale: 0.97))
+                    .disabled(session.selectedEntryIDs.isEmpty)
+                    .accessibilityLabel("预览")
+                    .help("按空格键执行")
                 }
             }
 
-            // Right Independent Floating Flow Pill (Matching arczip_live_workspace_selected_search.png & draft.png!)
+            // Right Independent Floating Flow CTA
             if let flowRec = rec {
                 WorkspaceFlowButton(recommendation: flowRec, selection: selection, session: session) {
                     if session.selectedEntries.isEmpty, let navigationEntry {
@@ -1475,25 +1539,12 @@ public struct WorkspaceFlowOrbitBar: View {
                         appViewModel.executeFlowAction(flowRec, in: session)
                     }
                 }
-                .transition(.scale(scale: 0.9).combined(with: .opacity))
+                .transition(.scale(scale: 0.92).combined(with: .opacity))
             } else if session.initialSourceStat == nil || session.hasUnsavedChanges || session.displayedEntries.isEmpty {
-                Button {
+                ProZipFlowOrbitButton(title: "添加文件", icon: "bolt.fill", shortcut: nil, minimumSize: CGSize(width: 116, height: 40)) {
                     appViewModel.promptAddFiles(to: session)
-                } label: {
-                    HStack(spacing: 6) {
-                        Image(systemName: "bolt.fill")
-                            .font(.system(size: 11, weight: .bold))
-                        Text("添加文件")
-                            .font(.system(size: 13, weight: .semibold))
-                    }
-                    .padding(.horizontal, 16)
-                    .frame(height: 40)
-                    .background(ProZipTheme.accent)
-                    .foregroundStyle(.white)
-                    .clipShape(Capsule())
-                    .shadow(color: ProZipTheme.accent.opacity(0.28), radius: 6, y: 2)
                 }
-                .buttonStyle(.plain)
+                .accessibilityLabel("添加文件")
             }
         }
     }
@@ -1515,7 +1566,76 @@ public struct WorkspaceFlowOrbitBar: View {
     }
 }
 
-// MARK: - Workspace List View (Matching workspace.png Pixel-for-Pixel)
+/// `NSVisualEffectView` whose `hitTest(_:)` returns `nil` so AppKit never intercepts
+/// mouse clicks meant for SwiftUI buttons rendered by `NSHostingView`.
+private struct WorkspacePassThroughGlassView: NSViewRepresentable {
+    var material: NSVisualEffectView.Material
+    var blendingMode: NSVisualEffectView.BlendingMode
+
+    private final class PassThroughEffectView: NSVisualEffectView {
+        override func hitTest(_ point: NSPoint) -> NSView? { nil }
+    }
+
+    func makeNSView(context: Context) -> NSVisualEffectView {
+        let view = PassThroughEffectView()
+        view.material = material
+        view.blendingMode = blendingMode
+        view.state = .active
+        return view
+    }
+
+    func updateNSView(_ nsView: NSVisualEffectView, context: Context) {
+        if nsView.material != material { nsView.material = material }
+        if nsView.blendingMode != blendingMode { nsView.blendingMode = blendingMode }
+    }
+}
+
+/// Isolated pointer-tracking capsule wrapper: draws the radial glow strictly in `.background`
+/// with `.allowsHitTesting(false)` so physical mouse clicks reach every capsule `Button`.
+private struct FlowOrbitCapsule<Content: View>: View {
+    @Environment(\.colorScheme) private var colorScheme
+    @State private var orbitPoint: CGPoint?
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        content
+            .padding(4)
+            .background {
+                ZStack(alignment: .leading) {
+                    WorkspacePassThroughGlassView(material: .headerView, blendingMode: .withinWindow)
+                    (colorScheme == .dark
+                        ? Color(red: 0.16, green: 0.17, blue: 0.19).opacity(0.92)
+                        : Color.white.opacity(0.94))
+                    if let point = orbitPoint {
+                        Circle()
+                            .fill(ProZipTheme.accent.opacity(0.18))
+                            .frame(width: 84, height: 84)
+                            .blur(radius: 18)
+                            .offset(x: max(0, point.x - 42), y: 0)
+                            .allowsHitTesting(false)
+                    }
+                }
+                .clipShape(Capsule())
+                .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.30 : 0.07), radius: 8, x: 0, y: 3)
+                .allowsHitTesting(false)
+            }
+            .overlay {
+                Capsule()
+                    .strokeBorder(Color.primary.opacity(0.08), lineWidth: 1)
+                    .allowsHitTesting(false)
+            }
+            .onContinuousHover { phase in
+                switch phase {
+                case .active(let point):
+                    orbitPoint = point
+                case .ended:
+                    withAnimation(.easeOut(duration: 0.16)) { orbitPoint = nil }
+                }
+            }
+    }
+}
+
+// MARK: - Workspace List View
 
 public struct WorkspaceListView: View {
     @ObservedObject public var session: ArchiveBrowsingSession
@@ -1523,7 +1643,8 @@ public struct WorkspaceListView: View {
     @Binding public var sortAscending: Bool
     public var isTreeMode: Bool
     @Binding public var expandedFolderPaths: Set<String>
-    @Binding public var hoveredEntryID: String?
+    private var externalHoveredEntryID: Binding<String?>?
+    @State private var localHoveredEntryID: String?
     public var onHoverEntryChanged: ((ArchiveEntry?) -> Void)?
 
     @EnvironmentObject public var appViewModel: ProZipAppViewModel
@@ -1546,13 +1667,25 @@ public struct WorkspaceListView: View {
         SortInput(revision: session.displayedEntriesRevision, field: sortField, ascending: sortAscending, showsAuxiliary: preferences.showsAuxiliaryEntries, treeMode: isTreeMode, expandedPaths: expandedFolderPaths)
     }
 
+    private var activeHoveredEntryID: String? {
+        externalHoveredEntryID?.wrappedValue ?? localHoveredEntryID
+    }
+
+    private func setHoveredEntryID(_ id: String?) {
+        if let externalHoveredEntryID {
+            externalHoveredEntryID.wrappedValue = id
+        } else {
+            localHoveredEntryID = id
+        }
+    }
+
     public init(
         session: ArchiveBrowsingSession,
         sortField: Binding<WorkspaceSortField> = .constant(.name),
         sortAscending: Binding<Bool> = .constant(true),
         isTreeMode: Bool = false,
         expandedFolderPaths: Binding<Set<String>> = .constant([]),
-        hoveredEntryID: Binding<String?> = .constant(nil),
+        hoveredEntryID: Binding<String?>? = nil,
         onHoverEntryChanged: ((ArchiveEntry?) -> Void)? = nil
     ) {
         self.session = session
@@ -1560,50 +1693,51 @@ public struct WorkspaceListView: View {
         self._sortAscending = sortAscending
         self.isTreeMode = isTreeMode
         self._expandedFolderPaths = expandedFolderPaths
-        self._hoveredEntryID = hoveredEntryID
+        self.externalHoveredEntryID = hoveredEntryID
         self.onHoverEntryChanged = onHoverEntryChanged
     }
 
     public var body: some View {
         let visibleItems = sortedVisibleItems
         return VStack(spacing: 0) {
-            // Column Headers Bar (名称 | 大小 | 修改时间)
+            // Column Headers Bar: 名称 (flex, W - 569) | 大小 (107pt fixed) | 修改时间 (154pt fixed)
             HStack(spacing: 0) {
                 sortableHeaderButton(field: .name, title: "名称")
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.leading, 19)
-
-                headerColumnDivider
-
-                sortableHeaderButton(field: .size, title: "大小")
-                    .frame(width: 96, alignment: .leading)
-                    .padding(.leading, 13)
-
-                headerColumnDivider
-
-                sortableHeaderButton(field: .modifiedDate, title: "修改时间")
-                    .frame(width: 144, alignment: .leading)
                     .padding(.leading, 10)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
 
-                headerColumnDivider
-                    .padding(.trailing, 10)
+                HStack(spacing: 0) {
+                    headerColumnDivider
+                    sortableHeaderButton(field: .size, title: "大小")
+                        .padding(.leading, 8)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+                }
+                .frame(width: 107)
+
+                HStack(spacing: 0) {
+                    headerColumnDivider
+                    sortableHeaderButton(field: .modifiedDate, title: "修改时间")
+                        .padding(.leading, 8)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+                    headerColumnDivider
+                }
+                .frame(width: 154)
             }
+            .padding(.horizontal, 10)
             .frame(height: 28)
 
             Divider()
 
-            // Main Table Rows with Full-Viewport Alternating Zebra Stripes (Matching workspace.png)
+            // Main Table Rows + Full-Viewport 30pt-Pitch Odd Zebra Rhythm
             GeometryReader { geo in
-                // ArcZip draws a decorative zebra pattern under the real rows:
-                // 24pt rounded bands with a 24pt gap, starting one row-gap below the content.
-                let fillerCount = max(0, Int(ceil(geo.size.height / 48.0)) + 1)
+                let fillerCount = max(0, Int(ceil(geo.size.height / 60.0)) + 2)
 
                 ScrollView {
                     LazyVStack(spacing: 0) {
                         ForEach(Array(visibleItems.enumerated()), id: \.element.id) { index, item in
                             let entry = item.entry
                             let isSelected = session.selectedEntryIDs.contains(entry.id)
-                            let isHovered = hoveredEntryID == entry.id
+                            let isHovered = activeHoveredEntryID == entry.id
 
                             WorkspaceRowItemView(
                                 entry: entry,
@@ -1624,18 +1758,16 @@ public struct WorkspaceListView: View {
                                     handleDoubleClick(on: entry)
                                 }
                             )
-                            .overlay(alignment: .leading) {
-                                GeometryReader { geometry in
-                                    ArchiveFileDragHitArea(entry: entry, session: session, orderedEntries: cachedKeyboardEntries, onClick: { count, modifiers in
-                                        if count >= 2 { handleDoubleClick(on: entry) }
-                                        else { ArchiveSelectionInteraction.click(entry, in: session, orderedEntries: cachedKeyboardEntries, modifiers: modifiers) }
-                                    }, onHover: { hovering in
-                                        hoveredEntryID = hovering ? entry.id : (hoveredEntryID == entry.id ? nil : hoveredEntryID)
-                                        onHoverEntryChanged?(hovering ? entry : nil)
-                                    })
-                                    .frame(width: max(0, geometry.size.width - 270))
-                                    .padding(.leading, isTreeMode ? 20 + CGFloat(item.depth * 18) : 0)
-                                }
+                            .overlay {
+                                ArchiveFileDragHitArea(entry: entry, session: session, orderedEntries: cachedKeyboardEntries, onClick: { count, modifiers in
+                                    if count >= 2 { handleDoubleClick(on: entry) }
+                                    else { ArchiveSelectionInteraction.click(entry, in: session, orderedEntries: cachedKeyboardEntries, modifiers: modifiers) }
+                                }, onHover: { hovering in
+                                    let current = activeHoveredEntryID
+                                    setHoveredEntryID(hovering ? entry.id : (current == entry.id ? nil : current))
+                                    onHoverEntryChanged?(hovering ? entry : nil)
+                                })
+                                .padding(.leading, isTreeMode ? 20 + CGFloat(item.depth * 18) : 0)
                             }
                             .contextMenu {
                                 FileItemContextMenu(entry: entry, session: session)
@@ -1643,16 +1775,17 @@ public struct WorkspaceListView: View {
                             }
                         }
 
-                        // Decorative zebra filler bands (ArcZip-style background rhythm)
-                        VStack(spacing: 24) {
+                        // Seamless 30pt-pitch odd filler bands continuing immediately after visibleItems
+                        VStack(spacing: 30) {
                             ForEach(0..<fillerCount, id: \.self) { _ in
-                                RoundedRectangle(cornerRadius: 7, style: .continuous)
-                                    .fill(colorScheme == .dark ? Color.white.opacity(0.04) : Color.black.opacity(0.040))
-                                    .frame(height: 24)
+                                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                    .fill(colorScheme == .dark ? Color.white.opacity(0.035) : Color.black.opacity(0.035))
+                                    .frame(height: 30)
                                     .padding(.horizontal, 10)
                             }
                         }
-                        .padding(.top, 0)
+                        .padding(.top, visibleItems.count.isMultiple(of: 2) ? 30 : 0)
+                        .padding(.bottom, 72)
                         .contentShape(Rectangle())
                         .onTapGesture {
                             session.selectedEntryIDs.removeAll()
@@ -1686,7 +1819,7 @@ public struct WorkspaceListView: View {
         } label: {
             HStack(spacing: 4) {
                 Text(title)
-                    .font(.system(size: 11, weight: .medium))
+                    .font(.system(size: 11.5, weight: .medium))
                     .foregroundStyle(.secondary)
 
                 if sortField == field {
@@ -1698,21 +1831,7 @@ public struct WorkspaceListView: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-    }
-
-    private func zebraFillColor(index: Int, isSelected: Bool, isHovered: Bool) -> Color {
-        if isSelected {
-            return ProZipTheme.accent.opacity(colorScheme == .dark ? 0.30 : 0.20)
-        }
-        if isHovered {
-            return ProZipTheme.accent.opacity(colorScheme == .dark ? 0.14 : 0.09)
-        }
-        if index % 2 == 1 {
-            return colorScheme == .dark
-                ? Color.white.opacity(0.04)
-                : Color.black.opacity(0.038)
-        }
-        return Color.clear
+        .accessibilityLabel(title)
     }
 
     private struct FlattenedTreeItem: Identifiable {
@@ -1803,7 +1922,7 @@ public struct WorkspaceListView: View {
     }
 }
 
-// MARK: - Workspace Row Item View (Matching workspace.png Zebra Pill Rows)
+// MARK: - Workspace Row Item View (30pt Neutral Zebra / #DDDCDD Selected Rows)
 
 public struct WorkspaceRowItemView: View {
     public let entry: ArchiveEntry
@@ -1846,9 +1965,13 @@ public struct WorkspaceRowItemView: View {
         self.onDoubleClick = onDoubleClick
     }
 
+    private var isDimmedAuxiliary: Bool {
+        entry.isAuxiliary || entry.isDiskImageBackground || entry.isApplicationsShortcut
+    }
+
     public var body: some View {
         HStack(spacing: 0) {
-            // Name Column (Icon + Name + Lock Badge)
+            // Name Column (flex: W - 569)
             HStack(spacing: 10) {
                 if depth > 0 {
                     Spacer()
@@ -1868,57 +1991,45 @@ public struct WorkspaceRowItemView: View {
                     .buttonStyle(.plain)
                 }
 
-                if let session {
-                    ArchiveEntryThumbnail(entry: entry, session: session, size: CGSize(width: 19, height: 17))
-                } else {
-                    EntryRichFileIconView(entry: entry, size: 17)
-                }
+                EntryRichFileIconView(entry: entry, size: 17)
 
                 Text(entry.name)
                     .font(.system(size: 13.5, weight: .regular))
-                    .foregroundStyle(isSelected ? Color.white : Color.primary)
+                    .foregroundStyle(.primary)
                     .lineLimit(1)
 
                 if entry.isEncrypted {
                     Image(systemName: "lock.fill")
                         .font(.system(size: 10))
-                        .foregroundStyle(ProZipTheme.accent)
-                }
-
-                if entry.isAuxiliary {
-                    Text("辅助")
-                        .font(.system(size: 9, weight: .medium))
-                        .foregroundStyle(.secondary)
-                        .padding(.horizontal, 4)
-                        .padding(.vertical, 1)
-                        .background(Color.primary.opacity(0.06))
-                        .clipShape(Capsule())
+                        .foregroundStyle(Color(red: 0.78, green: 0.48, blue: 0.08))
                 }
             }
+            .padding(.leading, 18)
+            .padding(.trailing, 8)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.leading, 29)
 
-            // Size Column
+            // Size Column (107pt fixed)
             Text(entry.isDirectory ? "—" : WorkspaceDateFormatters.sizeString(for: entry.uncompressedSize))
                 .font(.system(size: 12.5))
-                .foregroundStyle(isSelected ? Color.white : Color.primary.opacity(0.82))
+                .foregroundStyle(.primary.opacity(0.84))
+                .lineLimit(1)
+                .padding(.leading, 8)
                 .frame(width: 107, alignment: .leading)
-                .padding(.leading, 0)
-                .offset(x: -11)
 
-            // Modified Time Column
+            // Modified Time Column (154pt fixed)
             Text(WorkspaceDateFormatters.displayString(from: entry.modifiedAt))
                 .font(.system(size: 12.5))
-                .foregroundStyle(isSelected ? Color.white : Color.primary.opacity(0.82))
+                .foregroundStyle(.primary.opacity(0.84))
                 .lineLimit(1)
-                .frame(width: 134, alignment: .leading)
-                .padding(.leading, 1)
-                .padding(.trailing, 10)
-                .offset(x: -10.5)
+                .padding(.leading, 8)
+                .padding(.trailing, 6)
+                .frame(width: 154, alignment: .leading)
         }
+        .padding(.horizontal, 10)
+        .opacity(isDimmedAuxiliary ? 0.55 : 1.0)
         .frame(height: 30)
         .background(
-            RoundedRectangle(cornerRadius: 7, style: .continuous)
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
                 .fill(rowBackgroundColor)
                 .padding(.horizontal, 10)
         )
@@ -1938,15 +2049,22 @@ public struct WorkspaceRowItemView: View {
 
     private var rowBackgroundColor: Color {
         if isSelected {
-            return Color(nsColor: .selectedContentBackgroundColor)
+            // ArcZip neutral selected row: #DDDCDD (RGBA = 221, 220, 221) with dark primary text
+            return colorScheme == .dark
+                ? Color.white.opacity(0.15)
+                : Color(red: 221.0 / 255.0, green: 220.0 / 255.0, blue: 221.0 / 255.0)
         }
         if isHovered {
-            return ProZipTheme.accent.opacity(colorScheme == .dark ? 0.14 : 0.08)
+            // ArcZip neutral row hover: black.opacity(0.055) (~#EFEFF1), ZERO green tint
+            return colorScheme == .dark
+                ? Color.white.opacity(0.07)
+                : Color.black.opacity(0.055)
         }
         if index % 2 == 1 {
+            // ArcZip odd zebra row: #F4F5F5 (black.opacity(0.035))
             return colorScheme == .dark
-                ? Color.white.opacity(0.04)
-                : Color.black.opacity(0.038)
+                ? Color.white.opacity(0.035)
+                : Color.black.opacity(0.035)
         }
         return Color.clear
     }
@@ -1981,8 +2099,8 @@ public struct EntryRichFileIconView: View {
                     )
             }
             .frame(width: size + 2, height: size)
-        } else if entry.fileExtension == "txt" || entry.fileExtension == "md" || entry.fileExtension == "log" {
-            // Landscape White Card with Text Lines (Matching readme.txt in workspace.png)
+        } else if entry.fileExtension == "txt" || entry.fileExtension == "md" || entry.fileExtension == "log" || entry.fileExtension == "json" {
+            // Landscape White Card with Text Lines
             ZStack {
                 RoundedRectangle(cornerRadius: 2.5, style: .continuous)
                     .fill(Color.white)
@@ -2004,7 +2122,7 @@ public struct EntryRichFileIconView: View {
             }
             .frame(width: size + 2, height: size)
         } else if entry.fileExtension == "bin" || entry.fileExtension == "dat" {
-            // Portrait White Document Page Icon (Matching blob.bin in workspace.png)
+            // Portrait White Document Page Icon
             ZStack {
                 RoundedRectangle(cornerRadius: 2.5, style: .continuous)
                     .fill(Color.white)
@@ -2127,48 +2245,70 @@ public struct FileItemContextMenu: View {
     }
 }
 
-// MARK: - Workspace Icons Grid View (116×112pt Tiles)
+// MARK: - Workspace Icons Grid View (144×150pt Tiles)
 
 public struct WorkspaceIconsGridView: View {
     @ObservedObject public var session: ArchiveBrowsingSession
-    @Binding public var hoveredEntryID: String?
+    private var externalHoveredEntryID: Binding<String?>?
+    @State private var localHoveredEntryID: String?
     public var onHoverEntryChanged: ((ArchiveEntry?) -> Void)?
     @EnvironmentObject public var appViewModel: ProZipAppViewModel
+    @ObservedObject private var preferences = ProZipPreferences.shared
     @Environment(\.colorScheme) private var colorScheme
 
     public init(
         session: ArchiveBrowsingSession,
-        hoveredEntryID: Binding<String?> = .constant(nil),
+        hoveredEntryID: Binding<String?>? = nil,
         onHoverEntryChanged: ((ArchiveEntry?) -> Void)? = nil
     ) {
         self.session = session
-        self._hoveredEntryID = hoveredEntryID
+        self.externalHoveredEntryID = hoveredEntryID
         self.onHoverEntryChanged = onHoverEntryChanged
     }
 
+    private var activeHoveredEntryID: String? {
+        externalHoveredEntryID?.wrappedValue ?? localHoveredEntryID
+    }
+
+    private func setHoveredEntryID(_ id: String?) {
+        if let externalHoveredEntryID {
+            externalHoveredEntryID.wrappedValue = id
+        } else {
+            localHoveredEntryID = id
+        }
+    }
+
+    private var visibleEntries: [ArchiveEntry] {
+        session.currentItems.filter { preferences.showsAuxiliaryEntries || !$0.isAuxiliary }
+    }
+
     public var body: some View {
-        GeometryReader { geometry in
+        let items = visibleEntries
+        return GeometryReader { geometry in
             let columnCount = max(1, Int((geometry.size.width - 20) / 146))
             let columns = Array(repeating: GridItem(.fixed(144), spacing: 2), count: columnCount)
             ScrollView {
                 LazyVGrid(columns: columns, alignment: .leading, spacing: 16) {
-                    ForEach(session.currentItems, id: \.id) { entry in
-                        iconTile(entry)
+                    ForEach(items, id: \.id) { entry in
+                        iconTile(entry, orderedEntries: items)
                             .id(entry.id)
                     }
                 }
-                .padding(.horizontal, 11)
+                .padding(.horizontal, 14)
                 .padding(.top, 12)
+                .padding(.bottom, 72)
                 .accessibilityElement(children: .contain)
             }
-            .modifier(ArchiveKeyboardNavigation(session: session, entries: session.displayedEntries, columnCount: columnCount, handlesHorizontalSelection: true))
+            .modifier(ArchiveKeyboardNavigation(session: session, entries: items, columnCount: columnCount, handlesHorizontalSelection: true))
         }
     }
 
-    private func iconTile(_ entry: ArchiveEntry) -> some View {
+    private func iconTile(_ entry: ArchiveEntry, orderedEntries: [ArchiveEntry]) -> some View {
         let isSelected = session.selectedEntryIDs.contains(entry.id)
-        let isHovered = hoveredEntryID == entry.id
-        return VStack(spacing: 0) {
+        let isHovered = activeHoveredEntryID == entry.id
+        let isDimmed = entry.isAuxiliary || entry.isDiskImageBackground || entry.isApplicationsShortcut
+
+        return VStack(spacing: 4) {
             ArchiveEntryThumbnail(entry: entry, session: session)
                 .overlay(alignment: .bottomTrailing) {
                     if entry.isEncrypted {
@@ -2181,21 +2321,29 @@ public struct WorkspaceIconsGridView: View {
                 }
             Text(entry.name)
                 .font(.system(size: 13.5, weight: .medium))
+                .foregroundStyle(.primary)
                 .multilineTextAlignment(.center)
                 .lineLimit(2)
                 .frame(maxWidth: 138, minHeight: 36, alignment: .top)
         }
+        .opacity(isDimmed ? 0.55 : 1.0)
         .frame(width: 144, height: 150)
         .background(
-            RoundedRectangle(cornerRadius: 8)
-                .fill(isSelected ? Color(nsColor: .selectedContentBackgroundColor).opacity(0.16) : isHovered ? Color.primary.opacity(0.035) : Color.clear)
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .fill(
+                    isSelected
+                        ? (colorScheme == .dark ? Color.white.opacity(0.14) : Color(red: 221.0 / 255.0, green: 220.0 / 255.0, blue: 221.0 / 255.0))
+                        : (isHovered
+                            ? (colorScheme == .dark ? Color.white.opacity(0.06) : Color.black.opacity(0.045))
+                            : Color.clear)
+                )
         )
         .contentShape(Rectangle())
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(entry.name)
         .accessibilityAddTraits(.isButton)
         .accessibilityAddTraits(isSelected ? [.isSelected] : [])
-        .accessibilityAction { ArchiveSelectionInteraction.click(entry, in: session, orderedEntries: session.displayedEntries) }
+        .accessibilityAction { ArchiveSelectionInteraction.click(entry, in: session, orderedEntries: orderedEntries) }
         .onTapGesture(count: 2) {
             if entry.isDirectory {
                 Task { await session.enterDirectory(entry.path) }
@@ -2205,11 +2353,12 @@ public struct WorkspaceIconsGridView: View {
             }
         }
         .onTapGesture {
-            ArchiveSelectionInteraction.click(entry, in: session, orderedEntries: session.displayedEntries)
+            ArchiveSelectionInteraction.click(entry, in: session, orderedEntries: orderedEntries)
         }
         .overlay {
-            ArchiveFileDragHitArea(entry: entry, session: session, orderedEntries: session.displayedEntries, onHover: { hovering in
-                hoveredEntryID = hovering ? entry.id : (hoveredEntryID == entry.id ? nil : hoveredEntryID)
+            ArchiveFileDragHitArea(entry: entry, session: session, orderedEntries: orderedEntries, onHover: { hovering in
+                let current = activeHoveredEntryID
+                setHoveredEntryID(hovering ? entry.id : (current == entry.id ? nil : current))
                 onHoverEntryChanged?(hovering ? entry : nil)
             })
         }
@@ -2225,9 +2374,11 @@ public struct WorkspaceIconsGridView: View {
 public struct WorkspaceColumnsView: View {
     @ObservedObject public var session: ArchiveBrowsingSession
     @Binding public var directoryEntry: ArchiveEntry?
-    @Binding public var hoveredEntryID: String?
+    private var externalHoveredEntryID: Binding<String?>?
+    @State private var localHoveredEntryID: String?
     public var onHoverEntryChanged: ((ArchiveEntry?) -> Void)?
     @EnvironmentObject public var appViewModel: ProZipAppViewModel
+    @Environment(\.colorScheme) private var colorScheme
     @State private var columns: [Column] = []
 
     private struct Column: Identifiable {
@@ -2244,13 +2395,25 @@ public struct WorkspaceColumnsView: View {
     public init(
         session: ArchiveBrowsingSession,
         directoryEntry: Binding<ArchiveEntry?> = .constant(nil),
-        hoveredEntryID: Binding<String?> = .constant(nil),
+        hoveredEntryID: Binding<String?>? = nil,
         onHoverEntryChanged: ((ArchiveEntry?) -> Void)? = nil
     ) {
         self.session = session
         self._directoryEntry = directoryEntry
-        self._hoveredEntryID = hoveredEntryID
+        self.externalHoveredEntryID = hoveredEntryID
         self.onHoverEntryChanged = onHoverEntryChanged
+    }
+
+    private var activeHoveredEntryID: String? {
+        externalHoveredEntryID?.wrappedValue ?? localHoveredEntryID
+    }
+
+    private func setHoveredEntryID(_ id: String?) {
+        if let externalHoveredEntryID {
+            externalHoveredEntryID.wrappedValue = id
+        } else {
+            localHoveredEntryID = id
+        }
     }
 
     public var body: some View {
@@ -2266,6 +2429,7 @@ public struct WorkspaceColumnsView: View {
                                             .id(entry.id)
                                     }
                                 }
+                                .padding(.bottom, 72)
                                 .accessibilityElement(children: .contain)
                             }
                             .frame(width: 223, height: geometry.size.height)
@@ -2293,10 +2457,14 @@ public struct WorkspaceColumnsView: View {
     private func columnRow(_ entry: ArchiveEntry, in column: Column) -> some View {
         let isAncestor = entry.isDirectory && (session.currentDirectoryPath == entry.path || session.currentDirectoryPath.hasPrefix(entry.path + "/"))
         let isSelected = session.selectedEntryIDs.contains(entry.id) || isAncestor
+        let isHovered = activeHoveredEntryID == entry.id
+        let isDimmed = entry.isAuxiliary || entry.isDiskImageBackground || entry.isApplicationsShortcut
+
         return HStack(spacing: 10) {
-            ArchiveEntryThumbnail(entry: entry, session: session, size: CGSize(width: 18, height: 16))
+            EntryRichFileIconView(entry: entry, size: 17)
             Text(entry.name)
                 .font(.system(size: 13.5))
+                .foregroundStyle(.primary)
                 .lineLimit(1)
             Spacer(minLength: 4)
             if entry.isEncrypted {
@@ -2310,13 +2478,25 @@ public struct WorkspaceColumnsView: View {
                     .foregroundStyle(.secondary)
             }
         }
+        .opacity(isDimmed ? 0.55 : 1.0)
         .padding(.leading, 16)
         .padding(.trailing, 18)
         .frame(height: 28)
         .overlay(alignment: .bottom) {
-            Rectangle().fill(Color.primary.opacity(0.07)).frame(height: 0.5).padding(.horizontal, 8)
+            Rectangle().fill(Color.primary.opacity(0.06)).frame(height: 0.5).padding(.horizontal, 12)
         }
-        .background(isSelected ? Color(nsColor: .selectedContentBackgroundColor).opacity(0.14) : Color.clear)
+        .background(
+            RoundedRectangle(cornerRadius: 6, style: .continuous)
+                .fill(
+                    isSelected
+                        ? (colorScheme == .dark ? Color.white.opacity(0.15) : Color(red: 221.0 / 255.0, green: 220.0 / 255.0, blue: 221.0 / 255.0))
+                        : (isHovered
+                            ? (colorScheme == .dark ? Color.white.opacity(0.06) : Color.black.opacity(0.045))
+                            : Color.clear)
+                )
+                .padding(.horizontal, 6)
+                .padding(.vertical, 1)
+        )
         .contentShape(Rectangle())
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(entry.name)
@@ -2342,7 +2522,8 @@ public struct WorkspaceColumnsView: View {
                     }
                 } else { select(entry, in: column, modifiers: modifiers) }
             }, onHover: { hovering in
-                hoveredEntryID = hovering ? entry.id : (hoveredEntryID == entry.id ? nil : hoveredEntryID)
+                let current = activeHoveredEntryID
+                setHoveredEntryID(hovering ? entry.id : (current == entry.id ? nil : current))
                 onHoverEntryChanged?(hovering ? entry : nil)
             })
         }
@@ -2418,16 +2599,22 @@ public struct WorkspaceInspectorPane: View {
     }
 
     public var body: some View {
+        let outerShape = RoundedRectangle(cornerRadius: 22, style: .continuous)
+        let innerShape = RoundedRectangle(cornerRadius: 20, style: .continuous)
+
         VStack(alignment: .leading, spacing: 0) {
-            // Header ("压缩包详情" or "项目详情")
+            // Top 46pt Header Strip ("压缩包详情" or "项目详情")
             Text(session.selectedEntries.isEmpty && navigationEntry == nil ? "压缩包详情" : "项目详情")
                 .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(.primary.opacity(0.78))
-                .padding(.horizontal, 19)
-                .padding(.top, 14)
-                .padding(.bottom, 16)
+                .foregroundStyle(
+                    colorScheme == .dark
+                        ? Color.white.opacity(0.80)
+                        : Color(red: 74.0 / 255.0, green: 73.0 / 255.0, blue: 82.0 / 255.0)
+                )
+                .padding(.horizontal, 20)
+                .frame(height: 46, alignment: .leading)
 
-            // Full-Height Inner Card (Matching workspace.png white rounded card inside tinted inspector)
+            // Continuous White Inner Sheet: (W - 272, 52, 262, H - 62), r = 20
             ScrollView {
                 Group {
                     if let selected = session.selectedEntries.first ?? navigationEntry {
@@ -2441,51 +2628,55 @@ public struct WorkspaceInspectorPane: View {
             }
             .scrollIndicators(.hidden)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-            .background(ProZipTheme.inspectorCardBackground(for: colorScheme))
-            .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
-            .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.25 : 0.04), radius: 5, y: 2)
+            .background(innerShape.fill(ProZipTheme.inspectorCardBackground(for: colorScheme)))
+            .clipShape(innerShape)
+            .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.22 : 0.035), radius: 4, y: 1)
             .padding(.horizontal, 4)
             .padding(.bottom, 4)
         }
-        .background(
-            RoundedRectangle(cornerRadius: 32, style: .continuous)
-                .fill(ProZipTheme.inspectorBackground(for: colorScheme))
-        )
+        .background(outerShape.fill(ProZipTheme.inspectorBackground(for: colorScheme)))
+        .clipShape(outerShape)
         .overlay(
-            RoundedRectangle(cornerRadius: 32, style: .continuous)
-                .stroke(Color.primary.opacity(0.06), lineWidth: 1)
+            outerShape
+                .strokeBorder(
+                    colorScheme == .dark
+                        ? Color.white.opacity(0.08)
+                        : Color(red: 213.0 / 255.0, green: 210.0 / 255.0, blue: 223.0 / 255.0),
+                    lineWidth: 1
+                )
+                .allowsHitTesting(false)
         )
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("检查器")
         .task(id: "\(inspectedEntry?.id ?? ""): \(session.displayedEntriesRevision)") {
             await loadSelectedPreview()
         }
     }
 
-    // MARK: - Archive Root Inspector Content (Matching workspace.png)
+    // MARK: - Archive Root Inspector Content
 
     private var archiveRootInspectorContent: some View {
         VStack(alignment: .leading, spacing: 16) {
-            // Centered 3D Pocket Graphic
             HStack {
                 Spacer()
-                ProZipArchivePocketGraphic(size: 120)
+                ProZipArchivePocketGraphic(size: 112)
                 Spacer()
             }
-            .padding(.top, 12)
-            .padding(.bottom, 21)
+            .padding(.top, 18)
+            .padding(.bottom, 22)
 
-            // Left-Aligned Archive Name & Format Subtitle (Matching workspace.png!)
             VStack(alignment: .leading, spacing: 4) {
                 Text(session.archiveName)
                     .font(.system(size: 16, weight: .bold))
                     .foregroundStyle(.primary)
                     .lineLimit(1)
+                    .help(session.archiveName)
 
                 Text(session.safeDescriptor.format.displayName)
                     .font(.system(size: 12))
                     .foregroundStyle(.secondary)
             }
 
-            // Key-Value Metadata Rows separated by light dividers
             VStack(spacing: 7) {
                 let displayBytes = session.initialSourceStat?.size ?? session.displayedEntries.reduce(Int64(0)) { $0 + $1.uncompressedSize }
 
@@ -2518,7 +2709,7 @@ public struct WorkspaceInspectorPane: View {
                     value: session.initialSourceStat.map { WorkspaceDateFormatters.displayString(from: $0.mtime) } ?? "—"
                 )
             }
-            .padding(.top, 1)
+            .padding(.top, 2)
 
             Spacer()
         }
@@ -2528,35 +2719,38 @@ public struct WorkspaceInspectorPane: View {
 
     private func selectedEntryInspectorContent(_ selected: ArchiveEntry) -> some View {
         VStack(alignment: .leading, spacing: 14) {
-            // Preview Canvas Card (Matching arczip_live_workspace_selected_search.png!)
+            // 300pt Preview Hero Slot with Elevated White Card (230pt, r = 14)
             Group {
                 if let image = previewImage {
                     Image(nsImage: image)
                         .resizable()
                         .scaledToFit()
-                        .frame(maxHeight: 260)
-                        .offset(y: -6)
+                        .frame(maxWidth: 230, maxHeight: 240)
+                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                        .shadow(color: Color.black.opacity(0.08), radius: 14, y: 4)
                 } else if selected.isDirectory {
                     Image(nsImage: NSWorkspace.shared.icon(for: .folder))
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 230, height: 230)
-                        .offset(y: -6)
+                        .frame(width: 156, height: 156)
                 } else if isTextEntry(selected) {
                     selectedTextPreview(selected)
                 } else {
-                    ArchiveEntryThumbnail(entry: selected, session: session, size: CGSize(width: 230, height: 260))
-                        .offset(y: -6)
+                    ArchiveEntryThumbnail(entry: selected, session: session, size: CGSize(width: 230, height: 220))
+                        .shadow(color: Color.black.opacity(0.08), radius: 14, y: 4)
                 }
             }
             .frame(maxWidth: .infinity)
             .frame(height: 300)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel("所选项目缩略图")
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(selected.name)
                     .font(.system(size: 16, weight: .bold))
                     .foregroundStyle(.primary)
                     .lineLimit(2)
+                    .help(selected.name)
 
                 Text(selected.isDirectory ? "文件夹" : (UTType(filenameExtension: selected.fileExtension)?.localizedDescription ?? "文件"))
                     .font(.system(size: 12))
@@ -2578,42 +2772,42 @@ public struct WorkspaceInspectorPane: View {
 
     private func selectedTextPreview(_ selected: ArchiveEntry) -> some View {
         VStack(alignment: .leading, spacing: 6) {
-                Text(selected.name)
-                    .font(.system(size: 10.5, weight: .medium))
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
+            Text(selected.name)
+                .font(.system(size: 10.5, weight: .medium))
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
 
-                Divider()
-                    .opacity(0.45)
+            Divider()
+                .opacity(0.45)
 
-                if let text = previewText {
-                    Text(text.dropLast(text.last?.isNewline == true ? 1 : 0))
-                        .font(.system(size: 10.5, design: .monospaced))
-                        .foregroundStyle(.primary.opacity(0.82))
-                        .lineLimit(8)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.vertical, 4)
-                } else {
-                    HStack {
-                        Spacer()
-                        EntryRichFileIconView(entry: selected, size: 46)
-                        Spacer()
-                    }
-                    .padding(.vertical, 12)
+            if let text = previewText {
+                Text(text.dropLast(text.last?.isNewline == true ? 1 : 0))
+                    .font(.system(size: 10.5, design: .monospaced))
+                    .foregroundStyle(.primary.opacity(0.84))
+                    .lineLimit(8)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.vertical, 4)
+            } else {
+                HStack {
+                    Spacer()
+                    EntryRichFileIconView(entry: selected, size: 46)
+                    Spacer()
                 }
+                .padding(.vertical, 12)
             }
-            .padding(12)
-            .frame(maxWidth: .infinity)
-            .background(
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .fill(colorScheme == .dark ? Color.white.opacity(0.06) : Color.white)
-                    .shadow(color: Color.black.opacity(0.06), radius: 8, y: 3)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .stroke(Color.primary.opacity(0.06), lineWidth: 1)
-            )
-            .padding(.bottom, 12)
+        }
+        .padding(14)
+        .frame(width: 230)
+        .frame(minHeight: 140)
+        .background(
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .fill(colorScheme == .dark ? Color(red: 0.18, green: 0.19, blue: 0.21) : Color.white)
+                .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.28 : 0.08), radius: 14, y: 4)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .strokeBorder(Color.primary.opacity(0.05), lineWidth: 1)
+        )
     }
 
     @MainActor
@@ -2680,7 +2874,8 @@ private enum WorkspaceDateFormatters {
     }()
 
     static func displayString(from date: Date) -> String {
-        dateFormatter.string(from: date)
+        guard date > .distantPast else { return "—" }
+        return dateFormatter.string(from: date)
     }
 
     static func sizeString(for bytes: Int64) -> String {

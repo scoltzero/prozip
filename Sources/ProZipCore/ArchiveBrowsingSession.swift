@@ -58,17 +58,25 @@ public final class ArchiveBrowsingSession: ObservableObject {
     private var selectedEntriesCache: [ArchiveEntry] = []
     public private(set) var selectionAnchorID: String?
     public private(set) var selectionLeadID: String?
+    private var refreshEntriesTask: Task<Void, Never>?
     @Published public var showsAuxiliaryEntries: Bool = false {
         didSet {
             guard showsAuxiliaryEntries != oldValue else { return }
-            Task { @MainActor in await refreshDisplayedEntries() }
+            scheduleDisplayedEntriesRefresh()
         }
     }
     @Published public var searchQuery: String = "" {
         didSet {
-            Task { @MainActor in
-                await refreshDisplayedEntries()
-            }
+            guard searchQuery != oldValue else { return }
+            scheduleDisplayedEntriesRefresh()
+        }
+    }
+
+    private func scheduleDisplayedEntriesRefresh() {
+        refreshEntriesTask?.cancel()
+        refreshEntriesTask = Task { @MainActor [weak self] in
+            guard !Task.isCancelled else { return }
+            await self?.refreshDisplayedEntries()
         }
     }
 
@@ -590,6 +598,7 @@ public final class ArchiveBrowsingSession: ObservableObject {
             if let anchor = selectionAnchorID, !visibleIDs.contains(anchor) { selectionAnchorID = nil }
             if let lead = selectionLeadID, !visibleIDs.contains(lead) { selectionLeadID = nil }
         } catch {
+            guard !Task.isCancelled, !(error is CancellationError) else { return }
             guard currentDirectoryPath == directory, searchQuery.trimmingCharacters(in: .whitespacesAndNewlines) == query,
                   pendingMutations == mutations, showsAuxiliaryEntries == includeAuxiliary else { return }
             displayedEntries = []

@@ -1564,6 +1564,54 @@ final class ProZipAcceptanceTests: XCTestCase {
         XCTAssertTrue(FileManager.default.fileExists(atPath: artifactDir.appendingPathComponent("prozip_mini.png").path))
         XCTAssertTrue(FileManager.default.fileExists(atPath: artifactDir.appendingPathComponent("prozip_settings_compression.png").path))
     }
+
+    func testUI_SettingsWindowSupportsVerticalAndDiagonalResize() throws {
+        let appVM = ProZipAppViewModel.shared
+        let root = ProZipSettingsView(initialTab: .extraction)
+            .environmentObject(appVM)
+        let hosting = NSHostingView(rootView: root)
+        hosting.safeAreaRegions = []
+        hosting.frame = NSRect(x: 0, y: 0, width: 900, height: 712)
+        hosting.autoresizingMask = [.width, .height]
+        hosting.sizingOptions = [.minSize]
+
+        let window = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 900, height: 712),
+            styleMask: [.titled, .fullSizeContentView, .closable, .miniaturizable, .resizable],
+            backing: .buffered,
+            defer: false
+        )
+        window.contentView = hosting
+        window.titlebarAppearsTransparent = true
+        window.titleVisibility = .hidden
+        window.titlebarSeparatorStyle = .none
+        window.isMovableByWindowBackground = false
+        window.minSize = NSSize(width: 900, height: 680)
+        window.contentMinSize = NSSize(width: 900, height: 680)
+        hosting.layoutSubtreeIfNeeded()
+
+        XCTAssertTrue(window.isOpaque)
+        XCTAssertEqual(window.contentMinSize, NSSize(width: 900, height: 680))
+        XCTAssertGreaterThan(window.maxSize.height, 10_000)
+
+        // Vertical shrink via bottom border (712 -> 680)
+        window.setFrame(NSRect(x: 100, y: 132, width: 900, height: 680), display: true)
+        hosting.layoutSubtreeIfNeeded()
+        XCTAssertEqual(window.frame.size, NSSize(width: 900, height: 680))
+        XCTAssertEqual(hosting.bounds.size, NSSize(width: 900, height: 680))
+
+        // Vertical enlarge via bottom border (680 -> 860)
+        window.setFrame(NSRect(x: 100, y: -48, width: 900, height: 860), display: true)
+        hosting.layoutSubtreeIfNeeded()
+        XCTAssertEqual(window.frame.size, NSSize(width: 900, height: 860))
+        XCTAssertEqual(hosting.bounds.size, NSSize(width: 900, height: 860))
+
+        // Diagonal bottom-right enlarge (900x860 -> 1140x920)
+        window.setFrame(NSRect(x: 100, y: -108, width: 1140, height: 920), display: true)
+        hosting.layoutSubtreeIfNeeded()
+        XCTAssertEqual(window.frame.size, NSSize(width: 1140, height: 920))
+        XCTAssertEqual(hosting.bounds.size, NSSize(width: 1140, height: 920))
+    }
 }
 
 // MARK: - Private Little Endian Byte Helper for Test Binary Construction

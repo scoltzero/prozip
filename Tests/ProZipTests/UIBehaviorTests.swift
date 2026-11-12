@@ -476,7 +476,7 @@ final class UIBehaviorTests: XCTestCase {
         let vm = makeTestAppViewModel()
         let session = ArchiveBrowsingSession(url: URL(fileURLWithPath: "/tmp/layout.zip"))
         try await session.loadEntries([ArchiveEntry(path: "readme.txt", type: .file)])
-        for size in [CGSize(width: 880, height: 600), CGSize(width: 1040, height: 740), CGSize(width: 1600, height: 900)] {
+        for size in [CGSize(width: 900, height: 600), CGSize(width: 1040, height: 740), CGSize(width: 1600, height: 900)] {
             let root = WorkspaceWindowView(session: session)
                 .environmentObject(vm)
                 .environment(\.colorScheme, .light)
@@ -493,8 +493,113 @@ final class UIBehaviorTests: XCTestCase {
             let scale = CGFloat(bitmap.pixelsWide) / size.width
             let color = try XCTUnwrap(bitmap.colorAt(x: Int((size.width - 265) * scale), y: Int(20 * scale))?.usingColorSpace(.deviceRGB))
             XCTAssertGreaterThan(color.alphaComponent, 0.95, "Inspector absent at \(size)")
-            XCTAssertGreaterThan(color.greenComponent - color.redComponent, 0.005, "Inspector no longer follows right edge at \(size)")
+            XCTAssertLessThan(color.redComponent, 0.97, "Inspector no longer follows right edge at \(size)")
+            XCTAssertGreaterThan(color.blueComponent, color.greenComponent, "Inspector must use neutral #EBE7F1 surface rather than green tint at \(size)")
             window.contentView = nil
         }
+    }
+
+    func testSynthesizedVirtualDirectoryUsesDistantPastTimestamp() async throws {
+        let session = ArchiveBrowsingSession(url: URL(fileURLWithPath: "/tmp/aux-virtual.zip"))
+        session.showsAuxiliaryEntries = true
+        try await session.loadEntries([
+            ArchiveEntry(path: "__MACOSX/._readme.txt", type: .file, uncompressedSize: 82)
+        ])
+        await session.refreshDisplayedEntries()
+        let macosx = try XCTUnwrap(session.displayedEntries.first(where: { $0.path == "__MACOSX" }))
+        XCTAssertTrue(macosx.isDirectory)
+        XCTAssertEqual(macosx.modifiedAt, Date.distantPast)
+    }
+
+    func testEmptyDraftWorkspaceFitsMinimumSizeWithoutClipping() async throws {
+        let vm = makeTestAppViewModel()
+        let session = ArchiveBrowsingSession(url: URL(fileURLWithPath: "/tmp/nonexistent-\(UUID().uuidString)-未命名压缩包.zip"))
+        XCTAssertNil(session.initialSourceStat)
+        let idealHosting = NSHostingView(
+            rootView: WorkspaceWindowView(session: session)
+                .environmentObject(vm)
+        )
+        idealHosting.safeAreaRegions = []
+        idealHosting.layoutSubtreeIfNeeded()
+        XCTAssertEqual(idealHosting.fittingSize.width, 1040, accuracy: 1, "Ideal width must stay 1040")
+        XCTAssertEqual(idealHosting.fittingSize.height, 740, accuracy: 1, "Empty draft skeleton must not overflow 740 ideal height")
+
+        let hosting = NSHostingView(
+            rootView: WorkspaceWindowView(session: session)
+                .environmentObject(vm)
+        )
+        hosting.safeAreaRegions = []
+        hosting.frame = NSRect(x: 0, y: 0, width: 900, height: 600)
+        hosting.sizingOptions = [.minSize]
+        let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 900, height: 600), styleMask: [.titled, .fullSizeContentView, .resizable], backing: .buffered, defer: false)
+        window.contentView = hosting
+        hosting.layoutSubtreeIfNeeded()
+        try await Task.sleep(for: .milliseconds(20))
+        hosting.layoutSubtreeIfNeeded()
+        XCTAssertEqual(window.contentMinSize.width, 900, accuracy: 1, "Workspace minimum width must be 900")
+        XCTAssertEqual(window.contentMinSize.height, 600, accuracy: 1, "Workspace minimum height must be 600")
+        window.contentView = nil
+    }
+
+    func testWorkspaceFlowCapsuleHitTestReachesHostingViewWithoutInterception() async throws {
+        let tempDir = FileManager.default.temporaryDirectory.appendingPathComponent("prozip-capsule-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: tempDir) }
+        let archiveURL = tempDir.appendingPathComponent("sample.zip")
+        try Data([0x50, 0x4B, 0x05, 0x06] + Array(repeating: UInt8(0), count: 18)).write(to: archiveURL)
+
+        let vm = makeTestAppViewModel()
+        let session = ArchiveBrowsingSession(url: archiveURL)
+        try await session.loadEntries([ArchiveEntry(path: "hello.txt", type: .file, uncompressedSize: 5)])
+        XCTAssertNotNil(session.initialSourceStat)
+
+        let size = CGSize(width: 1040, height: 740)
+        let hosting = NSHostingView(
+            rootView: WorkspaceWindowView(session: session)
+                .environmentObject(vm)
+                .frame(width: size.width, height: size.height)
+        )
+        hosting.safeAreaRegions = []
+        hosting.frame = CGRect(origin: .zero, size: size)
+        let window = NSWindow(contentRect: hosting.frame, styleMask: .borderless, backing: .buffered, defer: false)
+        window.contentView = hosting
+        hosting.layoutSubtreeIfNeeded()
+        try await Task.sleep(for: .milliseconds(30))
+        hosting.layoutSubtreeIfNeeded()
+
+        // Centers of 切换到 Mini (23,681,34,34), 全部解压 (58,681,129,34), 预览 (188,681,118,34) in bottom-up coords:
+        for point in [NSPoint(x: 40, y: 42), NSPoint(x: 122, y: 42), NSPoint(x: 247, y: 42)] {
+            let hitView = try XCTUnwrap(hosting.hitTest(point))
+            XCTAssertTrue(hitView === hosting, "AppKit subview \(type(of: hitView)) intercepted hitTest at \(point)")
+        }
+        window.contentView = nil
+    }
+
+    func testManagedTempCleanupPreservesCreationDraftAndAppInstallDirs() async throws {
+        let tempRoot = FileManager.default.temporaryDirectory.appendingPathComponent("prozip-reg-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: tempRoot, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: tempRoot) }
+
+        let registry = try ManagedTemporaryArtifactRegistry(fileURL: tempRoot.appendingPathComponent("registry.sqlite"))
+        let previewDir = try await registry.createManagedTemporaryDirectory(purpose: "quicklook")
+        addTeardownBlock { try? FileManager.default.removeItem(at: previewDir) }
+        try Data(repeating: 0xAA, count: 1024).write(to: previewDir.appendingPathComponent("thumb.png"))
+
+        let draftDir = try await registry.createManagedTemporaryDirectory(purpose: "creation-draft")
+        addTeardownBlock { try? FileManager.default.removeItem(at: draftDir) }
+        try Data(repeating: 0xBB, count: 2048).write(to: draftDir.appendingPathComponent("staged.txt"))
+
+        let installDir = try await registry.createManagedTemporaryDirectory(purpose: "application-installation")
+        addTeardownBlock { try? FileManager.default.removeItem(at: installDir) }
+        try Data(repeating: 0xCC, count: 4096).write(to: installDir.appendingPathComponent("App.app"))
+
+        let cleanable = await registry.totalCleanableBytes()
+        XCTAssertEqual(cleanable, 1024)
+
+        let freed = try await registry.cleanAllTemporaryFiles()
+        XCTAssertEqual(freed, 1024)
+        XCTAssertFalse(FileManager.default.fileExists(atPath: previewDir.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: draftDir.path), "creation-draft must survive active-PID temp cleanup")
+        XCTAssertTrue(FileManager.default.fileExists(atPath: installDir.path), "application-installation must survive active-PID temp cleanup")
     }
 }

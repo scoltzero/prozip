@@ -318,11 +318,12 @@ public final class DiskImageEngine: ArchiveEngine, @unchecked Sendable {
     }
 
     public func detach(_ mountPoint: String) async {
-        let proc = Process()
-        proc.executableURL = URL(fileURLWithPath: "/usr/bin/hdiutil")
-        proc.arguments = ["detach", mountPoint, "-force"]
-        try? proc.run()
-        proc.waitUntilExit()
+        _ = await Task.detached {
+            try? await ProcessCancellationController.run(
+                executableURL: URL(fileURLWithPath: "/usr/bin/hdiutil"),
+                arguments: ["detach", mountPoint, "-force"]
+            )
+        }.value
 
         removeMount(point: mountPoint)
     }
@@ -337,36 +338,28 @@ public final class DiskImageEngine: ArchiveEngine, @unchecked Sendable {
     // MARK: - 14-Stage Application Installation Pipeline
 
     public static func inspectSignature(of appURL: URL) async -> AppSignatureStatus {
-        let codesignProc = Process()
-        codesignProc.executableURL = URL(fileURLWithPath: "/usr/bin/codesign")
-        codesignProc.arguments = ["-dvvv", appURL.path]
-        let errPipe = Pipe()
-        codesignProc.standardError = errPipe
-        try? codesignProc.run()
-        codesignProc.waitUntilExit()
-
-        let errData = errPipe.fileHandleForReading.readDataToEndOfFile()
-        let errStr = String(data: errData, encoding: .utf8) ?? ""
-
-        if codesignProc.terminationStatus != 0 {
+        guard let codesignResult = try? await ProcessCancellationController.run(
+            executableURL: URL(fileURLWithPath: "/usr/bin/codesign"),
+            arguments: ["-dvvv", appURL.path]
+        ), codesignResult.exitCode == 0 else {
             return .unsigned
         }
 
+        let errStr = String(data: codesignResult.stderr, encoding: .utf8) ?? codesignResult.combinedOutputString
         if errStr.contains("Signature=adhoc") {
             return .adHocSigned
         }
 
         // Check Notarization via spctl
-        let spctlProc = Process()
-        spctlProc.executableURL = URL(fileURLWithPath: "/usr/bin/spctl")
-        spctlProc.arguments = ["-a", "-vv", appURL.path]
-        let spctlPipe = Pipe()
-        spctlProc.standardError = spctlPipe
-        try? spctlProc.run()
-        spctlProc.waitUntilExit()
+        guard let spctlResult = try? await ProcessCancellationController.run(
+            executableURL: URL(fileURLWithPath: "/usr/bin/spctl"),
+            arguments: ["-a", "-vv", appURL.path]
+        ) else {
+            return .signedNotNotarized
+        }
 
-        let spctlErr = String(data: spctlPipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
-        if spctlProc.terminationStatus == 0 && (spctlErr.contains("Notarized Developer ID") || spctlErr.contains("source=Notarized")) {
+        let spctlErr = String(data: spctlResult.stderr, encoding: .utf8) ?? spctlResult.combinedOutputString
+        if spctlResult.exitCode == 0 && (spctlErr.contains("Notarized Developer ID") || spctlErr.contains("source=Notarized")) {
             return .notarized
         }
 
