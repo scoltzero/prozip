@@ -24,6 +24,10 @@
   <a href="https://github.com/scoltzero/prozip/issues"><img src="https://img.shields.io/badge/Feedback-Issues-2EA44F?style=for-the-badge&logo=github&logoColor=white" alt="问题反馈与建议"></a>
 </p>
 
+<p align="center">
+  <img src="Resources/ProZip-Demo.gif" alt="ProZip 界面与功能演示" width="920">
+</p>
+
 > [!IMPORTANT]
 > **关于本项目的定位与初衷**：
 > 本项目为开发者个人出于对 macOS 现代化桌面应用架构、SwiftUI 与 AppKit 混合交互设计、跨引擎归档流（Archive Streaming Pipeline）及清洁室工程实践的学习、研究与技术探索而发起的完全开源项目。
