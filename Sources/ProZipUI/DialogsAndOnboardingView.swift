@@ -1180,33 +1180,95 @@ public struct AboutProZipView: View {
 public struct CheckForUpdatesDialogView: View {
     @Environment(\.dismiss) private var dismiss
     @AppStorage("updates.autoCheck.v1") private var autoCheckUpdates: Bool = true
-    @State private var isChecking: Bool = false
+    @EnvironmentObject private var appViewModel: ProZipAppViewModel
 
     public init() {}
 
     public var body: some View {
-        ArcZipDialogSurface(width: 420) {
+        let currentVer = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.1.0"
+        let currentBuild = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1"
+
+        ArcZipDialogSurface(width: 440) {
             VStack(alignment: .leading, spacing: 16) {
-                HStack(spacing: 14) {
+                HStack(alignment: .top, spacing: 14) {
                     ProZipBrandIcon(size: 52, showAppSquircle: true)
 
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(isChecking ? "正在检查更新…" : "ProZip 0.1.0 已是最新版本")
-                            .font(.system(size: 15, weight: .bold))
-                        Text("当前安装的 ProZip 0.1.0 (Build 1) Open Source 是目前已发布的最新版本。")
-                            .font(.system(size: 12))
-                            .foregroundStyle(.secondary)
-                            .fixedSize(horizontal: false, vertical: true)
+                    VStack(alignment: .leading, spacing: 5) {
+                        switch appViewModel.updatePhase {
+                        case .checking, .idle:
+                            Text("正在检查更新…")
+                                .font(.system(size: 15, weight: .bold))
+                            Text("正在连接 GitHub 获取最新版本信息…")
+                                .font(.system(size: 12))
+                                .foregroundStyle(.secondary)
+
+                        case .updateAvailable(_, let latestVersion, _, _):
+                            HStack(spacing: 6) {
+                                Text("发现新版本 \(latestVersion)")
+                                    .font(.system(size: 15, weight: .bold))
+                                Text("Update")
+                                    .font(.system(size: 10, weight: .bold))
+                                    .foregroundStyle(ProZipTheme.darkInk)
+                                    .padding(.horizontal, 6)
+                                    .padding(.vertical, 1.5)
+                                    .background(ProZipTheme.accentBright, in: Capsule())
+                            }
+                            Text("当前版本 \(currentVer) (Build \(currentBuild))，有可用的新版本可供升级。")
+                                .font(.system(size: 12))
+                                .foregroundStyle(.secondary)
+                                .fixedSize(horizontal: false, vertical: true)
+
+                        case .upToDate(let ver):
+                            Text("ProZip \(ver) 已是最新版本")
+                                .font(.system(size: 15, weight: .bold))
+                            Text("当前安装的 ProZip \(ver) (Build \(currentBuild)) 是目前已发布的最新版本。")
+                                .font(.system(size: 12))
+                                .foregroundStyle(.secondary)
+                                .fixedSize(horizontal: false, vertical: true)
+
+                        case .failed(let errorDesc):
+                            Text("检查更新未完成")
+                                .font(.system(size: 15, weight: .bold))
+                            Text(errorDesc)
+                                .font(.system(size: 12))
+                                .foregroundStyle(.secondary)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
                     }
                 }
 
-                if isChecking {
+                if appViewModel.updatePhase == .checking || appViewModel.isUpdateChecking {
                     ProgressView()
                         .progressViewStyle(.linear)
                         .tint(ProZipTheme.accent)
                 }
 
-                Toggle("自动检查更新（每天检查一次，安装前征求确认）", isOn: $autoCheckUpdates)
+                if case .updateAvailable(_, _, let release, _) = appViewModel.updatePhase,
+                   let bodyText = release.body, !bodyText.isEmpty {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("更新说明：")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(.secondary)
+                        ScrollView {
+                            Text(bodyText)
+                                .font(.system(size: 11))
+                                .foregroundStyle(.primary)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(8)
+                        }
+                        .frame(height: 90)
+                        .background(
+                            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                .fill(Color.primary.opacity(0.04))
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                .strokeBorder(Color.primary.opacity(0.08), lineWidth: 0.5)
+                        )
+                    }
+                }
+
+                Toggle("自动检查更新（启动时智能静默检测）", isOn: $autoCheckUpdates)
                     .toggleStyle(.checkbox)
                     .font(.system(size: 12))
                     .tint(ProZipTheme.accent)
@@ -1223,20 +1285,59 @@ public struct CheckForUpdatesDialogView: View {
 
                     Spacer()
 
-                    ArcZipDialogButton("重新检查", role: .secondary, size: .regular) {
-                        isChecking = true
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) {
-                            isChecking = false
+                    switch appViewModel.updatePhase {
+                    case .checking:
+                        ArcZipDialogButton("取消", role: .secondary, size: .regular) {
+                            dismiss()
                         }
-                    }
 
-                    ArcZipDialogButton("好", role: .primary, size: .regular) {
-                        dismiss()
+                    case .updateAvailable(_, _, let release, let downloadURL):
+                        ArcZipDialogButton("稍后再说", role: .secondary, size: .regular) {
+                            dismiss()
+                        }
+
+                        ArcZipDialogButton("前往下载 ↗", role: .primary, size: .regular) {
+                            if let target = downloadURL ?? URL(string: release.htmlUrl) {
+                                NSWorkspace.shared.open(target)
+                            }
+                            dismiss()
+                        }
+                        .keyboardShortcut(.defaultAction)
+
+                    case .upToDate:
+                        ArcZipDialogButton("重新检查", role: .secondary, size: .regular) {
+                            appViewModel.checkForUpdates(userInitiated: true)
+                        }
+
+                        ArcZipDialogButton("好", role: .primary, size: .regular) {
+                            dismiss()
+                        }
+                        .keyboardShortcut(.defaultAction)
+
+                    case .failed:
+                        ArcZipDialogButton("重试", role: .secondary, size: .regular) {
+                            appViewModel.checkForUpdates(userInitiated: true)
+                        }
+
+                        ArcZipDialogButton("好", role: .primary, size: .regular) {
+                            dismiss()
+                        }
+                        .keyboardShortcut(.defaultAction)
+
+                    case .idle:
+                        ArcZipDialogButton("检查更新", role: .primary, size: .regular) {
+                            appViewModel.checkForUpdates(userInitiated: true)
+                        }
+                        .keyboardShortcut(.defaultAction)
                     }
-                    .keyboardShortcut(.defaultAction)
                 }
             }
             .padding(22)
+        }
+        .onAppear {
+            if appViewModel.updatePhase == .idle {
+                appViewModel.checkForUpdates(userInitiated: true)
+            }
         }
     }
 }

@@ -1269,6 +1269,9 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
                 candidate.orderOut(nil)
             }
         }
+
+        // 5. Check for updates in background if needed
+        ProZipAppViewModel.shared.checkAutoUpdatesOnLaunchIfNeeded()
     }
 
     private func createArchiveWindow(for session: ArchiveBrowsingSession?) -> ArcZipWindow {

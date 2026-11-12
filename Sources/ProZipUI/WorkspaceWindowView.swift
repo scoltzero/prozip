@@ -1458,6 +1458,8 @@ public struct WorkspaceFlowOrbitBar: View {
         self.navigationEntry = navigationEntry
     }
 
+    @State private var hoveredButton: String? = nil
+
     public var body: some View {
         let selection = session.selectedEntries.isEmpty ? navigationEntry.map { [$0] } ?? [] : session.selectedEntries
         let rec = session.initialSourceStat == nil ? nil : FlowActionRouter.recommendAction(
@@ -1467,23 +1469,35 @@ public struct WorkspaceFlowOrbitBar: View {
         )
 
         HStack(alignment: .bottom, spacing: 9) {
-            // Left Liquid Glass Capsule: [⤡ 34×34] [↑ 全部解压 ⏎ 129×34] [👁 预览 空格 118×34]
+            // Left Liquid Glass Capsule: [⤡ 34×34] | [↑ 全部解压 ⏎ 129×34] | [👁 预览 空格 118×34]
             FlowOrbitCapsule {
-                HStack(spacing: 1) {
+                HStack(spacing: 3) {
                     if session.initialSourceStat != nil {
                         Button {
                             session.isMiniMode = true
                         } label: {
                             Image(systemName: "arrow.down.right.and.arrow.up.left")
                                 .font(.system(size: 11, weight: .semibold))
-                                .foregroundStyle(Color.primary.opacity(0.74))
-                                .frame(width: 34, height: 34)
+                                .foregroundStyle(Color.primary.opacity(hoveredButton == "mini" ? 0.95 : 0.74))
+                                .frame(width: 32, height: 32)
+                                .background {
+                                    if hoveredButton == "mini" {
+                                        Circle()
+                                            .fill(colorScheme == .dark ? Color.white.opacity(0.14) : Color.white.opacity(0.50))
+                                    }
+                                }
                                 .contentShape(Circle())
                         }
                         .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.05, pressedScale: 0.93))
                         .accessibilityIdentifier("ProZip.SwitchToMini")
                         .accessibilityLabel("切换到 Mini")
-                        .help("切换到 Mini")
+                        .help("切换到 Mini (⌥⌘M)")
+                        .onHover { h in withAnimation(.easeInOut(duration: 0.14)) { hoveredButton = h ? "mini" : nil } }
+
+                        // Glass Divider
+                        Rectangle()
+                            .fill(colorScheme == .dark ? Color.white.opacity(0.12) : Color.black.opacity(0.08))
+                            .frame(width: 1, height: 16)
                     }
 
                     Button {
@@ -1497,16 +1511,28 @@ public struct WorkspaceFlowOrbitBar: View {
                             Text("全部解压")
                                 .font(.system(size: 13, weight: .semibold))
 
-                            keyboardShortcutBadge("⏎", isHighlighted: false)
+                            keyboardShortcutBadge("⏎", isHighlighted: hoveredButton == "extractAll")
                         }
-                        .frame(width: 129, height: 34)
-                        .foregroundStyle(canExtract ? Color.primary : Color.secondary.opacity(0.55))
+                        .frame(width: 126, height: 32)
+                        .foregroundStyle(canExtract ? (hoveredButton == "extractAll" ? Color.primary : Color.primary.opacity(0.88)) : Color.secondary.opacity(0.50))
+                        .background {
+                            if canExtract && hoveredButton == "extractAll" {
+                                Capsule()
+                                    .fill(colorScheme == .dark ? Color.white.opacity(0.14) : Color.white.opacity(0.52))
+                            }
+                        }
                         .contentShape(Capsule())
                     }
                     .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.02, pressedScale: 0.97))
                     .disabled(session.initialSourceStat == nil || !session.phase.canExtractAll)
                     .accessibilityLabel("全部解压")
                     .help("按回车键执行")
+                    .onHover { h in withAnimation(.easeInOut(duration: 0.14)) { hoveredButton = h ? "extractAll" : nil } }
+
+                    // Glass Divider
+                    Rectangle()
+                        .fill(colorScheme == .dark ? Color.white.opacity(0.12) : Color.black.opacity(0.08))
+                        .frame(width: 1, height: 16)
 
                     Button {
                         appViewModel.previewSelected(in: session)
@@ -1517,16 +1543,23 @@ public struct WorkspaceFlowOrbitBar: View {
                                 .font(.system(size: 12, weight: .medium))
                             Text("预览")
                                 .font(.system(size: 13, weight: .medium))
-                            keyboardShortcutBadge("空格", isHighlighted: false)
+                            keyboardShortcutBadge("空格", isHighlighted: hoveredButton == "preview")
                         }
-                        .frame(width: 118, height: 34)
-                        .foregroundStyle(hasSelection ? Color.primary.opacity(0.85) : Color.secondary.opacity(0.55))
+                        .frame(width: 114, height: 32)
+                        .foregroundStyle(hasSelection ? (hoveredButton == "preview" ? Color.primary : Color.primary.opacity(0.85)) : Color.secondary.opacity(0.50))
+                        .background {
+                            if hasSelection && hoveredButton == "preview" {
+                                Capsule()
+                                    .fill(colorScheme == .dark ? Color.white.opacity(0.14) : Color.white.opacity(0.52))
+                            }
+                        }
                         .contentShape(Capsule())
                     }
                     .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.02, pressedScale: 0.97))
                     .disabled(session.selectedEntryIDs.isEmpty)
                     .accessibilityLabel("预览")
                     .help("按空格键执行")
+                    .onHover { h in withAnimation(.easeInOut(duration: 0.14)) { hoveredButton = h ? "preview" : nil } }
                 }
             }
 
@@ -1590,8 +1623,9 @@ private struct WorkspacePassThroughGlassView: NSViewRepresentable {
     }
 }
 
-/// Isolated pointer-tracking capsule wrapper: draws the radial glow strictly in `.background`
-/// with `.allowsHitTesting(false)` so physical mouse clicks reach every capsule `Button`.
+/// Isolated pointer-tracking capsule wrapper: draws the Liquid Glass background
+/// and the radial glow strictly in `.background` with `.allowsHitTesting(false)`
+/// so physical mouse clicks reach every capsule `Button`.
 private struct FlowOrbitCapsule<Content: View>: View {
     @Environment(\.colorScheme) private var colorScheme
     @State private var orbitPoint: CGPoint?
@@ -1599,29 +1633,60 @@ private struct FlowOrbitCapsule<Content: View>: View {
 
     var body: some View {
         content
-            .padding(4)
+            .padding(.horizontal, 6)
+            .padding(.vertical, 4)
             .background {
                 ZStack(alignment: .leading) {
-                    WorkspacePassThroughGlassView(material: .headerView, blendingMode: .withinWindow)
+                    // 1. AppKit withinWindow HUD Glass
+                    WorkspacePassThroughGlassView(material: .hudWindow, blendingMode: .withinWindow)
+
+                    // 2. Native SwiftUI ultraThinMaterial for multi-layer refraction
+                    Rectangle()
+                        .fill(.ultraThinMaterial)
+
+                    // 3. Translucent frosted tint allowing underlying list entries to blur-through
                     (colorScheme == .dark
-                        ? Color(red: 0.16, green: 0.17, blue: 0.19).opacity(0.92)
-                        : Color.white.opacity(0.94))
+                        ? Color(red: 0.12, green: 0.13, blue: 0.15).opacity(0.60)
+                        : Color.white.opacity(0.52))
+
+                    // 4. Subtle specular highlight bevel from top
+                    LinearGradient(
+                        colors: [
+                            Color.white.opacity(colorScheme == .dark ? 0.20 : 0.48),
+                            Color.clear
+                        ],
+                        startPoint: .top,
+                        endPoint: .center
+                    )
+
+                    // 5. Interactive Liquid Glow following pointer
                     if let point = orbitPoint {
                         Circle()
-                            .fill(ProZipTheme.accent.opacity(0.18))
-                            .frame(width: 84, height: 84)
-                            .blur(radius: 18)
-                            .offset(x: max(0, point.x - 42), y: 0)
+                            .fill(ProZipTheme.accent.opacity(colorScheme == .dark ? 0.24 : 0.18))
+                            .frame(width: 88, height: 88)
+                            .blur(radius: 16)
+                            .offset(x: max(0, point.x - 44), y: 0)
                             .allowsHitTesting(false)
                     }
                 }
                 .clipShape(Capsule())
-                .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.30 : 0.07), radius: 8, x: 0, y: 3)
+                .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.40 : 0.08), radius: 12, x: 0, y: 5)
+                .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.20 : 0.04), radius: 2, x: 0, y: 1)
                 .allowsHitTesting(false)
             }
             .overlay {
                 Capsule()
-                    .strokeBorder(Color.primary.opacity(0.08), lineWidth: 1)
+                    .strokeBorder(
+                        LinearGradient(
+                            colors: [
+                                Color.white.opacity(colorScheme == .dark ? 0.40 : 0.85),
+                                Color.white.opacity(colorScheme == .dark ? 0.10 : 0.25)
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        ),
+                        lineWidth: 1
+                    )
                     .allowsHitTesting(false)
             }
             .onContinuousHover { phase in

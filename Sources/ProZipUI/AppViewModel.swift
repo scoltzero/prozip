@@ -810,10 +810,65 @@ public final class ProZipAppViewModel: ObservableObject {
         }
     }
 
-    public func checkForUpdates() {
-        alertTitle = "暂时无法检查更新"
-        alertMessage = "当前版本尚未提供在线更新服务。"
-        isAlertPresented = true
+    public enum UpdateCheckPhase: Equatable, Sendable {
+        case idle
+        case checking
+        case upToDate(currentVersion: String)
+        case updateAvailable(currentVersion: String, latestVersion: String, release: GitHubReleaseInfo, downloadURL: URL?)
+        case failed(errorDescription: String)
+    }
+
+    @Published public var updatePhase: UpdateCheckPhase = .idle
+    @Published public var latestAvailableRelease: GitHubReleaseInfo?
+    @Published public var preferredUpdateDownloadURL: URL?
+    @Published public var isUpdateChecking: Bool = false
+
+    public func checkForUpdates(userInitiated: Bool = true) {
+        if userInitiated {
+            isCheckForUpdatesPresented = true
+        }
+        updatePhase = .checking
+        isUpdateChecking = true
+
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            do {
+                let result = try await AppUpdateService.shared.checkForUpdates()
+                self.isUpdateChecking = false
+                if result.hasUpdate {
+                    self.latestAvailableRelease = result.release
+                    self.preferredUpdateDownloadURL = result.preferredDownloadURL
+                    self.updatePhase = .updateAvailable(
+                        currentVersion: result.currentVersion,
+                        latestVersion: result.latestVersion,
+                        release: result.release,
+                        downloadURL: result.preferredDownloadURL
+                    )
+                    if !userInitiated {
+                        self.isCheckForUpdatesPresented = true
+                    }
+                } else {
+                    self.updatePhase = .upToDate(currentVersion: result.currentVersion)
+                }
+            } catch {
+                self.isUpdateChecking = false
+                let description = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+                self.updatePhase = .failed(errorDescription: description)
+            }
+        }
+    }
+
+    public func checkAutoUpdatesOnLaunchIfNeeded() {
+        guard AppUpdateService.isAutoCheckEnabled else { return }
+        let lastCheck = AppUpdateService.lastCheckDate
+        let now = Date()
+        if let lastCheck, now.timeIntervalSince(lastCheck) < 86400 {
+            // Already checked within 24 hours
+            return
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) { [weak self] in
+            self?.checkForUpdates(userInitiated: false)
+        }
     }
     @Published public var isReleaseOverviewPresented: Bool = false {
         didSet {

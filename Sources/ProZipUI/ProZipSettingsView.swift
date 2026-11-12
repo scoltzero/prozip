@@ -2222,6 +2222,7 @@ public struct AdvancedSettingsPane: View {
 // MARK: - 10. About Settings Pane
 
 public struct AboutSettingsPane: View {
+    @ObservedObject private var appViewModel = ProZipAppViewModel.shared
     @State private var isUpdateDialogPresented: Bool = false
     @State private var isReleaseOverviewPresented: Bool = false
     @State private var isLicenseSheetPresented: Bool = false
@@ -2244,21 +2245,27 @@ public struct AboutSettingsPane: View {
                         .foregroundStyle(.secondary)
                     Text("\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.1.0") (\(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1"))")
                         .font(.system(size: 13, weight: .medium))
-                    Text(isCheckingForUpdates ? "正在检查更新…" : "尚未检查更新")
-                        .font(.system(size: 11))
-                        .foregroundStyle(.secondary)
+                    if appViewModel.isUpdateChecking {
+                        Text("正在检查更新…")
+                            .font(.system(size: 11))
+                            .foregroundStyle(ProZipTheme.accent)
+                    } else if let lastDate = AppUpdateService.lastCheckDate {
+                        Text("上次检查：\(lastDate.formatted(date: .numeric, time: .shortened))")
+                            .font(.system(size: 11))
+                            .foregroundStyle(.secondary)
+                    } else {
+                        Text("尚未检查更新")
+                            .font(.system(size: 11))
+                            .foregroundStyle(.secondary)
+                    }
                 }
 
                 Spacer()
 
                 Button {
-                    isCheckingForUpdates = true
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                        isCheckingForUpdates = false
-                        ProZipAppViewModel.shared.checkForUpdates()
-                    }
+                    ProZipAppViewModel.shared.checkForUpdates(userInitiated: true)
                 } label: {
-                    Text("检查更新")
+                    Text(appViewModel.isUpdateChecking ? "正在检查…" : "检查更新")
                         .font(.system(size: 13))
                         .frame(width: 101, height: 29)
                         .background(
@@ -2267,6 +2274,7 @@ public struct AboutSettingsPane: View {
                         )
                 }
                 .buttonStyle(.plain)
+                .disabled(appViewModel.isUpdateChecking)
             }
             .padding(.top, 54)
 

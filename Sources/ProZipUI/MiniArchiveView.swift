@@ -961,27 +961,33 @@ public struct MiniArchiveView: View {
             }
             .padding(.horizontal, 4)
             .padding(.vertical, 3)
-            .background(
-                Capsule()
-                    .fill(
-                        colorScheme == .dark
-                            ? Color.white.opacity(0.12)
-                            : Color.white.opacity(0.58)
+            .background {
+                ZStack {
+                    ProZipGlassMaterialView(material: .hudWindow, blendingMode: .withinWindow)
+                    Rectangle().fill(.ultraThinMaterial)
+                    (colorScheme == .dark
+                        ? Color(red: 0.12, green: 0.13, blue: 0.15).opacity(0.60)
+                        : Color.white.opacity(0.52))
+                    LinearGradient(
+                        colors: [
+                            Color.white.opacity(colorScheme == .dark ? 0.20 : 0.45),
+                            Color.clear
+                        ],
+                        startPoint: .top,
+                        endPoint: .center
                     )
-                    .shadow(
-                        color: Color.black.opacity(colorScheme == .dark ? 0.25 : 0.10),
-                        radius: 4,
-                        x: 0,
-                        y: 1
-                    )
-            )
+                }
+                .clipShape(Capsule())
+                .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.35 : 0.08), radius: 8, x: 0, y: 3)
+                .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.18 : 0.04), radius: 2, x: 0, y: 1)
+            }
             .overlay(
                 Capsule()
                     .strokeBorder(
                         LinearGradient(
                             colors: [
-                                Color.white.opacity(colorScheme == .dark ? 0.36 : 0.90),
-                                Color.white.opacity(colorScheme == .dark ? 0.12 : 0.45)
+                                Color.white.opacity(colorScheme == .dark ? 0.38 : 0.85),
+                                Color.white.opacity(colorScheme == .dark ? 0.10 : 0.25)
                             ],
                             startPoint: .top,
                             endPoint: .bottom
