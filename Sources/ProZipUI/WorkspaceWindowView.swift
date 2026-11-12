@@ -132,23 +132,25 @@ public struct WorkspaceWindowView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .padding(.top, 16)
 
-                    // 56pt Bottom Progressive Blur + Soft Surface Veil (FoldspaceBottomProgressiveBlur)
-                    ZStack {
-                        ProZipVariableBlurView(direction: .bottomToTop, material: .headerView)
-                        LinearGradient(
-                            colors: [
-                                mainCardFill.opacity(0.0),
-                                mainCardFill.opacity(0.58),
-                                mainCardFill.opacity(0.90)
-                            ],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
+                    // Legacy bottom surface veil only on pre-macOS 26; on macOS 26+ rows stay crisp and refract directly through the floating Liquid Glass capsule.
+                    if #unavailable(macOS 26.0) {
+                        ZStack {
+                            ProZipVariableBlurView(direction: .bottomToTop, material: .headerView)
+                            LinearGradient(
+                                colors: [
+                                    mainCardFill.opacity(0.0),
+                                    mainCardFill.opacity(0.58),
+                                    mainCardFill.opacity(0.90)
+                                ],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
+                        }
+                        .frame(height: 56)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+                        .allowsHitTesting(false)
+                        .zIndex(5)
                     }
-                    .frame(height: 56)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
-                    .allowsHitTesting(false)
-                    .zIndex(5)
 
                     // Floating Hover Preview Panel (ArchiveHoverPreviewOverlay)
                     if preferences.hoverPreviewEnabled, let previewEntry = hoverPreviewEntry {
@@ -376,118 +378,104 @@ public struct WorkspaceWindowView: View {
                 .overlay { WindowDragArea() }
 
             // Right Cluster: View Mode Capsule (108×38) + Delete (38×38) + Save (38×38) + Search (38×38 / 220×38)
-            HStack(spacing: 8) {
-                HStack(spacing: 2) {
-                    viewModeCapsuleButton(.icons, icon: "square.grid.2x2", label: "图标视图", tooltip: "图标视图 (⌘1)")
-                    viewModeCapsuleButton(.list, icon: "list.bullet", label: "列表视图", tooltip: "列表视图 (⌘2)")
-                    viewModeCapsuleButton(.columns, icon: "rectangle.split.3x1", label: "分栏视图", tooltip: "分栏视图 (⌘3)")
-                }
-                .padding(.horizontal, 4)
-                .padding(.vertical, 3)
-                .frame(width: 108, height: 38)
-                .background(
-                    Capsule()
-                        .fill(colorScheme == .dark ? Color.white.opacity(0.06) : Color(red: 0.961, green: 0.961, blue: 0.969))
-                )
-                .overlay(
-                    Capsule()
-                        .strokeBorder(Color.primary.opacity(0.06), lineWidth: 1)
-                )
-                .accessibilityElement(children: .contain)
-                .accessibilityLabel("显示方式")
-
-                // Delete Button: SOLID #E1385A crimson-pink + WHITE trash icon when items selected
-                toolbarCircleButton(
-                    icon: "trash",
-                    accessibilityID: "trash",
-                    label: "删除",
-                    tooltip: "删除",
-                    isEnabled: canDelete,
-                    activeSolidFill: canDelete ? Color(red: 0.882, green: 0.220, blue: 0.353) : nil
-                ) {
-                    session.removeSelectedDraftEntries()
-                }
-
-                // Save Button: SOLID #1EA854 emerald-green + WHITE floppy icon when dirty
-                toolbarCircleButton(
-                    icon: "externaldrive.badge.checkmark",
-                    customFloppyGraphic: true,
-                    accessibilityID: nil,
-                    label: "保存",
-                    tooltip: "保存",
-                    isEnabled: session.hasUnsavedChanges,
-                    activeSolidFill: session.hasUnsavedChanges ? Color(red: 0.118, green: 0.659, blue: 0.329) : nil
-                ) {
-                    Task {
-                        appViewModel.saveChanges(for: session)
+            ProZipGlassGroup(spacing: 4) {
+                HStack(spacing: 8) {
+                    HStack(spacing: 2) {
+                        viewModeCapsuleButton(.icons, icon: "square.grid.2x2", label: "图标视图", tooltip: "图标视图 (⌘1)")
+                        viewModeCapsuleButton(.list, icon: "list.bullet", label: "列表视图", tooltip: "列表视图 (⌘2)")
+                        viewModeCapsuleButton(.columns, icon: "rectangle.split.3x1", label: "分栏视图", tooltip: "分栏视图 (⌘3)")
                     }
-                }
+                    .padding(.horizontal, 4)
+                    .padding(.vertical, 3)
+                    .frame(width: 108, height: 38)
+                    .proZipLiquidGlassCapsule(interactive: true)
+                    .accessibilityElement(children: .contain)
+                    .accessibilityLabel("显示方式")
 
-                // Expandable Search Bar (220×38) or Collapsed Search Circle Button (38×38)
-                if session.isSearchExpanded {
-                    HStack(spacing: 8) {
-                        Image(systemName: "magnifyingglass")
-                            .font(.system(size: 13, weight: .medium))
-                            .foregroundStyle(ProZipTheme.accent)
+                    // Delete Button: crimson-pink #E1385A Liquid Glass circle + WHITE trash icon when items selected
+                    toolbarCircleButton(
+                        icon: "trash",
+                        accessibilityID: "trash",
+                        label: "删除",
+                        tooltip: "删除",
+                        isEnabled: canDelete,
+                        activeSolidFill: canDelete ? Color(red: 0.882, green: 0.220, blue: 0.353) : nil
+                    ) {
+                        session.removeSelectedDraftEntries()
+                    }
 
-                        TextField("搜索压缩包", text: $session.searchQuery)
-                            .textFieldStyle(.plain)
-                            .focused($isSearchFocused)
-                            .onAppear { isSearchFocused = true }
-                            .onExitCommand {
+                    // Save Button: emerald-green #1EA854 Liquid Glass circle + WHITE floppy icon when dirty
+                    toolbarCircleButton(
+                        icon: "externaldrive.badge.checkmark",
+                        customFloppyGraphic: true,
+                        accessibilityID: nil,
+                        label: "保存",
+                        tooltip: "保存",
+                        isEnabled: session.hasUnsavedChanges,
+                        activeSolidFill: session.hasUnsavedChanges ? Color(red: 0.118, green: 0.659, blue: 0.329) : nil
+                    ) {
+                        Task {
+                            appViewModel.saveChanges(for: session)
+                        }
+                    }
+
+                    // Expandable Search Bar (220×38) or Collapsed Search Circle Button (38×38)
+                    if session.isSearchExpanded {
+                        HStack(spacing: 8) {
+                            Image(systemName: "magnifyingglass")
+                                .font(.system(size: 13, weight: .medium))
+                                .foregroundStyle(ProZipTheme.accent)
+
+                            TextField("搜索压缩包", text: $session.searchQuery)
+                                .textFieldStyle(.plain)
+                                .focused($isSearchFocused)
+                                .onAppear { isSearchFocused = true }
+                                .onExitCommand {
+                                    session.searchQuery = ""
+                                    withAnimation(.spring(response: 0.24, dampingFraction: 0.82)) {
+                                        session.isSearchExpanded = false
+                                    }
+                                }
+                                .font(.system(size: 13))
+                                .frame(maxWidth: .infinity)
+
+                            Button {
                                 session.searchQuery = ""
                                 withAnimation(.spring(response: 0.24, dampingFraction: 0.82)) {
                                     session.isSearchExpanded = false
                                 }
-                            }
-                            .font(.system(size: 13))
-                            .frame(maxWidth: .infinity)
-
-                        Button {
-                            session.searchQuery = ""
-                            withAnimation(.spring(response: 0.24, dampingFraction: 0.82)) {
-                                session.isSearchExpanded = false
-                            }
-                        } label: {
-                            ZStack {
-                                Circle()
-                                    .fill(colorScheme == .dark ? Color.white.opacity(0.12) : Color.white)
-                                    .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.2 : 0.05), radius: 2, y: 1)
-                                Circle()
-                                    .strokeBorder(Color.primary.opacity(0.08), lineWidth: 1)
+                            } label: {
                                 Image(systemName: "xmark")
                                     .font(.system(size: 10, weight: .semibold))
                                     .foregroundStyle(.primary.opacity(0.75))
+                                    .frame(width: 28, height: 28)
                             }
-                            .frame(width: 28, height: 28)
+                            .buttonStyle(ProZipGlassSegmentButtonStyle(shape: .circle, hoverDarkOpacity: 0.10, hoverLightOpacity: 0.06))
+                            .proZipLiquidGlassCircle(interactive: true)
+                            .accessibilityLabel("清除并关闭搜索")
+                            .help("关闭搜索")
                         }
-                        .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.04, pressedScale: 0.94))
-                        .accessibilityLabel("清除并关闭搜索")
-                        .help("关闭搜索")
-                    }
-                    .padding(.leading, 12)
-                    .padding(.trailing, 5)
-                    .frame(width: 220, height: 38)
-                    .background(
-                        Capsule()
-                            .fill(colorScheme == .dark ? Color.white.opacity(0.08) : Color(red: 0.965, green: 0.965, blue: 0.973))
-                            .shadow(color: ProZipTheme.accent.opacity(0.14), radius: 6, y: 1)
-                    )
-                    .overlay(
-                        Capsule()
-                            .strokeBorder(ProZipTheme.accent, lineWidth: 1.5)
-                    )
-                    .transition(.scale(scale: 0.92, anchor: .trailing).combined(with: .opacity))
-                } else {
-                    toolbarCircleButton(
-                        icon: "magnifyingglass",
-                        accessibilityID: "ProZip.WorkspaceSearch",
-                        label: "搜索压缩包",
-                        tooltip: "搜索压缩包",
-                        isEnabled: true
-                    ) {
-                        withAnimation(.spring(response: 0.24, dampingFraction: 0.82)) {
-                            session.isSearchExpanded = true
+                        .padding(.leading, 12)
+                        .padding(.trailing, 5)
+                        .frame(width: 220, height: 38)
+                        .proZipLiquidGlassCapsule(interactive: false)
+                        .overlay(
+                            Capsule()
+                                .strokeBorder(ProZipTheme.accent, lineWidth: 1.5)
+                                .allowsHitTesting(false)
+                        )
+                        .transition(.scale(scale: 0.92, anchor: .trailing).combined(with: .opacity))
+                    } else {
+                        toolbarCircleButton(
+                            icon: "magnifyingglass",
+                            accessibilityID: "ProZip.WorkspaceSearch",
+                            label: "搜索压缩包",
+                            tooltip: "搜索压缩包",
+                            isEnabled: true
+                        ) {
+                            withAnimation(.spring(response: 0.24, dampingFraction: 0.82)) {
+                                session.isSearchExpanded = true
+                            }
                         }
                     }
                 }
@@ -512,12 +500,18 @@ public struct WorkspaceWindowView: View {
                 }
                 Image(systemName: icon)
                     .font(.system(size: 12.5, weight: .semibold))
-                    .foregroundStyle(isSelected ? Color.white : Color.primary.opacity(0.68))
+                    .foregroundStyle(isSelected ? Color.white : Color.primary.opacity(0.74))
             }
             .frame(width: 32, height: 32)
             .contentShape(Circle())
         }
-        .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.04, pressedScale: 0.94))
+        .buttonStyle(
+            ProZipGlassSegmentButtonStyle(
+                shape: .circle,
+                hoverDarkOpacity: isSelected ? 0 : 0.10,
+                hoverLightOpacity: isSelected ? 0 : 0.055
+            )
+        )
         .accessibilityIdentifier(icon)
         .accessibilityLabel(label)
         .accessibilityAddTraits(isSelected ? [.isSelected] : [])
@@ -537,34 +531,21 @@ public struct WorkspaceWindowView: View {
     ) -> some View {
         let button = Button(action: action) {
             ZStack {
-                Circle()
-                    .fill(
-                        activeSolidFill
-                            ?? (isActive
-                                ? ProZipTheme.accentSoft
-                                : (colorScheme == .dark ? Color.white.opacity(0.06) : Color(red: 0.961, green: 0.961, blue: 0.969)))
-                    )
-                    .frame(width: 38, height: 38)
-                    .shadow(
-                        color: activeSolidFill?.opacity(0.26) ?? Color.black.opacity(colorScheme == .dark ? 0.16 : 0.03),
-                        radius: activeSolidFill != nil ? 5 : 2,
-                        y: 1
-                    )
-                    .overlay(
-                        Circle()
-                            .strokeBorder(
-                                activeSolidFill != nil
-                                    ? Color.white.opacity(0.22)
-                                    : (isActive ? ProZipTheme.accent.opacity(0.5) : Color.primary.opacity(0.06)),
-                                lineWidth: 1
-                            )
-                    )
+                if let activeSolidFill {
+                    Circle()
+                        .fill(activeSolidFill.opacity(0.88))
+                        .frame(width: 38, height: 38)
+                } else if isActive {
+                    Circle()
+                        .fill(ProZipTheme.accentSoft)
+                        .frame(width: 38, height: 38)
+                }
 
                 if customFloppyGraphic {
                     FloppyDiskSaveIcon(
                         strokeColor: activeSolidFill != nil
                             ? Color.white
-                            : (isEnabled ? Color.primary.opacity(0.75) : Color.primary.opacity(0.32))
+                            : (isEnabled ? Color.primary.opacity(0.80) : Color.primary.opacity(0.32))
                     )
                 } else {
                     Image(systemName: icon)
@@ -574,12 +555,20 @@ public struct WorkspaceWindowView: View {
                                 ? Color.white
                                 : (isActive
                                     ? ProZipTheme.accent
-                                    : (isEnabled ? Color.primary.opacity(0.78) : Color.primary.opacity(0.32)))
+                                    : (isEnabled ? Color.primary.opacity(0.82) : Color.primary.opacity(0.32)))
                         )
                 }
             }
+            .frame(width: 38, height: 38)
         }
-        .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.04, pressedScale: 0.94))
+        .buttonStyle(
+            ProZipGlassSegmentButtonStyle(
+                shape: .circle,
+                hoverDarkOpacity: activeSolidFill != nil ? 0.14 : 0.10,
+                hoverLightOpacity: activeSolidFill != nil ? 0.08 : 0.055
+            )
+        )
+        .proZipLiquidGlassCircle(interactive: isEnabled, tint: activeSolidFill?.opacity(0.45))
         .disabled(!isEnabled)
         .accessibilityLabel(label)
         .help(tooltip)
@@ -597,7 +586,7 @@ public struct WorkspaceWindowView: View {
 
     private var breadcrumbBarContainer: some View {
         HStack(spacing: 12) {
-            // Intrinsic content-hugging Breadcrumb Capsule (expands via horizontal ScrollView only on deep paths)
+            // Intrinsic content-hugging Liquid Glass Breadcrumb Capsule (expands via horizontal ScrollView only on deep paths)
             HStack(spacing: 10) {
                 HStack(spacing: 6) {
                     breadcrumbNavButton(icon: "chevron.left", id: "chevron.left", label: "后退", isEnabled: session.canGoBack) {
@@ -611,8 +600,9 @@ public struct WorkspaceWindowView: View {
                     }
                 }
 
-                Divider()
-                    .frame(height: 14)
+                Rectangle()
+                    .fill(Color.primary.opacity(0.09))
+                    .frame(width: 1, height: 14)
 
                 ViewThatFits(in: .horizontal) {
                     breadcrumbSegmentsRow
@@ -623,15 +613,7 @@ public struct WorkspaceWindowView: View {
             }
             .padding(.horizontal, 10)
             .frame(height: 36)
-            .background(
-                Capsule()
-                    .fill(colorScheme == .dark ? Color.white.opacity(0.05) : Color.white)
-                    .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.25 : 0.05), radius: 6, x: 0, y: 2)
-            )
-            .overlay(
-                Capsule()
-                    .strokeBorder(Color.primary.opacity(0.06), lineWidth: 1)
-            )
+            .proZipLiquidGlassCapsule(interactive: false)
             .accessibilityElement(children: .contain)
             .accessibilityLabel("文件夹导航")
 
@@ -655,30 +637,21 @@ public struct WorkspaceWindowView: View {
                     .foregroundStyle(
                         showingAux
                             ? (colorScheme == .dark ? ProZipTheme.accentBright : ProZipTheme.accentDeep)
-                            : (colorScheme == .dark ? Color.white.opacity(0.72) : Color(red: 0.373, green: 0.388, blue: 0.408))
-                    )
-                    .background(
-                        Capsule().fill(
-                            showingAux
-                                ? ProZipTheme.accent.opacity(isHoveringAuxPill ? 0.20 : 0.14)
-                                : (colorScheme == .dark
-                                    ? Color.white.opacity(isHoveringAuxPill ? 0.12 : 0.07)
-                                    : (isHoveringAuxPill
-                                        ? Color(red: 0.914, green: 0.922, blue: 0.937)
-                                        : Color(red: 0.953, green: 0.957, blue: 0.965)))
-                        )
-                    )
-                    .overlay(
-                        Capsule().strokeBorder(
-                            showingAux ? ProZipTheme.accent.opacity(0.30) : Color.primary.opacity(0.06),
-                            lineWidth: 1
-                        )
+                            : (colorScheme == .dark ? Color.white.opacity(0.75) : Color(red: 0.35, green: 0.36, blue: 0.38))
                     )
                 }
-                .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.02, pressedScale: 0.96, hoverBrightness: 0))
+                .buttonStyle(
+                    ProZipGlassSegmentButtonStyle(
+                        shape: .capsule,
+                        baseTint: showingAux ? ProZipTheme.accent : nil,
+                        hoverDarkOpacity: 0.10,
+                        hoverLightOpacity: 0.055
+                    )
+                )
+                .proZipLiquidGlassCapsule(interactive: true, tint: showingAux ? ProZipTheme.accent.opacity(0.18) : nil)
                 .fixedSize()
                 .onHover { hovering in
-                    withAnimation(.easeOut(duration: 0.12)) { isHoveringAuxPill = hovering }
+                    isHoveringAuxPill = hovering
                 }
                 .accessibilityLabel(showingAux ? "隐藏辅助项目" : "显示辅助项目")
                 .accessibilityValue("\(session.auxiliaryEntryCount) 个辅助项目")
@@ -709,34 +682,13 @@ public struct WorkspaceWindowView: View {
                         .foregroundStyle(.tertiary)
                 }
 
-                Button {
+                BreadcrumbSegmentButton(
+                    title: crumb.title,
+                    isRootArchive: idx == 0,
+                    isLast: isLast
+                ) {
                     Task { await session.enterDirectory(crumb.path) }
-                } label: {
-                    HStack(spacing: 5) {
-                        if idx == 0 {
-                            ArchiveMiniDocBadgeIcon()
-                        } else {
-                            Image(systemName: "folder.fill")
-                                .font(.system(size: 11))
-                                .foregroundStyle(Color(red: 0.33, green: 0.68, blue: 0.96))
-                        }
-
-                        Text(crumb.title)
-                            .font(.system(size: 11.5, weight: isLast ? .semibold : .medium))
-                            .foregroundStyle(isLast ? .primary : .secondary)
-                            .lineLimit(1)
-                    }
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(
-                        isLast
-                            ? (colorScheme == .dark ? Color.white.opacity(0.08) : Color.black.opacity(0.045))
-                            : Color.clear
-                    )
-                    .clipShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
                 }
-                .buttonStyle(.plain)
-                .accessibilityLabel(crumb.title)
             }
         }
     }
@@ -837,7 +789,6 @@ private struct BreadcrumbNavButton: View {
     let label: String
     let isEnabled: Bool
     let action: () -> Void
-    @State private var isHovering = false
 
     var body: some View {
         Button(action: action) {
@@ -845,19 +796,59 @@ private struct BreadcrumbNavButton: View {
                 .font(.system(size: 11, weight: .semibold))
                 .frame(width: 28, height: 28)
                 .foregroundStyle(isEnabled ? Color.primary.opacity(0.76) : Color.secondary.opacity(0.35))
-                .background(
-                    Circle()
-                        .fill(isEnabled && isHovering ? Color.primary.opacity(0.06) : Color.clear)
-                )
         }
-        .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.0, pressedScale: 0.94, hoverBrightness: 0))
+        .buttonStyle(ProZipGlassSegmentButtonStyle(shape: .circle, hoverDarkOpacity: 0.10, hoverLightOpacity: 0.055))
         .disabled(!isEnabled)
-        .onHover { hovering in
-            withAnimation(.easeOut(duration: 0.12)) { isHovering = hovering }
-        }
         .accessibilityIdentifier(id)
         .accessibilityLabel(label)
         .help(label)
+    }
+}
+
+private struct BreadcrumbSegmentButton: View {
+    let title: String
+    let isRootArchive: Bool
+    let isLast: Bool
+    let action: () -> Void
+
+    @State private var isHovering = false
+    @Environment(\.colorScheme) private var colorScheme
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 5) {
+                if isRootArchive {
+                    ArchiveMiniDocBadgeIcon()
+                } else {
+                    Image(systemName: "folder.fill")
+                        .font(.system(size: 11))
+                        .foregroundStyle(Color(red: 0.33, green: 0.68, blue: 0.96))
+                }
+
+                Text(title)
+                    .font(.system(size: 11.5, weight: isLast ? .semibold : .medium))
+                    .foregroundStyle(isLast ? Color.primary.opacity(0.88) : Color.secondary)
+                    .lineLimit(1)
+            }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .background(
+                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                    .fill(
+                        isHovering
+                            ? (colorScheme == .dark ? Color.white.opacity(0.09) : Color.black.opacity(0.055))
+                            : Color.clear
+                    )
+            )
+            .contentShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
+        }
+        .buttonStyle(.plain)
+        .onHover { hovering in
+            withAnimation(.easeOut(duration: 0.12)) {
+                isHovering = hovering
+            }
+        }
+        .accessibilityLabel(title)
     }
 }
 
@@ -1458,8 +1449,6 @@ public struct WorkspaceFlowOrbitBar: View {
         self.navigationEntry = navigationEntry
     }
 
-    @State private var hoveredButton: String? = nil
-
     public var body: some View {
         let selection = session.selectedEntries.isEmpty ? navigationEntry.map { [$0] } ?? [] : session.selectedEntries
         let rec = session.initialSourceStat == nil ? nil : FlowActionRouter.recommendAction(
@@ -1468,133 +1457,121 @@ public struct WorkspaceFlowOrbitBar: View {
             allowedFormats: ProZipPreferences.shared.allowedOpenFormats
         )
 
-        HStack(alignment: .bottom, spacing: 9) {
-            // Left Liquid Glass Capsule: [⤡ 34×34] | [↑ 全部解压 ⏎ 129×34] | [👁 预览 空格 118×34]
-            FlowOrbitCapsule {
-                HStack(spacing: 3) {
-                    if session.initialSourceStat != nil {
-                        Button {
-                            session.isMiniMode = true
-                        } label: {
-                            Image(systemName: "arrow.down.right.and.arrow.up.left")
-                                .font(.system(size: 11, weight: .semibold))
-                                .foregroundStyle(Color.primary.opacity(hoveredButton == "mini" ? 0.95 : 0.74))
-                                .frame(width: 32, height: 32)
-                                .background {
-                                    if hoveredButton == "mini" {
-                                        Circle()
-                                            .fill(colorScheme == .dark ? Color.white.opacity(0.14) : Color.white.opacity(0.50))
-                                    }
-                                }
-                                .contentShape(Circle())
+        ProZipGlassGroup(spacing: 4) {
+            HStack(alignment: .bottom, spacing: 9) {
+                // Left Native Liquid Glass Capsule: [⤡ 34×34] [↑ 全部解压 ⏎ 129×34] [👁 预览 空格 118×34]
+                FlowOrbitCapsule {
+                    HStack(spacing: 1) {
+                        if session.initialSourceStat != nil {
+                            Button {
+                                session.isMiniMode = true
+                            } label: {
+                                Image(systemName: "arrow.down.right.and.arrow.up.left")
+                                    .font(.system(size: 11.5, weight: .semibold))
+                                    .foregroundStyle(Color.primary.opacity(0.82))
+                                    .frame(width: 34, height: 34)
+                            }
+                            .buttonStyle(ProZipGlassSegmentButtonStyle(shape: .circle, hoverDarkOpacity: 0.11, hoverLightOpacity: 0.065))
+                            .accessibilityIdentifier("ProZip.SwitchToMini")
+                            .accessibilityLabel("切换到 Mini")
+                            .help("切换到 Mini (⌥⌘M)")
                         }
-                        .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.05, pressedScale: 0.93))
-                        .accessibilityIdentifier("ProZip.SwitchToMini")
-                        .accessibilityLabel("切换到 Mini")
-                        .help("切换到 Mini (⌥⌘M)")
-                        .onHover { h in withAnimation(.easeInOut(duration: 0.14)) { hoveredButton = h ? "mini" : nil } }
 
-                        // Glass Divider
-                        Rectangle()
-                            .fill(colorScheme == .dark ? Color.white.opacity(0.12) : Color.black.opacity(0.08))
-                            .frame(width: 1, height: 16)
-                    }
-
-                    Button {
-                        appViewModel.extractAll(in: session)
-                    } label: {
                         let canExtract = session.initialSourceStat != nil && session.phase.canExtractAll
-                        HStack(spacing: 7) {
-                            Image(systemName: "arrow.up.square")
-                                .font(.system(size: 13, weight: .semibold))
+                        Button {
+                            appViewModel.extractAll(in: session)
+                        } label: {
+                            HStack(spacing: 6) {
+                                Image(systemName: "arrow.up.square")
+                                    .font(.system(size: 13.5, weight: .semibold))
 
-                            Text("全部解压")
-                                .font(.system(size: 13, weight: .semibold))
+                                Text("全部解压")
+                                    .font(.system(size: 13, weight: .semibold))
 
-                            keyboardShortcutBadge("⏎", isHighlighted: hoveredButton == "extractAll")
-                        }
-                        .frame(width: 126, height: 32)
-                        .foregroundStyle(canExtract ? (hoveredButton == "extractAll" ? Color.primary : Color.primary.opacity(0.88)) : Color.secondary.opacity(0.50))
-                        .background {
-                            if canExtract && hoveredButton == "extractAll" {
-                                Capsule()
-                                    .fill(colorScheme == .dark ? Color.white.opacity(0.14) : Color.white.opacity(0.52))
+                                keyboardShortcutBadge("⏎", isEnabled: canExtract)
                             }
+                            .frame(width: 129, height: 34)
+                            .foregroundStyle(
+                                canExtract
+                                    ? (colorScheme == .dark ? Color.white.opacity(0.92) : Color(red: 0.10, green: 0.11, blue: 0.12))
+                                    : Color.secondary.opacity(0.45)
+                            )
                         }
-                        .contentShape(Capsule())
-                    }
-                    .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.02, pressedScale: 0.97))
-                    .disabled(session.initialSourceStat == nil || !session.phase.canExtractAll)
-                    .accessibilityLabel("全部解压")
-                    .help("按回车键执行")
-                    .onHover { h in withAnimation(.easeInOut(duration: 0.14)) { hoveredButton = h ? "extractAll" : nil } }
+                        .buttonStyle(ProZipGlassSegmentButtonStyle(shape: .capsule, hoverDarkOpacity: 0.11, hoverLightOpacity: 0.065))
+                        .disabled(!canExtract)
+                        .accessibilityLabel("全部解压")
+                        .help("按回车键执行")
 
-                    // Glass Divider
-                    Rectangle()
-                        .fill(colorScheme == .dark ? Color.white.opacity(0.12) : Color.black.opacity(0.08))
-                        .frame(width: 1, height: 16)
-
-                    Button {
-                        appViewModel.previewSelected(in: session)
-                    } label: {
                         let hasSelection = !session.selectedEntryIDs.isEmpty
-                        HStack(spacing: 6) {
-                            Image(systemName: "eye")
-                                .font(.system(size: 12, weight: .medium))
-                            Text("预览")
-                                .font(.system(size: 13, weight: .medium))
-                            keyboardShortcutBadge("空格", isHighlighted: hoveredButton == "preview")
-                        }
-                        .frame(width: 114, height: 32)
-                        .foregroundStyle(hasSelection ? (hoveredButton == "preview" ? Color.primary : Color.primary.opacity(0.85)) : Color.secondary.opacity(0.50))
-                        .background {
-                            if hasSelection && hoveredButton == "preview" {
-                                Capsule()
-                                    .fill(colorScheme == .dark ? Color.white.opacity(0.14) : Color.white.opacity(0.52))
+                        Button {
+                            appViewModel.previewSelected(in: session)
+                        } label: {
+                            HStack(spacing: 6) {
+                                Image(systemName: "eye")
+                                    .font(.system(size: 12.5, weight: .semibold))
+                                Text("预览")
+                                    .font(.system(size: 13, weight: .semibold))
+                                keyboardShortcutBadge("空格", isEnabled: hasSelection)
                             }
+                            .frame(width: 118, height: 34)
+                            .foregroundStyle(
+                                hasSelection
+                                    ? (colorScheme == .dark ? Color.white.opacity(0.92) : Color(red: 0.10, green: 0.11, blue: 0.12))
+                                    : (colorScheme == .dark ? Color.white.opacity(0.36) : Color(red: 0.55, green: 0.56, blue: 0.58))
+                            )
                         }
-                        .contentShape(Capsule())
+                        .buttonStyle(ProZipGlassSegmentButtonStyle(shape: .capsule, hoverDarkOpacity: 0.11, hoverLightOpacity: 0.065))
+                        .disabled(!hasSelection)
+                        .accessibilityLabel("预览")
+                        .help("按空格键执行")
                     }
-                    .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.02, pressedScale: 0.97))
-                    .disabled(session.selectedEntryIDs.isEmpty)
-                    .accessibilityLabel("预览")
-                    .help("按空格键执行")
-                    .onHover { h in withAnimation(.easeInOut(duration: 0.14)) { hoveredButton = h ? "preview" : nil } }
                 }
-            }
 
-            // Right Independent Floating Flow CTA
-            if let flowRec = rec {
-                WorkspaceFlowButton(recommendation: flowRec, selection: selection, session: session) {
-                    if session.selectedEntries.isEmpty, let navigationEntry {
-                        appViewModel.extractSelection([navigationEntry], in: session)
-                    } else {
-                        appViewModel.executeFlowAction(flowRec, in: session)
+                // Right Independent Floating Flow CTA
+                if let flowRec = rec {
+                    WorkspaceFlowButton(recommendation: flowRec, selection: selection, session: session) {
+                        if session.selectedEntries.isEmpty, let navigationEntry {
+                            appViewModel.extractSelection([navigationEntry], in: session)
+                        } else {
+                            appViewModel.executeFlowAction(flowRec, in: session)
+                        }
                     }
+                    .transition(.scale(scale: 0.92).combined(with: .opacity))
+                } else if session.initialSourceStat == nil || session.hasUnsavedChanges || session.displayedEntries.isEmpty {
+                    ProZipFlowOrbitButton(title: "添加文件", icon: "bolt.fill", shortcut: nil, minimumSize: CGSize(width: 116, height: 40)) {
+                        appViewModel.promptAddFiles(to: session)
+                    }
+                    .accessibilityLabel("添加文件")
                 }
-                .transition(.scale(scale: 0.92).combined(with: .opacity))
-            } else if session.initialSourceStat == nil || session.hasUnsavedChanges || session.displayedEntries.isEmpty {
-                ProZipFlowOrbitButton(title: "添加文件", icon: "bolt.fill", shortcut: nil, minimumSize: CGSize(width: 116, height: 40)) {
-                    appViewModel.promptAddFiles(to: session)
-                }
-                .accessibilityLabel("添加文件")
             }
         }
     }
 
-    private func keyboardShortcutBadge(_ text: String, isHighlighted: Bool) -> some View {
+    private func keyboardShortcutBadge(_ text: String, isEnabled: Bool) -> some View {
         Text(text)
-            .font(.system(size: 10, weight: .medium))
-            .foregroundStyle(isHighlighted ? Color.white : Color.secondary)
-            .padding(.horizontal, 5)
+            .font(.system(size: 10, weight: .semibold))
+            .foregroundStyle(
+                colorScheme == .dark
+                    ? Color.white.opacity(isEnabled ? 0.86 : 0.45)
+                    : Color(red: 0.24, green: 0.25, blue: 0.27).opacity(isEnabled ? 0.90 : 0.58)
+            )
+            .padding(.horizontal, 5.5)
             .padding(.vertical, 2)
             .background(
-                RoundedRectangle(cornerRadius: 4, style: .continuous)
-                    .fill(isHighlighted ? Color.white.opacity(0.22) : Color.primary.opacity(0.05))
+                RoundedRectangle(cornerRadius: 4.5, style: .continuous)
+                    .fill(
+                        colorScheme == .dark
+                            ? Color.white.opacity(isEnabled ? 0.16 : 0.09)
+                            : Color.white.opacity(isEnabled ? 0.94 : 0.82)
+                    )
+                    .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.22 : 0.04), radius: 0.5, x: 0, y: 0.5)
             )
             .overlay(
-                RoundedRectangle(cornerRadius: 4, style: .continuous)
-                    .stroke(isHighlighted ? Color.white.opacity(0.35) : Color.primary.opacity(0.10), lineWidth: 0.6)
+                RoundedRectangle(cornerRadius: 4.5, style: .continuous)
+                    .strokeBorder(
+                        Color.black.opacity(colorScheme == .dark ? 0.22 : 0.06),
+                        lineWidth: 0.5
+                    )
             )
     }
 }
@@ -1623,80 +1600,14 @@ private struct WorkspacePassThroughGlassView: NSViewRepresentable {
     }
 }
 
-/// Isolated pointer-tracking capsule wrapper: draws the Liquid Glass background
-/// and the radial glow strictly in `.background` with `.allowsHitTesting(false)`
-/// so physical mouse clicks reach every capsule `Button`.
+/// Native macOS 26+ Liquid Glass capsule container for Workspace bottom actions.
 private struct FlowOrbitCapsule<Content: View>: View {
-    @Environment(\.colorScheme) private var colorScheme
-    @State private var orbitPoint: CGPoint?
     @ViewBuilder let content: Content
 
     var body: some View {
         content
-            .padding(.horizontal, 6)
-            .padding(.vertical, 4)
-            .background {
-                ZStack(alignment: .leading) {
-                    // 1. AppKit withinWindow HUD Glass
-                    WorkspacePassThroughGlassView(material: .hudWindow, blendingMode: .withinWindow)
-
-                    // 2. Native SwiftUI ultraThinMaterial for multi-layer refraction
-                    Rectangle()
-                        .fill(.ultraThinMaterial)
-
-                    // 3. Translucent frosted tint allowing underlying list entries to blur-through
-                    (colorScheme == .dark
-                        ? Color(red: 0.12, green: 0.13, blue: 0.15).opacity(0.60)
-                        : Color.white.opacity(0.52))
-
-                    // 4. Subtle specular highlight bevel from top
-                    LinearGradient(
-                        colors: [
-                            Color.white.opacity(colorScheme == .dark ? 0.20 : 0.48),
-                            Color.clear
-                        ],
-                        startPoint: .top,
-                        endPoint: .center
-                    )
-
-                    // 5. Interactive Liquid Glow following pointer
-                    if let point = orbitPoint {
-                        Circle()
-                            .fill(ProZipTheme.accent.opacity(colorScheme == .dark ? 0.24 : 0.18))
-                            .frame(width: 88, height: 88)
-                            .blur(radius: 16)
-                            .offset(x: max(0, point.x - 44), y: 0)
-                            .allowsHitTesting(false)
-                    }
-                }
-                .clipShape(Capsule())
-                .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.40 : 0.08), radius: 12, x: 0, y: 5)
-                .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.20 : 0.04), radius: 2, x: 0, y: 1)
-                .allowsHitTesting(false)
-            }
-            .overlay {
-                Capsule()
-                    .strokeBorder(
-                        LinearGradient(
-                            colors: [
-                                Color.white.opacity(colorScheme == .dark ? 0.40 : 0.85),
-                                Color.white.opacity(colorScheme == .dark ? 0.10 : 0.25)
-                            ],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        ),
-                        lineWidth: 1
-                    )
-                    .allowsHitTesting(false)
-            }
-            .onContinuousHover { phase in
-                switch phase {
-                case .active(let point):
-                    orbitPoint = point
-                case .ended:
-                    withAnimation(.easeOut(duration: 0.16)) { orbitPoint = nil }
-                }
-            }
+            .padding(4)
+            .proZipLiquidGlassCapsule(interactive: true)
     }
 }
 

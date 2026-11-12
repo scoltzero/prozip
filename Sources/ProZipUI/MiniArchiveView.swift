@@ -109,7 +109,23 @@ public struct MiniArchiveView: View {
         )
     }
 
+    private var miniCornerRadius: CGFloat {
+        if #available(macOS 26.0, *) {
+            return 20
+        }
+        return 26
+    }
+
+    private var usesNativeMiniLiquidGlass: Bool {
+        if #available(macOS 26.0, *) {
+            return preferences.miniUsesLiquidGlass
+        }
+        return false
+    }
+
     public var body: some View {
+        let windowShape = RoundedRectangle(cornerRadius: miniCornerRadius, style: .continuous)
+
         VStack(spacing: 0) {
             // 1. Top Header Bar (y = 14..47)
             miniTopBar
@@ -131,10 +147,22 @@ public struct MiniArchiveView: View {
                     .transition(.opacity.combined(with: .move(edge: .top)))
             }
 
-            // 4. Central Scrollable File List + Floating Bottom Bar (y = 97..422)
+            // 4. Central Scrollable File List + Progressive Bottom Fade + Floating Bottom Bar (y = 97..422)
             ZStack(alignment: .bottom) {
                 miniFileListView
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .mask(
+                        LinearGradient(
+                            stops: [
+                                .init(color: .black, location: 0.0),
+                                .init(color: .black, location: 0.80),
+                                .init(color: .black.opacity(0.28), location: 0.88),
+                                .init(color: .clear, location: 0.94)
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
 
                 miniBottomBar
                     .padding(.horizontal, 10)
@@ -145,38 +173,40 @@ public struct MiniArchiveView: View {
         .onAppear { refreshSortCache() }
         .onChange(of: sortInput) { _, _ in refreshSortCache() }
         .background(miniWindowSurface)
-        .clipShape(RoundedRectangle(cornerRadius: 26, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 26, style: .continuous)
-                .strokeBorder(
-                    LinearGradient(
-                        colors: [
-                            Color.white.opacity(colorScheme == .dark ? 0.24 : 0.65),
-                            Color.white.opacity(colorScheme == .dark ? 0.08 : 0.32)
-                        ],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    ),
-                    lineWidth: 1.0
-                )
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 26, style: .continuous)
-                .stroke(Color.black.opacity(colorScheme == .dark ? 0.35 : 0.12), lineWidth: 1.0)
-        )
-        .overlay(
-            Group {
-                if isDropTargeted {
-                    RoundedRectangle(cornerRadius: 26, style: .continuous)
-                        .strokeBorder(ProZipTheme.accentBright, style: StrokeStyle(lineWidth: 2, dash: [6, 4]))
-                        .background(
-                            RoundedRectangle(cornerRadius: 26, style: .continuous)
-                                .fill(ProZipTheme.accentSoft.opacity(0.4))
-                        )
-                        .padding(3)
-                }
+        .clipShape(windowShape)
+        .overlay {
+            if !usesNativeMiniLiquidGlass {
+                windowShape
+                    .strokeBorder(
+                        LinearGradient(
+                            colors: [
+                                Color.white.opacity(colorScheme == .dark ? 0.24 : 0.65),
+                                Color.white.opacity(colorScheme == .dark ? 0.08 : 0.32)
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        ),
+                        lineWidth: 1.0
+                    )
+                    .overlay(
+                        windowShape
+                            .stroke(Color.black.opacity(colorScheme == .dark ? 0.35 : 0.12), lineWidth: 1.0)
+                    )
+                    .allowsHitTesting(false)
             }
-        )
+        }
+        .overlay {
+            if isDropTargeted {
+                windowShape
+                    .strokeBorder(ProZipTheme.accentBright, style: StrokeStyle(lineWidth: 2, dash: [6, 4]))
+                    .background(
+                        windowShape
+                            .fill(ProZipTheme.accentSoft.opacity(0.4))
+                    )
+                    .padding(3)
+                    .allowsHitTesting(false)
+            }
+        }
         .background(alignment: .topLeading) {
             WindowDragArea()
                 .frame(width: 440, height: 52)
@@ -198,18 +228,30 @@ public struct MiniArchiveView: View {
 
     @ViewBuilder
     private var miniWindowSurface: some View {
-        ZStack {
-            VisualEffectView(
-                material: preferences.miniUsesLiquidGlass
-                    ? (colorScheme == .dark ? .hudWindow : .underWindowBackground)
-                    : (colorScheme == .dark ? .windowBackground : .sidebar),
-                blendingMode: .behindWindow
-            )
+        if usesNativeMiniLiquidGlass {
+            ZStack {
+                Color.clear
+                    .proZipLiquidGlassRoundedRect(cornerRadius: miniCornerRadius, interactive: false)
+                if colorScheme == .dark {
+                    ProZipTheme.miniDarkSurface.opacity(0.28)
+                } else {
+                    Color.white.opacity(0.26)
+                }
+            }
+        } else {
+            ZStack {
+                VisualEffectView(
+                    material: preferences.miniUsesLiquidGlass
+                        ? (colorScheme == .dark ? .hudWindow : .underWindowBackground)
+                        : (colorScheme == .dark ? .windowBackground : .sidebar),
+                    blendingMode: .behindWindow
+                )
 
-            if colorScheme == .dark {
-                ProZipTheme.miniDarkSurface.opacity(preferences.miniUsesLiquidGlass ? 0.56 : 0.88)
-            } else {
-                Color.white.opacity(preferences.miniUsesLiquidGlass ? 0.50 : 0.88)
+                if colorScheme == .dark {
+                    ProZipTheme.miniDarkSurface.opacity(preferences.miniUsesLiquidGlass ? 0.56 : 0.84)
+                } else {
+                    Color.white.opacity(preferences.miniUsesLiquidGlass ? 0.38 : 0.84)
+                }
             }
         }
     }
@@ -480,11 +522,11 @@ public struct MiniArchiveView: View {
                             Task { await session.enterDirectory(crumb.path) }
                         } label: {
                             Text(crumb.title)
-                                .font(.system(size: 13, weight: index == crumbs.count - 1 ? .semibold : .medium))
+                                .font(.system(size: 12.5, weight: .medium))
                                 .foregroundStyle(
                                     colorScheme == .dark
-                                        ? Color.white.opacity(index == crumbs.count - 1 ? 0.90 : 0.65)
-                                        : Color(red: 0.28, green: 0.29, blue: 0.31).opacity(index == crumbs.count - 1 ? 1.0 : 0.78)
+                                        ? Color.white.opacity(index == crumbs.count - 1 ? 0.84 : 0.62)
+                                        : Color(red: 0.27, green: 0.28, blue: 0.30).opacity(index == crumbs.count - 1 ? 0.92 : 0.72)
                                 )
                                 .lineLimit(1)
                         }
@@ -585,19 +627,19 @@ public struct MiniArchiveView: View {
             RoundedRectangle(cornerRadius: 11, style: .continuous)
                 .fill(
                     colorScheme == .dark
-                        ? Color.white.opacity(0.10)
-                        : Color.white.opacity(0.42)
+                        ? Color.white.opacity(0.08)
+                        : Color.white.opacity(0.46)
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 11, style: .continuous)
-                        .fill(colorScheme == .dark ? Color.clear : Color.black.opacity(0.04))
+                        .fill(colorScheme == .dark ? Color.clear : Color.black.opacity(0.022))
                 )
         )
         .overlay(
             RoundedRectangle(cornerRadius: 11, style: .continuous)
                 .strokeBorder(
-                    Color.white.opacity(colorScheme == .dark ? 0.14 : 0.48),
-                    lineWidth: 0.8
+                    Color.white.opacity(colorScheme == .dark ? 0.12 : 0.42),
+                    lineWidth: 0.7
                 )
         )
         .onHover { hovering in
@@ -675,6 +717,7 @@ public struct MiniArchiveView: View {
                     }
                     .padding(.top, 10)
                     .padding(.bottom, 52)
+                    .background(MiniTransparentScrollerInstaller())
                 }
             }
         }
@@ -872,129 +915,99 @@ public struct MiniArchiveView: View {
     // MARK: - 5. Bottom Action & Flow Bar
 
     private var miniBottomBar: some View {
-        HStack(spacing: 10) {
-            // Left 3 Circular Glass Control Buttons (28x28 @ x=10, 46, 82, y=383.5)
-            HStack(spacing: 8) {
-                // 1. Close Window Button
-                ArcZipMiniRoundActionButton(
-                    icon: "xmark",
-                    tooltip: "关闭窗口",
-                    size: 28,
-                    tintColor: preferences.miniUsesColoredControlButtons
-                        ? Color(red: 0.90, green: 0.22, blue: 0.20).opacity(isCloseHovered ? 1.0 : 0.88)
-                        : nil,
-                    fillTint: preferences.miniUsesColoredControlButtons
-                        ? Color(red: 0.95, green: 0.28, blue: 0.26)
-                        : nil
-                ) {
-                    appViewModel.closeSession(id: session.id)
-                }
-                .onHover { isCloseHovered = $0 }
-
-                // 2. Pin Window Button (#40A9FF sky-blue + outer ring when pinned)
-                ArcZipMiniPinButton(
-                    isPinned: $session.isAlwaysOnTop,
-                    size: 28,
-                    isColored: preferences.miniUsesColoredControlButtons,
-                    tooltip: session.isAlwaysOnTop ? "取消窗口置顶" : "窗口置顶"
-                )
-
-                // 3. Expand to Full Workspace Button
-                ArcZipMiniRoundActionButton(
-                    icon: "arrow.up.left.and.arrow.down.right",
-                    tooltip: "打开完整窗口",
-                    size: 28,
-                    tintColor: preferences.miniUsesColoredControlButtons
-                        ? Color(red: 0.14, green: 0.68, blue: 0.22).opacity(isExpandHovered ? 1.0 : 0.88)
-                        : nil,
-                    fillTint: preferences.miniUsesColoredControlButtons
-                        ? Color(red: 0.18, green: 0.78, blue: 0.30)
-                        : nil
-                ) {
-                    withAnimation(.spring(response: 0.26, dampingFraction: 0.80)) {
-                        session.isMiniMode = false
+        ProZipGlassGroup(spacing: 4) {
+            HStack(alignment: .bottom, spacing: 10) {
+                // Left 3 Circular Liquid Glass Control Buttons (28x28 @ x=10, 46, 82)
+                HStack(spacing: 8) {
+                    // 1. Close Window Button
+                    ArcZipMiniRoundActionButton(
+                        icon: "xmark",
+                        tooltip: "关闭窗口",
+                        size: 28,
+                        tintColor: preferences.miniUsesColoredControlButtons
+                            ? Color(red: 0.90, green: 0.22, blue: 0.20).opacity(isCloseHovered ? 1.0 : 0.88)
+                            : nil,
+                        fillTint: preferences.miniUsesColoredControlButtons
+                            ? Color(red: 0.95, green: 0.28, blue: 0.26)
+                            : nil
+                    ) {
+                        appViewModel.closeSession(id: session.id)
                     }
-                }
-                .onHover { isExpandHovered = $0 }
-            }
+                    .onHover { isCloseHovered = $0 }
 
-            Spacer(minLength: 6)
-
-            // Contextual Primary Flow Button when entry is selected (matching OnboardingMiniWindow.png)
-            if let rec = currentFlowRecommendation {
-                ProZipFlowOrbitButton(
-                    title: rec.title,
-                    icon: rec.systemIcon,
-                    shortcut: nil,
-                    isEnabled: rec.isEnabled,
-                    mode: .accentOrbit
-                ) {
-                    appViewModel.executeFlowAction(rec, in: session)
-                }
-                .help(rec.unavailableReason ?? rec.title)
-                .transition(.scale(scale: 0.92).combined(with: .opacity))
-            }
-
-            // Right Frosted Glass Capsule Bar: "预览 空格" + "全部解压 ⏎"
-            HStack(spacing: 1) {
-                miniCapsuleButton(
-                    title: "预览",
-                    icon: "eye",
-                    shortcut: "空格",
-                    width: 100,
-                    isEnabled: !session.selectedEntryIDs.isEmpty
-                ) {
-                    appViewModel.previewSelected(in: session)
-                }
-                .help("使用快速查看预览所选文件 (空格)")
-
-                miniCapsuleButton(
-                    title: "全部解压",
-                    icon: "arrow.up.square",
-                    shortcut: "⏎",
-                    width: 108,
-                    isEnabled: session.phase.canExtractAll
-                ) {
-                    appViewModel.extractAll(in: session)
-                }
-                .help("解压全部文件 (回车)")
-            }
-            .padding(.horizontal, 4)
-            .padding(.vertical, 3)
-            .background {
-                ZStack {
-                    ProZipGlassMaterialView(material: .hudWindow, blendingMode: .withinWindow)
-                    Rectangle().fill(.ultraThinMaterial)
-                    (colorScheme == .dark
-                        ? Color(red: 0.12, green: 0.13, blue: 0.15).opacity(0.60)
-                        : Color.white.opacity(0.52))
-                    LinearGradient(
-                        colors: [
-                            Color.white.opacity(colorScheme == .dark ? 0.20 : 0.45),
-                            Color.clear
-                        ],
-                        startPoint: .top,
-                        endPoint: .center
+                    // 2. Pin Window Button (sky-blue + outer ring when pinned)
+                    ArcZipMiniPinButton(
+                        isPinned: $session.isAlwaysOnTop,
+                        size: 28,
+                        isColored: preferences.miniUsesColoredControlButtons,
+                        tooltip: session.isAlwaysOnTop ? "取消窗口置顶" : "窗口置顶"
                     )
+
+                    // 3. Expand to Full Workspace Button
+                    ArcZipMiniRoundActionButton(
+                        icon: "arrow.up.left.and.arrow.down.right",
+                        tooltip: "打开完整窗口",
+                        size: 28,
+                        tintColor: preferences.miniUsesColoredControlButtons
+                            ? Color(red: 0.14, green: 0.68, blue: 0.22).opacity(isExpandHovered ? 1.0 : 0.88)
+                            : nil,
+                        fillTint: preferences.miniUsesColoredControlButtons
+                            ? Color(red: 0.18, green: 0.78, blue: 0.30)
+                            : nil
+                    ) {
+                        withAnimation(.spring(response: 0.26, dampingFraction: 0.80)) {
+                            session.isMiniMode = false
+                        }
+                    }
+                    .onHover { isExpandHovered = $0 }
                 }
-                .clipShape(Capsule())
-                .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.35 : 0.08), radius: 8, x: 0, y: 3)
-                .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.18 : 0.04), radius: 2, x: 0, y: 1)
+                .padding(.bottom, 2.5)
+
+                Spacer(minLength: 6)
+
+                // Contextual Primary Flow Button when entry is selected (with stacked alternative peek)
+                if let rec = currentFlowRecommendation {
+                    WorkspaceFlowButton(
+                        recommendation: rec,
+                        selection: session.selectedEntries,
+                        session: session,
+                        compact: true
+                    ) {
+                        appViewModel.executeFlowAction(rec, in: session)
+                    }
+                    .transition(.scale(scale: 0.92).combined(with: .opacity))
+                }
+
+                // Right Native Liquid Glass Capsule Bar: "预览 空格" + "全部解压 ⏎"
+                HStack(spacing: 1) {
+                    miniCapsuleButton(
+                        title: "预览",
+                        icon: "eye",
+                        shortcut: "空格",
+                        width: 100,
+                        isProminent: false,
+                        isEnabled: !session.selectedEntryIDs.isEmpty
+                    ) {
+                        appViewModel.previewSelected(in: session)
+                    }
+                    .help("按空格键执行")
+
+                    miniCapsuleButton(
+                        title: "全部解压",
+                        icon: "arrow.up.square",
+                        shortcut: "⏎",
+                        width: 108,
+                        isProminent: true,
+                        isEnabled: session.phase.canExtractAll
+                    ) {
+                        appViewModel.extractAll(in: session)
+                    }
+                    .help("按回车键执行")
+                }
+                .padding(.horizontal, 4)
+                .padding(.vertical, 3)
+                .proZipLiquidGlassCapsule(interactive: true)
             }
-            .overlay(
-                Capsule()
-                    .strokeBorder(
-                        LinearGradient(
-                            colors: [
-                                Color.white.opacity(colorScheme == .dark ? 0.38 : 0.85),
-                                Color.white.opacity(colorScheme == .dark ? 0.10 : 0.25)
-                            ],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        ),
-                        lineWidth: 1.0
-                    )
-            )
         }
     }
 
@@ -1004,6 +1017,7 @@ public struct MiniArchiveView: View {
         icon: String,
         shortcut: String,
         width: CGFloat,
+        isProminent: Bool,
         isEnabled: Bool,
         action: @escaping () -> Void
     ) -> some View {
@@ -1012,6 +1026,7 @@ public struct MiniArchiveView: View {
             icon: icon,
             shortcut: shortcut,
             width: width,
+            isProminent: isProminent,
             isEnabled: isEnabled,
             colorScheme: colorScheme,
             action: action
@@ -1139,48 +1154,47 @@ private struct MiniCapsuleSegmentButton: View {
     let icon: String
     let shortcut: String
     let width: CGFloat
+    let isProminent: Bool
     let isEnabled: Bool
     let colorScheme: ColorScheme
     let action: () -> Void
-
-    @State private var isHovered = false
 
     var body: some View {
         Button(action: action) {
             HStack(spacing: 5) {
                 Image(systemName: icon)
-                    .font(.system(size: 12, weight: .medium))
+                    .font(.system(size: 12, weight: isProminent ? .semibold : .medium))
                 Text(title)
-                    .font(.system(size: 13, weight: .medium))
+                    .font(.system(size: 13, weight: isProminent ? .semibold : .medium))
                     .lineLimit(1)
                 Text(shortcut)
-                    .font(.system(size: 10, weight: .medium))
-                    .padding(.horizontal, 5)
+                    .font(.system(size: 10, weight: .semibold))
+                    .foregroundStyle(
+                        colorScheme == .dark
+                            ? Color.white.opacity(isEnabled ? 0.86 : 0.52)
+                            : Color(red: 0.22, green: 0.23, blue: 0.25).opacity(isEnabled ? 0.92 : 0.65)
+                    )
+                    .padding(.horizontal, 5.5)
                     .padding(.vertical, 2)
                     .background(
-                        RoundedRectangle(cornerRadius: 4, style: .continuous)
-                            .fill(colorScheme == .dark ? Color.white.opacity(0.16) : Color.white.opacity(0.72))
+                        RoundedRectangle(cornerRadius: 4.5, style: .continuous)
+                            .fill(colorScheme == .dark ? Color.white.opacity(0.16) : Color.white.opacity(0.92))
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 4.5, style: .continuous)
+                            .strokeBorder(Color.black.opacity(colorScheme == .dark ? 0.0 : 0.05), lineWidth: 0.5)
                     )
             }
             .frame(width: width, height: 27)
-            .foregroundStyle(isEnabled ? Color.primary.opacity(isHovered ? 0.98 : 0.86) : Color.secondary.opacity(0.45))
-            .background(
-                Capsule()
-                    .fill(
-                        isHovered && isEnabled
-                            ? (colorScheme == .dark ? Color.white.opacity(0.10) : Color.black.opacity(0.06))
-                            : Color.clear
-                    )
+            .foregroundStyle(
+                isEnabled
+                    ? (colorScheme == .dark ? Color.white.opacity(0.94) : Color(red: 0.08, green: 0.09, blue: 0.10))
+                    : (colorScheme == .dark ? Color.white.opacity(0.38) : Color(red: 0.42, green: 0.44, blue: 0.47))
             )
-            .contentShape(Capsule())
         }
-        .buttonStyle(ProZipPressScaleStyle(hoverScale: 1.02, pressedScale: 0.96))
+        .buttonStyle(ProZipGlassSegmentButtonStyle(shape: .capsule, hoverDarkOpacity: 0.11, hoverLightOpacity: 0.065))
         .disabled(!isEnabled)
-        .onHover { hovering in
-            withAnimation(.easeOut(duration: 0.12)) {
-                isHovered = hovering
-            }
-        }
+        .accessibilityLabel(title)
     }
 }
 
@@ -1209,5 +1223,53 @@ public struct VisualEffectView: NSViewRepresentable {
     public func updateNSView(_ nsView: NSVisualEffectView, context: Context) {
         nsView.material = material
         nsView.blendingMode = blendingMode
+    }
+}
+
+private final class TransparentSlotVerticalScroller: NSScroller {
+    override class var isCompatibleWithOverlayScrollers: Bool { true }
+
+    override func drawKnobSlot(in slotRect: NSRect, highlight flag: Bool) {
+        // Keep scroller track transparent over Mini's Liquid Glass surface.
+    }
+}
+
+private struct MiniTransparentScrollerInstaller: NSViewRepresentable {
+    private final class ProbeView: NSView {
+        override func hitTest(_ point: NSPoint) -> NSView? { nil }
+
+        override func viewDidMoveToSuperview() {
+            super.viewDidMoveToSuperview()
+            configureEnclosingScrollView()
+        }
+
+        override func viewDidMoveToWindow() {
+            super.viewDidMoveToWindow()
+            configureEnclosingScrollView()
+        }
+
+        func configureEnclosingScrollView() {
+            DispatchQueue.main.async { [weak self] in
+                guard let self else { return }
+                var cursor: NSView? = self.superview
+                while let current = cursor {
+                    if let scrollView = current as? NSScrollView {
+                        scrollView.drawsBackground = false
+                        if !(scrollView.verticalScroller is TransparentSlotVerticalScroller) {
+                            let scroller = TransparentSlotVerticalScroller()
+                            scroller.controlSize = .regular
+                            scrollView.verticalScroller = scroller
+                        }
+                        break
+                    }
+                    cursor = current.superview
+                }
+            }
+        }
+    }
+
+    func makeNSView(context: Context) -> NSView { ProbeView() }
+    func updateNSView(_ nsView: NSView, context: Context) {
+        (nsView as? ProbeView)?.configureEnclosingScrollView()
     }
 }

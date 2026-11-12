@@ -6,6 +6,7 @@ struct WorkspaceFlowButton: View {
     let recommendation: FlowActionRecommendation
     let selection: [ArchiveEntry]
     @ObservedObject var session: ArchiveBrowsingSession
+    var compact: Bool = false
     let primaryAction: () -> Void
     @EnvironmentObject private var appViewModel: ProZipAppViewModel
     @State private var isExpanded = false
@@ -13,6 +14,18 @@ struct WorkspaceFlowButton: View {
 
     private var hasAlternative: Bool {
         recommendation.actionID == .openFile && selection.count == 1 && !selection[0].isDirectory
+    }
+
+    private var primaryMinSize: CGSize {
+        compact ? CGSize(width: 112, height: 33) : CGSize(width: 120, height: 40)
+    }
+
+    private var secondaryMinSize: CGSize {
+        compact ? CGSize(width: 108, height: 32) : CGSize(width: 116, height: 38)
+    }
+
+    private var peekSize: CGSize {
+        compact ? CGSize(width: 98, height: 33) : CGSize(width: 106, height: 40)
     }
 
     var body: some View {
@@ -34,23 +47,36 @@ struct WorkspaceFlowButton: View {
     private var controls: some View {
         ZStack(alignment: .bottom) {
             if hasAlternative && !isExpanded {
-                Capsule()
-                    .fill(ProZipTheme.accent.opacity(0.62))
-                    .frame(width: 112, height: 38)
-                    .offset(y: -4)
-                    .allowsHitTesting(false)
-                    .accessibilityHidden(true)
+                ZStack {
+                    Capsule()
+                        .fill(.ultraThinMaterial)
+                    Capsule()
+                        .fill(ProZipTheme.accent.opacity(0.52))
+                    Capsule()
+                        .strokeBorder(
+                            LinearGradient(
+                                colors: [Color.white.opacity(0.72), Color.white.opacity(0.18)],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            ),
+                            lineWidth: 0.9
+                        )
+                }
+                .frame(width: peekSize.width, height: peekSize.height)
+                .offset(y: compact ? -5.0 : -5.5)
+                .allowsHitTesting(false)
+                .accessibilityHidden(true)
             }
-            VStack(spacing: 8) {
+            VStack(spacing: compact ? 6 : 8) {
                 if hasAlternative && isExpanded {
-                    ProZipFlowOrbitButton(title: "解压", icon: "bolt.fill", shortcut: nil, minimumSize: CGSize(width: 116, height: 38)) {
+                    ProZipFlowOrbitButton(title: "解压", icon: "bolt.fill", shortcut: nil, minimumSize: secondaryMinSize) {
                         collapseTask?.cancel()
                         setExpanded(false)
                         appViewModel.extractSelection(selection, in: session)
                     }
                     .transition(.scale(scale: 0.94, anchor: .bottom).combined(with: .opacity))
                 }
-                ProZipFlowOrbitButton(title: recommendation.title, icon: "bolt.fill", shortcut: nil, isEnabled: recommendation.isEnabled, minimumSize: CGSize(width: 120, height: 40)) {
+                ProZipFlowOrbitButton(title: recommendation.title, icon: "bolt.fill", shortcut: nil, isEnabled: recommendation.isEnabled, minimumSize: primaryMinSize) {
                     collapseTask?.cancel()
                     setExpanded(false)
                     primaryAction()

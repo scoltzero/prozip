@@ -770,80 +770,69 @@ struct ProZipLandingView: View {
                     .accessibilityLabel("欢迎！拖入文件以开始")
                     .padding(.bottom, 47.5)
 
-                    HStack(spacing: 12) {
-                        Button {
-                            ProZipAppDelegate.shared?.promptOpenArchive()
-                        } label: {
-                            HStack(spacing: 8) {
-                                Image(systemName: "folder")
-                                    .font(.system(size: 14, weight: .semibold))
-                                Text("打开压缩包")
-                                    .font(.system(size: 14, weight: .semibold))
+                    ProZipGlassGroup(spacing: 4) {
+                        HStack(spacing: 12) {
+                            Button {
+                                ProZipAppDelegate.shared?.promptOpenArchive()
+                            } label: {
+                                HStack(spacing: 8) {
+                                    Image(systemName: "folder")
+                                        .font(.system(size: 14, weight: .semibold))
+                                    Text("打开压缩包")
+                                        .font(.system(size: 14, weight: .semibold))
+                                }
+                                .frame(width: 146.5, height: 40)
+                                .foregroundStyle(.primary)
                             }
-                            .frame(width: 146.5, height: 40)
-                            .background(
-                                Capsule().fill(
-                                    isHoveringOpen
-                                        ? (colorScheme == .dark ? Color.white.opacity(0.20) : Color(red: 0.835, green: 0.816, blue: 0.824))
-                                        : (colorScheme == .dark ? Color.white.opacity(0.11) : Color.white.opacity(0.84))
-                                )
-                            )
-                            .overlay(
-                                Capsule().strokeBorder(Color.primary.opacity(0.08), lineWidth: 1)
-                            )
-                            .shadow(color: .black.opacity(colorScheme == .dark ? 0.18 : 0.04), radius: 5, y: 2)
-                            .foregroundStyle(.primary)
-                        }
-                        .buttonStyle(LandingScaleButtonStyle(scale: 0.97))
-                        .onHover { hovering in
-                            withAnimation(.easeOut(duration: 0.14)) { isHoveringOpen = hovering }
-                        }
-                        .accessibilityIdentifier("ProZip.LandingOpen")
-                        .accessibilityLabel("打开压缩包")
-                        .help("打开压缩包")
+                            .buttonStyle(ProZipGlassSegmentButtonStyle(shape: .capsule, hoverDarkOpacity: 0.11, hoverLightOpacity: 0.065))
+                            .proZipLiquidGlassCapsule(interactive: true)
+                            .onHover { isHoveringOpen = $0 }
+                            .accessibilityIdentifier("ProZip.LandingOpen")
+                            .accessibilityLabel("打开压缩包")
+                            .help("打开压缩包")
 
-                        Button {
-                            ProZipAppDelegate.shared?.createNewArchive()
-                        } label: {
-                            HStack(spacing: 8) {
-                                Image(systemName: "plus")
-                                    .font(.system(size: 14, weight: .bold))
-                                Text("创建压缩包")
-                                    .font(.system(size: 14, weight: .semibold))
+                            Button {
+                                ProZipAppDelegate.shared?.createNewArchive()
+                            } label: {
+                                HStack(spacing: 8) {
+                                    Image(systemName: "plus")
+                                        .font(.system(size: 14, weight: .bold))
+                                    Text("创建压缩包")
+                                        .font(.system(size: 14, weight: .semibold))
+                                }
+                                .frame(width: 142.5, height: 40)
+                                .background {
+                                    if isWindowActive {
+                                        Capsule()
+                                            .fill(
+                                                LinearGradient(
+                                                    colors: [
+                                                        isHoveringCreate ? Color(red: 0.56, green: 0.85, blue: 0.12).opacity(0.88) : ProZipTheme.accent.opacity(0.84),
+                                                        isHoveringCreate ? ProZipTheme.accent.opacity(0.92) : ProZipTheme.accentDeep.opacity(0.78)
+                                                    ],
+                                                    startPoint: .top,
+                                                    endPoint: .bottom
+                                                )
+                                            )
+                                    }
+                                }
+                                .foregroundStyle(isWindowActive ? Color.white : Color.secondary)
                             }
-                            .frame(width: 142.5, height: 40)
-                            .background(
-                                Capsule().fill(
-                                    isWindowActive
-                                        ? ProZipTheme.accent
-                                        : (colorScheme == .dark ? Color.white.opacity(0.12) : Color(red: 0.925, green: 0.933, blue: 0.945))
+                            .buttonStyle(
+                                ProZipGlassSegmentButtonStyle(
+                                    shape: .capsule,
+                                    hoverDarkOpacity: isWindowActive ? 0.10 : 0.08,
+                                    hoverLightOpacity: isWindowActive ? 0.05 : 0.05
                                 )
                             )
-                            .overlay(
-                                Capsule().strokeBorder(
-                                    LinearGradient(
-                                        colors: [Color.white.opacity(isWindowActive ? 0.34 : 0.0), .clear],
-                                        startPoint: .top,
-                                        endPoint: .bottom
-                                    ),
-                                    lineWidth: 1
-                                )
-                            )
-                            .brightness(isWindowActive && isHoveringCreate ? 0.04 : 0)
-                            .shadow(
-                                color: isWindowActive ? ProZipTheme.accent.opacity(0.26) : .clear,
-                                radius: 8,
-                                y: 3
-                            )
-                            .foregroundStyle(isWindowActive ? Color.white : Color.secondary)
+                            .proZipLiquidGlassCapsule(interactive: true, tint: isWindowActive ? ProZipTheme.accent : nil)
+                            .onHover { hovering in
+                                withAnimation(.easeOut(duration: 0.14)) { isHoveringCreate = hovering }
+                            }
+                            .accessibilityIdentifier("ProZip.LandingCreate")
+                            .accessibilityLabel("创建压缩包")
+                            .help("创建压缩包")
                         }
-                        .buttonStyle(LandingScaleButtonStyle(scale: 0.97))
-                        .onHover { hovering in
-                            withAnimation(.easeOut(duration: 0.14)) { isHoveringCreate = hovering }
-                        }
-                        .accessibilityIdentifier("ProZip.LandingCreate")
-                        .accessibilityLabel("创建压缩包")
-                        .help("创建压缩包")
                     }
                     .padding(.bottom, 84.5)
                 }
@@ -871,19 +860,10 @@ struct ProZipLandingView: View {
                     .font(.system(size: 15, weight: .medium))
                     .foregroundStyle(.primary.opacity(0.85))
                     .frame(width: 38, height: 38)
-                    .background(
-                        Circle().fill(
-                            isHoveringGear
-                                ? (colorScheme == .dark ? Color.white.opacity(0.20) : Color(red: 0.824, green: 0.820, blue: 0.827))
-                                : (colorScheme == .dark ? Color.white.opacity(0.10) : Color(red: 0.976, green: 0.976, blue: 0.976))
-                        )
-                    )
-                    .overlay(Circle().strokeBorder(Color.primary.opacity(0.08), lineWidth: 1))
             }
-            .buttonStyle(LandingScaleButtonStyle(scale: 0.95))
-            .onHover { hovering in
-                withAnimation(.easeOut(duration: 0.14)) { isHoveringGear = hovering }
-            }
+            .buttonStyle(ProZipGlassSegmentButtonStyle(shape: .circle, hoverDarkOpacity: 0.10, hoverLightOpacity: 0.055))
+            .proZipLiquidGlassCircle(interactive: true)
+            .onHover { isHoveringGear = $0 }
             .padding(.top, 13)
             .padding(.trailing, 19)
             .accessibilityIdentifier("ProZip.LandingSettings")

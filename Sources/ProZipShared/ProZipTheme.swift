@@ -940,15 +940,15 @@ public struct FoldspaceButton: View {
     }
 }
 
-// MARK: - FlowOrbitControl (Primary Action Button with Animated Orbit Border Highlight)
+// MARK: - FlowOrbitControl (Prominent Liquid Glass Primary Action Button)
 
 public typealias ProZipFlowOrbitButton = FlowOrbitControl
 
 public struct FlowOrbitControl: View {
     public enum AppearanceMode: Sendable {
-        /// Vibrant yellow-green primary button with dark bold text (#141A05) and orbit border
+        /// Vibrant ProZip yellow-green Liquid Glass prominent button
         case accentOrbit
-        /// Translucent glass capsule button matching Mini/Workspace default "全部解压 ⏎" pill
+        /// Translucent regular Liquid Glass capsule button
         case glassPrimary
     }
 
@@ -961,7 +961,6 @@ public struct FlowOrbitControl: View {
     public let action: () -> Void
 
     @State private var isHovered: Bool = false
-    @State private var orbitAngle: Double = 0
     @Environment(\.colorScheme) private var colorScheme
 
     public init(
@@ -1011,7 +1010,7 @@ public struct FlowOrbitControl: View {
                 }
 
                 Text(title)
-                    .font(.system(size: 13, weight: .bold))
+                    .font(.system(size: 13.5, weight: .semibold))
                     .lineLimit(1)
 
                 if let shortcut {
@@ -1021,31 +1020,30 @@ public struct FlowOrbitControl: View {
                     )
                 }
             }
-            .padding(.horizontal, 12)
+            .padding(.horizontal, 14)
             .padding(.vertical, 6.5)
             .frame(minWidth: minimumSize?.width, minHeight: minimumSize?.height)
             .foregroundStyle(foregroundColor)
-            .background(backgroundCapsule)
-            .overlay(orbitBorderOverlay)
+            .background(innerFillCapsule)
             .contentShape(Capsule())
         }
-        .buttonStyle(FoldspaceButtonStyle(pressScale: 0.97))
+        .buttonStyle(ProZipProminentGlassPressStyle())
+        .proZipLiquidGlassCapsule(
+            interactive: isEnabled,
+            tint: mode == .accentOrbit && isEnabled ? ProZipTheme.accent : nil
+        )
+        .shadow(
+            color: mode == .accentOrbit && isEnabled
+                ? ProZipTheme.accentDeep.opacity(isHovered ? 0.30 : 0.18)
+                : .clear,
+            radius: isHovered ? 8 : 5,
+            x: 0,
+            y: 2
+        )
         .disabled(!isEnabled)
         .onHover { hovering in
-            if hovering {
-                if !isHovered {
-                    withAnimation(.easeInOut(duration: 0.18)) {
-                        isHovered = true
-                    }
-                    withAnimation(.linear(duration: 2.4).repeatForever(autoreverses: false)) {
-                        orbitAngle = 360
-                    }
-                }
-            } else {
-                withAnimation(.easeOut(duration: 0.2)) {
-                    isHovered = false
-                    orbitAngle = 0
-                }
+            withAnimation(.easeOut(duration: 0.14)) {
+                isHovered = hovering
             }
         }
     }
@@ -1056,14 +1054,14 @@ public struct FlowOrbitControl: View {
         }
         switch mode {
         case .accentOrbit:
-            return ProZipTheme.darkInk
+            return Color.white
         case .glassPrimary:
             return colorScheme == .dark ? Color.white : Color(red: 0.10, green: 0.10, blue: 0.11)
         }
     }
 
     @ViewBuilder
-    private var backgroundCapsule: some View {
+    private var innerFillCapsule: some View {
         switch mode {
         case .accentOrbit:
             Capsule()
@@ -1071,63 +1069,46 @@ public struct FlowOrbitControl: View {
                     isEnabled
                         ? LinearGradient(
                             colors: [
-                                isHovered ? Color(red: 0.78, green: 0.98, blue: 0.20) : ProZipTheme.accentBright,
-                                ProZipTheme.accentPrimary
+                                isHovered ? Color(red: 0.56, green: 0.85, blue: 0.12).opacity(0.74) : ProZipTheme.accent.opacity(0.68),
+                                isHovered ? ProZipTheme.accent.opacity(0.78) : ProZipTheme.accentDeep.opacity(0.64)
                             ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
+                            startPoint: .top,
+                            endPoint: .bottom
                         )
                         : LinearGradient(
-                            colors: [Color.secondary.opacity(0.25), Color.secondary.opacity(0.20)],
+                            colors: [Color.secondary.opacity(0.22), Color.secondary.opacity(0.18)],
                             startPoint: .top,
                             endPoint: .bottom
                         )
                 )
-                .shadow(
-                    color: isEnabled ? ProZipTheme.accentPrimary.opacity(isHovered ? 0.38 : 0.22) : .clear,
-                    radius: isHovered ? 7 : 4,
-                    x: 0,
-                    y: 2
+                .overlay(
+                    Capsule()
+                        .strokeBorder(
+                            LinearGradient(
+                                colors: [Color.white.opacity(isEnabled ? 0.42 : 0.12), Color.white.opacity(0.10)],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            ),
+                            lineWidth: 0.8
+                        )
                 )
+                .padding(1.2)
         case .glassPrimary:
             Capsule()
                 .fill(
-                    isHovered
-                        ? (colorScheme == .dark ? Color.white.opacity(0.14) : Color.white.opacity(0.65))
+                    isHovered && isEnabled
+                        ? (colorScheme == .dark ? Color.white.opacity(0.10) : Color.black.opacity(0.06))
                         : Color.clear
                 )
         }
     }
+}
 
-    @ViewBuilder
-    private var orbitBorderOverlay: some View {
-        if isHovered && isEnabled {
-            Capsule()
-                .strokeBorder(
-                    AngularGradient(
-                        gradient: Gradient(colors: [
-                            Color.white.opacity(0.85),
-                            ProZipTheme.accentBright.opacity(0.45),
-                            Color.white.opacity(0.15),
-                            ProZipTheme.accentBright.opacity(0.55),
-                            Color.white.opacity(0.85)
-                        ]),
-                        center: .center,
-                        angle: .degrees(orbitAngle)
-                    ),
-                    lineWidth: 1.4
-                )
-        } else if mode == .accentOrbit && isEnabled {
-            Capsule()
-                .strokeBorder(
-                    LinearGradient(
-                        colors: [Color.white.opacity(0.45), Color.black.opacity(0.10)],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    ),
-                    lineWidth: 0.8
-                )
-        }
+private struct ProZipProminentGlassPressStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .brightness(configuration.isPressed ? -0.04 : 0)
+            .animation(.easeOut(duration: 0.12), value: configuration.isPressed)
     }
 }
 
@@ -1352,7 +1333,6 @@ public struct ArcZipMiniRoundActionButton: View {
     public var fillTint: Color?
     public let action: () -> Void
 
-    @State private var isHovered: Bool = false
     @Environment(\.colorScheme) private var colorScheme
 
     public init(
@@ -1373,60 +1353,18 @@ public struct ArcZipMiniRoundActionButton: View {
 
     public var body: some View {
         Button(action: action) {
-            ZStack {
-                Circle()
-                    .fill(circleFill)
-                    .frame(width: size, height: size)
-                    .overlay(
-                        Circle()
-                            .fill(isHovered && fillTint == nil && colorScheme != .dark ? Color.black.opacity(0.08) : Color.clear)
-                    )
-                    .shadow(
-                        color: Color.black.opacity(isHovered ? 0.14 : 0.08),
-                        radius: isHovered ? 3.5 : 2,
-                        x: 0,
-                        y: 1
-                    )
-
-                ArcZipMiniRingShape()
-                    .strokeBorder(
-                        LinearGradient(
-                            colors: [
-                                Color.white.opacity(colorScheme == .dark ? 0.35 : 0.88),
-                                Color.black.opacity(colorScheme == .dark ? 0.22 : 0.12)
-                            ],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        ),
-                        lineWidth: 1.0
-                    )
-                    .frame(width: size, height: size)
-
-                Image(systemName: icon)
-                    .font(.system(size: size * 0.41, weight: .semibold))
-                    .foregroundStyle(
-                        tintColor ?? (colorScheme == .dark ? Color.white.opacity(0.90) : Color(red: 0.14, green: 0.15, blue: 0.17))
-                    )
-            }
-            .scaleEffect(isHovered ? 1.03 : 1.0)
+            Image(systemName: icon)
+                .font(.system(size: size * 0.40, weight: .semibold))
+                .foregroundStyle(
+                    tintColor ?? (colorScheme == .dark ? Color.white.opacity(0.90) : Color(red: 0.11, green: 0.12, blue: 0.14))
+                )
+                .frame(width: size, height: size)
         }
-        .buttonStyle(FoldspaceButtonStyle(pressScale: 0.94))
+        .buttonStyle(ProZipGlassSegmentButtonStyle(shape: .circle, baseTint: fillTint))
+        .proZipLiquidGlassCircle(interactive: true, tint: fillTint?.opacity(0.18))
         .help(tooltip)
+        .accessibilityIdentifier(icon)
         .accessibilityLabel(tooltip.isEmpty ? icon : tooltip)
-        .onHover { hovering in
-            withAnimation(.spring(response: 0.22, dampingFraction: 0.76)) {
-                isHovered = hovering
-            }
-        }
-    }
-
-    private var circleFill: Color {
-        if let fillTint {
-            return fillTint.opacity(isHovered ? 0.26 : 0.17)
-        }
-        return colorScheme == .dark
-            ? Color.white.opacity(isHovered ? 0.18 : 0.11)
-            : Color.white.opacity(0.62)
     }
 }
 
@@ -1438,7 +1376,7 @@ public struct ArcZipMiniPinButtonStyle: ButtonStyle {
     @State private var isHovered: Bool = false
     @Environment(\.colorScheme) private var colorScheme
 
-    private static let skyBlue = Color(red: 0.251, green: 0.663, blue: 1.0) // #40A9FF
+    private static let skyBlue = Color(red: 0.31, green: 0.67, blue: 0.98)
 
     public init(isPinned: Bool, size: CGFloat = 28, isColored: Bool = false) {
         self.isPinned = isPinned
@@ -1449,73 +1387,47 @@ public struct ArcZipMiniPinButtonStyle: ButtonStyle {
     public func makeBody(configuration: Configuration) -> some View {
         ZStack {
             Circle()
-                .fill(circleFill)
-                .frame(width: size, height: size)
-                .overlay(
-                    Circle()
-                        .fill(!isPinned && !isColored && isHovered && colorScheme != .dark ? Color.black.opacity(0.08) : Color.clear)
-                )
-                .shadow(
-                    color: isPinned
-                        ? Self.skyBlue.opacity(0.32)
-                        : Color.black.opacity(isHovered ? 0.14 : 0.08),
-                    radius: isHovered ? 3.5 : 2,
-                    x: 0,
-                    y: 1
-                )
-
-            ArcZipMiniRingShape()
-                .strokeBorder(
-                    isPinned
-                        ? LinearGradient(
-                            colors: [Color.white.opacity(0.78), Self.skyBlue.opacity(0.9)],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                        : LinearGradient(
-                            colors: [
-                                Color.white.opacity(colorScheme == .dark ? 0.35 : 0.88),
-                                Color.black.opacity(colorScheme == .dark ? 0.22 : 0.12)
-                            ],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        ),
-                    lineWidth: 1.0
-                )
+                .fill(innerHoverOrStateFill(isPressed: configuration.isPressed))
                 .frame(width: size, height: size)
 
             configuration.label
-                .font(.system(size: size * 0.41, weight: .semibold))
+                .font(.system(size: size * 0.40, weight: .semibold))
                 .foregroundStyle(iconColor)
+                .frame(width: size, height: size)
         }
+        .contentShape(Circle())
+        .proZipLiquidGlassCircle(
+            interactive: true,
+            tint: isPinned ? Self.skyBlue.opacity(0.55) : (isColored ? Self.skyBlue.opacity(0.18) : nil)
+        )
         .overlay {
             if isPinned {
                 Circle()
-                    .stroke(Self.skyBlue.opacity(0.88), lineWidth: 1.5)
-                    .frame(width: size + 4, height: size + 4)
+                    .strokeBorder(Self.skyBlue.opacity(0.82), lineWidth: 1.5)
+                    .frame(width: size + 5, height: size + 5)
                     .allowsHitTesting(false)
             }
         }
-        .scaleEffect(configuration.isPressed ? 0.94 : (isHovered ? 1.03 : 1.0))
-        .animation(.spring(response: 0.22, dampingFraction: 0.76), value: configuration.isPressed)
-        .animation(.spring(response: 0.24, dampingFraction: 0.76), value: isPinned)
+        .animation(.easeOut(duration: 0.14), value: configuration.isPressed)
+        .animation(.spring(response: 0.24, dampingFraction: 0.78), value: isPinned)
         .onHover { hovering in
-            withAnimation(.spring(response: 0.22, dampingFraction: 0.76)) {
+            withAnimation(.easeOut(duration: 0.14)) {
                 isHovered = hovering
             }
         }
     }
 
-    private var circleFill: Color {
+    private func innerHoverOrStateFill(isPressed: Bool) -> Color {
         if isPinned {
-            return Self.skyBlue.opacity(isHovered ? 0.96 : 0.88)
+            return Self.skyBlue.opacity(isPressed ? 0.88 : (isHovered ? 0.82 : 0.74))
         }
         if isColored {
-            return Self.skyBlue.opacity(isHovered ? 0.26 : 0.17)
+            return Self.skyBlue.opacity(isPressed ? 0.28 : (isHovered ? 0.22 : 0.12))
         }
-        return colorScheme == .dark
-            ? Color.white.opacity(isHovered ? 0.18 : 0.11)
-            : Color.white.opacity(0.62)
+        if colorScheme == .dark {
+            return Color.white.opacity(isPressed ? 0.16 : (isHovered ? 0.10 : 0.0))
+        }
+        return Color.black.opacity(isPressed ? 0.12 : (isHovered ? 0.075 : 0.0))
     }
 
     private var iconColor: Color {
@@ -1525,7 +1437,7 @@ public struct ArcZipMiniPinButtonStyle: ButtonStyle {
         if isColored {
             return Self.skyBlue
         }
-        return colorScheme == .dark ? Color.white.opacity(0.90) : Color(red: 0.14, green: 0.15, blue: 0.17)
+        return colorScheme == .dark ? Color.white.opacity(0.90) : Color(red: 0.11, green: 0.12, blue: 0.14)
     }
 }
 
@@ -2013,5 +1925,219 @@ private final class DragStripView: NSView {
 
     override func mouseDown(with event: NSEvent) {
         window?.performDrag(with: event)
+    }
+}
+
+// MARK: - Native macOS 26+ Liquid Glass Helpers & Segment Button Style
+
+public enum ProZipGlassHighlightShape: Sendable {
+    case circle
+    case capsule
+}
+
+/// Segment / icon button style for controls hosted inside or wrapped by macOS 26+ Liquid Glass:
+/// renders a smooth inner hover/press highlight without scale jitter, letting native `Glass.interactive()`
+/// drive the directional liquid-lens press response.
+public struct ProZipGlassSegmentButtonStyle: ButtonStyle {
+    public var shape: ProZipGlassHighlightShape
+    public var baseTint: Color?
+    public var hoverDarkOpacity: Double
+    public var hoverLightOpacity: Double
+
+    public init(
+        shape: ProZipGlassHighlightShape = .capsule,
+        baseTint: Color? = nil,
+        hoverDarkOpacity: Double = 0.10,
+        hoverLightOpacity: Double = 0.065
+    ) {
+        self.shape = shape
+        self.baseTint = baseTint
+        self.hoverDarkOpacity = hoverDarkOpacity
+        self.hoverLightOpacity = hoverLightOpacity
+    }
+
+    public func makeBody(configuration: Configuration) -> some View {
+        SegmentBody(
+            configuration: configuration,
+            shape: shape,
+            baseTint: baseTint,
+            hoverDarkOpacity: hoverDarkOpacity,
+            hoverLightOpacity: hoverLightOpacity
+        )
+    }
+
+    private struct SegmentBody: View {
+        let configuration: Configuration
+        let shape: ProZipGlassHighlightShape
+        let baseTint: Color?
+        let hoverDarkOpacity: Double
+        let hoverLightOpacity: Double
+
+        @State private var isHovered = false
+        @Environment(\.isEnabled) private var isEnabled
+        @Environment(\.colorScheme) private var colorScheme
+
+        var body: some View {
+            configuration.label
+                .background {
+                    switch shape {
+                    case .circle:
+                        Circle().fill(highlightFill)
+                    case .capsule:
+                        Capsule().fill(highlightFill)
+                    }
+                }
+                .contentShape(
+                    shape == .circle ? AnyShape(Circle()) : AnyShape(Capsule())
+                )
+                .animation(.easeOut(duration: 0.12), value: configuration.isPressed)
+                .onHover { hovering in
+                    withAnimation(.easeOut(duration: 0.14)) {
+                        isHovered = hovering
+                    }
+                }
+        }
+
+        private var highlightFill: Color {
+            if let baseTint {
+                guard isEnabled else { return baseTint.opacity(0.08) }
+                if configuration.isPressed { return baseTint.opacity(0.28) }
+                if isHovered { return baseTint.opacity(0.20) }
+                return baseTint.opacity(0.11)
+            }
+            guard isEnabled else { return .clear }
+            if colorScheme == .dark {
+                if configuration.isPressed { return Color.white.opacity(hoverDarkOpacity + 0.06) }
+                return isHovered ? Color.white.opacity(hoverDarkOpacity) : .clear
+            } else {
+                if configuration.isPressed { return Color.black.opacity(hoverLightOpacity + 0.045) }
+                return isHovered ? Color.black.opacity(hoverLightOpacity) : .clear
+            }
+        }
+    }
+}
+
+/// Groups nearby Liquid Glass controls into a shared backdrop sampling pass on macOS 26+.
+public struct ProZipGlassGroup<Content: View>: View {
+    public var spacing: CGFloat?
+    @ViewBuilder public let content: Content
+
+    public init(spacing: CGFloat? = 4, @ViewBuilder content: () -> Content) {
+        self.spacing = spacing
+        self.content = content()
+    }
+
+    public var body: some View {
+        if #available(macOS 26.0, *) {
+            GlassEffectContainer(spacing: spacing) {
+                content
+            }
+        } else {
+            content
+        }
+    }
+}
+
+private struct ProZipLiquidGlassCapsuleModifier: ViewModifier {
+    var interactive: Bool
+    var tint: Color?
+    @Environment(\.colorScheme) private var colorScheme
+
+    func body(content: Content) -> some View {
+        if #available(macOS 26.0, *) {
+            let base: Glass = tint.map { Glass.regular.tint($0) } ?? .regular
+            content.glassEffect(interactive ? base.interactive() : base, in: .capsule)
+        } else {
+            content
+                .background {
+                    ZStack {
+                        Capsule().fill(.ultraThinMaterial)
+                        if let tint {
+                            Capsule().fill(tint.opacity(0.75))
+                        } else {
+                            Capsule().fill(colorScheme == .dark ? Color.white.opacity(0.08) : Color.white.opacity(0.72))
+                        }
+                    }
+                    .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.28 : 0.07), radius: 6, x: 0, y: 2)
+                }
+                .overlay {
+                    Capsule()
+                        .strokeBorder(Color.white.opacity(colorScheme == .dark ? 0.22 : 0.65), lineWidth: 0.8)
+                        .allowsHitTesting(false)
+                }
+        }
+    }
+}
+
+private struct ProZipLiquidGlassCircleModifier: ViewModifier {
+    var interactive: Bool
+    var tint: Color?
+    @Environment(\.colorScheme) private var colorScheme
+
+    func body(content: Content) -> some View {
+        if #available(macOS 26.0, *) {
+            let base: Glass = tint.map { Glass.regular.tint($0) } ?? .regular
+            content.glassEffect(interactive ? base.interactive() : base, in: .circle)
+        } else {
+            content
+                .background {
+                    ZStack {
+                        Circle().fill(.ultraThinMaterial)
+                        if let tint {
+                            Circle().fill(tint.opacity(0.75))
+                        } else {
+                            Circle().fill(colorScheme == .dark ? Color.white.opacity(0.08) : Color.white.opacity(0.72))
+                        }
+                    }
+                    .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.28 : 0.07), radius: 4, x: 0, y: 1.5)
+                }
+                .overlay {
+                    Circle()
+                        .strokeBorder(Color.white.opacity(colorScheme == .dark ? 0.22 : 0.65), lineWidth: 0.8)
+                        .allowsHitTesting(false)
+                }
+        }
+    }
+}
+
+private struct ProZipLiquidGlassRoundedRectModifier: ViewModifier {
+    var cornerRadius: CGFloat
+    var interactive: Bool
+    var tint: Color?
+    @Environment(\.colorScheme) private var colorScheme
+
+    func body(content: Content) -> some View {
+        let shape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+        if #available(macOS 26.0, *) {
+            let base: Glass = tint.map { Glass.regular.tint($0) } ?? .regular
+            content.glassEffect(interactive ? base.interactive() : base, in: shape)
+        } else {
+            content
+                .background {
+                    ZStack {
+                        ProZipGlassMaterialView(material: .hudWindow, blendingMode: .behindWindow)
+                        if let tint {
+                            tint
+                        } else {
+                            Color.white.opacity(colorScheme == .dark ? 0.08 : 0.45)
+                        }
+                    }
+                    .clipShape(shape)
+                }
+        }
+    }
+}
+
+public extension View {
+    func proZipLiquidGlassCapsule(interactive: Bool = false, tint: Color? = nil) -> some View {
+        modifier(ProZipLiquidGlassCapsuleModifier(interactive: interactive, tint: tint))
+    }
+
+    func proZipLiquidGlassCircle(interactive: Bool = false, tint: Color? = nil) -> some View {
+        modifier(ProZipLiquidGlassCircleModifier(interactive: interactive, tint: tint))
+    }
+
+    func proZipLiquidGlassRoundedRect(cornerRadius: CGFloat, interactive: Bool = false, tint: Color? = nil) -> some View {
+        modifier(ProZipLiquidGlassRoundedRectModifier(cornerRadius: cornerRadius, interactive: interactive, tint: tint))
     }
 }
