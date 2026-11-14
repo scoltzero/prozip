@@ -1912,19 +1912,54 @@ public extension View {
     }
 }
 
-/// AppKit-backed drag strip: uses NSWindow.performDrag for smooth, native window moves.
+/// AppKit-backed drag strip: uses `NSWindow.performDrag` for normal windows and drags
+/// the owning root window when hosted inside an attached macOS sheet.
 public struct WindowDragArea: NSViewRepresentable {
     public init() {}
 
     public func makeNSView(context: Context) -> NSView { DragStripView() }
     public func updateNSView(_ nsView: NSView, context: Context) {}
+
+    public static func resolveRootWindow(from window: NSWindow?) -> NSWindow? {
+        var current = window
+        while let parent = current?.sheetParent {
+            current = parent
+        }
+        return current
+    }
 }
 
 private final class DragStripView: NSView {
     override var mouseDownCanMoveWindow: Bool { true }
 
     override func mouseDown(with event: NSEvent) {
-        window?.performDrag(with: event)
+        guard let window else { return }
+        if window.sheetParent == nil {
+            window.performDrag(with: event)
+            return
+        }
+        guard let target = WindowDragArea.resolveRootWindow(from: window) else { return }
+        let startMouseLocation = NSEvent.mouseLocation
+        let startOrigin = target.frame.origin
+        window.trackEvents(
+            matching: [.leftMouseDragged, .leftMouseUp],
+            timeout: NSEvent.foreverDuration,
+            mode: .eventTracking
+        ) { trackedEvent, stop in
+            guard let trackedEvent else {
+                stop.pointee = true
+                return
+            }
+            if trackedEvent.type == .leftMouseDragged {
+                let currentLocation = NSEvent.mouseLocation
+                target.setFrameOrigin(NSPoint(
+                    x: startOrigin.x + (currentLocation.x - startMouseLocation.x),
+                    y: startOrigin.y + (currentLocation.y - startMouseLocation.y)
+                ))
+            } else if trackedEvent.type == .leftMouseUp {
+                stop.pointee = true
+            }
+        }
     }
 }
 

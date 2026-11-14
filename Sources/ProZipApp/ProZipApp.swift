@@ -1120,6 +1120,8 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
     var shelfPanel: NSPanel?
     var shelfEventMonitors: [Any] = []
     private var shelfIdleTimer: Timer?
+    private var finderSpacebarSessionIDs: Set<UUID> = []
+    private var miniSpacebarMonitor: Any?
     private var cancellables: Set<AnyCancellable> = []
 
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -1138,6 +1140,9 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
             self?.openMiniPreviewFromFinderSpacebar(url: url)
         }
         FinderSpacebarMonitor.shared.startMonitoringIfConfigured()
+        miniSpacebarMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
+            self?.handleLocalSpacebarKeyDown(event) ?? event
+        }
         Task {
             try? await ProZipPreferences.shared.refreshFileAssociations()
         }
@@ -1328,6 +1333,7 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
 
         let sessions = ProZipAppViewModel.shared.sessions
         let ids = Set(sessions.map(\.id))
+        finderSpacebarSessionIDs.formIntersection(ids)
         for id in Array(sessionWindows.keys) where !ids.contains(id) {
             guard let window = sessionWindows.removeValue(forKey: id) else { continue }
             window.delegate = nil
@@ -1460,6 +1466,10 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
     }
 
     func applicationWillTerminate(_ notification: Notification) {
+        if let miniSpacebarMonitor {
+            NSEvent.removeMonitor(miniSpacebarMonitor)
+            self.miniSpacebarMonitor = nil
+        }
         FinderSpacebarMonitor.shared.stopMonitoring()
         ProZipAppViewModel.shared.cancelBackgroundWork()
         guard restartRequested else { return }
@@ -1878,11 +1888,31 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
         } catch {
             return
         }
-        _ = vm.openArchive(at: url, forceMiniMode: true)
+        let session = vm.openArchive(at: url, forceMiniMode: true)
+        finderSpacebarSessionIDs.insert(session.id)
         landingWindow?.orderOut(nil)
         if let landingWindow { NSApp.removeWindowsItem(landingWindow) }
         synchronizeSessionWindows()
         showActiveWindow()
+    }
+
+    @MainActor
+    private func handleLocalSpacebarKeyDown(_ event: NSEvent) -> NSEvent? {
+        let vm = ProZipAppViewModel.shared
+        guard let session = vm.activeSession else { return event }
+        guard FinderSpacebarArchivePolicy.shouldDismissMiniWindow(
+            event: event,
+            session: session,
+            expectedWindow: sessionWindows[session.id]
+        ) else {
+            return event
+        }
+        let openedFromFinder = finderSpacebarSessionIDs.contains(session.id)
+        vm.closeSession(id: session.id)
+        if openedFromFinder && vm.sessions.isEmpty {
+            NSRunningApplication.runningApplications(withBundleIdentifier: "com.apple.finder").first?.activate()
+        }
+        return nil
     }
 
     private func quickCompress(_ urls: [URL]) {

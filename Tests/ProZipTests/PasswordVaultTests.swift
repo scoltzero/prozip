@@ -16,6 +16,8 @@ final class TestPasswordBookKeyStore: PasswordBookKeyStore, @unchecked Sendable 
     var shouldFailRemoving = false
     var supportsAuthentication = true
     var authenticationAllowed = true
+    var requiresInteractiveLegacyAuth = false
+    var allowInteractiveLegacyAuth = true
     var authenticatedKeyOverride: Data?
     var onSave: (() -> Void)?
     var onAuthenticatedRead: (() -> Void)?
@@ -52,6 +54,19 @@ final class TestPasswordBookKeyStore: PasswordBookKeyStore, @unchecked Sendable 
             guard authenticationReason != nil, authenticationAllowed else { throw CocoaError(.userCancelled) }
             onAuthenticatedRead?()
             return authenticatedKeyOverride ?? record.key
+        }
+        if requiresInteractiveLegacyAuth {
+            throw CocoaError(.fileReadNoPermission)
+        }
+        return record.key
+    }
+
+    func loadLegacyKeyInteractively(id: String) throws -> Data {
+        lock.lock()
+        let record = records[id]
+        lock.unlock()
+        guard !shouldFailLoading, allowInteractiveLegacyAuth, let record, !record.requiresUserPresence else {
+            throw CocoaError(.userCancelled)
         }
         return record.key
     }
@@ -792,6 +807,74 @@ final class PasswordVaultTests: XCTestCase {
             XCTAssertNotNil(reloaded.lastError)
             XCTAssertFalse(reloaded.unlock(withMasterPassword: "fixture-master"))
             XCTAssertEqual(try Data(contentsOf: url), data)
+        }
+    }
+
+    func testLegacyKeychainAuthorizationRecoversEntriesAndRotatesKeyForSilentReopen() async throws {
+        try await withTemporaryVaultAsync { url in
+            let book = makeBook(url)
+            let entry = book.addEntry(title: "LegacyACL", password: "secret-password")
+            let originalData = try Data(contentsOf: url)
+            let oldKeyID = try XCTUnwrap(try store(at: url)["keychainKeyID"] as? String)
+
+            keyStore.requiresInteractiveLegacyAuth = true
+            let lockedBook = makeBook(url)
+            XCTAssertTrue(lockedBook.isLocked)
+            XCTAssertTrue(lockedBook.needsKeychainAuthorization)
+            XCTAssertFalse(lockedBook.hasMasterPassword)
+            XCTAssertTrue(lockedBook.entries.isEmpty)
+            XCTAssertEqual(try Data(contentsOf: url), originalData)
+
+            // Keep silent reads failing while allowing explicit interactive legacy prompt until key rotation completes.
+            keyStore.requiresInteractiveLegacyAuth = true
+            keyStore.allowInteractiveLegacyAuth = true
+            let unlocked = await lockedBook.authorizeKeychainAndUnlockAsync()
+            XCTAssertTrue(unlocked)
+            XCTAssertFalse(lockedBook.isLocked)
+            XCTAssertFalse(lockedBook.needsKeychainAuthorization)
+            XCTAssertNil(lockedBook.lastError)
+            XCTAssertEqual(lockedBook.entries, [entry])
+
+            let rotatedKeyID = try XCTUnwrap(try store(at: url)["keychainKeyID"] as? String)
+            XCTAssertNotEqual(rotatedKeyID, oldKeyID)
+
+            keyStore.requiresInteractiveLegacyAuth = false
+            let reopened = makeBook(url)
+            XCTAssertFalse(reopened.isLocked)
+            XCTAssertFalse(reopened.needsKeychainAuthorization)
+            XCTAssertEqual(reopened.entries, [entry])
+        }
+    }
+
+    func testFailedLegacyKeychainAuthorizationPreservesVaultAndResetRebuildsCleanly() async throws {
+        try await withTemporaryVaultAsync { url in
+            let book = makeBook(url)
+            book.addEntry(title: "LegacyACL", password: "secret-password")
+            let originalData = try Data(contentsOf: url)
+
+            keyStore.requiresInteractiveLegacyAuth = true
+            keyStore.allowInteractiveLegacyAuth = false
+            let lockedBook = makeBook(url)
+            XCTAssertTrue(lockedBook.isLocked)
+            XCTAssertTrue(lockedBook.needsKeychainAuthorization)
+
+            let unlocked = await lockedBook.authorizeKeychainAndUnlockAsync()
+            XCTAssertFalse(unlocked)
+            XCTAssertTrue(lockedBook.isLocked)
+            XCTAssertTrue(lockedBook.needsKeychainAuthorization)
+            XCTAssertNotNil(lockedBook.lastError)
+            XCTAssertEqual(try Data(contentsOf: url), originalData)
+
+            keyStore.requiresInteractiveLegacyAuth = false
+            lockedBook.resetAndClearAll()
+            XCTAssertFalse(lockedBook.isLocked)
+            XCTAssertFalse(lockedBook.needsKeychainAuthorization)
+            XCTAssertTrue(lockedBook.entries.isEmpty)
+            XCTAssertNotEqual(try Data(contentsOf: url), originalData)
+
+            let reopened = makeBook(url)
+            XCTAssertFalse(reopened.isLocked)
+            XCTAssertTrue(reopened.entries.isEmpty)
         }
     }
 }

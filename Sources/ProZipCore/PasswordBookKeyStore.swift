@@ -5,9 +5,21 @@ import LocalAuthentication
 protocol PasswordBookKeyStore: Sendable {
     func saveKey(_ key: Data, id: String, requiresUserPresence: Bool) throws
     func loadKey(id: String, authenticationReason: String?) throws -> Data
+    func loadLegacyKeyInteractively(id: String) throws -> Data
     func removeKey(id: String) throws
     func containsProtectedKey(id: String) -> Bool
     func canAuthenticate() -> Bool
+    var supportsDataProtectionQuickUnlock: Bool { get }
+}
+
+extension PasswordBookKeyStore {
+    func loadLegacyKeyInteractively(id: String) throws -> Data {
+        try loadKey(id: id, authenticationReason: nil)
+    }
+
+    var supportsDataProtectionQuickUnlock: Bool {
+        canAuthenticate()
+    }
 }
 
 struct SystemPasswordBookKeyStore: PasswordBookKeyStore {
@@ -46,17 +58,58 @@ struct SystemPasswordBookKeyStore: PasswordBookKeyStore {
         authenticationFlags() != nil
     }
 
-    private func withoutLegacyInteraction<T>(_ operation: () throws -> T) throws -> T {
+    var supportsDataProtectionQuickUnlock: Bool {
+        Self.hasAppleTeamIdentifier() && canAuthenticate()
+    }
+
+    private static func hasAppleTeamIdentifier() -> Bool {
+        var dynamicCode: SecCode?
+        guard SecCodeCopySelf([], &dynamicCode) == errSecSuccess, let dynamicCode else { return false }
+        var staticCode: SecStaticCode?
+        guard SecCodeCopyStaticCode(dynamicCode, [], &staticCode) == errSecSuccess, let staticCode else { return false }
+        var info: CFDictionary?
+        let flags = SecCSFlags(rawValue: kSecCSSigningInformation)
+        guard SecCodeCopySigningInformation(staticCode, flags, &info) == errSecSuccess,
+              let dict = info as? [String: Any],
+              let teamID = dict[kSecCodeInfoTeamIdentifier as String] as? String else {
+            return false
+        }
+        return !teamID.isEmpty
+    }
+
+    private func withLegacyInteraction<T>(allowed: Bool, _ operation: () throws -> T) throws -> T {
         // Classic Keychain ignores LAContext's interaction flag; serialize the process-wide switch.
         Self.legacyLock.lock()
         defer { Self.legacyLock.unlock() }
         var wasAllowed: DarwinBoolean = false
         var status = SecKeychainGetUserInteractionAllowed(&wasAllowed)
         guard status == errSecSuccess else { throw keychainError(status) }
-        status = SecKeychainSetUserInteractionAllowed(false)
+        status = SecKeychainSetUserInteractionAllowed(allowed)
         guard status == errSecSuccess else { throw keychainError(status) }
         defer { _ = SecKeychainSetUserInteractionAllowed(wasAllowed.boolValue) }
         return try operation()
+    }
+
+    private func withoutLegacyInteraction<T>(_ operation: () throws -> T) throws -> T {
+        try withLegacyInteraction(allowed: false, operation)
+    }
+
+    private func loadLegacyKey(id: String, interactive: Bool) throws -> Data {
+        try withLegacyInteraction(allowed: interactive) {
+            var legacyQuery = try query(id: id, dataProtection: false)
+            legacyQuery[kSecReturnData as String] = true
+            legacyQuery[kSecMatchLimit as String] = kSecMatchLimitOne
+            var legacyResult: CFTypeRef?
+            let legacyStatus = SecItemCopyMatching(legacyQuery as CFDictionary, &legacyResult)
+            guard legacyStatus == errSecSuccess, let data = legacyResult as? Data, data.count == 32 else {
+                throw keychainError(legacyStatus == errSecSuccess ? errSecDecode : legacyStatus)
+            }
+            return data
+        }
+    }
+
+    func loadLegacyKeyInteractively(id: String) throws -> Data {
+        try loadLegacyKey(id: id, interactive: true)
     }
 
     private func keychainError(_ status: OSStatus) -> NSError {
@@ -118,17 +171,7 @@ struct SystemPasswordBookKeyStore: PasswordBookKeyStore {
         let status = SecItemCopyMatching(attributes as CFDictionary, &result)
         if authenticationReason == nil && (status == errSecItemNotFound || status == errSecMissingEntitlement
                                            || status == errSecNotAvailable) {
-            return try withoutLegacyInteraction {
-                var legacyQuery = try query(id: id, dataProtection: false)
-                legacyQuery[kSecReturnData as String] = true
-                legacyQuery[kSecMatchLimit as String] = kSecMatchLimitOne
-                var legacyResult: CFTypeRef?
-                let legacyStatus = SecItemCopyMatching(legacyQuery as CFDictionary, &legacyResult)
-                guard legacyStatus == errSecSuccess, let data = legacyResult as? Data, data.count == 32 else {
-                    throw keychainError(legacyStatus == errSecSuccess ? errSecDecode : legacyStatus)
-                }
-                return data
-            }
+            return try loadLegacyKey(id: id, interactive: false)
         }
         guard status == errSecSuccess, let data = result as? Data, data.count == 32 else {
             throw keychainError(status == errSecSuccess ? errSecDecode : status)

@@ -1439,13 +1439,15 @@ public struct PasswordBookSettingsPane: View {
     @State private var isNewPreset: Bool = false
     @State private var isAddSheetPresented: Bool = false
     @State private var isProtectionDialogPresented: Bool = false
+    @State private var isConfirmingReset: Bool = false
+    @State private var isAuthorizingKeychain: Bool = false
     @State private var searchKeyword: String = ""
     @State private var revealedEntryIDs: Set<UUID> = []
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             if let error = passwordBook.lastError {
-                Text(error).font(.system(size: 11)).foregroundStyle(.red)
+                Text(error).font(.system(size: 11.5)).foregroundStyle(.red)
             }
             settingsCard(title: "密码自动化与输入") {
                 SettingsRowLayout {
@@ -1505,7 +1507,9 @@ public struct PasswordBookSettingsPane: View {
                                 .background(passwordBook.hasMasterPassword ? ProZipTheme.accentSoft : Color.secondary.opacity(0.12))
                                 .clipShape(Capsule())
                         }
-                        Text("使用独立密码保护密码本，支持时可用 Touch ID 或 Apple Watch 快速解锁。")
+                        Text(passwordBook.isBiometricQuickUnlockSupportedByBuild
+                             ? "使用独立密码保护密码本，支持时可用 Touch ID 或 Apple Watch 快速解锁。"
+                             : "使用独立密码保护密码本（不依赖应用签名，升级版本也不会丢失）。")
                             .font(.system(size: 11))
                             .foregroundStyle(.secondary)
                     }
@@ -1519,6 +1523,7 @@ public struct PasswordBookSettingsPane: View {
                         glassActionButton(passwordBook.hasMasterPassword ? "修改密码…" : "开启保护…", icon: "lock.shield") {
                             isProtectionDialogPresented = true
                         }
+                        .disabled(passwordBook.isLocked && !passwordBook.hasMasterPassword)
                     }
                 }
             }
@@ -1539,21 +1544,75 @@ public struct PasswordBookSettingsPane: View {
                         glassActionButton("添加密码…", icon: "plus") {
                             isAddSheetPresented = true
                         }
+                        .disabled(passwordBook.isLocked)
                     }
 
                     if passwordBook.isLocked {
-                        HStack(spacing: 10) {
-                            Image(systemName: "lock.fill")
-                                .foregroundStyle(ProZipTheme.accent)
-                            Text("密码本已锁定。请先解锁密码本以查看或编辑已保存记录。")
-                                .font(.system(size: 12))
-                                .foregroundStyle(.secondary)
-                            Spacer()
-                            glassActionButton("解锁密码本…", icon: "key.fill") {
-                                isProtectionDialogPresented = true
+                        if passwordBook.hasMasterPassword {
+                            HStack(spacing: 10) {
+                                Image(systemName: "lock.fill")
+                                    .foregroundStyle(ProZipTheme.accent)
+                                Text("密码本已锁定。请先解锁密码本以查看或编辑已保存记录。")
+                                    .font(.system(size: 12))
+                                    .foregroundStyle(.secondary)
+                                Spacer()
+                                glassActionButton("解锁密码本…", icon: "key.fill") {
+                                    isProtectionDialogPresented = true
+                                }
                             }
+                            .padding(.vertical, 12)
+                        } else {
+                            VStack(alignment: .leading, spacing: 10) {
+                                HStack(alignment: .top, spacing: 10) {
+                                    Image(systemName: passwordBook.needsKeychainAuthorization ? "key.viewfinder" : "exclamationmark.triangle.fill")
+                                        .font(.system(size: 15))
+                                        .foregroundStyle(.orange)
+                                        .padding(.top, 1)
+                                    VStack(alignment: .leading, spacing: 3) {
+                                        Text(passwordBook.needsKeychainAuthorization ? "需要重新授权访问钥匙串" : "无法直接读取旧密码本")
+                                            .font(.system(size: 13, weight: .semibold))
+                                        Text(passwordBook.needsKeychainAuthorization
+                                             ? "应用重新构建或更新后，系统需要你点一次“始终允许”来继续读取以前保存的密码（原记录完整保留，不会丢失）。"
+                                             : "原密码本文件已保留。你可以尝试重新授权钥匙串，或者直接清空并重建新的密码本。")
+                                            .font(.system(size: 11.5))
+                                            .foregroundStyle(.secondary)
+                                            .fixedSize(horizontal: false, vertical: true)
+                                    }
+                                }
+
+                                HStack(spacing: 8) {
+                                    Button(isAuthorizingKeychain ? "正在请求授权…" : "授权恢复密码本") {
+                                        guard !isAuthorizingKeychain else { return }
+                                        isConfirmingReset = false
+                                        Task {
+                                            isAuthorizingKeychain = true
+                                            defer { isAuthorizingKeychain = false }
+                                            _ = await passwordBook.authorizeKeychainAndUnlockAsync()
+                                        }
+                                    }
+                                    .buttonStyle(.borderedProminent)
+                                    .tint(ProZipTheme.accent)
+                                    .controlSize(.small)
+                                    .disabled(isAuthorizingKeychain)
+
+                                    if isConfirmingReset {
+                                        glassActionButton("确认清空并重建", icon: "trash", danger: true) {
+                                            passwordBook.resetAndClearAll()
+                                            isConfirmingReset = false
+                                        }
+                                        glassActionButton("取消") {
+                                            isConfirmingReset = false
+                                        }
+                                    } else {
+                                        glassActionButton("清空并重建密码本…", icon: "arrow.counterclockwise", danger: true) {
+                                            isConfirmingReset = true
+                                        }
+                                    }
+                                    Spacer()
+                                }
+                            }
+                            .padding(.vertical, 8)
                         }
-                        .padding(.vertical, 12)
                     } else if passwordBook.entries.isEmpty {
                         Text("尚未保存密码。保存常用密码，方便解锁或创建压缩包。")
                             .font(.system(size: 12))

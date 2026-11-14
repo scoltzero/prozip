@@ -167,4 +167,67 @@ final class MiniLaunchModeTests: XCTestCase {
         XCTAssertFalse(FinderSpacebarArchivePolicy.isTextInputOrControlRole(kAXRowRole as String, subrole: nil))
         XCTAssertFalse(FinderSpacebarArchivePolicy.isTextInputOrControlRole(kAXGroupRole as String, subrole: nil))
     }
+
+    func testSpacebarDismissPolicyInMiniWindow() {
+        XCTAssertTrue(FinderSpacebarArchivePolicy.shouldDismissMiniOnSpacebar(
+            keyCode: 49,
+            modifierFlags: [],
+            isRepeat: false,
+            isMiniMode: true,
+            isTargetWindow: true,
+            hasAttachedSheet: false,
+            isEditingText: false,
+            isSearchExpanded: false,
+            isInnerQuickLookVisible: false,
+            hasSelectedEntries: false
+        ))
+        XCTAssertFalse(FinderSpacebarArchivePolicy.shouldDismissMiniOnSpacebar(
+            keyCode: 49,
+            modifierFlags: [],
+            isRepeat: false,
+            isMiniMode: true,
+            isTargetWindow: true,
+            hasAttachedSheet: false,
+            isEditingText: false,
+            isSearchExpanded: false,
+            isInnerQuickLookVisible: false,
+            hasSelectedEntries: true
+        ))
+        XCTAssertFalse(FinderSpacebarArchivePolicy.shouldDismissMiniOnSpacebar(
+            keyCode: 49,
+            modifierFlags: [],
+            isRepeat: false,
+            isMiniMode: true,
+            isTargetWindow: true,
+            hasAttachedSheet: false,
+            isEditingText: true,
+            isSearchExpanded: false,
+            isInnerQuickLookVisible: false,
+            hasSelectedEntries: false
+        ))
+        XCTAssertFalse(FinderSpacebarArchivePolicy.shouldDismissMiniOnSpacebar(
+            keyCode: 49,
+            modifierFlags: [],
+            isRepeat: false,
+            isMiniMode: false,
+            isTargetWindow: true,
+            hasAttachedSheet: false,
+            isEditingText: false,
+            isSearchExpanded: false,
+            isInnerQuickLookVisible: false,
+            hasSelectedEntries: false
+        ))
+        XCTAssertFalse(FinderSpacebarArchivePolicy.shouldDismissMiniOnSpacebar(
+            keyCode: 49,
+            modifierFlags: [.command],
+            isRepeat: false,
+            isMiniMode: true,
+            isTargetWindow: true,
+            hasAttachedSheet: false,
+            isEditingText: false,
+            isSearchExpanded: false,
+            isInnerQuickLookVisible: false,
+            hasSelectedEntries: false
+        ))
+    }
 }

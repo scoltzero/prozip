@@ -340,7 +340,12 @@ public struct ArchiveCreationDialogView: View {
             }
         }
         .frame(width: 900, height: 600)
-        .background(creationSheetBackground)
+        .background {
+            ZStack {
+                creationSheetBackground
+                WindowDragArea()
+            }
+        }
         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
@@ -396,6 +401,10 @@ public struct ArchiveCreationDialogView: View {
         .padding(.horizontal, 44)
         .padding(.top, 20)
         .padding(.bottom, 18)
+        .contentShape(Rectangle())
+        .overlay {
+            WindowDragArea()
+        }
     }
 
     // MARK: - Name & Destination Row (two columns, 399pt each)
@@ -1332,13 +1341,17 @@ public struct ArchiveCreationDialogView: View {
         }
         .background {
             ZStack {
-                ProZipVariableBlurView(
-                    direction: .bottomToTop,
-                    material: colorScheme == .dark ? .hudWindow : .headerView
-                )
-                creationSheetBackground.opacity(0.84)
+                ZStack {
+                    ProZipVariableBlurView(
+                        direction: .bottomToTop,
+                        material: colorScheme == .dark ? .hudWindow : .headerView
+                    )
+                    creationSheetBackground.opacity(0.84)
+                }
+                .allowsHitTesting(false)
+
+                WindowDragArea()
             }
-            .allowsHitTesting(false)
         }
     }
 

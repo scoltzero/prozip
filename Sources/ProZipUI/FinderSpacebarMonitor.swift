@@ -4,7 +4,9 @@ import Combine
 import CoreServices
 import Foundation
 import os
+import ProZipCore
 import ProZipShared
+import QuickLookUI
 
 public enum AutomationPermissionStatus: String, Equatable, Sendable {
     case granted
@@ -101,6 +103,50 @@ public enum FinderSpacebarArchivePolicy {
             }
             return false
         }
+    }
+
+    public static func shouldDismissMiniOnSpacebar(
+        keyCode: UInt16,
+        modifierFlags: NSEvent.ModifierFlags,
+        isRepeat: Bool,
+        isMiniMode: Bool,
+        isTargetWindow: Bool,
+        hasAttachedSheet: Bool,
+        isEditingText: Bool,
+        isSearchExpanded: Bool,
+        isInnerQuickLookVisible: Bool,
+        hasSelectedEntries: Bool
+    ) -> Bool {
+        guard keyCode == 49, !isRepeat else { return false }
+        let blocking: NSEvent.ModifierFlags = [.command, .option, .control, .shift, .function]
+        guard modifierFlags.intersection(blocking).isEmpty else { return false }
+        guard isMiniMode, isTargetWindow else { return false }
+        guard !hasAttachedSheet, !isEditingText, !isSearchExpanded, !isInnerQuickLookVisible else { return false }
+        return !hasSelectedEntries
+    }
+
+    @MainActor
+    public static func shouldDismissMiniWindow(
+        event: NSEvent,
+        session: ArchiveBrowsingSession?,
+        expectedWindow: NSWindow?
+    ) -> Bool {
+        guard let session, let expectedWindow, let keyWindow = NSApp.keyWindow else { return false }
+        let responder = keyWindow.firstResponder
+        let isEditing = (responder is NSTextView) || (responder is NSTextField)
+        let innerQLVisible = QLPreviewPanel.sharedPreviewPanelExists() && QLPreviewPanel.shared().isVisible
+        return shouldDismissMiniOnSpacebar(
+            keyCode: event.keyCode,
+            modifierFlags: event.modifierFlags,
+            isRepeat: event.isARepeat,
+            isMiniMode: session.isMiniMode,
+            isTargetWindow: keyWindow === expectedWindow,
+            hasAttachedSheet: keyWindow.attachedSheet != nil,
+            isEditingText: isEditing,
+            isSearchExpanded: session.isSearchExpanded || !session.searchQuery.isEmpty,
+            isInnerQuickLookVisible: innerQLVisible,
+            hasSelectedEntries: !session.selectedEntries.isEmpty
+        )
     }
 }
 

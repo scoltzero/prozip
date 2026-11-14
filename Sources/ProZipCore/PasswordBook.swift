@@ -71,7 +71,12 @@ public final class PasswordBook: ObservableObject, @unchecked Sendable {
     @Published public private(set) var isLocked: Bool = false
     @Published public private(set) var hasMasterPassword: Bool = false
     @Published public private(set) var isQuickUnlockEnabled: Bool = false
+    @Published public private(set) var needsKeychainAuthorization: Bool = false
     @Published public private(set) var lastError: String?
+
+    public var isBiometricQuickUnlockSupportedByBuild: Bool {
+        keyStore.supportsDataProtectionQuickUnlock
+    }
 
     private var activeFileKey: SymmetricKey?
     private var currentStore: EncryptedPasswordBookStore?
@@ -100,21 +105,46 @@ public final class PasswordBook: ObservableObject, @unchecked Sendable {
     private func loadFromDisk() {
         lockQueue.lock()
         defer { lockQueue.unlock() }
+        let store: EncryptedPasswordBookStore
         do {
-            let store = try readStore()
-            hasMasterPassword = store.hasMasterPassword
-            isQuickUnlockEnabled = store.quickUnlockKeyID != nil
-            if store.hasMasterPassword {
+            store = try readStore()
+        } catch {
+            let readError = error as NSError
+            if readError.domain == NSCocoaErrorDomain && readError.code == NSFileReadNoSuchFileError {
+                if !replaceVault([], masterPassword: nil, allowQuickUnlock: false) { isLocked = true }
+            } else {
+                isLocked = true
+                needsKeychainAuthorization = false
+                lastError = "无法读取密码本或访问钥匙串，原文件已保留。"
+            }
+            return
+        }
+
+        hasMasterPassword = store.hasMasterPassword
+        isQuickUnlockEnabled = store.quickUnlockKeyID != nil
+        if store.hasMasterPassword {
+            currentStore = store
+            needsKeychainAuthorization = false
+            isLocked = true
+            return
+        }
+
+        let keyData: Data
+        if store.version == 1 {
+            keyData = store.unmasteredKey!
+        } else {
+            do {
+                keyData = try keyStore.loadKey(id: store.keychainKeyID!, authenticationReason: nil)
+            } catch {
                 currentStore = store
                 isLocked = true
+                needsKeychainAuthorization = true
+                lastError = "应用版本或签名已更新，需要重新授权访问钥匙串以恢复密码本（原文件已保留）。"
                 return
             }
-            let keyData: Data
-            if store.version == 1 {
-                keyData = store.unmasteredKey!
-            } else {
-                keyData = try keyStore.loadKey(id: store.keychainKeyID!, authenticationReason: nil)
-            }
+        }
+
+        do {
             guard keyData.count == 32 else { throw CocoaError(.fileReadCorruptFile) }
             let key = SymmetricKey(data: keyData)
             let decoded = try decryptEntries(in: store, using: key)
@@ -125,13 +155,9 @@ public final class PasswordBook: ObservableObject, @unchecked Sendable {
                 accept(store, entries: decoded, key: key)
             }
         } catch {
-            let readError = error as NSError
-            if readError.domain == NSCocoaErrorDomain && readError.code == NSFileReadNoSuchFileError {
-                if !replaceVault([], masterPassword: nil, allowQuickUnlock: false) { isLocked = true }
-            } else {
-                isLocked = true
-                lastError = "无法读取密码本或访问钥匙串，原文件已保留。"
-            }
+            isLocked = true
+            needsKeychainAuthorization = false
+            lastError = "无法读取密码本或访问钥匙串，原文件已保留。"
         }
     }
 
@@ -198,6 +224,7 @@ public final class PasswordBook: ObservableObject, @unchecked Sendable {
         isQuickUnlockEnabled = store.quickUnlockKeyID != nil
         self.entries = entries
         isLocked = false
+        needsKeychainAuthorization = false
         lastError = nil
     }
 
@@ -398,6 +425,102 @@ public final class PasswordBook: ObservableObject, @unchecked Sendable {
     }
 
     public func reset() { resetAndClearAll() }
+
+    private struct LegacyKeychainUnlockPreparation: Sendable {
+        var store: EncryptedPasswordBookStore
+        var keyID: String
+        var generation: UUID
+    }
+
+    private func prepareLegacyKeychainUnlock() -> LegacyKeychainUnlockPreparation? {
+        lockQueue.lock()
+        defer { lockQueue.unlock() }
+        guard isLocked else { return nil }
+        do {
+            let store = try readStore()
+            guard !store.hasMasterPassword, store.version == 2, let keyID = store.keychainKeyID else {
+                lastError = "当前密码本状态不支持直接通过钥匙串恢复。"
+                return nil
+            }
+            return LegacyKeychainUnlockPreparation(store: store, keyID: keyID, generation: stateGeneration)
+        } catch {
+            needsKeychainAuthorization = false
+            lastError = "无法读取本地密码本文件，原文件已保留。"
+            return nil
+        }
+    }
+
+    private func completeLegacyKeychainUnlock(
+        _ preparation: LegacyKeychainUnlockPreparation,
+        result: Result<Data, Error>
+    ) -> Bool {
+        lockQueue.lock()
+        defer { lockQueue.unlock() }
+        guard stateGeneration == preparation.generation, isLocked else { return !isLocked }
+        switch result {
+        case .success(let keyData):
+            do {
+                guard keyData.count == 32, try readStore() == preparation.store else {
+                    throw CocoaError(.fileReadCorruptFile)
+                }
+                let key = SymmetricKey(data: keyData)
+                let decoded = try decryptEntries(in: preparation.store, using: key)
+                accept(preparation.store, entries: decoded, key: key)
+                // Re-key onto a keychain item created by the current binary so future launches stay silent.
+                _ = replaceVault(decoded, masterPassword: nil, allowQuickUnlock: false)
+                return true
+            } catch {
+                needsKeychainAuthorization = false
+                lastError = "无法解密密码本或文件已损坏，原文件已保留。"
+                return false
+            }
+        case .failure(let error):
+            needsKeychainAuthorization = true
+            let nsError = error as NSError
+            if nsError.domain == NSOSStatusErrorDomain && nsError.code == Int(errSecItemNotFound) {
+                lastError = "钥匙串中未找到对应密钥，原文件已保留。若无需保留旧记录，可点击清空并重建密码本。"
+            } else {
+                lastError = "未完成钥匙串授权，原文件已保留。你可以再次尝试授权，或选择清空并重建密码本。"
+            }
+            return false
+        }
+    }
+
+    @discardableResult
+    public func authorizeKeychainAndUnlock() -> Bool {
+        guard isLocked else { return true }
+        guard let preparation = prepareLegacyKeychainUnlock() else { return !isLocked }
+        let outcome: Result<Data, Error>
+        do {
+            outcome = .success(try keyStore.loadLegacyKeyInteractively(id: preparation.keyID))
+        } catch {
+            outcome = .failure(error)
+        }
+        return completeLegacyKeychainUnlock(preparation, result: outcome)
+    }
+
+    @discardableResult
+    public func authorizeKeychainAndUnlockAsync() async -> Bool {
+        let state = await MainActor.run { () -> (alreadyUnlocked: Bool, preparation: LegacyKeychainUnlockPreparation?) in
+            lockQueue.lock()
+            defer { lockQueue.unlock() }
+            if !isLocked { return (true, nil) }
+            return (false, prepareLegacyKeychainUnlock())
+        }
+        if state.alreadyUnlocked { return true }
+        guard let preparation = state.preparation else { return false }
+        let keyStore = self.keyStore
+        let outcome = await Task.detached(priority: .userInitiated) { () -> Result<Data, Error> in
+            do {
+                return .success(try keyStore.loadLegacyKeyInteractively(id: preparation.keyID))
+            } catch {
+                return .failure(error)
+            }
+        }.value
+        return await MainActor.run {
+            completeLegacyKeychainUnlock(preparation, result: outcome)
+        }
+    }
 
     // MARK: - Keychain-authenticated Quick Unlock
 

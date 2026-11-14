@@ -1535,6 +1535,7 @@ public struct PasswordBookProtectionDialogView: View {
     @State private var enableTouchID: Bool = false
     @State private var errorMessage: String?
     @State private var isConfirmingReset: Bool = false
+    @State private var isAuthorizingKeychain: Bool = false
 
     public init() {}
 
@@ -1564,9 +1565,10 @@ public struct PasswordBookProtectionDialogView: View {
                         }
                     }
                     } else {
-                        Text(passwordBook.lastError ?? "无法读取密码本，原文件已保留。请检查钥匙串访问权限，或确认后重置密码本。")
+                        Text(passwordBook.lastError ?? "应用更新后需要重新授权访问钥匙串，才能恢复以前保存的密码（原记录已保留）。")
                             .font(.system(size: 12))
                             .foregroundStyle(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                 } else {
                     SecureField("设置新主密码", text: $masterPassword)
@@ -1575,10 +1577,23 @@ public struct PasswordBookProtectionDialogView: View {
                     SecureField("再次输入主密码确认", text: $confirmPassword)
                         .textFieldStyle(.roundedBorder)
 
-                    Toggle("允许使用 Touch ID 快速解锁密码本", isOn: $enableTouchID)
-                        .toggleStyle(.checkbox)
-                        .font(.system(size: 12))
-                        .tint(ProZipTheme.accent)
+                    if passwordBook.isBiometricQuickUnlockSupportedByBuild {
+                        Toggle("允许使用 Touch ID 快速解锁密码本", isOn: $enableTouchID)
+                            .toggleStyle(.checkbox)
+                            .font(.system(size: 12))
+                            .tint(ProZipTheme.accent)
+                    } else {
+                        VStack(alignment: .leading, spacing: 3) {
+                            Toggle("允许使用 Touch ID 快速解锁密码本（仅正式签名版支持）", isOn: .constant(false))
+                                .toggleStyle(.checkbox)
+                                .font(.system(size: 12))
+                                .disabled(true)
+                            Text("开源自签名版暂不启用苹果 Data Protection 钥匙串；直接设置主密码即可跨版本正常使用。")
+                                .font(.system(size: 10.5))
+                                .foregroundStyle(.secondary)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                    }
                 }
 
                 HStack(alignment: .top, spacing: 6) {
@@ -1624,14 +1639,28 @@ public struct PasswordBookProtectionDialogView: View {
 
                     if passwordBook.isLocked {
                         if passwordBook.hasMasterPassword {
-                        ArcZipDialogButton("解锁密码本", role: .primary, size: .regular) {
-                            if passwordBook.unlock(withMasterPassword: masterPassword) {
-                                dismiss()
-                            } else {
-                                errorMessage = passwordBook.lastError ?? "主密码错误，请重试。"
+                            ArcZipDialogButton("解锁密码本", role: .primary, size: .regular) {
+                                if passwordBook.unlock(withMasterPassword: masterPassword) {
+                                    dismiss()
+                                } else {
+                                    errorMessage = passwordBook.lastError ?? "主密码错误，请重试。"
+                                }
                             }
-                        }
-                        .keyboardShortcut(.defaultAction)
+                            .keyboardShortcut(.defaultAction)
+                        } else {
+                            ArcZipDialogButton(isAuthorizingKeychain ? "授权中…" : "授权恢复密码本", role: .primary, size: .regular) {
+                                guard !isAuthorizingKeychain else { return }
+                                Task {
+                                    isAuthorizingKeychain = true
+                                    defer { isAuthorizingKeychain = false }
+                                    if await passwordBook.authorizeKeychainAndUnlockAsync() {
+                                        dismiss()
+                                    } else {
+                                        errorMessage = passwordBook.lastError ?? "未完成钥匙串授权。"
+                                    }
+                                }
+                            }
+                            .keyboardShortcut(.defaultAction)
                         }
                     } else {
                         if passwordBook.hasMasterPassword {
