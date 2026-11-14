@@ -41,6 +41,18 @@ public enum WorkspaceViewMode: String, CaseIterable, Codable, Sendable {
     }
 }
 
+public enum FinderSpacebarPreviewScope: String, CaseIterable, Codable, Sendable {
+    case claimedOnly
+    case allSupported
+
+    public var title: String {
+        switch self {
+        case .claimedOnly: return "仅已接管格式"
+        case .allSupported: return "所有支持格式"
+        }
+    }
+}
+
 public struct RecentArchiveRecord: Codable, Hashable, Identifiable, Sendable {
     public var id: String { path }
     public let path: String
@@ -216,6 +228,16 @@ public final class ProZipPreferences: ObservableObject, @unchecked Sendable {
     @Published public var miniUsesColoredControlButtons: Bool {
         didSet { defaults.set(miniUsesColoredControlButtons, forKey: "miniWindow.usesColoredControlButtons.v1") }
     }
+    @Published public var finderSpacebarPreviewEnabled: Bool {
+        didSet { defaults.set(finderSpacebarPreviewEnabled, forKey: "finder.spacebarMiniPreview.v1") }
+    }
+    @Published public var finderSpacebarPreviewScope: FinderSpacebarPreviewScope {
+        didSet { defaults.set(finderSpacebarPreviewScope.rawValue, forKey: "finder.spacebarMiniPreviewScope.v1") }
+    }
+
+    public var cachedAssociatedExtensions: Set<String> {
+        actualAssociatedExtensions.isEmpty ? Set(associatedArchiveFormats) : actualAssociatedExtensions
+    }
 
     // Box (MenuBar Shelf)
     @Published public var boxEnabled: Bool {
@@ -308,6 +330,8 @@ public final class ProZipPreferences: ObservableObject, @unchecked Sendable {
         self.prefersMiniWindow = defaults.object(forKey: "archiveOpening.prefersMiniWindow.v1") as? Bool ?? false
         self.miniUsesLiquidGlass = defaults.object(forKey: "miniWindow.usesLiquidGlass.v1") as? Bool ?? true
         self.miniUsesColoredControlButtons = defaults.object(forKey: "miniWindow.usesColoredControlButtons.v1") as? Bool ?? false
+        self.finderSpacebarPreviewEnabled = defaults.object(forKey: "finder.spacebarMiniPreview.v1") as? Bool ?? true
+        self.finderSpacebarPreviewScope = FinderSpacebarPreviewScope(rawValue: defaults.string(forKey: "finder.spacebarMiniPreviewScope.v1") ?? "") ?? .claimedOnly
 
         self.boxEnabled = defaults.object(forKey: "box.enabled.v1") as? Bool ?? true
         self.boxColor = defaults.string(forKey: "box.color") ?? "chartreuse"
@@ -540,6 +564,8 @@ public final class ProZipPreferences: ObservableObject, @unchecked Sendable {
         prefersMiniWindow = false
         miniUsesLiquidGlass = true
         miniUsesColoredControlButtons = false
+        finderSpacebarPreviewEnabled = true
+        finderSpacebarPreviewScope = .claimedOnly
         boxEnabled = true
         boxColor = "chartreuse"
         boxShellColorOpacity = 0.35

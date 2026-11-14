@@ -1064,17 +1064,25 @@ public final class ProZipAppViewModel: ObservableObject {
     }
 
     @discardableResult
-    public func openArchive(at url: URL, preferredMode: WorkspaceViewMode? = nil, honorMiniPreference: Bool = false) -> ArchiveBrowsingSession {
+    public func openArchive(
+        at url: URL,
+        preferredMode: WorkspaceViewMode? = nil,
+        honorMiniPreference: Bool = false,
+        forceMiniMode: Bool = false
+    ) -> ArchiveBrowsingSession {
         // Record in recent archives
         ProZipPreferences.shared.recordRecentArchive(url)
 
         // Check if already open
         if let existing = sessions.first(where: { $0.url.path == url.path }) {
+            if forceMiniMode && !existing.isMiniMode {
+                existing.isMiniMode = true
+            }
             activeSessionID = existing.id
             return existing
         }
 
-        let isMini = honorMiniPreference && ProZipPreferences.shared.prefersMiniWindow
+        let isMini = forceMiniMode || (honorMiniPreference && ProZipPreferences.shared.prefersMiniWindow)
         let mode = preferredMode ?? ProZipPreferences.shared.workspaceViewMode
         let format = ArchiveFormat.detect(from: url)
         let descriptor = ArchiveDescriptor(url: url, format: format)

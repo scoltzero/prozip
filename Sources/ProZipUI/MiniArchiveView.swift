@@ -63,6 +63,29 @@ public struct MiniArchiveView: View {
         session.displayedEntries.reduce(0) { $0 + $1.uncompressedSize }
     }
 
+    private var overviewSizeText: String? {
+        let bytes: Int64?
+        if let sourceSize = session.initialSourceStat?.size, sourceSize >= 0 {
+            bytes = sourceSize
+        } else if session.safeDescriptor.totalCompressedSize > 0 {
+            bytes = session.safeDescriptor.totalCompressedSize
+        } else if !session.displayedEntries.isEmpty {
+            bytes = totalUncompressedBytes
+        } else {
+            bytes = nil
+        }
+        guard let bytes else { return nil }
+        return ByteCountFormatter.string(fromByteCount: bytes, countStyle: .file)
+    }
+
+    private var miniSubtitleText: String {
+        let base = "\(session.safeDescriptor.format.displayName) · \(totalEntryCount) 个项目"
+        if let overviewSizeText {
+            return "\(base) · \(overviewSizeText)"
+        }
+        return base
+    }
+
     private var sortedEntries: [ArchiveEntry] {
         cachedSortInput == sortInput ? cachedEntries : makeSortedEntries()
     }
@@ -215,6 +238,16 @@ public struct MiniArchiveView: View {
         .onDrop(of: [.fileURL], isTargeted: $isDropTargeted) { providers in
             handleDrop(providers: providers)
         }
+        .onExitCommand {
+            if session.isSearchExpanded || !session.searchQuery.isEmpty {
+                withAnimation(.easeOut(duration: 0.15)) {
+                    session.searchQuery = ""
+                    session.isSearchExpanded = false
+                }
+            } else {
+                appViewModel.closeSession(id: session.id)
+            }
+        }
         .sheet(isPresented: Binding(
             get: { appViewModel.isRenameSheetPresented && appViewModel.renamingSessionID == session.id },
             set: { if appViewModel.renamingSessionID == session.id { appViewModel.isRenameSheetPresented = $0 } }
@@ -342,9 +375,9 @@ public struct MiniArchiveView: View {
                     }
                 }
 
-                // Subtitle: "ZIP 压缩包 · 4 个项目"
+                // Subtitle: "ZIP 压缩包 · 4 个项目 · 201 KB"
                 HStack(spacing: 6) {
-                    Text("\(session.safeDescriptor.format.displayName) · \(totalEntryCount) 个项目")
+                    Text(miniSubtitleText)
                         .font(.system(size: 11, weight: .regular))
                         .foregroundStyle(colorScheme == .dark ? Color.white.opacity(0.65) : Color(red: 0.25, green: 0.26, blue: 0.27))
                         .lineLimit(1)

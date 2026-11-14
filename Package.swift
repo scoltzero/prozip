@@ -50,7 +50,9 @@ let package = Package(
                 .linkedFramework("AppKit"),
                 .linkedFramework("SwiftUI"),
                 .linkedFramework("QuickLookUI"),
-                .linkedFramework("AVKit")
+                .linkedFramework("AVKit"),
+                .linkedFramework("ApplicationServices"),
+                .linkedFramework("CoreServices")
             ]
         ),
         .executableTarget(

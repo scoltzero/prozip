@@ -1134,6 +1134,13 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
 
         setupShelfStatusItem()
         observePreferences()
+        FinderSpacebarMonitor.shared.onOpenArchiveMini = { [weak self] url in
+            self?.openMiniPreviewFromFinderSpacebar(url: url)
+        }
+        FinderSpacebarMonitor.shared.startMonitoringIfConfigured()
+        Task {
+            try? await ProZipPreferences.shared.refreshFileAssociations()
+        }
         ProZipAppViewModel.shared.$sessions
             .map { $0.map(\.id) }
             .removeDuplicates()
@@ -1235,6 +1242,14 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
                 .map { URL(fileURLWithPath: $0) }
                 .filter { FileManager.default.fileExists(atPath: $0.path) }
             if !files.isEmpty { importFiles(files, replacingLanding: true, honorMiniPreference: true) }
+        }
+        if args.contains("--open-mini-settings") {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) { [weak self] in
+                self?.openSettings(tab: .mini)
+                if args.contains("--request-spacebar-auth") {
+                    FinderSpacebarMonitor.shared.requestAllAuthorizations()
+                }
+            }
         }
 
         // The empty SwiftUI Settings scene can materialize at launch on macOS 27.
@@ -1445,6 +1460,7 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
     }
 
     func applicationWillTerminate(_ notification: Notification) {
+        FinderSpacebarMonitor.shared.stopMonitoring()
         ProZipAppViewModel.shared.cancelBackgroundWork()
         guard restartRequested else { return }
         let relaunch = Process()
@@ -1851,6 +1867,22 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
         case .sendToProZip:
             importFiles(urls, replacingLanding: true)
         }
+    }
+
+    @MainActor
+    private func openMiniPreviewFromFinderSpacebar(url: URL) {
+        let vm = ProZipAppViewModel.shared
+        guard !vm.isTerminationRequested else { return }
+        do {
+            try FileURLDrop.validateSources([url])
+        } catch {
+            return
+        }
+        _ = vm.openArchive(at: url, forceMiniMode: true)
+        landingWindow?.orderOut(nil)
+        if let landingWindow { NSApp.removeWindowsItem(landingWindow) }
+        synchronizeSessionWindows()
+        showActiveWindow()
     }
 
     private func quickCompress(_ urls: [URL]) {

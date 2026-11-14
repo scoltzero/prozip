@@ -1829,6 +1829,7 @@ public struct FlowSettingsPane: View {
 
 public struct MiniSettingsPane: View {
     @ObservedObject public var preferences: ProZipPreferences
+    @ObservedObject private var spacebarMonitor = FinderSpacebarMonitor.shared
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 24) {
@@ -1875,7 +1876,139 @@ public struct MiniSettingsPane: View {
                     }
                 }
             }
+
+            settingsCard(title: "访达空格键直接打开 Mini（系统授权）") {
+                SettingsRowLayout {
+                    HStack {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("在访达中按空格键打开 ProZip Mini")
+                                .font(.system(size: 13, weight: .semibold))
+                            Text("选中压缩包并按下空格键时，直接弹出可浏览的 Mini 窗格，不修改任何系统文件")
+                                .font(.system(size: 11))
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        settingsSwitch(isOn: $preferences.finderSpacebarPreviewEnabled)
+                    }
+
+                    SettingsSeparator()
+
+                    HStack {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("接管范围")
+                                .font(.system(size: 13, weight: .semibold))
+                            Text("决定哪些压缩包在访达按空格时直接弹出 Mini")
+                                .font(.system(size: 11))
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        SettingsPopoverPicker(
+                            title: "接管范围",
+                            selection: $preferences.finderSpacebarPreviewScope,
+                            options: FinderSpacebarPreviewScope.allCases.map { ($0, $0.title) }
+                        )
+                    }
+
+                    SettingsSeparator()
+
+                    HStack(spacing: 12) {
+                        Circle()
+                            .fill(spacebarMonitor.isAccessibilityGranted ? Color.green : Color.orange)
+                            .frame(width: 8, height: 8)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("辅助功能权限")
+                                .font(.system(size: 13, weight: .semibold))
+                            Text(spacebarMonitor.isAccessibilityGranted ? "已授权，可安全拦截访达中的空格键事件" : "用于捕获访达空格键，并在文本重命名/搜索时自动放行")
+                                .font(.system(size: 11))
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        if spacebarMonitor.isAccessibilityGranted {
+                            Text("已授权")
+                                .font(.system(size: 11.5, weight: .semibold))
+                                .foregroundStyle(.green)
+                        } else {
+                            glassActionButton("授权辅助功能") {
+                                spacebarMonitor.requestAccessibilityAuthorization()
+                            }
+                        }
+                    }
+
+                    SettingsSeparator()
+
+                    HStack(spacing: 12) {
+                        Circle()
+                            .fill(spacebarMonitor.automationStatus == .granted ? Color.green : Color.orange)
+                            .frame(width: 8, height: 8)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("自动化权限（控制访达）")
+                                .font(.system(size: 13, weight: .semibold))
+                            Text("用于在桌面、图标视图等场景读取当前选中的单个压缩包路径")
+                                .font(.system(size: 11))
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        switch spacebarMonitor.automationStatus {
+                        case .granted:
+                            Text("已授权")
+                                .font(.system(size: 11.5, weight: .semibold))
+                                .foregroundStyle(.green)
+                        case .denied:
+                            glassActionButton("打开系统设置") {
+                                spacebarMonitor.openAutomationSettings()
+                            }
+                        case .notDetermined, .finderNotRunning:
+                            glassActionButton("授权控制访达") {
+                                spacebarMonitor.requestAutomationAuthorization()
+                            }
+                        }
+                    }
+
+                    SettingsSeparator()
+
+                    HStack(spacing: 10) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(spacebarStatusSummary)
+                                .font(.system(size: 12, weight: .medium))
+                                .foregroundStyle(spacebarMonitor.isTapActive && spacebarMonitor.isFullyAuthorized ? Color.green : .secondary)
+                            if let note = spacebarMonitor.lastStatusNote {
+                                Text(note)
+                                    .font(.system(size: 11))
+                                    .foregroundStyle(.orange)
+                            }
+                        }
+                        Spacer()
+                        glassActionButton("刷新状态", icon: "arrow.clockwise") {
+                            spacebarMonitor.refreshPermissions(attemptTapSync: true)
+                        }
+                        if !spacebarMonitor.isFullyAuthorized {
+                            Button("一键授权") {
+                                spacebarMonitor.requestAllAuthorizations()
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .tint(ProZipTheme.accent)
+                            .controlSize(.small)
+                        }
+                    }
+                }
+            }
         }
+        .onAppear {
+            spacebarMonitor.refreshPermissions(attemptTapSync: true)
+        }
+    }
+
+    private var spacebarStatusSummary: String {
+        if !preferences.finderSpacebarPreviewEnabled {
+            return "已关闭访达空格键监听"
+        }
+        if spacebarMonitor.isTapActive && spacebarMonitor.isFullyAuthorized {
+            return "状态：已就绪（在访达选中已接管压缩包按空格即可弹出 Mini）"
+        }
+        if spacebarMonitor.isTapActive {
+            return "状态：部分就绪（建议同时授予“自动化 → 控制访达”权限以覆盖所有视图）"
+        }
+        return "状态：等待授权后激活（无需重启 ProZip，开启权限后自动生效）"
     }
 }
 

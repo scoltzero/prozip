@@ -26,6 +26,8 @@
     <string>14.0</string>
     <key>NSHighResolutionCapable</key>
     <true/>
+    <key>NSAppleEventsUsageDescription</key>
+    <string>ProZip 需要读取你在访达中选中的文件，以便在按下空格键时直接以 Mini 窗格预览压缩包。</string>
     <key>NSPrincipalClass</key>
     <string>NSApplication</string>
     <key>CFBundleURLTypes</key>
