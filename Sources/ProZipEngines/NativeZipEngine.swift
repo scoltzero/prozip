@@ -883,7 +883,7 @@ public struct NativeZipEngine: ArchiveEngine {
             }
         }
 
-        progress(OperationProgress(phase: .preparing, completedBytes: 0, totalBytes: 0))
+        progress(OperationProgress(phase: .preparing, completedBytes: 0, totalBytes: 0, fractionCompleted: 0))
 
         // Collect items to archive
         let collectedItems = try collectSourceItems(
@@ -892,12 +892,26 @@ public struct NativeZipEngine: ArchiveEngine {
             repairWindowsNames: profile.repairWindowsNames
         )
 
+        let estimatedTotalBytes = collectedItems.reduce(Int64(0)) { partial, item in
+            partial + max(0, item.fileSize)
+        }
+        var prepareThrottle = ZipProgressThrottle(minInterval: 0.025)
+        if estimatedTotalBytes > 0 {
+            progress(OperationProgress(
+                phase: .preparing,
+                completedBytes: 0,
+                totalBytes: estimatedTotalBytes,
+                currentItem: collectedItems.first?.archivePath,
+                fractionCompleted: 0.02
+            ))
+        }
+
         // Read payloads, probe with CompressionBodyProbe, build Manifest
         var itemsWithPayload: [ZipEntryPayload] = []
         var manifestItems: [CreationManifestItem] = []
         var totalUncompressedBytes: Int64 = 0
 
-        for item in collectedItems {
+        for (index, item) in collectedItems.enumerated() {
             try Task.checkCancellation()
             switch item.type {
             case .directory:
@@ -974,6 +988,21 @@ public struct NativeZipEngine: ArchiveEngine {
             case .special:
                 continue
             }
+
+            let denomBytes = max(estimatedTotalBytes, totalUncompressedBytes)
+            let ratio: Double = denomBytes > 0
+                ? min(1.0, Double(totalUncompressedBytes) / Double(denomBytes))
+                : Double(index + 1) / Double(max(1, collectedItems.count))
+            let prepareFraction = 0.02 + 0.13 * ratio
+            if prepareThrottle.shouldEmit(fraction: prepareFraction, force: index == collectedItems.count - 1) {
+                progress(OperationProgress(
+                    phase: .preparing,
+                    completedBytes: min(totalUncompressedBytes, denomBytes),
+                    totalBytes: denomBytes,
+                    currentItem: item.archivePath,
+                    fractionCompleted: prepareFraction
+                ))
+            }
         }
 
         let manifest = CreationManifest(items: manifestItems)
@@ -1005,13 +1034,16 @@ public struct NativeZipEngine: ArchiveEngine {
                     progress(OperationProgress(
                         phase: .compressing,
                         completedBytes: 0,
-                        totalBytes: totalBytesToRecord
+                        totalBytes: totalBytesToRecord,
+                        currentItem: payloadsToWrite.first?.path,
+                        fractionCompleted: 0.15
                     ))
                     try self.writeZipArchive(
                         items: payloadsToWrite,
                         password: effectivePassword,
                         strength: profileStrength,
                         to: partialURL,
+                        fractionRange: 0.15...0.95,
                         progress: progress
                     )
                 },
@@ -1019,7 +1051,8 @@ public struct NativeZipEngine: ArchiveEngine {
                     progress(OperationProgress(
                         phase: .verifying,
                         completedBytes: totalBytesToRecord,
-                        totalBytes: totalBytesToRecord
+                        totalBytes: totalBytesToRecord,
+                        fractionCompleted: 0.97
                     ))
                     try Self.verifyArchive(at: partialURL, against: manifest)
                 }
@@ -1028,7 +1061,8 @@ public struct NativeZipEngine: ArchiveEngine {
             progress(OperationProgress(
                 phase: .completed,
                 completedBytes: totalBytesToRecord,
-                totalBytes: totalBytesToRecord
+                totalBytes: totalBytesToRecord,
+                fractionCompleted: 1.0
             ))
         }
     }
@@ -1208,22 +1242,34 @@ public struct NativeZipEngine: ArchiveEngine {
             targetURL: outputURL,
             allowOverwrite: true,
             writer: { partialURL in
-                progress(OperationProgress(phase: .compressing, completedBytes: 0, totalBytes: totalTargetBytes))
+                progress(OperationProgress(
+                    phase: .compressing,
+                    completedBytes: 0,
+                    totalBytes: totalTargetBytes,
+                    currentItem: payloadsToApply.first?.path,
+                    fractionCompleted: 0.05
+                ))
                 try self.writeZipArchive(
                     items: payloadsToApply,
                     password: password,
                     strength: currentProfileStrength,
                     to: partialURL,
+                    fractionRange: 0.05...0.95,
                     progress: progress
                 )
             },
             verifier: { partialURL in
-                progress(OperationProgress(phase: .verifying, completedBytes: totalTargetBytes, totalBytes: totalTargetBytes))
+                progress(OperationProgress(
+                    phase: .verifying,
+                    completedBytes: totalTargetBytes,
+                    totalBytes: totalTargetBytes,
+                    fractionCompleted: 0.97
+                ))
                 try Self.verifyArchive(at: partialURL, against: targetManifest)
             }
         )
 
-        progress(OperationProgress(phase: .completed, completedBytes: totalTargetBytes, totalBytes: totalTargetBytes))
+        progress(OperationProgress(phase: .completed, completedBytes: totalTargetBytes, totalBytes: totalTargetBytes, fractionCompleted: 1.0))
     }
 
     private enum MutableEntryState {
@@ -1232,6 +1278,26 @@ public struct NativeZipEngine: ArchiveEngine {
     }
 
     // MARK: - Internal ZIP Creation Engine
+
+    struct ZipProgressThrottle {
+        let minInterval: CFAbsoluteTime
+        private var lastEmitTime: CFAbsoluteTime = 0
+        private var lastFraction: Double = -1
+
+        init(minInterval: CFAbsoluteTime = 0.025) {
+            self.minInterval = minInterval
+        }
+
+        mutating func shouldEmit(fraction: Double, force: Bool = false) -> Bool {
+            let now = CFAbsoluteTimeGetCurrent()
+            if force || lastEmitTime == 0 || (now - lastEmitTime) >= minInterval || (fraction - lastFraction) >= 0.02 {
+                lastEmitTime = now
+                lastFraction = max(lastFraction, fraction)
+                return true
+            }
+            return false
+        }
+    }
 
     struct ZipEntryPayload {
         let path: String
@@ -1250,6 +1316,7 @@ public struct NativeZipEngine: ArchiveEngine {
         password: String?,
         strength: CreationProfile.Strength,
         to targetURL: URL,
+        fractionRange: ClosedRange<Double> = 0.0...0.95,
         progress: ProgressSink? = nil
     ) throws {
         let fileManager = FileManager.default
@@ -1262,8 +1329,29 @@ public struct NativeZipEngine: ArchiveEngine {
 
         var centralDirectoryEntries: [Data] = []
         var currentOffset: UInt64 = 0
+        let totalUncompressedBytes = items.reduce(Int64(0)) { $0 + max(0, $1.uncompressedSize) }
+        var completedUncompressedBytes: Int64 = 0
+        var throttle = ZipProgressThrottle(minInterval: 0.025)
+        let span = max(0.0, fractionRange.upperBound - fractionRange.lowerBound)
 
-        for item in items {
+        func emitWriteProgress(currentBytes: Int64, entryIndex: Int, currentItem: String, force: Bool = false) {
+            guard let progress else { return }
+            let ratio: Double = totalUncompressedBytes > 0
+                ? min(1.0, max(0.0, Double(currentBytes) / Double(totalUncompressedBytes)))
+                : Double(entryIndex + 1) / Double(max(1, items.count))
+            let fraction = fractionRange.lowerBound + span * ratio
+            if throttle.shouldEmit(fraction: fraction, force: force) {
+                progress(OperationProgress(
+                    phase: .compressing,
+                    completedBytes: min(currentBytes, totalUncompressedBytes),
+                    totalBytes: totalUncompressedBytes,
+                    currentItem: currentItem,
+                    fractionCompleted: fraction
+                ))
+            }
+        }
+
+        for (entryIndex, item) in items.enumerated() {
             try Task.checkCancellation()
             let normalizedPath = item.path.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
             let isDirectory = item.type == .directory
@@ -1274,6 +1362,7 @@ public struct NativeZipEngine: ArchiveEngine {
 
             var compressedData: Data
             var method = item.method
+            let baseCompleted = completedUncompressedBytes
 
             if isDirectory {
                 compressedData = Data()
@@ -1283,7 +1372,17 @@ public struct NativeZipEngine: ArchiveEngine {
                 method = 0
             } else {
                 if method == 8 {
-                    compressedData = try Self.deflateRaw(data: item.data, level: strength.zlibLevel)
+                    compressedData = try Self.deflateRaw(
+                        data: item.data,
+                        level: strength.zlibLevel,
+                        onInputProgress: progress == nil ? nil : { sliceCompleted in
+                            emitWriteProgress(
+                                currentBytes: baseCompleted + sliceCompleted,
+                                entryIndex: entryIndex,
+                                currentItem: entryPath
+                            )
+                        }
+                    )
                 } else {
                     compressedData = item.data
                 }
@@ -1329,6 +1428,13 @@ public struct NativeZipEngine: ArchiveEngine {
 
             try handle.write(contentsOf: localHeader)
             currentOffset += UInt64(localHeader.count)
+            completedUncompressedBytes += max(0, item.uncompressedSize)
+            emitWriteProgress(
+                currentBytes: completedUncompressedBytes,
+                entryIndex: entryIndex,
+                currentItem: entryPath,
+                force: entryIndex == items.count - 1
+            )
 
             // Construct Central Directory Record
             var cdEntry = Data()
@@ -1405,7 +1511,21 @@ public struct NativeZipEngine: ArchiveEngine {
         try fm.createDirectory(at: staging, withIntermediateDirectories: false)
         defer { try? fm.removeItem(at: staging) }
         let fullZipURL = staging.appendingPathComponent("full-archive.zip")
-        try writeZipArchive(items: items, password: password, strength: strength, to: fullZipURL, progress: progress)
+        try writeZipArchive(
+            items: items,
+            password: password,
+            strength: strength,
+            to: fullZipURL,
+            fractionRange: 0.15...0.92,
+            progress: progress
+        )
+        let totalUncompressed = items.reduce(Int64(0)) { $0 + max(0, $1.uncompressedSize) }
+        progress(OperationProgress(
+            phase: .verifying,
+            completedBytes: totalUncompressed,
+            totalBytes: totalUncompressed,
+            fractionCompleted: 0.95
+        ))
         try Self.verifyArchive(at: fullZipURL, against: manifest)
 
         let parts = try SplitArchivePublication.stageParts(
@@ -1414,9 +1534,9 @@ public struct NativeZipEngine: ArchiveEngine {
             plan: splitPlan
         )
         let totalBytes = Int64(try fullZipURL.resourceValues(forKeys: [.fileSizeKey]).fileSize ?? 0)
-        progress(OperationProgress(phase: .savingSafely, completedBytes: totalBytes, totalBytes: totalBytes))
+        progress(OperationProgress(phase: .savingSafely, completedBytes: totalBytes, totalBytes: totalBytes, fractionCompleted: 0.98))
         try SplitArchivePublication.publish(stagedParts: parts, baseURL: targetURL)
-        progress(OperationProgress(phase: .completed, completedBytes: totalBytes, totalBytes: totalBytes))
+        progress(OperationProgress(phase: .completed, completedBytes: totalBytes, totalBytes: totalBytes, fractionCompleted: 1.0))
     }
 
     // MARK: - Central Directory & EOCD Parser (doc/03 section 3 & test A1..A5)
@@ -1870,6 +1990,25 @@ public struct NativeZipEngine: ArchiveEngine {
         let symlinkTarget: String?
         let modifiedAt: Date
         let permissions: UInt16
+        let fileSize: Int64
+
+        init(
+            archivePath: String,
+            type: EntryType,
+            sourceURL: URL?,
+            symlinkTarget: String?,
+            modifiedAt: Date,
+            permissions: UInt16,
+            fileSize: Int64 = 0
+        ) {
+            self.archivePath = archivePath
+            self.type = type
+            self.sourceURL = sourceURL
+            self.symlinkTarget = symlinkTarget
+            self.modifiedAt = modifiedAt
+            self.permissions = permissions
+            self.fileSize = fileSize
+        }
     }
 
     private func readSourceData(at url: URL, remainingBudget: Int64) throws -> Data {
@@ -1913,7 +2052,7 @@ public struct NativeZipEngine: ArchiveEngine {
                 var enumerationError: Error?
                 guard let enumerator = fileManager.enumerator(
                     at: rootURL,
-                    includingPropertiesForKeys: [.isDirectoryKey, .isSymbolicLinkKey, .contentModificationDateKey],
+                    includingPropertiesForKeys: [.isDirectoryKey, .isSymbolicLinkKey, .contentModificationDateKey, .fileSizeKey],
                     options: [],
                     errorHandler: { _, error in
                         enumerationError = error
@@ -1937,7 +2076,7 @@ public struct NativeZipEngine: ArchiveEngine {
 
                     let repairedSubPath = repairWindowsNames ? WindowsNameRepairPolicy.repairPath(subPath) : subPath
                     let archivePath = "\(rootName)/\(repairedSubPath)"
-                    let values = try? childURL.resourceValues(forKeys: [.isDirectoryKey, .isSymbolicLinkKey, .contentModificationDateKey])
+                    let values = try? childURL.resourceValues(forKeys: [.isDirectoryKey, .isSymbolicLinkKey, .contentModificationDateKey, .fileSizeKey])
 
                     let modDate = values?.contentModificationDate ?? Date()
                     let perms = (try? fileManager.attributesOfItem(atPath: childURL.path)[.posixPermissions] as? NSNumber)?.uint16Value
@@ -1950,7 +2089,8 @@ public struct NativeZipEngine: ArchiveEngine {
                             sourceURL: childURL,
                             symlinkTarget: symTarget,
                             modifiedAt: modDate,
-                            permissions: perms ?? 0o777
+                            permissions: perms ?? 0o777,
+                            fileSize: Int64(symTarget.utf8.count)
                         ))
                     } else if values?.isDirectory == true {
                         items.append(SourceItem(
@@ -1968,15 +2108,17 @@ public struct NativeZipEngine: ArchiveEngine {
                             sourceURL: childURL,
                             symlinkTarget: nil,
                             modifiedAt: modDate,
-                            permissions: perms ?? 0o644
+                            permissions: perms ?? 0o644,
+                            fileSize: Int64(values?.fileSize ?? 0)
                         ))
                     }
                 }
                 if let enumerationError { throw enumerationError }
             } else {
-                let values = try? rootURL.resourceValues(forKeys: [.isSymbolicLinkKey, .contentModificationDateKey])
+                let values = try? rootURL.resourceValues(forKeys: [.isSymbolicLinkKey, .contentModificationDateKey, .fileSizeKey])
                 let modDate = values?.contentModificationDate ?? Date()
                 let perms = (attributes[.posixPermissions] as? NSNumber)?.uint16Value
+                let attrSize = (attributes[.size] as? NSNumber)?.int64Value ?? Int64(values?.fileSize ?? 0)
 
                 if values?.isSymbolicLink == true {
                     let symTarget = try fileManager.destinationOfSymbolicLink(atPath: rootURL.path)
@@ -1986,7 +2128,8 @@ public struct NativeZipEngine: ArchiveEngine {
                         sourceURL: rootURL,
                         symlinkTarget: symTarget,
                         modifiedAt: modDate,
-                        permissions: perms ?? 0o777
+                        permissions: perms ?? 0o777,
+                        fileSize: Int64(symTarget.utf8.count)
                     ))
                 } else {
                     items.append(SourceItem(
@@ -1995,7 +2138,8 @@ public struct NativeZipEngine: ArchiveEngine {
                         sourceURL: rootURL,
                         symlinkTarget: nil,
                         modifiedAt: modDate,
-                        permissions: perms ?? 0o644
+                        permissions: perms ?? 0o644,
+                        fileSize: attrSize
                     ))
                 }
             }
@@ -2025,6 +2169,14 @@ public struct NativeZipEngine: ArchiveEngine {
     // MARK: - Helpers: Raw Deflate / Inflate (system zlib)
 
     public static func deflateRaw(data: Data, level: Int32) throws -> Data {
+        try deflateRaw(data: data, level: level, onInputProgress: nil)
+    }
+
+    static func deflateRaw(
+        data: Data,
+        level: Int32,
+        onInputProgress: ((Int64) throws -> Void)?
+    ) throws -> Data {
         var stream = z_stream()
         let initRet = deflateInit2_(
             &stream,
@@ -2042,23 +2194,19 @@ public struct NativeZipEngine: ArchiveEngine {
         defer { deflateEnd(&stream) }
 
         var output = Data()
-        let chunkSize = 65_536
-        var buffer = [UInt8](repeating: 0, count: chunkSize)
+        let outChunkSize = 65_536
+        let inSliceSize = 524_288 // 512 KiB slices for smooth intra-file progress & cancellation
+        var buffer = [UInt8](repeating: 0, count: outChunkSize)
 
-        try data.withUnsafeBytes { rawIn in
-            guard let inBase = rawIn.bindMemory(to: UInt8.self).baseAddress else { return }
-            stream.next_in = UnsafeMutablePointer(mutating: inBase)
-            stream.avail_in = uInt(data.count)
-
+        if data.isEmpty {
             var status = Z_OK
             while status == Z_OK {
                 buffer.withUnsafeMutableBufferPointer { outBuf in
                     guard let outBase = outBuf.baseAddress else { return }
                     stream.next_out = outBase
-                    stream.avail_out = uInt(chunkSize)
-
+                    stream.avail_out = uInt(outChunkSize)
                     status = deflate(&stream, Z_FINISH)
-                    let written = chunkSize - Int(stream.avail_out)
+                    let written = outChunkSize - Int(stream.avail_out)
                     if written > 0 {
                         output.append(outBase, count: written)
                     }
@@ -2066,6 +2214,52 @@ public struct NativeZipEngine: ArchiveEngine {
             }
             guard status == Z_STREAM_END else {
                 throw ProZipError.corruptedArchive("Deflate 压缩异常中断 (\(status))")
+            }
+            return output
+        }
+
+        try data.withUnsafeBytes { rawIn in
+            guard let inBase = rawIn.bindMemory(to: UInt8.self).baseAddress else { return }
+            var offset = 0
+            let total = data.count
+
+            while offset < total {
+                try Task.checkCancellation()
+                let sliceLen = min(inSliceSize, total - offset)
+                let isFinalSlice = (offset + sliceLen) >= total
+                let flushMode = isFinalSlice ? Z_FINISH : Z_NO_FLUSH
+
+                stream.next_in = UnsafeMutablePointer(mutating: inBase.advanced(by: offset))
+                stream.avail_in = uInt(sliceLen)
+
+                var status = Z_OK
+                repeat {
+                    buffer.withUnsafeMutableBufferPointer { outBuf in
+                        guard let outBase = outBuf.baseAddress else { return }
+                        stream.next_out = outBase
+                        stream.avail_out = uInt(outChunkSize)
+                        status = deflate(&stream, flushMode)
+                        let written = outChunkSize - Int(stream.avail_out)
+                        if written > 0 {
+                            output.append(outBase, count: written)
+                        }
+                    }
+                } while isFinalSlice
+                    ? (status == Z_OK)
+                    : (status == Z_OK && (stream.avail_in > 0 || stream.avail_out == 0))
+
+                if isFinalSlice {
+                    guard status == Z_STREAM_END else {
+                        throw ProZipError.corruptedArchive("Deflate 压缩异常中断 (\(status))")
+                    }
+                } else {
+                    guard status == Z_OK, stream.avail_in == 0 else {
+                        throw ProZipError.corruptedArchive("Deflate 压缩异常中断 (\(status))")
+                    }
+                }
+
+                offset += sliceLen
+                try onInputProgress?(Int64(offset))
             }
         }
         return output

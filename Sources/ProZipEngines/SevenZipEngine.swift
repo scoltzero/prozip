@@ -44,7 +44,7 @@ private final class ProcessOutputBuffer: @unchecked Sendable {
         }
         stdoutData.append(data)
         for byte in data {
-            if byte == 0x0A {
+            if byte == 0x0A || byte == 0x0D || byte == 0x08 {
                 stdoutLineBytes = 0
             } else {
                 stdoutLineBytes += 1
@@ -65,7 +65,7 @@ private final class ProcessOutputBuffer: @unchecked Sendable {
         if budgetError != nil { return budgetError }
         stderrData.append(data)
         for byte in data {
-            if byte == 0x0A {
+            if byte == 0x0A || byte == 0x0D || byte == 0x08 {
                 stderrLineBytes = 0
             } else {
                 stderrLineBytes += 1
@@ -154,7 +154,8 @@ public final class ProcessCancellationController: @unchecked Sendable {
         stdinData: Data? = nil,
         stdoutFile: FileHandle? = nil,
         stdoutByteLimit: Int64 = .max,
-        stdoutPrefixLimit: Int64? = nil
+        stdoutPrefixLimit: Int64? = nil,
+        onStdoutChunk: (@Sendable (Data) -> Void)? = nil
     ) async throws -> ProcessResult {
         try Task.checkCancellation()
         if let stdoutPrefixLimit {
@@ -203,6 +204,9 @@ public final class ProcessCancellationController: @unchecked Sendable {
         stdoutSource.setEventHandler {
             let available = stdoutHandle.availableData
             guard !available.isEmpty else { stdoutSource.cancel(); return }
+            if stdoutFile == nil {
+                onStdoutChunk?(available)
+            }
             if buffer.appendStdout(available, maxTotal: maxTotalOutputBytes, maxLine: maxSingleLineBytes) != nil || buffer.reachedPrefixLimit {
                 lifecycle.stop()
             }
@@ -289,7 +293,10 @@ public struct SevenZipEngine: ArchiveEngine {
 
     public init() {}
 
-    // MARK: - Binary Resolution
+    // MARK: - Binary Resolution & Core Pre-warming
+
+    private static let binaryCacheLock = NSLock()
+    private static var cachedBinaryPath: String?
 
     public static func resolveBinaryURL() -> URL? {
         if let path = resolveBinaryPath() {
@@ -299,6 +306,14 @@ public struct SevenZipEngine: ArchiveEngine {
     }
 
     public static func resolveBinaryPath() -> String? {
+        let fm = FileManager.default
+        binaryCacheLock.lock()
+        let cached = cachedBinaryPath
+        binaryCacheLock.unlock()
+        if let cached, fm.isExecutableFile(atPath: cached) {
+            return cached
+        }
+
         let candidates: [String?] = [
             Bundle.main.url(forResource: "7zz", withExtension: nil)?.path,
             "/opt/homebrew/bin/7zz",
@@ -308,14 +323,75 @@ public struct SevenZipEngine: ArchiveEngine {
             "/usr/bin/7z"
         ]
 
-        let fm = FileManager.default
         for candidate in candidates {
             guard let path = candidate, !path.isEmpty else { continue }
             if fm.isExecutableFile(atPath: path) {
+                binaryCacheLock.lock()
+                cachedBinaryPath = path
+                binaryCacheLock.unlock()
                 return path
             }
         }
         return nil
+    }
+
+    /// Faults the external 7-Zip binary and dynamic codecs into macOS's unified buffer cache.
+    public static func prewarm() async {
+        guard let bin = resolveBinaryURL() else { return }
+        _ = try? await ProcessCancellationController.run(
+            executableURL: bin,
+            arguments: ["i"]
+        )
+    }
+
+    /// Parses `-bsp1` progress chunks emitted by 7zz / p7zip (e.g. `" 49% + big.bin"` or `"100% 1 + big.bin"`).
+    public static func parseProgressSnapshot(from chunk: Data) -> (percent: Int, currentItem: String?)? {
+        guard !chunk.isEmpty else { return nil }
+        let text = String(decoding: chunk, as: UTF8.self)
+        let segments = text.split { $0 == "\n" || $0 == "\r" || $0 == "\u{08}" }
+        for rawSegment in segments.reversed() {
+            let trimmed = rawSegment.trimmingCharacters(in: .whitespaces)
+            guard !trimmed.isEmpty, let percentIndex = trimmed.firstIndex(of: "%") else { continue }
+            let prefix = trimmed[..<percentIndex]
+            guard !prefix.isEmpty, prefix.count <= 3, prefix.allSatisfy(\.isNumber),
+                  let pct = Int(prefix), (0...100).contains(pct) else {
+                continue
+            }
+            let suffix = trimmed[trimmed.index(after: percentIndex)...]
+            var itemName: String?
+            if let plusRange = suffix.range(of: "+ ") {
+                let candidate = suffix[plusRange.upperBound...].trimmingCharacters(in: .whitespaces)
+                if !candidate.isEmpty {
+                    itemName = candidate
+                }
+            }
+            return (pct, itemName)
+        }
+        return nil
+    }
+
+    private static func estimateSourceBytes(_ sources: [URL]) -> Int64 {
+        let fm = FileManager.default
+        var total: Int64 = 0
+        for root in sources {
+            let values = try? root.resourceValues(forKeys: [.isDirectoryKey, .isRegularFileKey, .fileSizeKey])
+            if values?.isDirectory == true {
+                guard let enumerator = fm.enumerator(
+                    at: root,
+                    includingPropertiesForKeys: [.isRegularFileKey, .fileSizeKey],
+                    options: []
+                ) else { continue }
+                while let child = enumerator.nextObject() as? URL {
+                    if let childVals = try? child.resourceValues(forKeys: [.isRegularFileKey, .fileSizeKey]),
+                       childVals.isRegularFile == true {
+                        total += Int64(max(0, childVals.fileSize ?? 0))
+                    }
+                }
+            } else {
+                total += Int64(max(0, values?.fileSize ?? 0))
+            }
+        }
+        return total
     }
 
     private func requireBinaryURL() throws -> URL {
@@ -733,6 +809,11 @@ public struct SevenZipEngine: ArchiveEngine {
         }
 
         extraArgs.append("-mx=\(profile.strength.sevenZipLevel)")
+        extraArgs.append("-mmt=\(max(1, profile.processorCount))")
+        if !profile.preserveMacMetadata {
+            extraArgs.append(contentsOf: ["-xr!.DS_Store", "-xr!__MACOSX", "-xr!._*"])
+        }
+        extraArgs.append("-bsp1")
 
         // Count-based splitting needs the final compressed size, so only size-based splitting uses -v.
         if let split = profile.split, case .bySize(let bytes) = split {
@@ -747,13 +828,52 @@ public struct SevenZipEngine: ArchiveEngine {
 
         // Bare -p asks for both the new password and its confirmation, even with piped stdin.
         let stdinData = hasPwd ? Data("\(password!)\n\(password!)\n".utf8) : nil
+        let estimatedTotalBytes = Self.estimateSourceBytes(sources)
 
-        progress(OperationProgress(phase: .compressing, completedBytes: 0, totalBytes: 0))
+        progress(OperationProgress(
+            phase: .compressing,
+            completedBytes: 0,
+            totalBytes: estimatedTotalBytes,
+            currentItem: sources.first?.lastPathComponent,
+            fractionCompleted: 0.05
+        ))
+
+        final class StreamProgressState: @unchecked Sendable {
+            let lock = NSLock()
+            var lastEmitTime: CFAbsoluteTime = 0
+            var lastPercent: Int = -1
+        }
+        let streamState = StreamProgressState()
 
         let result = try await ProcessCancellationController.run(
             executableURL: bin,
             arguments: cmdArgs,
-            stdinData: stdinData
+            stdinData: stdinData,
+            onStdoutChunk: { chunk in
+                guard let snapshot = Self.parseProgressSnapshot(from: chunk) else { return }
+                let now = CFAbsoluteTimeGetCurrent()
+                var shouldSend = false
+                streamState.lock.lock()
+                if snapshot.percent > streamState.lastPercent,
+                   (streamState.lastEmitTime == 0 || (now - streamState.lastEmitTime) >= 0.025 || snapshot.percent - streamState.lastPercent >= 2 || snapshot.percent == 100) {
+                    streamState.lastPercent = snapshot.percent
+                    streamState.lastEmitTime = now
+                    shouldSend = true
+                }
+                streamState.lock.unlock()
+                guard shouldSend else { return }
+
+                let ratio = Double(snapshot.percent) / 100.0
+                let completed = estimatedTotalBytes > 0 ? Int64(Double(estimatedTotalBytes) * ratio) : Int64(snapshot.percent)
+                let total = estimatedTotalBytes > 0 ? estimatedTotalBytes : 100
+                progress(OperationProgress(
+                    phase: .compressing,
+                    completedBytes: completed,
+                    totalBytes: total,
+                    currentItem: snapshot.currentItem,
+                    fractionCompleted: 0.05 + 0.87 * ratio
+                ))
+            }
         )
 
         if result.exitCode == 1 {
@@ -772,6 +892,12 @@ public struct SevenZipEngine: ArchiveEngine {
             partsToPublish = family.volumeURLs
             verificationURL = family.primaryVolumeURL
         }
+        progress(OperationProgress(
+            phase: .verifying,
+            completedBytes: estimatedTotalBytes,
+            totalBytes: estimatedTotalBytes,
+            fractionCompleted: 0.95
+        ))
         try await verifyWrittenArchive(verificationURL, password: password, encrypted: hasPwd,
                                        encryptedHeaders: profile.encryptHeaders)
         if let split = profile.split, case .byCount = split {
@@ -781,7 +907,12 @@ public struct SevenZipEngine: ArchiveEngine {
         }
 
         // Publish archive safely
-        progress(OperationProgress(phase: .savingSafely, completedBytes: 0, totalBytes: 0))
+        progress(OperationProgress(
+            phase: .savingSafely,
+            completedBytes: estimatedTotalBytes,
+            totalBytes: estimatedTotalBytes,
+            fractionCompleted: 0.98
+        ))
 
         if let parts = partsToPublish {
             _ = try SplitArchivePublication.publish(stagedParts: parts, baseURL: url)
@@ -797,7 +928,8 @@ public struct SevenZipEngine: ArchiveEngine {
             }
         }
 
-        progress(OperationProgress(phase: .completed, completedBytes: 1, totalBytes: 1))
+        let finalTotal = max(1, estimatedTotalBytes)
+        progress(OperationProgress(phase: .completed, completedBytes: finalTotal, totalBytes: finalTotal, fractionCompleted: 1.0))
     }
 
     // MARK: - Apply Mutations (Incremental Editing)

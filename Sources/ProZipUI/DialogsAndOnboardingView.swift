@@ -2538,6 +2538,10 @@ public struct ArchiveProgressWindowView: View {
 
     public init() {}
 
+    public init(appViewModel: ProZipAppViewModel) {
+        self.appViewModel = appViewModel
+    }
+
     public var body: some View {
         ArcZipDialogSurface(width: 380, height: 260) {
             VStack(alignment: .leading, spacing: 10) {
@@ -2583,7 +2587,9 @@ public struct ArchiveProgressWindowView: View {
                     ScrollView {
                         LazyVStack(spacing: 8) {
                             ForEach(appViewModel.tasks) { task in
-                                TaskRowItemView(task: task)
+                                TaskRowItemView(task: task) {
+                                    appViewModel.removeTask(id: task.id)
+                                }
                             }
                         }
                         .padding(.horizontal, 16)
@@ -2593,10 +2599,20 @@ public struct ArchiveProgressWindowView: View {
 
                 Divider()
 
-                HStack {
-                    ArcZipSettingsNativeGlassButton("清理已完成记录", icon: "broom") {
-                        appViewModel.tasks.removeAll { $0.phase == .completed || $0.phase == .cancelled }
+                HStack(spacing: 8) {
+                    ArcZipSettingsNativeGlassButton("清理已结束", icon: "broom") {
+                        appViewModel.clearFinishedTasks()
                     }
+                    .disabled(appViewModel.finishedTasksCount == 0)
+                    .opacity(appViewModel.finishedTasksCount == 0 ? 0.45 : 1.0)
+                    .help("清理所有已完成、失败和已取消的记录")
+
+                    ArcZipSettingsNativeGlassButton("删除全部", icon: "trash") {
+                        appViewModel.clearAllTasks()
+                    }
+                    .disabled(appViewModel.tasks.isEmpty)
+                    .opacity(appViewModel.tasks.isEmpty ? 0.45 : 1.0)
+                    .help("删除全部记录（进行中的任务将安全取消并回滚）")
 
                     Spacer()
 
@@ -2623,9 +2639,11 @@ public struct ArchiveProgressWindowView: View {
 
 public struct TaskRowItemView: View {
     @ObservedObject public var task: ArchiveTaskRecord
+    public var onRemove: (() -> Void)?
 
-    public init(task: ArchiveTaskRecord) {
+    public init(task: ArchiveTaskRecord, onRemove: (() -> Void)? = nil) {
         self.task = task
+        self.onRemove = onRemove
     }
 
     private var speedAndETAText: String {
@@ -2633,15 +2651,51 @@ public struct TaskRowItemView: View {
         if task.phase == .completed {
             return task.speedBytesPerSec > 0 ? "已完成 · 平均 \(speedStr)" : "已完成"
         }
+        if task.phase == .failed || task.phase == .cancelled {
+            return task.phase.rawValue
+        }
         guard task.speedBytesPerSec > 0 else { return task.phase.rawValue }
         let remainingBytes = max(0, task.totalBytes - task.completedBytes)
-        let etaSec = task.speedBytesPerSec > 0 ? max(1, Int(remainingBytes / task.speedBytesPerSec)) : 1
+        let etaSec = max(1, Int(remainingBytes / task.speedBytesPerSec))
         return "\(speedStr) · 剩余约 \(etaSec) 秒"
+    }
+
+    private var progressTint: Color {
+        switch task.phase {
+        case .failed:
+            return .red
+        case .cancelled:
+            return .secondary
+        default:
+            return ProZipTheme.accent
+        }
+    }
+
+    private var trailingProgressLabel: String {
+        switch task.phase {
+        case .failed:
+            return "失败"
+        case .cancelled:
+            return "已取消"
+        default:
+            return "\(Int(task.fractionCompleted * 100))%"
+        }
+    }
+
+    private var trailingProgressColor: Color {
+        switch task.phase {
+        case .completed:
+            return ProZipTheme.accentDeep
+        case .failed:
+            return .red
+        default:
+            return .secondary
+        }
     }
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            HStack {
+            HStack(spacing: 6) {
                 Text(task.title)
                     .font(.system(size: 12.5, weight: .semibold))
                     .lineLimit(1)
@@ -2650,43 +2704,60 @@ public struct TaskRowItemView: View {
 
                 Text(speedAndETAText)
                     .font(.system(size: 10.5, design: .monospaced))
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(task.phase == .failed ? .red : .secondary)
 
-                if task.phase != .completed && task.phase != .failed && task.phase != .cancelled {
+                if !task.isFinished {
                     Button {
                         task.cancel()
                     } label: {
                         Image(systemName: "xmark.circle.fill")
-                            .font(.system(size: 11))
+                            .font(.system(size: 12))
                             .foregroundStyle(.secondary)
                     }
                     .buttonStyle(.plain)
                     .help("取消任务并安全回滚临时文件")
-                } else if let resultURL = task.outputResultURL {
+                } else {
+                    if task.phase == .completed, let resultURL = task.outputResultURL {
+                        Button {
+                            NSWorkspace.shared.activateFileViewerSelecting([resultURL])
+                        } label: {
+                            Image(systemName: "magnifyingglass")
+                                .font(.system(size: 11))
+                                .foregroundStyle(ProZipTheme.accent)
+                        }
+                        .buttonStyle(.plain)
+                        .help("在访达中显示输出文件")
+                    }
+
                     Button {
-                        NSWorkspace.shared.activateFileViewerSelecting([resultURL])
+                        if let onRemove {
+                            onRemove()
+                        } else {
+                            ProZipAppViewModel.shared.removeTask(id: task.id)
+                        }
                     } label: {
-                        Image(systemName: "magnifyingglass")
-                            .font(.system(size: 11))
-                            .foregroundStyle(ProZipTheme.accent)
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.system(size: 12))
+                            .foregroundStyle(task.phase == .failed ? Color.red.opacity(0.85) : Color.secondary)
                     }
                     .buttonStyle(.plain)
-                    .help("在访达中显示输出文件")
+                    .help(task.phase == .failed ? "清除此错误记录" : "删除此条记录")
+                    .accessibilityLabel(task.phase == .failed ? "清除此错误记录" : "删除此条记录")
                 }
             }
 
             ProgressView(value: task.fractionCompleted)
-                .progressViewStyle(LinearProgressViewStyle(tint: ProZipTheme.accent))
+                .progressViewStyle(LinearProgressViewStyle(tint: progressTint))
 
             HStack {
-                Text(task.currentItem ?? task.phase.rawValue)
+                Text(task.errorMessage ?? task.currentItem ?? task.phase.rawValue)
                     .font(.system(size: 10.5))
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(task.phase == .failed ? .red : .secondary)
                     .lineLimit(1)
                 Spacer()
-                Text("\(Int(task.fractionCompleted * 100))%")
+                Text(trailingProgressLabel)
                     .font(.system(size: 10.5, weight: .bold, design: .monospaced))
-                    .foregroundStyle(task.phase == .completed ? ProZipTheme.accentDeep : .secondary)
+                    .foregroundStyle(trailingProgressColor)
             }
         }
         .padding(10)

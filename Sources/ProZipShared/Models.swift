@@ -877,9 +877,9 @@ public struct CreationProfile: Codable, Hashable, Sendable {
         split: SplitPlan? = nil,
         password: String? = nil,
         encryptHeaders: Bool = false,
-        preserveMacMetadata: Bool = false,
+        preserveMacMetadata: Bool? = nil,
         processorCount: Int = ProcessInfo.processInfo.activeProcessorCount,
-        repairWindowsNames: Bool = false
+        repairWindowsNames: Bool? = nil
     ) {
         self.purpose = purpose
         self.format = format
@@ -887,9 +887,9 @@ public struct CreationProfile: Codable, Hashable, Sendable {
         self.split = split
         self.password = password
         self.encryptHeaders = encryptHeaders
-        self.preserveMacMetadata = purpose == .mac ? true : preserveMacMetadata
+        self.preserveMacMetadata = preserveMacMetadata ?? (purpose == .mac)
         self.processorCount = max(1, processorCount)
-        self.repairWindowsNames = purpose == .windows ? true : repairWindowsNames
+        self.repairWindowsNames = repairWindowsNames ?? (purpose == .windows)
     }
 
     public var canAdjustStrength: Bool {

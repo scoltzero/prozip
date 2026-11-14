@@ -1,6 +1,7 @@
 import AppKit
 import Carbon.HIToolbox
 import ProZipCore
+import ProZipEngines
 import ProZipShared
 import SwiftUI
 
@@ -195,6 +196,7 @@ public struct ArchiveCreationDialogView: View {
     @Environment(\.colorScheme) private var colorScheme
 
     private let explicitInitialPurpose: CreationProfile.Purpose?
+    public let isStandaloneWindow: Bool
     @State private var selectedPurpose: CreationProfile.Purpose = .general
     @State private var hoveredPurpose: CreationProfile.Purpose?
     @State private var archiveName: String = "归档"
@@ -226,11 +228,17 @@ public struct ArchiveCreationDialogView: View {
     @FocusState private var isNameFieldFocused: Bool
 
     @MainActor
-    public init(initialPurpose: CreationProfile.Purpose? = nil, defaultName: String = "归档", appViewModel: ProZipAppViewModel? = nil) {
+    public init(
+        initialPurpose: CreationProfile.Purpose? = nil,
+        defaultName: String = "归档",
+        isStandaloneWindow: Bool = false,
+        appViewModel: ProZipAppViewModel? = nil
+    ) {
         let appViewModel = appViewModel ?? .shared
         self.appViewModel = appViewModel
         self.passwordBook = appViewModel.passwordBook
         self.explicitInitialPurpose = initialPurpose
+        self.isStandaloneWindow = isStandaloneWindow
         _archiveName = State(initialValue: defaultName)
         if let initialPurpose {
             _selectedPurpose = State(initialValue: initialPurpose)
@@ -296,8 +304,12 @@ public struct ArchiveCreationDialogView: View {
         return true
     }
 
+    private var creationWindowTarget: NSWindow? {
+        NSApp.windows.first { $0.identifier?.rawValue == "ProZip.CreationWindow" } ?? NSApp.keyWindow
+    }
+
     public var body: some View {
-        VStack(spacing: 0) {
+        let content = VStack(spacing: 0) {
             brandHeader
 
             ZStack(alignment: .bottom) {
@@ -339,20 +351,37 @@ public struct ArchiveCreationDialogView: View {
                 }
             }
         }
-        .frame(width: 900, height: 600)
+        .frame(
+            minWidth: 820,
+            idealWidth: isStandaloneWindow ? 920 : 900,
+            maxWidth: .infinity,
+            minHeight: 560,
+            idealHeight: isStandaloneWindow ? 720 : 600,
+            maxHeight: .infinity
+        )
         .background {
             ZStack {
                 creationSheetBackground
                 WindowDragArea()
             }
         }
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .strokeBorder(creationCardBorder, lineWidth: 1)
-        )
-        .shadow(color: .black.opacity(colorScheme == .dark ? 0.36 : 0.18), radius: 28, y: 14)
+        .onChange(of: excludeMacJunk) { _, newValue in
+            preferences.defaultPreservesMacMetadata = !newValue
+        }
+        .onChange(of: windowsCompatibleNames) { _, newValue in
+            preferences.windowsNameRepair = newValue
+        }
+        .sheet(
+            isPresented: Binding(
+                get: { isStandaloneWindow && appViewModel.isFilenameRepairPresented },
+                set: { appViewModel.isFilenameRepairPresented = $0 }
+            )
+        ) {
+            FilenameRepairDialogView()
+                .environmentObject(appViewModel)
+        }
         .onAppear {
+            ArchiveEngineBroker.shared.prewarmEngines()
             let initialP = explicitInitialPurpose ?? preferences.defaultPurpose
             selectedPurpose = initialP
             format = preferences.defaultFormat(for: initialP)
@@ -383,9 +412,22 @@ public struct ArchiveCreationDialogView: View {
                 }
             }
         }
+
+        if isStandaloneWindow {
+            content
+                .ignoresSafeArea(.container, edges: .top)
+        } else {
+            content
+                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .strokeBorder(creationCardBorder, lineWidth: 1)
+                )
+                .shadow(color: .black.opacity(colorScheme == .dark ? 0.36 : 0.18), radius: 28, y: 14)
+        }
     }
 
-    // MARK: - Brand Header (32pt icon + 24pt title, no window chrome)
+    // MARK: - Brand Header (32pt icon + 24pt title, draggable + quick window size toggle)
 
     private var brandHeader: some View {
         HStack(spacing: 12) {
@@ -397,14 +439,49 @@ public struct ArchiveCreationDialogView: View {
                 .foregroundStyle(creationInk)
 
             Spacer(minLength: 0)
+
+            if isStandaloneWindow {
+                Button {
+                    toggleCreationWindowZoom()
+                } label: {
+                    Image(systemName: "arrow.up.left.and.arrow.down.right")
+                        .font(.system(size: 11.5, weight: .semibold))
+                        .foregroundStyle(creationMutedInk)
+                        .frame(width: 28, height: 28)
+                        .background(
+                            RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                .fill(creationFieldFill)
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                .strokeBorder(creationCardBorder, lineWidth: 1)
+                        )
+                }
+                .buttonStyle(.plain)
+                .help("展开或还原窗口尺寸（也可直接拖拽窗口四边或四角自由缩放）")
+            }
         }
         .padding(.horizontal, 44)
         .padding(.top, 20)
         .padding(.bottom, 18)
         .contentShape(Rectangle())
-        .overlay {
+        .background {
             WindowDragArea()
         }
+    }
+
+    private func toggleCreationWindowZoom() {
+        guard let window = creationWindowTarget else { return }
+        let visible = (window.screen ?? NSScreen.main)?.visibleFrame ?? NSRect(x: 0, y: 0, width: 1440, height: 900)
+        let current = window.frame
+        let isExpanded = current.height >= 830 || current.width >= 1000
+        let targetWidth: CGFloat = isExpanded ? 920 : min(1020, visible.width - 48)
+        let targetHeight: CGFloat = isExpanded ? 720 : min(870, visible.height - 48)
+        var nextFrame = current
+        nextFrame.origin.x = max(visible.minX + 16, min(visible.maxX - targetWidth - 16, current.midX - targetWidth / 2))
+        nextFrame.origin.y = max(visible.minY + 16, min(visible.maxY - targetHeight - 16, current.maxY - targetHeight))
+        nextFrame.size = NSSize(width: targetWidth, height: targetHeight)
+        window.setFrame(nextFrame, display: true, animate: true)
     }
 
     // MARK: - Name & Destination Row (two columns, 399pt each)
@@ -557,7 +634,6 @@ public struct ArchiveCreationDialogView: View {
                 ForEach(CreationProfile.Purpose.allCases, id: \.self) { purpose in
                     purposeCard(purpose)
                 }
-                Spacer(minLength: 0)
             }
         }
     }
@@ -587,7 +663,7 @@ public struct ArchiveCreationDialogView: View {
                     .opacity(isSelected ? 0.95 : 0.62)
             }
             .foregroundStyle(isSelected ? Color.white : creationInk)
-            .frame(width: 152, height: 106)
+            .frame(minWidth: 136, idealWidth: 152, maxWidth: .infinity, minHeight: 106, maxHeight: 106)
             .background(
                 RoundedRectangle(cornerRadius: 12, style: .continuous)
                     .fill(
@@ -705,7 +781,7 @@ public struct ArchiveCreationDialogView: View {
             Spacer(minLength: 0)
         }
         .padding(16)
-        .frame(maxWidth: .infinity, minHeight: 214, maxHeight: 214, alignment: .topLeading)
+        .frame(maxWidth: .infinity, minHeight: 220, maxHeight: 220, alignment: .topLeading)
         .background(creationCardSurface)
     }
 
@@ -770,27 +846,43 @@ public struct ArchiveCreationDialogView: View {
                 .font(.system(size: 15, weight: .bold))
                 .foregroundStyle(creationInk)
 
-            VStack(spacing: 7) {
+            VStack(spacing: 6) {
                 overviewRow("格式", overviewFormatLabel)
                 overviewRow("压缩强度", effectiveStrength.title)
                 overviewRow("用途", selectedPurpose.title)
             }
-            .padding(.top, 14)
+            .padding(.top, 12)
 
             Rectangle()
                 .fill(creationCardBorder)
                 .frame(height: 1)
-                .padding(.vertical, 14)
+                .padding(.vertical, 10)
 
-            VStack(alignment: .leading, spacing: 9) {
-                overviewCheckRow("清理 macOS 辅助文件", isOn: excludeMacJunk)
-                overviewCheckRow("采用通用 ZIP 设置", isOn: windowsCompatibleNames)
+            VStack(alignment: .leading, spacing: 4) {
+                OverviewOptionToggleRow(
+                    title: "清理 macOS 辅助文件",
+                    helpText: "排除 .DS_Store、__MACOSX 与 ._ 资源分叉文件（点击可自由开关）",
+                    isOn: $excludeMacJunk,
+                    inkColor: creationInk,
+                    mutedColor: creationMutedInk,
+                    trackOffFill: creationFieldFill,
+                    borderColor: creationCardBorder
+                )
+                OverviewOptionToggleRow(
+                    title: format == .zip ? "采用通用 ZIP 设置" : "Windows 文件名兼容修复",
+                    helpText: "跨平台文件名兼容修复：自动替换 \\ : * ? \" < > | 等非法字符（点击可自由开关）",
+                    isOn: $windowsCompatibleNames,
+                    inkColor: creationInk,
+                    mutedColor: creationMutedInk,
+                    trackOffFill: creationFieldFill,
+                    borderColor: creationCardBorder
+                )
             }
 
             Spacer(minLength: 0)
         }
         .padding(16)
-        .frame(maxWidth: .infinity, minHeight: 214, maxHeight: 214, alignment: .topLeading)
+        .frame(maxWidth: .infinity, minHeight: 220, maxHeight: 220, alignment: .topLeading)
         .background(creationCardSurface)
     }
 
@@ -806,21 +898,6 @@ public struct ArchiveCreationDialogView: View {
                 .font(.system(size: 13, weight: .semibold))
                 .foregroundStyle(creationInk)
                 .lineLimit(1)
-        }
-    }
-
-    private func overviewCheckRow(_ text: String, isOn: Bool) -> some View {
-        HStack(spacing: 8) {
-            Image(systemName: isOn ? "checkmark.circle.fill" : "circle")
-                .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(isOn ? ProZipTheme.accentDeep : creationMutedInk.opacity(0.35))
-
-            Text(text)
-                .font(.system(size: 12.5))
-                .foregroundStyle(creationInk.opacity(0.85))
-                .lineLimit(1)
-
-            Spacer(minLength: 0)
         }
     }
 
@@ -1301,6 +1378,9 @@ public struct ArchiveCreationDialogView: View {
                 Spacer(minLength: 0)
 
                 Button {
+                    if isStandaloneWindow {
+                        appViewModel.isCreationDialogPresented = false
+                    }
                     dismiss()
                 } label: {
                     HStack(spacing: 8) {
@@ -1557,7 +1637,6 @@ public struct ArchiveCreationDialogView: View {
         }
         let completion = appViewModel.creationCompletion
         appViewModel.creationCompletion = nil
-        dismiss()
         appViewModel.createArchive(
             sources: sources,
             destinationURL: targetURL,
@@ -1567,6 +1646,79 @@ public struct ArchiveCreationDialogView: View {
             sourcesToTrash: originalSources,
             completion: completion
         )
+        if isStandaloneWindow {
+            appViewModel.isCreationDialogPresented = false
+        }
+        dismiss()
+    }
+}
+
+// MARK: - Interactive Overview Option Toggle Row
+
+private struct OverviewOptionToggleRow: View {
+    let title: String
+    let helpText: String
+    @Binding var isOn: Bool
+    let inkColor: Color
+    let mutedColor: Color
+    let trackOffFill: Color
+    let borderColor: Color
+
+    @State private var isHovered: Bool = false
+
+    var body: some View {
+        Button {
+            withAnimation(.spring(response: 0.22, dampingFraction: 0.80)) {
+                isOn.toggle()
+            }
+        } label: {
+            HStack(spacing: 8) {
+                Image(systemName: isOn ? "checkmark.circle.fill" : "circle")
+                    .font(.system(size: 13.5, weight: .semibold))
+                    .foregroundStyle(isOn ? ProZipTheme.accentDeep : mutedColor.opacity(0.45))
+
+                Text(title)
+                    .font(.system(size: 12.5, weight: isOn ? .medium : .regular))
+                    .foregroundStyle(isOn ? inkColor.opacity(0.92) : mutedColor)
+                    .lineLimit(1)
+
+                Spacer(minLength: 6)
+
+                ZStack(alignment: isOn ? .trailing : .leading) {
+                    Capsule(style: .continuous)
+                        .fill(isOn ? ProZipTheme.accent : trackOffFill)
+                        .overlay(
+                            Capsule(style: .continuous)
+                                .strokeBorder(isOn ? ProZipTheme.accentDeep.opacity(0.25) : borderColor, lineWidth: 0.8)
+                        )
+                        .frame(width: 30, height: 17)
+
+                    Circle()
+                        .fill(Color.white)
+                        .frame(width: 13, height: 13)
+                        .shadow(color: .black.opacity(0.16), radius: 1.2, y: 0.6)
+                        .padding(.horizontal, 2)
+                }
+            }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 5)
+            .background(
+                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                    .fill(isHovered ? Color.primary.opacity(0.045) : Color.clear)
+            )
+            .contentShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
+        }
+        .buttonStyle(.plain)
+        .onHover { hovering in
+            withAnimation(.easeOut(duration: 0.12)) {
+                isHovered = hovering
+            }
+        }
+        .help(helpText)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(title)
+        .accessibilityValue(isOn ? "已开启" : "已关闭")
+        .accessibilityAddTraits(.isButton)
     }
 }
 

@@ -194,12 +194,6 @@ struct AppRootView: View {
             .sheet(isPresented: presentation(\.isOnboardingPresented)) {
                 FirstLaunchOnboardingView(dismissesSheetOnFinish: true)
             }
-            .sheet(isPresented: presentation(\.isCreationDialogPresented), onDismiss: {
-                appViewModel.creationDialogDidDismiss()
-            }) {
-                ArchiveCreationDialogView(defaultName: appViewModel.sessions.first(where: { $0.id == sessionID })?.url.deletingPathExtension().lastPathComponent ?? "归档")
-                    .environmentObject(appViewModel)
-            }
             .sheet(isPresented: presentation(\.isPasswordPromptPresented), onDismiss: {
                 appViewModel.passwordPromptDidDismiss()
             }) {
@@ -234,7 +228,12 @@ struct AppRootView: View {
             }) {
                 TrashConfirmationDialogView()
             }
-            .sheet(isPresented: presentation(\.isFilenameRepairPresented)) {
+            .sheet(
+                isPresented: Binding(
+                    get: { !appViewModel.isCreationDialogPresented && presentation(\.isFilenameRepairPresented).wrappedValue },
+                    set: { presentation(\.isFilenameRepairPresented).wrappedValue = $0 }
+                )
+            ) {
                 FilenameRepairDialogView()
             }
             .sheet(isPresented: presentation(\.isEntryIndexIssuePresented)) {
@@ -1111,6 +1110,8 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
     private(set) var sessionWindows: [UUID: ArcZipWindow] = [:]
     private var isSynchronizingSessionWindows = false
     var settingsWindow: ArcZipWindow?
+    var creationWindow: ArcZipWindow?
+    private var savedCreationWindowSize: NSSize?
     var alertWindow: NSWindow?
     private var progressWindow: TaskProgressPanel?
     private var saveAlert: NSAlert?
@@ -1146,6 +1147,7 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
         Task {
             try? await ProZipPreferences.shared.refreshFileAssociations()
         }
+        ArchiveEngineBroker.shared.prewarmEngines()
         ProZipAppViewModel.shared.$sessions
             .map { $0.map(\.id) }
             .removeDuplicates()
@@ -1187,6 +1189,19 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
             .receive(on: RunLoop.main)
             .sink { [weak self] presented in
                 if presented { self?.showAlertWindow() } else { self?.alertWindow?.orderOut(nil); self?.alertWindow = nil }
+            }
+            .store(in: &cancellables)
+
+        ProZipAppViewModel.shared.$isCreationDialogPresented
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] presented in
+                guard let self else { return }
+                if presented {
+                    self.openCreationWindow()
+                } else {
+                    self.dismissCreationWindow()
+                }
             }
             .store(in: &cancellables)
 
@@ -1264,6 +1279,7 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
                 candidate !== self.landingWindow &&
                 !self.sessionWindows.values.contains(where: { $0 === candidate }) &&
                 candidate !== self.settingsWindow &&
+                candidate !== self.creationWindow &&
                 candidate !== self.alertWindow &&
                 candidate.sheetParent == nil && !(candidate is NSPanel) {
                 candidate.orderOut(nil)
@@ -1374,6 +1390,10 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
     }
 
     func windowShouldClose(_ sender: NSWindow) -> Bool {
+        if sender === creationWindow {
+            ProZipAppViewModel.shared.isCreationDialogPresented = false
+            return false
+        }
         guard let id = sessionWindows.first(where: { $0.value === sender })?.key else { return true }
         ProZipAppViewModel.shared.activeSessionID = id
         ProZipAppViewModel.shared.closeSession(id: id)
@@ -1411,10 +1431,20 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
         if sender === settingsWindow {
             return NSSize(width: max(900, frameSize.width), height: max(680, frameSize.height))
         }
+        if sender === creationWindow {
+            return NSSize(width: max(820, frameSize.width), height: max(560, frameSize.height))
+        }
         return frameSize
     }
 
     func windowDidResize(_ notification: Notification) {
+        if let window = notification.object as? ArcZipWindow, window === creationWindow {
+            let size = window.contentView?.bounds.size ?? window.frame.size
+            if size.width >= 820 && size.height >= 560 {
+                savedCreationWindowSize = size
+            }
+            return
+        }
         guard let window = notification.object as? ArcZipWindow,
               window.usesPositionedTrafficLights,
               !window.hidesTrafficLights,
@@ -1808,6 +1838,101 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
         NSApp.addWindowsItem(window, title: "设置", filename: false)
         settingsWindow = window
         NSApp.activate(ignoringOtherApps: true)
+    }
+
+    @MainActor
+    func openCreationWindow() {
+        let vm = ProZipAppViewModel.shared
+        let ownerSession = vm.activeSession ?? vm.sessions.first
+        let defaultName = vm.creationOriginalSources?.first?.deletingPathExtension().lastPathComponent
+            ?? vm.creationSources.first?.deletingPathExtension().lastPathComponent
+            ?? ownerSession?.url.deletingPathExtension().lastPathComponent
+            ?? "归档"
+
+        let referenceWindow = vm.activeSessionID.flatMap { sessionWindows[$0] } ?? NSApp.keyWindow ?? landingWindow
+        let visibleFrame = (referenceWindow?.screen ?? NSScreen.main)?.visibleFrame
+            ?? NSRect(x: 0, y: 0, width: 1440, height: 900)
+
+        let preferred = savedCreationWindowSize ?? NSSize(width: 920, height: 720)
+        let targetSize = NSSize(
+            width: max(820, min(preferred.width, visibleFrame.width - 48)),
+            height: max(560, min(preferred.height, visibleFrame.height - 48))
+        )
+
+        let root = ArchiveCreationDialogView(
+            defaultName: defaultName,
+            isStandaloneWindow: true,
+            appViewModel: vm
+        )
+        .environmentObject(vm)
+
+        let hosting = NSHostingView(rootView: root)
+        hosting.safeAreaRegions = []
+        hosting.frame = NSRect(origin: .zero, size: targetSize)
+        hosting.autoresizingMask = [.width, .height]
+        hosting.sizingOptions = [.minSize]
+
+        if let existing = creationWindow {
+            existing.contentView = hosting
+            existing.makeKeyAndOrderFront(nil)
+            NSApp.activate(ignoringOtherApps: true)
+            return
+        }
+
+        let window = ArcZipWindow(
+            contentRect: NSRect(origin: .zero, size: targetSize),
+            styleMask: [.titled, .fullSizeContentView, .closable, .miniaturizable, .resizable],
+            backing: .buffered,
+            defer: false
+        )
+        window.delegate = self
+        window.contentView = hosting
+        window.isReleasedWhenClosed = false
+        window.hasShadow = true
+        window.titlebarAppearsTransparent = true
+        window.titleVisibility = .hidden
+        window.titlebarSeparatorStyle = .none
+        window.isMovableByWindowBackground = false
+        window.acceptsMouseMovedEvents = true
+        window.minFrameWidth = 820
+        window.minFrameHeight = 560
+        window.minSize = NSSize(width: 820, height: 560)
+        window.contentMinSize = NSSize(width: 820, height: 560)
+        window.collectionBehavior = [.fullScreenNone]
+        window.usesPositionedTrafficLights = true
+        window.hidesTrafficLights = true
+        window.applyTrafficLightsLayout()
+        window.title = "创建压缩包"
+        window.identifier = NSUserInterfaceItemIdentifier("ProZip.CreationWindow")
+        window.setAccessibilityIdentifier("ProZip.CreationWindow")
+
+        if let refFrame = referenceWindow?.frame {
+            let originX = max(visibleFrame.minX + 16, min(visibleFrame.maxX - targetSize.width - 16, refFrame.midX - targetSize.width / 2))
+            let originY = max(visibleFrame.minY + 16, min(visibleFrame.maxY - targetSize.height - 16, refFrame.midY - targetSize.height / 2))
+            window.setFrameOrigin(NSPoint(x: originX, y: originY))
+        } else {
+            window.center()
+        }
+
+        window.makeKeyAndOrderFront(nil)
+        NSApp.addWindowsItem(window, title: "创建压缩包", filename: false)
+        creationWindow = window
+        NSApp.activate(ignoringOtherApps: true)
+    }
+
+    @MainActor
+    private func dismissCreationWindow() {
+        if let window = creationWindow {
+            let size = window.contentView?.bounds.size ?? window.frame.size
+            if size.width >= 820 && size.height >= 560 {
+                savedCreationWindowSize = size
+            }
+            NSApp.removeWindowsItem(window)
+            window.delegate = nil
+            window.orderOut(nil)
+            creationWindow = nil
+        }
+        ProZipAppViewModel.shared.creationDialogDidDismiss()
     }
 
     @MainActor

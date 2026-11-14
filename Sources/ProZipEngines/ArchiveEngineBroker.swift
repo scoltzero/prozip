@@ -12,6 +12,9 @@ public final class ArchiveEngineBroker: @unchecked Sendable {
     public let libarchiveEngine: LibarchiveEngine
     public let diskImageEngine: DiskImageEngine
 
+    private let prewarmLock = NSLock()
+    private var hasStartedPrewarm = false
+
     public init(
         nativeZipEngine: (any ArchiveEngine)? = nil,
         sevenZipEngine: SevenZipEngine = SevenZipEngine(),
@@ -26,6 +29,28 @@ public final class ArchiveEngineBroker: @unchecked Sendable {
         self.sevenZipEngine = sevenZipEngine
         self.libarchiveEngine = libarchiveEngine
         self.diskImageEngine = diskImageEngine
+    }
+
+    /// Pre-loads in-process zlib tables and faults external compression cores (`7zz`, `bsdtar`)
+    /// into macOS's unified buffer cache once on a low-priority background task.
+    public func prewarmEngines() {
+        prewarmLock.lock()
+        let shouldStart = !hasStartedPrewarm
+        if shouldStart { hasStartedPrewarm = true }
+        prewarmLock.unlock()
+        guard shouldStart else { return }
+
+        Task.detached(priority: .utility) {
+            _ = try? NativeZipEngine.deflateRaw(data: Data("prozip-prewarm".utf8), level: 6)
+            await SevenZipEngine.prewarm()
+            let bsdtarURL = URL(fileURLWithPath: LibarchiveEngine.bsdtarPath)
+            if FileManager.default.isExecutableFile(atPath: bsdtarURL.path) {
+                _ = try? await ProcessCancellationController.run(
+                    executableURL: bsdtarURL,
+                    arguments: ["--version"]
+                )
+            }
+        }
     }
 
     // MARK: - Routing Matrix (doc/03 section 2)

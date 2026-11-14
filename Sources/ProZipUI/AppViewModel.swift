@@ -377,6 +377,11 @@ public final class ArchiveTaskRecord: ObservableObject, Identifiable {
     @Published public var outputResultURL: URL?
     public let isCancelable: Bool
     private var cancelAction: (() -> Void)?
+    private let startedAt: CFAbsoluteTime
+
+    public var isFinished: Bool {
+        phase == .completed || phase == .failed || phase == .cancelled
+    }
 
     public init(
         id: UUID = UUID(),
@@ -403,20 +408,48 @@ public final class ArchiveTaskRecord: ObservableObject, Identifiable {
         self.outputResultURL = outputResultURL ?? archiveURL
         self.isCancelable = isCancelable
         self.cancelAction = cancelAction
+        self.startedAt = CFAbsoluteTimeGetCurrent()
     }
 
     public func update(progress: OperationProgress) {
-        guard phase != .cancelled, phase != .completed, phase != .failed else { return }
+        guard !isFinished else { return }
         self.phase = progress.phase
-        self.completedBytes = progress.completedBytes
-        self.totalBytes = progress.totalBytes
-        self.fractionCompleted = progress.fractionCompleted
-        self.currentItem = progress.currentItem
+        if progress.totalBytes > 0 || progress.phase == .failed || progress.phase == .cancelled {
+            self.completedBytes = progress.completedBytes
+            self.totalBytes = progress.totalBytes
+        }
+        if progress.phase == .completed {
+            self.fractionCompleted = 1.0
+        } else if progress.phase == .failed || progress.phase == .cancelled {
+            self.fractionCompleted = progress.fractionCompleted
+        } else {
+            self.fractionCompleted = max(self.fractionCompleted, progress.fractionCompleted)
+        }
+        if let currentItem = progress.currentItem {
+            self.currentItem = currentItem
+        } else if [.verifying, .savingSafely, .finishing, .completed, .failed, .cancelled].contains(progress.phase) {
+            self.currentItem = nil
+        }
+
+        if progress.totalBytes >= 4096, progress.completedBytes > 0 {
+            let elapsed = CFAbsoluteTimeGetCurrent() - startedAt
+            if elapsed >= 0.02 {
+                let instantSpeed = Int64(Double(progress.completedBytes) / elapsed)
+                if instantSpeed > 0 {
+                    if speedBytesPerSec == 0 {
+                        speedBytesPerSec = instantSpeed
+                    } else {
+                        speedBytesPerSec = Int64(Double(speedBytesPerSec) * 0.35 + Double(instantSpeed) * 0.65)
+                    }
+                }
+            }
+        }
     }
 
     public func cancel() {
-        guard isCancelable, phase != .completed, phase != .failed, phase != .cancelled else { return }
+        guard isCancelable, !isFinished else { return }
         phase = .cancelled
+        outputResultURL = nil
         cancelAction?()
         cancelAction = nil
     }
@@ -1034,6 +1067,30 @@ public final class ProZipAppViewModel: ObservableObject {
 
     public var completedTasksCount: Int {
         tasks.filter { $0.phase == .completed }.count
+    }
+
+    public var finishedTasksCount: Int {
+        tasks.filter(\.isFinished).count
+    }
+
+    public func removeTask(id: UUID) {
+        guard let index = tasks.firstIndex(where: { $0.id == id }) else { return }
+        let task = tasks[index]
+        if !task.isFinished {
+            task.cancel()
+        }
+        tasks.remove(at: index)
+    }
+
+    public func clearFinishedTasks() {
+        tasks.removeAll(where: \.isFinished)
+    }
+
+    public func clearAllTasks() {
+        for task in tasks where !task.isFinished {
+            task.cancel()
+        }
+        tasks.removeAll()
     }
 
     // MARK: - Opening & Session Management
@@ -1934,6 +1991,7 @@ public final class ProZipAppViewModel: ObservableObject {
     private func fail(_ task: ArchiveTaskRecord, title: String, error: Error) {
         guard task.phase != .cancelled else { return }
         task.errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+        task.outputResultURL = nil
         task.update(progress: OperationProgress(phase: .failed, totalBytes: task.totalBytes, currentItem: task.errorMessage))
         alertTitle = title
         alertMessage = task.errorMessage ?? error.localizedDescription
@@ -2214,25 +2272,30 @@ public final class ProZipAppViewModel: ObservableObject {
         draftSessionID: UUID? = nil,
         completion: ((URL) -> Void)? = nil
     ) {
-        let totalBytes = sources.reduce(Int64(0)) { sum, url in
-            let size = (try? url.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 512_000
-            return sum + Int64(max(size, 4096))
-        }
         let task = ArchiveTaskRecord(
             title: "创建压缩包 \(destinationURL.lastPathComponent)",
             archiveURL: destinationURL,
-            phase: .compressing,
+            phase: .preparing,
             completedBytes: 0,
-            totalBytes: max(1024, totalBytes),
-            currentItem: sources.first?.lastPathComponent ?? "正在打包…",
+            totalBytes: 0,
+            currentItem: sources.first?.lastPathComponent ?? "正在准备…",
             outputResultURL: destinationURL
         )
         task.outputResultURL = nil
         tasks.insert(task, at: 0)
         isTaskProgressPresented = true
 
-        let operation = Task {
-            defer { task.clearCancellation() }
+        struct WeakViewModelRef: @unchecked Sendable {
+            weak var value: ProZipAppViewModel?
+        }
+        let weakSelf = WeakViewModelRef(value: self)
+
+        let operation = Task.detached(priority: .userInitiated) {
+            defer {
+                Task { @MainActor in
+                    task.clearCancellation()
+                }
+            }
             do {
                 try await ArchiveEngineBroker.shared.create(
                     sources: sources,
@@ -2242,7 +2305,7 @@ public final class ProZipAppViewModel: ObservableObject {
                 ) { progress in
                     if progress.phase != .completed {
                         Task { @MainActor in
-                            guard ![.completed, .failed, .cancelled].contains(task.phase) else { return }
+                            guard !task.isFinished else { return }
                             task.update(progress: progress)
                         }
                     }
@@ -2254,36 +2317,39 @@ public final class ProZipAppViewModel: ObservableObject {
                     guard FileManager.default.fileExists(atPath: destinationURL.path) else { throw ProZipError.invalidArchive("未找到已创建的压缩包") }
                     resultURL = destinationURL
                 }
+                let publishedSize = (try? resultURL.resourceValues(forKeys: [.fileSizeKey]).fileSize).map(Int64.init) ?? 0
                 try Task.checkCancellation()
                 await MainActor.run {
+                    let finalTotalBytes = max(task.totalBytes, max(1, publishedSize))
                     task.outputResultURL = resultURL
                     task.update(progress: OperationProgress(
                         phase: .completed,
-                        completedBytes: task.totalBytes,
-                        totalBytes: task.totalBytes,
+                        completedBytes: finalTotalBytes,
+                        totalBytes: finalTotalBytes,
                         currentItem: "已完成 · \(profile.format.displayName)",
                         fractionCompleted: 1.0
                     ))
-                    shelfModel.recentResults.insert(
+                    guard let viewModel = weakSelf.value else { return }
+                    viewModel.shelfModel.recentResults.insert(
                         ShelfCompletedResult(
                             title: resultURL.lastPathComponent,
-                            subtitle: "\(profile.format.displayName) · \(ByteCountFormatter.string(fromByteCount: task.totalBytes, countStyle: .file)) · 刚刚",
+                            subtitle: "\(profile.format.displayName) · \(ByteCountFormatter.string(fromByteCount: finalTotalBytes, countStyle: .file)) · 刚刚",
                             outputURL: resultURL,
                             isArchive: true
                         ),
                         at: 0
                     )
-                    if savePasswordToBook, let password = profile.password, !passwordBook.isLocked {
-                        passwordBook.addEntry(title: resultURL.lastPathComponent, password: password)
-                        if let error = passwordBook.lastError {
-                            self.cancelTermination()
-                            self.alertTitle = "压缩包已创建"
-                            self.alertMessage = "密码未能保存到密码本。\n" + error
-                            self.isAlertPresented = true
+                    if savePasswordToBook, let password = profile.password, !viewModel.passwordBook.isLocked {
+                        viewModel.passwordBook.addEntry(title: resultURL.lastPathComponent, password: password)
+                        if let error = viewModel.passwordBook.lastError {
+                            viewModel.cancelTermination()
+                            viewModel.alertTitle = "压缩包已创建"
+                            viewModel.alertMessage = "密码未能保存到密码本。\n" + error
+                            viewModel.isAlertPresented = true
                         }
                     }
-                    if let draftSessionID, sessions.contains(where: { $0.id == draftSessionID }) {
-                        sessionPasswords[draftSessionID] = profile.password
+                    if let draftSessionID, viewModel.sessions.contains(where: { $0.id == draftSessionID }) {
+                        viewModel.sessionPasswords[draftSessionID] = profile.password
                     }
                     completion?(resultURL)
                     if moveSourcesToTrash {
@@ -2296,27 +2362,34 @@ public final class ProZipAppViewModel: ObservableObject {
                             catch { failures.append("\(source.lastPathComponent)：\(error.localizedDescription)") }
                         }
                         if !failures.isEmpty {
-                            self.alertTitle = "压缩包已创建"
-                            self.alertMessage = "以下来源文件未能移到废纸篓：\n" + failures.joined(separator: "\n")
-                            self.isAlertPresented = true
+                            viewModel.alertTitle = "压缩包已创建"
+                            viewModel.alertMessage = "以下来源文件未能移到废纸篓：\n" + failures.joined(separator: "\n")
+                            viewModel.isAlertPresented = true
                         }
                     }
                     NotificationCenter.default.post(name: .proZipArchiveCreated, object: resultURL)
                 }
             } catch is CancellationError {
-                cancelTermination()
-                task.cancel()
-            } catch let error as ProZipError where error == .cancelled {
-                cancelTermination()
-                task.cancel()
-            } catch {
-                cancelTermination()
                 await MainActor.run {
+                    weakSelf.value?.cancelTermination()
+                    task.cancel()
+                }
+            } catch let error as ProZipError where error == .cancelled {
+                await MainActor.run {
+                    weakSelf.value?.cancelTermination()
+                    task.cancel()
+                }
+            } catch {
+                await MainActor.run {
+                    weakSelf.value?.cancelTermination()
+                    let message = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+                    task.errorMessage = message
+                    task.outputResultURL = nil
                     task.update(progress: OperationProgress(
                         phase: .failed,
                         completedBytes: 0,
                         totalBytes: task.totalBytes,
-                        currentItem: (error as? ProZipError)?.errorDescription ?? error.localizedDescription,
+                        currentItem: message,
                         fractionCompleted: 0
                     ))
                 }

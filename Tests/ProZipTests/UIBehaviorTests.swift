@@ -602,4 +602,248 @@ final class UIBehaviorTests: XCTestCase {
         XCTAssertTrue(FileManager.default.fileExists(atPath: draftDir.path), "creation-draft must survive active-PID temp cleanup")
         XCTAssertTrue(FileManager.default.fileExists(atPath: installDir.path), "application-installation must survive active-PID temp cleanup")
     }
+
+    func testNativeZipCreationEmitsSmoothIntermediateProgress() async throws {
+        let root = try temporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: root) }
+
+        // Single 4 MiB compressible file to exercise both preparing and 512 KiB slice-level Deflate progress
+        let source = root.appendingPathComponent("payload.txt")
+        let pattern = Data("ProZip smooth progress verification line 0123456789ABCDEF\n".utf8)
+        var payload = Data()
+        payload.reserveCapacity(4 * 1024 * 1024)
+        while payload.count < 4 * 1024 * 1024 {
+            payload.append(pattern)
+        }
+        try payload.write(to: source)
+
+        let archive = root.appendingPathComponent("smooth.zip")
+        final class ProgressCollector: @unchecked Sendable {
+            let lock = NSLock()
+            var snapshots: [OperationProgress] = []
+            func append(_ p: OperationProgress) {
+                lock.lock()
+                snapshots.append(p)
+                lock.unlock()
+            }
+        }
+        let collector = ProgressCollector()
+
+        try await NativeZipEngine().create(
+            sources: [source],
+            at: archive,
+            profile: CreationProfile(format: .zip),
+            password: nil
+        ) { progress in
+            collector.append(progress)
+        }
+
+        let snapshots = collector.snapshots
+        let fractions = snapshots.map(\.fractionCompleted)
+        XCTAssertGreaterThanOrEqual(fractions.count, 5, "Expected multiple progress ticks rather than 0 -> 1 jump")
+        XCTAssertTrue(fractions.contains { $0 > 0.01 && $0 < 0.25 }, "Expected early preparing/starting progress: \(fractions)")
+        XCTAssertTrue(fractions.contains { $0 >= 0.25 && $0 <= 0.96 }, "Expected mid-compression Deflate progress: \(fractions)")
+        XCTAssertEqual(fractions.last, 1.0)
+
+        for index in 1..<fractions.count {
+            XCTAssertGreaterThanOrEqual(
+                fractions[index] + 1e-9,
+                fractions[index - 1],
+                "Progress must be monotonically non-decreasing: \(fractions)"
+            )
+        }
+    }
+
+    func testSevenZipProgressSnapshotParserHandlesBackspaceStreams() {
+        let sample = Data("  0%\u{08}\u{08}\u{08}\u{08}    \u{08}\u{08}\u{08}\u{08} 49% + big.bin\u{08}\u{08}\u{08}\u{08}".utf8)
+        let parsed = SevenZipEngine.parseProgressSnapshot(from: sample)
+        XCTAssertEqual(parsed?.percent, 49)
+        XCTAssertEqual(parsed?.currentItem, "big.bin")
+
+        let finalSample = Data("100% 1 + folder/archive item.pdf\u{08}\u{08}".utf8)
+        let finalParsed = SevenZipEngine.parseProgressSnapshot(from: finalSample)
+        XCTAssertEqual(finalParsed?.percent, 100)
+        XCTAssertEqual(finalParsed?.currentItem, "folder/archive item.pdf")
+
+        let nonProgress = Data("Creating archive: /tmp/foo%20bar.7z\n".utf8)
+        XCTAssertNil(SevenZipEngine.parseProgressSnapshot(from: nonProgress))
+    }
+
+    func testTaskQueueSupportsSingleDeleteClearFinishedIncludingFailedAndClearAll() {
+        let vm = makeTestAppViewModel()
+        var activeCancelled = false
+        let activeTask = ArchiveTaskRecord(
+            title: "Active",
+            archiveURL: URL(fileURLWithPath: "/tmp/active.zip"),
+            phase: .compressing,
+            completedBytes: 50_000,
+            totalBytes: 100_000,
+            cancelAction: { activeCancelled = true }
+        )
+        let failedTask = ArchiveTaskRecord(
+            title: "Failed",
+            archiveURL: URL(fileURLWithPath: "/tmp/failed.zip"),
+            phase: .failed
+        )
+        failedTask.errorMessage = "密码仅支持 ASCII"
+        let completedTask = ArchiveTaskRecord(
+            title: "Completed",
+            archiveURL: URL(fileURLWithPath: "/tmp/completed.zip"),
+            phase: .completed
+        )
+        let cancelledTask = ArchiveTaskRecord(
+            title: "Cancelled",
+            archiveURL: URL(fileURLWithPath: "/tmp/cancelled.zip"),
+            phase: .cancelled
+        )
+
+        vm.tasks = [activeTask, failedTask, completedTask, cancelledTask]
+        XCTAssertEqual(vm.activeTasksCount, 1)
+        XCTAssertEqual(vm.failedTasksCount, 1)
+        XCTAssertEqual(vm.completedTasksCount, 1)
+        XCTAssertEqual(vm.finishedTasksCount, 3)
+
+        // 1. Dismiss a single record (e.g. cancelled row)
+        vm.removeTask(id: cancelledTask.id)
+        XCTAssertEqual(vm.tasks.map(\.id), [activeTask.id, failedTask.id, completedTask.id])
+
+        // 2. Clear finished records must remove BOTH completed AND failed records while keeping active task
+        vm.clearFinishedTasks()
+        XCTAssertEqual(vm.tasks.map(\.id), [activeTask.id])
+        XCTAssertFalse(activeCancelled)
+
+        // 3. Re-add a failed record and test Clear All (cancels active task + empties queue)
+        let secondFailed = ArchiveTaskRecord(
+            title: "Failed 2",
+            archiveURL: URL(fileURLWithPath: "/tmp/failed2.zip"),
+            phase: .failed
+        )
+        vm.tasks.append(secondFailed)
+        vm.clearAllTasks()
+        XCTAssertTrue(activeCancelled, "clearAllTasks must safely cancel in-progress tasks before removing")
+        XCTAssertTrue(vm.tasks.isEmpty)
+
+        // 4. Verify ArchiveProgressWindowView lays out cleanly at 380x260 with mixed rows
+        vm.tasks = [completedTask, failedTask]
+        let hosting = NSHostingView(
+            rootView: ArchiveProgressWindowView(appViewModel: vm)
+                .environmentObject(vm)
+                .frame(width: 380, height: 260)
+        )
+        hosting.frame = NSRect(x: 0, y: 0, width: 380, height: 260)
+        hosting.layoutSubtreeIfNeeded()
+        XCTAssertLessThanOrEqual(hosting.fittingSize.width, 380)
+    }
+
+    func testTaskRecordPreservesMonotonicProgressAcrossZeroBytePhaseTransitions() {
+        let task = ArchiveTaskRecord(
+            title: "Monotonic",
+            archiveURL: URL(fileURLWithPath: "/tmp/mono.7z"),
+            phase: .preparing
+        )
+        task.update(progress: OperationProgress(phase: .compressing, completedBytes: 80_000, totalBytes: 100_000))
+        XCTAssertEqual(task.fractionCompleted, 0.8, accuracy: 0.001)
+
+        // Transitioning to savingSafely with 0/0 must NOT drop fractionCompleted back to 0%
+        task.update(progress: OperationProgress(phase: .savingSafely, completedBytes: 0, totalBytes: 0))
+        XCTAssertEqual(task.phase, .savingSafely)
+        XCTAssertEqual(task.fractionCompleted, 0.8, accuracy: 0.001)
+
+        task.update(progress: OperationProgress(phase: .completed, completedBytes: 100_000, totalBytes: 100_000))
+        XCTAssertEqual(task.fractionCompleted, 1.0, accuracy: 0.001)
+    }
+
+    func testCreationProfileHonorsCustomOverviewOverridesAcrossPurposes() {
+        // Default fallback when omitted
+        let defaultWindows = CreationProfile(purpose: .windows, format: .sevenZip)
+        XCTAssertFalse(defaultWindows.preserveMacMetadata)
+        XCTAssertTrue(defaultWindows.repairWindowsNames)
+
+        let defaultMac = CreationProfile(purpose: .mac, format: .zip)
+        XCTAssertTrue(defaultMac.preserveMacMetadata)
+        XCTAssertFalse(defaultMac.repairWindowsNames)
+
+        // Custom user overrides in 压缩包概览 must be respected even under .windows / .mac purposes
+        let customWindows = CreationProfile(
+            purpose: .windows,
+            format: .sevenZip,
+            preserveMacMetadata: true,
+            repairWindowsNames: false
+        )
+        XCTAssertTrue(customWindows.preserveMacMetadata)
+        XCTAssertFalse(customWindows.repairWindowsNames)
+
+        let customMac = CreationProfile(
+            purpose: .mac,
+            format: .zip,
+            preserveMacMetadata: false,
+            repairWindowsNames: true
+        )
+        XCTAssertFalse(customMac.preserveMacMetadata)
+        XCTAssertTrue(customMac.repairWindowsNames)
+    }
+
+    func testArchiveCreationDialogStandaloneWindowResizesFlexibly() {
+        let vm = makeTestAppViewModel()
+        let dialog = ArchiveCreationDialogView(
+            defaultName: "deliverables",
+            isStandaloneWindow: true,
+            appViewModel: vm
+        )
+        .environmentObject(vm)
+
+        let hosting = NSHostingView(rootView: dialog)
+        hosting.safeAreaRegions = []
+        hosting.autoresizingMask = [.width, .height]
+        hosting.sizingOptions = [.minSize]
+
+        let window = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 920, height: 720),
+            styleMask: [.titled, .fullSizeContentView, .closable, .miniaturizable, .resizable],
+            backing: .buffered,
+            defer: false
+        )
+        window.minSize = NSSize(width: 820, height: 560)
+        window.contentMinSize = NSSize(width: 820, height: 560)
+        window.contentView = hosting
+
+        for targetSize in [
+            NSSize(width: 820, height: 560),
+            NSSize(width: 920, height: 720),
+            NSSize(width: 1180, height: 880)
+        ] {
+            window.setContentSize(targetSize)
+            hosting.layoutSubtreeIfNeeded()
+            XCTAssertEqual(hosting.bounds.width, targetSize.width, accuracy: 1.0)
+            XCTAssertEqual(hosting.bounds.height, targetSize.height, accuracy: 1.0)
+        }
+    }
+
+    func testSevenZipCreateHonorsPreserveMacMetadataToggle() async throws {
+        guard SevenZipEngine.resolveBinaryURL() != nil else { throw XCTSkip("7-Zip unavailable") }
+        let tempDir = try temporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: tempDir) }
+
+        let srcFolder = tempDir.appendingPathComponent("deliverables", isDirectory: true)
+        try FileManager.default.createDirectory(at: srcFolder, withIntermediateDirectories: true)
+        try Data("hello".utf8).write(to: srcFolder.appendingPathComponent("readme.txt"))
+        try Data("junk".utf8).write(to: srcFolder.appendingPathComponent(".DS_Store"))
+
+        let engine = SevenZipEngine()
+
+        // 1. excludeMacJunk = true (preserveMacMetadata = false) -> .DS_Store excluded
+        let clean7z = tempDir.appendingPathComponent("clean.7z")
+        let cleanProfile = CreationProfile(purpose: .windows, format: .sevenZip, preserveMacMetadata: false)
+        try await engine.create(sources: [srcFolder], at: clean7z, profile: cleanProfile, password: nil, progress: { _ in })
+        let cleanEntries = try await engine.list(clean7z, password: nil, progress: { _ in })
+        XCTAssertFalse(cleanEntries.contains { $0.name == ".DS_Store" || $0.path.hasSuffix(".DS_Store") })
+        XCTAssertTrue(cleanEntries.contains { $0.path.hasSuffix("readme.txt") })
+
+        // 2. Custom override under .windows: preserveMacMetadata = true -> .DS_Store preserved!
+        let preserved7z = tempDir.appendingPathComponent("preserved.7z")
+        let preservedProfile = CreationProfile(purpose: .windows, format: .sevenZip, preserveMacMetadata: true)
+        try await engine.create(sources: [srcFolder], at: preserved7z, profile: preservedProfile, password: nil, progress: { _ in })
+        let preservedEntries = try await engine.list(preserved7z, password: nil, progress: { _ in })
+        XCTAssertTrue(preservedEntries.contains { $0.name == ".DS_Store" || $0.path.hasSuffix(".DS_Store") })
+    }
 }
