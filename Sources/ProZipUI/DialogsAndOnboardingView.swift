@@ -983,8 +983,8 @@ public struct ReleaseOverviewWindowView: View {
                     ProZipBrandIcon(size: 48, showAppSquircle: true)
 
                     VStack(alignment: .leading, spacing: 3) {
-                        let overviewVer = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.1.2"
-                        let overviewBuild = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "2"
+                        let overviewVer = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.1.3"
+                        let overviewBuild = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "3"
                         HStack(spacing: 8) {
                             Text("ProZip \(overviewVer) 欢迎与特性概览")
                                 .font(.system(size: 18, weight: .bold))
@@ -1055,7 +1055,7 @@ public struct ReleaseOverviewWindowView: View {
                         .foregroundStyle(.secondary)
                     Spacer()
                     ArcZipDialogButton("知道了", role: .primary, size: .regular) {
-                        let ver = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.1.2"
+                        let ver = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.1.3"
                         UserDefaults.standard.set(ver, forKey: "releaseOverview.presentedVersion.v1.stable")
                         dismiss()
                     }
@@ -1128,8 +1128,8 @@ public struct AboutProZipView: View {
                 VStack(spacing: 4) {
                     Text("ProZip")
                         .font(.system(size: 22, weight: .bold))
-                    let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.1.2"
-                    let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "2"
+                    let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.1.3"
+                    let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "3"
                     Text("版本 \(version) (Build \(build)) · Open Source Edition")
                         .font(.system(size: 12, weight: .medium))
                         .foregroundStyle(.secondary)
@@ -1188,8 +1188,8 @@ public struct CheckForUpdatesDialogView: View {
     public init() {}
 
     public var body: some View {
-        let currentVer = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.1.2"
-        let currentBuild = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "2"
+        let currentVer = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.1.3"
+        let currentBuild = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "3"
 
         ArcZipDialogSurface(width: 440) {
             VStack(alignment: .leading, spacing: 16) {

@@ -8,6 +8,42 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [0.1.3] - 2026-11-14
+
+### 🇨🇳 中文
+
+#### 新增 (Added)
+- **Finder 空格键一键呼出 / 关闭 ProZip Mini**：基于系统辅助功能（Accessibility）与自动化（AppleEvents）授权的 `FinderSpacebarMonitor`，在 Finder 中选中支持的压缩包按空格键即可直接打开 ProZip Mini 轻量窗格预览；在 Mini 窗格聚焦时再次按下空格键即可关闭窗格并切回 Finder，支持在「设置 → ProZip Mini」中配置权限引导与接管格式范围。
+- **密码本钥匙串授权恢复与兜底重建**：针对开源/自签名版本更新或重签后系统钥匙串 ACL 变更导致原有密码本无法静默解密的问题，保留加密文件并在「设置 → 密码本」及保护设置弹窗提供 **「授权恢复密码本」**（一次性弹窗授权后自动轮换并绑定新签名密钥，后续恢复静默访问）与二次确认 **「清空并重建密码本…」** 兜底入口。
+
+#### 变更与优化 (Changed)
+- **Mini 窗口头部展示文件体积**：在 ProZip Mini 标题栏副标题中同步展示当前压缩包的条目数量与总文件大小。
+- **Touch ID 快捷解锁签名环境适配**：在未配置商业开发者 Team ID 的开源/自签名构建中温和禁用 Touch ID 快捷解锁勾选并提示原因，同时保留完整的 Data Protection Keychain 后端代码以供后续开发者签名构建使用。
+- **项目文档演示动图**：在 `README.md` 中新增交互界面与功能演示 GIF（`Resources/ProZip-Demo.gif`）。
+
+#### 修复 (Fixed)
+- 修复新建压缩包选项弹窗（`ArchiveCreationDialogView`）顶部标题栏、底部工具栏及空白背景区域无法拖拽移动整个窗口的问题（`WindowDragArea.resolveRootWindow` 沿父窗口链向上定位宿主窗口并结合事件跟踪拖拽）。
+- 修复通过 Finder 空格键打开 ProZip Mini 后，再次按下空格键未能关闭 Mini 窗格的问题。
+
+---
+
+### 🌐 English
+
+#### Added
+- **Finder Spacebar Toggle for ProZip Mini**: Added `FinderSpacebarMonitor` using macOS Accessibility & Automation (AppleEvents) permissions so pressing Spacebar in Finder on a supported archive opens ProZip Mini directly, and pressing Spacebar again inside Mini dismisses the window and returns focus to Finder—configurable with permission onboarding and scope toggles in Settings → ProZip Mini.
+- **Password Book Keychain Authorization Recovery & Reset Fallback**: Preserves existing encrypted vaults when an open-source / ad-hoc re-signed binary invalidates legacy Keychain ACLs; added **Authorize & Recover Password Book** (prompts once via system Keychain UI, decrypts saved entries, and rotates onto a new key bound to the current app signature for silent future launches) alongside a two-step **Reset & Rebuild Password Book** fallback in Settings → Password Book and the protection dialog.
+
+#### Changed
+- **Archive Size in ProZip Mini Header**: Updated the Mini window subtitle to display both item count and formatted archive file size.
+- **Ad-Hoc Build Handling for Touch ID Quick Unlock**: Gracefully disables the Touch ID quick-unlock toggle in builds without an Apple Team ID while keeping the full Data Protection Keychain implementation intact for future signed commercial builds.
+- **Interactive Demo GIF in README**: Added `Resources/ProZip-Demo.gif` showcasing UI modes and workflows.
+
+#### Fixed
+- Fixed an issue where dragging the header, footer, or background area of the archive creation options sheet (`ArchiveCreationDialogView`) did not move the host window (`WindowDragArea.resolveRootWindow` parent-chain resolution + mouse drag tracking).
+- Fixed Spacebar not dismissing the ProZip Mini window after launching via Finder Spacebar preview.
+
+---
+
 ## [0.1.2] - 2026-11-12
 
 ### 🇨🇳 中文
@@ -80,5 +116,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   - Local AES-GCM encrypted Password Book backed by macOS Keychain, Touch ID unlocking, and automatic password matching.
   - Bundled Finder context-menu extension (`ProZipFinderSync`) and Quick Look preview extension (`ProZipQuickLook`).
 
+[0.1.3]: https://github.com/scoltzero/prozip/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/scoltzero/prozip/compare/v0.1.0...v0.1.2
 [0.1.0]: https://github.com/scoltzero/prozip/releases/tag/v0.1.0
