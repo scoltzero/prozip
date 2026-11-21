@@ -53,7 +53,7 @@ struct ProZipApplication: App {
                     } else {
                         ForEach(preferences.recentArchives) { record in
                             Button(record.url.lastPathComponent) {
-                                appDelegate.importFiles([record.url], replacingLanding: NSApp.keyWindow === appDelegate.landingWindow)
+                                appDelegate.importFiles([record.url], replacingLanding: appDelegate.landingWindow != nil && NSApp.keyWindow === appDelegate.landingWindow)
                             }
                         }
                         Divider()
@@ -896,10 +896,11 @@ struct ProZipLandingView: View {
         .accessibilityElement(children: .contain)
         .accessibilityLabel("文件投放区")
         .animation(.easeInOut(duration: 0.15), value: isDropTargeted)
-        .task {
+        .task(id: isWindowActive) {
+            guard isWindowActive else { return }
             while !Task.isCancelled {
                 try? await Task.sleep(for: .seconds(3.6))
-                guard !Task.isCancelled else { break }
+                guard !Task.isCancelled, isWindowActive else { break }
                 withAnimation(.easeInOut(duration: 0.45)) {
                     headlineIndex = (headlineIndex + 1) % Self.headlines.count
                 }
@@ -1110,6 +1111,7 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
     private(set) var sessionWindows: [UUID: ArcZipWindow] = [:]
     private var isSynchronizingSessionWindows = false
     var settingsWindow: ArcZipWindow?
+    private var savedSettingsWindowSize: NSSize?
     var creationWindow: ArcZipWindow?
     private var savedCreationWindowSize: NSSize?
     var alertWindow: NSWindow?
@@ -1129,8 +1131,8 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
         ProZipAppDelegate.shared = self
         NSApp.servicesProvider = self
         NSUpdateDynamicServices()
-        // 1. Apply runtime sculpted application icon
-        ProZipIconRenderer.applyApplicationIcon()
+        // 1. Apply Dock visibility policy & runtime sculpted application icon
+        applyDockVisibilityPreference(ProZipPreferences.shared.showsInDock, isInitialLaunch: true)
 
         // 2. Keep the welcome page separate from each archive's window.
         showActiveWindow()
@@ -1188,7 +1190,11 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
         ProZipAppViewModel.shared.$isAlertPresented
             .receive(on: RunLoop.main)
             .sink { [weak self] presented in
-                if presented { self?.showAlertWindow() } else { self?.alertWindow?.orderOut(nil); self?.alertWindow = nil }
+                if presented {
+                    self?.showAlertWindow()
+                } else {
+                    self?.dismissAlertWindow()
+                }
             }
             .store(in: &cancellables)
 
@@ -1210,7 +1216,7 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
             .receive(on: RunLoop.main)
             .sink { [weak self] presented in
                 if presented { self?.showProgressWindow() }
-                else { self?.progressWindow?.orderOut(nil) }
+                else { self?.dismissProgressWindow() }
             }
             .store(in: &cancellables)
         NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)
@@ -1355,6 +1361,7 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
             window.delegate = nil
             NSApp.removeWindowsItem(window)
             window.close()
+            window.contentView = nil
         }
         for session in sessions where sessionWindows[session.id] == nil {
             let window = createArchiveWindow(for: session)
@@ -1365,13 +1372,19 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
     }
 
     func showActiveWindow() {
-        if landingWindow == nil {
-            landingWindow = createArchiveWindow(for: nil)
-            if ProZipAppViewModel.shared.activeSessionID == nil { landingWindow?.orderFront(nil) }
-            else if let landingWindow { NSApp.removeWindowsItem(landingWindow) }
-        }
         synchronizeSessionWindows()
-        let window = ProZipAppViewModel.shared.activeSessionID.flatMap { sessionWindows[$0] } ?? landingWindow
+        let window: ArcZipWindow?
+        if let activeSessionWindow = ProZipAppViewModel.shared.activeSessionID.flatMap({ sessionWindows[$0] }) {
+            window = activeSessionWindow
+        } else {
+            if landingWindow == nil {
+                landingWindow = createArchiveWindow(for: nil)
+            }
+            if let landingWindow {
+                NSApp.addWindowsItem(landingWindow, title: landingWindow.title, filename: false)
+            }
+            window = landingWindow
+        }
         if window?.isMiniaturized == true { window?.deminiaturize(nil) }
         window?.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
@@ -1380,13 +1393,21 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
     func showWelcomeWindow() {
         ProZipAppViewModel.shared.activeSessionID = nil
         showActiveWindow()
-        if let landingWindow { NSApp.addWindowsItem(landingWindow, title: "ProZip", filename: false) }
     }
 
     func createNewArchive() {
         ProZipAppViewModel.shared.createNewArchiveSession()
-        landingWindow?.orderOut(nil)
-        if let landingWindow { NSApp.removeWindowsItem(landingWindow) }
+        dismissLandingWindow()
+    }
+
+    @MainActor
+    private func dismissLandingWindow() {
+        guard let window = landingWindow else { return }
+        landingWindow = nil
+        NSApp.removeWindowsItem(window)
+        window.delegate = nil
+        window.orderOut(nil)
+        window.contentView = nil
     }
 
     func windowShouldClose(_ sender: NSWindow) -> Bool {
@@ -1399,6 +1420,30 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
         ProZipAppViewModel.shared.closeSession(id: id)
         // The session is removed only after its save/discard flow has completed.
         return false
+    }
+
+    func windowWillClose(_ notification: Notification) {
+        guard let window = notification.object as? ArcZipWindow else { return }
+        if window === landingWindow {
+            landingWindow = nil
+            NSApp.removeWindowsItem(window)
+            window.delegate = nil
+            DispatchQueue.main.async {
+                window.contentView = nil
+            }
+        } else if window === settingsWindow {
+            let size = window.contentView?.bounds.size ?? window.frame.size
+            if size.width >= 900 && size.height >= 680 {
+                savedSettingsWindowSize = size
+            }
+            settingsWindow = nil
+            NSApp.removeWindowsItem(window)
+            window.delegate = nil
+            ProZipResourceImageLoader.purgeCache()
+            DispatchQueue.main.async {
+                window.contentView = nil
+            }
+        }
     }
 
     func windowWillEnterFullScreen(_ notification: Notification) {
@@ -1438,6 +1483,13 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
     }
 
     func windowDidResize(_ notification: Notification) {
+        if let window = notification.object as? ArcZipWindow, window === settingsWindow {
+            let size = window.contentView?.bounds.size ?? window.frame.size
+            if size.width >= 900 && size.height >= 680 {
+                savedSettingsWindowSize = size
+            }
+            return
+        }
         if let window = notification.object as? ArcZipWindow, window === creationWindow {
             let size = window.contentView?.bounds.size ?? window.frame.size
             if size.width >= 820 && size.height >= 560 {
@@ -1533,6 +1585,13 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
 
     private func observePreferences() {
         let preferences = ProZipPreferences.shared
+        preferences.$showsInDock
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] showsInDock in
+                self?.applyDockVisibilityPreference(showsInDock, isInitialLaunch: false)
+            }
+            .store(in: &cancellables)
         preferences.$appearance
             .removeDuplicates()
             .sink { appearance in
@@ -1557,12 +1616,56 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
     }
 
     @MainActor
+    private func applyDockVisibilityPreference(_ showsInDock: Bool, isInitialLaunch: Bool) {
+        let targetPolicy: NSApplication.ActivationPolicy = showsInDock ? .regular : .accessory
+        let policyChanged = NSApp.activationPolicy() != targetPolicy
+
+        if isInitialLaunch {
+            if policyChanged {
+                _ = NSApp.setActivationPolicy(targetPolicy)
+            }
+            if showsInDock {
+                ProZipIconRenderer.applyApplicationIcon()
+            }
+            return
+        }
+
+        guard policyChanged else { return }
+        let wasActive = NSApp.isActive
+        let previousKeyWindow = NSApp.keyWindow
+        let visibleWindows = NSApp.windows.filter {
+            $0.isVisible && !($0 is NSPanel && $0 !== progressWindow && $0 !== shelfPanel)
+        }
+
+        _ = NSApp.setActivationPolicy(targetPolicy)
+        if showsInDock {
+            ProZipIconRenderer.applyApplicationIcon()
+        }
+
+        guard wasActive || !visibleWindows.isEmpty else { return }
+        DispatchQueue.main.async {
+            for window in visibleWindows where window.contentView != nil {
+                window.orderFrontRegardless()
+            }
+            if let key = previousKeyWindow, key.contentView != nil {
+                key.makeKeyAndOrderFront(nil)
+            }
+            if wasActive {
+                NSApp.activate(ignoringOtherApps: true)
+            }
+        }
+    }
+
+    @MainActor
     private func setupShelfStatusItem() {
         let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
         if let button = item.button {
             if let path = Bundle.main.path(forResource: "AppIcon-Preview", ofType: "png"),
-               let logo = NSImage(contentsOfFile: path) {
-                logo.size = NSSize(width: 18, height: 18)
+               let source = NSImage(contentsOfFile: path) {
+                let logo = NSImage(size: NSSize(width: 18, height: 18), flipped: false) { rect in
+                    source.draw(in: rect)
+                    return true
+                }
                 logo.isTemplate = false
                 logo.accessibilityDescription = "ProZip 文件盒"
                 button.image = logo
@@ -1616,6 +1719,12 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
         openItem.target = self
         menu.addItem(openItem)
 
+        let settingsItem = NSMenuItem(title: "设置…", action: #selector(openSettingsFromMenu), keyEquivalent: ",")
+        settingsItem.target = self
+        menu.addItem(settingsItem)
+
+        menu.addItem(.separator())
+
         let quitItem = NSMenuItem(title: "退出 ProZip", action: #selector(quitFromMenu), keyEquivalent: "q")
         quitItem.target = self
         menu.addItem(quitItem)
@@ -1627,6 +1736,12 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
     @objc private func activateMainWindowFromMenu() {
         hideShelfPanel()
         showActiveWindow()
+    }
+
+    @MainActor
+    @objc private func openSettingsFromMenu() {
+        hideShelfPanel()
+        openSettings()
     }
 
     func showShelf() {
@@ -1685,7 +1800,11 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
     private func hideShelfPanel() {
         shelfIdleTimer?.invalidate()
         shelfIdleTimer = nil
-        shelfPanel?.orderOut(nil)
+        if let panel = shelfPanel {
+            shelfPanel = nil
+            panel.orderOut(nil)
+            panel.contentView = nil
+        }
     }
 
     private func resetShelfIdleTimer() {
@@ -1758,6 +1877,23 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
         progressWindow?.makeKeyAndOrderFront(nil)
     }
 
+    @MainActor
+    private func dismissProgressWindow() {
+        guard let panel = progressWindow else { return }
+        progressWindow = nil
+        NSApp.removeWindowsItem(panel)
+        panel.orderOut(nil)
+        panel.contentView = nil
+    }
+
+    @MainActor
+    private func dismissAlertWindow() {
+        guard let window = alertWindow else { return }
+        alertWindow = nil
+        window.orderOut(nil)
+        window.contentView = nil
+    }
+
     private func showAlertWindow() {
         guard alertWindow == nil else { return }
         let vm = ProZipAppViewModel.shared
@@ -1799,16 +1935,17 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
             NSApp.activate(ignoringOtherApps: true)
             return
         }
+        let targetSize = savedSettingsWindowSize ?? NSSize(width: 900, height: 712)
         let root = ProZipSettingsView(initialTab: ProZipAppViewModel.shared.settingsSelectedTab)
             .environmentObject(ProZipAppViewModel.shared)
         let hosting = NSHostingView(rootView: root)
         hosting.safeAreaRegions = []
-        hosting.frame = NSRect(x: 0, y: 0, width: 900, height: 712)
+        hosting.frame = NSRect(origin: .zero, size: targetSize)
         hosting.autoresizingMask = [.width, .height]
         hosting.sizingOptions = [.minSize]
 
         let window = ArcZipWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 900, height: 712),
+            contentRect: NSRect(origin: .zero, size: targetSize),
             styleMask: [.titled, .fullSizeContentView, .closable, .miniaturizable, .resizable],
             backing: .buffered,
             defer: false
@@ -1930,6 +2067,7 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
             NSApp.removeWindowsItem(window)
             window.delegate = nil
             window.orderOut(nil)
+            window.contentView = nil
             creationWindow = nil
         }
         ProZipAppViewModel.shared.creationDialogDidDismiss()
@@ -2015,8 +2153,7 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
         }
         let session = vm.openArchive(at: url, forceMiniMode: true)
         finderSpacebarSessionIDs.insert(session.id)
-        landingWindow?.orderOut(nil)
-        if let landingWindow { NSApp.removeWindowsItem(landingWindow) }
+        dismissLandingWindow()
         synchronizeSessionWindows()
         showActiveWindow()
     }
@@ -2082,8 +2219,7 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
             do {
                 let imported = try await vm.importFiles(urls, honorMiniPreference: honorMiniPreference)
                 if replacingLanding || imported.contains(where: { $0.initialSourceStat == nil }) {
-                    landingWindow?.orderOut(nil)
-                    if let landingWindow { NSApp.removeWindowsItem(landingWindow) }
+                    dismissLandingWindow()
                 }
             } catch {
                 vm.alertTitle = "无法导入文件"
@@ -2095,7 +2231,7 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
 
     @MainActor
     func promptOpenArchive() {
-        let replacingLanding = NSApp.keyWindow === landingWindow
+        let replacingLanding = landingWindow != nil && NSApp.keyWindow === landingWindow
         let panel = NSOpenPanel()
         panel.canChooseFiles = true
         panel.canChooseDirectories = true

@@ -3371,5 +3371,9 @@
 	<string>；仍可在建立壓縮檔時暫時更改。</string>
 	<key>；回滚原因：</key>
 	<string>；還原原因：</string>
+	<key>在程序坞中显示</key>
+	<string>在 Dock 中顯示</string>
+	<key>隐藏后仍可通过菜单栏文件盒、访达或重新打开应用唤起 ProZip</key>
+	<string>隱藏後仍可透過選單列檔案盒、Finder 或重新打開應用程式喚起 ProZip</string>
 </dict>
 </plist>

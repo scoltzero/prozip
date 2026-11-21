@@ -82,6 +82,9 @@ public final class ProZipPreferences: ObservableObject, @unchecked Sendable {
     @Published public var launchAtLogin: Bool {
         didSet { defaults.set(launchAtLogin, forKey: "launchAtLogin") }
     }
+    @Published public var showsInDock: Bool {
+        didSet { defaults.set(showsInDock, forKey: "appearance.showsInDock.v1") }
+    }
     @Published public var appearance: AppearancePreference {
         didSet { defaults.set(appearance.rawValue, forKey: "appearance.preference.v1") }
     }
@@ -282,6 +285,7 @@ public final class ProZipPreferences: ObservableObject, @unchecked Sendable {
         self.localizationBundleAtLaunch = Self.localizationBundle(for: language, in: resourceBundle)
 
         self.launchAtLogin = defaults.bool(forKey: "launchAtLogin")
+        self.showsInDock = defaults.object(forKey: "appearance.showsInDock.v1") as? Bool ?? true
         self.appearance = AppearancePreference(rawValue: defaults.string(forKey: "appearance.preference.v1") ?? "") ?? .automatic
         self.preferredLanguage = language
         self.workspaceViewMode = WorkspaceViewMode(rawValue: defaults.string(forKey: "workspaceViewMode.v1") ?? "") ?? .list
@@ -539,6 +543,7 @@ public final class ProZipPreferences: ObservableObject, @unchecked Sendable {
         processorCount = 0
         windowsNameRepair = true
         launchAtLogin = false
+        showsInDock = true
         appearance = .automatic
         preferredLanguage = "system"
         workspaceViewMode = .list

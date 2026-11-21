@@ -3371,5 +3371,9 @@
 	<string>；仍可在创建压缩包时临时更改。</string>
 	<key>；回滚原因：</key>
 	<string>；回滚原因：</string>
+	<key>在程序坞中显示</key>
+	<string>在程序坞中显示</string>
+	<key>隐藏后仍可通过菜单栏文件盒、访达或重新打开应用唤起 ProZip</key>
+	<string>隐藏后仍可通过菜单栏文件盒、访达或重新打开应用唤起 ProZip</string>
 </dict>
 </plist>

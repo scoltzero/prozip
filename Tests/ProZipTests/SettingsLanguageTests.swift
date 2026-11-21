@@ -89,6 +89,23 @@ final class SettingsLanguageTests: XCTestCase {
             let table = try XCTUnwrap(PropertyListSerialization.propertyList(from: data, format: nil) as? [String: String])
             XCTAssertNotNil(table["跟随系统语言，或为 ProZip 单独指定语言。"])
             XCTAssertNotNil(table["重新启动 ProZip 后，语言设置将生效。请先保存修改。"])
+            XCTAssertNotNil(table["在程序坞中显示"])
+            XCTAssertNotNil(table["隐藏后仍可通过菜单栏文件盒、访达或重新打开应用唤起 ProZip"])
         }
+    }
+
+    func testShowsInDockDefaultsToTruePersistsAndResets() {
+        let (defaults, name) = isolatedDefaults()
+        defer { defaults.removePersistentDomain(forName: name) }
+        let preferences = ProZipPreferences(defaults: defaults)
+        XCTAssertTrue(preferences.showsInDock)
+
+        preferences.showsInDock = false
+        XCTAssertEqual(defaults.object(forKey: "appearance.showsInDock.v1") as? Bool, false)
+        let reloaded = ProZipPreferences(defaults: defaults)
+        XCTAssertFalse(reloaded.showsInDock)
+
+        preferences.resetAllSettings()
+        XCTAssertTrue(preferences.showsInDock)
     }
 }

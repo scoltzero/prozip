@@ -9,34 +9,50 @@ import ProZipEngines
 // MARK: - Bundled & Repo Resource Image Loader
 
 public enum ProZipResourceImageLoader {
-    private static let lock = NSLock()
-    private static var cache: [String: NSImage] = [:]
+    private static let cache: NSCache<NSString, NSImage> = {
+        let cache = NSCache<NSString, NSImage>()
+        cache.countLimit = 32
+        cache.totalCostLimit = 8 * 1024 * 1024
+        return cache
+    }()
 
     public static func nsImage(named name: String) -> NSImage? {
         let baseName = (name as NSString).deletingPathExtension
-        lock.lock()
-        if let cached = cache[baseName] {
-            lock.unlock()
+        let key = baseName as NSString
+        if let cached = cache.object(forKey: key) {
             return cached
         }
-        lock.unlock()
 
-        let candidates: [NSImage?] = [
-            Bundle.main.image(forResource: NSImage.Name(baseName)),
-            Bundle.main.path(forResource: baseName, ofType: "png").flatMap { NSImage(contentsOfFile: $0) },
-            NSImage(contentsOfFile: "/Users/luochuhan/repo/prozip/Resources/\(baseName).png"),
-            NSImage(contentsOfFile: FileManager.default.currentDirectoryPath + "/Resources/\(baseName).png")
+        let candidatePaths: [() -> String?] = [
+            { Bundle.main.path(forResource: baseName, ofType: "png") },
+            { "/Users/luochuhan/repo/prozip/Resources/\(baseName).png" },
+            { FileManager.default.currentDirectoryPath + "/Resources/\(baseName).png" }
         ]
 
-        for candidate in candidates {
-            if let img = candidate {
-                lock.lock()
-                cache[baseName] = img
-                lock.unlock()
+        for makePath in candidatePaths {
+            if let path = makePath(), let img = NSImage(contentsOfFile: path) {
+                cache.setObject(img, forKey: key, cost: estimatedByteCost(of: img))
                 return img
             }
         }
+
+        if let img = Bundle.main.image(forResource: NSImage.Name(baseName)) {
+            cache.setObject(img, forKey: key, cost: estimatedByteCost(of: img))
+            return img
+        }
         return nil
+    }
+
+    public static func purgeCache() {
+        cache.removeAllObjects()
+    }
+
+    private static func estimatedByteCost(of image: NSImage) -> Int {
+        let repCost = image.representations.reduce(0) { partial, rep in
+            max(partial, max(1, rep.pixelsWide) * max(1, rep.pixelsHigh) * 4)
+        }
+        if repCost > 0 { return repCost }
+        return max(1, Int(image.size.width * image.size.height * 16))
     }
 }
 

@@ -383,26 +383,42 @@ public struct GeneralSettingsPane: View {
     public var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             // 1. 启动 (Exact match to settings.png)
-            settingsCard(title: localized("启动"), minRowHeight: 48) {
-                HStack {
-                    Text(localized("开机自动启动 ProZip"))
-                        .font(.system(size: 13, weight: .semibold))
-                    Spacer()
-                    settingsSwitch(isOn: Binding(
-                        get: { preferences.launchAtLogin },
-                        set: { enabled in
-                            do {
-                                if enabled { try SMAppService.mainApp.register() }
-                                else { try SMAppService.mainApp.unregister() }
-                                preferences.launchAtLogin = enabled
-                                loginItemError = nil
-                            } catch { loginItemError = error.localizedDescription }
+            settingsCard(title: localized("启动")) {
+                SettingsRowLayout {
+                    HStack {
+                        Text(localized("开机自动启动 ProZip"))
+                            .font(.system(size: 13, weight: .semibold))
+                        Spacer()
+                        settingsSwitch(isOn: Binding(
+                            get: { preferences.launchAtLogin },
+                            set: { enabled in
+                                do {
+                                    if enabled { try SMAppService.mainApp.register() }
+                                    else { try SMAppService.mainApp.unregister() }
+                                    preferences.launchAtLogin = enabled
+                                    loginItemError = nil
+                                } catch { loginItemError = error.localizedDescription }
+                            }
+                        ))
+                    }
+
+                    if let loginItemError {
+                        Text(loginItemError).font(.system(size: 12)).foregroundStyle(.red)
+                    }
+
+                    SettingsSeparator()
+
+                    HStack {
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(localized("在程序坞中显示"))
+                                .font(.system(size: 13, weight: .semibold))
+                            Text(localized("隐藏后仍可通过菜单栏文件盒、访达或重新打开应用唤起 ProZip"))
+                                .font(.system(size: 11))
+                                .foregroundStyle(.secondary)
                         }
-                    ))
-                }
-                
-                if let loginItemError {
-                    Text(loginItemError).font(.system(size: 12)).foregroundStyle(.red)
+                        Spacer()
+                        settingsSwitch(isOn: $preferences.showsInDock)
+                    }
                 }
             }
             

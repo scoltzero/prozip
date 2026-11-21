@@ -3371,5 +3371,9 @@ You can turn monitoring off at any time. ProZip remains available from the Servi
 	<string>; you can change it when creating an archive.</string>
 	<key>；回滚原因：</key>
 	<string>; Rollback error: </string>
+	<key>在程序坞中显示</key>
+	<string>Show in Dock</string>
+	<key>隐藏后仍可通过菜单栏文件盒、访达或重新打开应用唤起 ProZip</key>
+	<string>When hidden, you can still open ProZip from the menu bar Box, Finder, or by reopening the app</string>
 </dict>
 </plist>
