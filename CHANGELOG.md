@@ -8,6 +8,42 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [0.1.4] - 2026-11-21
+
+### 🇨🇳 中文
+
+#### 新增 (Added)
+- **程序坞图标显示/隐藏设置**：在「设置 → 通用 → 启动」中新增 **「在程序坞中显示」** 开关，支持无需重启实时切换程序坞图标显示与隐藏（动态调整 `NSApplication.ActivationPolicy` 并保持当前活跃窗口焦点）；同时在菜单栏文件盒右键菜单中补充 **「设置…」** 快捷入口，同步提供简中、繁中、英文三语界面文案。
+- **任务队列精细清理与独立可缩放创建窗口**：
+  - 归档任务队列窗口（`ArchiveProgressWindowView`）新增单条任务移除按钮、一键「清理已完成」（包含失败项）与「全部清空」能力。
+  - 创建压缩包配置弹窗（`ArchiveCreationDialogView`）升级为独立可自由调整尺寸的窗口并自动记忆窗口大小；概览卡片中的辅助文件过滤与文件名兼容行支持直接点击切换。
+
+#### 变更与优化 (Changed)
+- **闲时内存回收与后台零唤醒优化**：
+  - 将欢迎页（`ProZipLandingView`）标题轮播绑定至窗口活跃状态，应用切入后台、失焦或最小化时立即停止定时动画循环，消除后台待机 CPU 唤醒与堆内存碎片。
+  - 关闭或收起欢迎窗、设置窗（保留窗口尺寸记忆）、菜单栏文件盒面板、任务进度窗及提示弹窗时主动卸载 `NSHostingView` 视图树并释放图层缓冲；已有活跃归档会话时不再于后台预创建欢迎窗。
+  - 将内置资源图片加载器（`ProZipResourceImageLoader`）改为带容量上限的 `NSCache`，设置窗关闭时主动清理缓存；菜单栏状态图标按 `18×18` 尺寸栅格化绘制，避免常驻持有高分辨率原图位图。
+- **实时流式压缩进度与引擎预热**：`NativeZipEngine` 支持 512 KiB 分块流式进度上报，`SevenZipEngine` 接入 `-bsp1` 实时压缩进度流并透传 `-mmt` 线程数与 macOS 元数据排除规则（`-xr!.DS_Store/__MACOSX/._*`）；启动时于后台低优先级预热压缩引擎并将压缩执行移出 `@MainActor`。
+
+---
+
+### 🌐 English
+
+#### Added
+- **Show / Hide in Dock Preference**: Added a **Show in Dock** toggle under Settings → General → Startup that switches `NSApplication.ActivationPolicy` (`.regular` / `.accessory`) live without restarting while preserving active window focus; added a quick **Settings…** item to the menu bar Box right-click menu, with Simplified Chinese, Traditional Chinese, and English localizations.
+- **Granular Task Queue Cleanup & Resizable Standalone Creation Window**:
+  - Added per-task dismiss buttons, **Clear Finished** (including failed tasks), and **Clear All** actions in `ArchiveProgressWindowView`.
+  - Hosted `ArchiveCreationDialogView` in a resizable standalone window with remembered dimensions, and made overview cleanup/compatibility rows directly interactive toggles.
+
+#### Changed
+- **Idle Memory Reclamation & Zero Background Wakeups**:
+  - Scoped `ProZipLandingView` headline rotation to `isWindowActive` so backgrounded, unfocused, or minimized windows pause the animation loop immediately with zero idle CPU wakeups.
+  - Released `NSHostingView` hierarchies and backing buffers when dismissing the Welcome window, Settings window (preserving remembered size), menu bar Shelf panel, Task Progress panel, and alert windows; avoided eagerly materializing the Welcome window when an archive session is already active.
+  - Converted `ProZipResourceImageLoader` to a cost-bounded `NSCache` (purged on Settings window close) and rasterized the menu bar status item icon at `18×18` instead of retaining the full `512×512` source bitmap.
+- **Real-Time Streaming Compression Progress & Engine Pre-Warming**: Added 512 KiB chunked progress reporting in `NativeZipEngine` and `-bsp1` live progress streaming in `SevenZipEngine` (forwarding configured `-mmt` thread counts and `-xr!.DS_Store/__MACOSX/._*` exclusions), plus background engine pre-warming off `@MainActor`.
+
+---
+
 ## [0.1.3] - 2026-11-14
 
 ### 🇨🇳 中文
@@ -116,6 +152,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   - Local AES-GCM encrypted Password Book backed by macOS Keychain, Touch ID unlocking, and automatic password matching.
   - Bundled Finder context-menu extension (`ProZipFinderSync`) and Quick Look preview extension (`ProZipQuickLook`).
 
+[0.1.4]: https://github.com/scoltzero/prozip/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/scoltzero/prozip/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/scoltzero/prozip/compare/v0.1.0...v0.1.2
 [0.1.0]: https://github.com/scoltzero/prozip/releases/tag/v0.1.0

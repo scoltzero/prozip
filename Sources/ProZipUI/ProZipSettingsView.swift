@@ -2451,7 +2451,7 @@ public struct AboutSettingsPane: View {
                     Text("当前版本")
                         .font(.system(size: 13))
                         .foregroundStyle(.secondary)
-                    Text("\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.1.3") (\(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "3"))")
+                    Text("\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.1.4") (\(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "4"))")
                         .font(.system(size: 13, weight: .medium))
                     if appViewModel.isUpdateChecking {
                         Text("正在检查更新…")
