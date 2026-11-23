@@ -361,6 +361,51 @@ public struct SplitVolumeFamily: Sendable, Equatable {
             )
         }
 
+        // Case 4: Old-style RAR split (.rar + .r00 ... .r99)
+        if filename.range(of: #"\.(r\d{2}|rar)$"#, options: [.regularExpression, .caseInsensitive]) != nil {
+            let base = (filename as NSString).deletingPathExtension
+            let isRPart = filename.range(of: #"\.r\d{2}$"#, options: [.regularExpression, .caseInsensitive]) != nil
+            var rarURL: URL?
+            var rParts: [(Int, URL)] = []
+            if let items = try? fm.contentsOfDirectory(at: dir, includingPropertiesForKeys: [.fileSizeKey]) {
+                let lowerBase = base.lowercased()
+                for item in items {
+                    let name = item.lastPathComponent
+                    let lowerName = name.lowercased()
+                    if lowerName == lowerBase + ".rar" {
+                        rarURL = item
+                    } else if lowerName.hasPrefix(lowerBase + ".r"), name.count == base.count + 4 {
+                        let suffix = String(name.suffix(2))
+                        if let num = Int(suffix), (0...99).contains(num) {
+                            rParts.append((num, item))
+                        }
+                    }
+                }
+            }
+            if isRPart || !rParts.isEmpty {
+                rParts.sort { $0.0 < $1.0 }
+                let primary = rarURL ?? dir.appendingPathComponent("\(base).rar")
+                var urls: [URL] = []
+                if let rarURL {
+                    urls.append(rarURL)
+                }
+                urls.append(contentsOf: rParts.map(\.1))
+                let expectedIndices = rParts.isEmpty ? [] : Array(0..<rParts.count)
+                let complete = (rarURL != nil) && !rParts.isEmpty && rParts.map(\.0) == expectedIndices
+                let hasEmpty = urls.contains { u in
+                    let size = (try? u.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0
+                    return size <= 0
+                }
+                return SplitVolumeFamily(
+                    primaryVolumeURL: primary,
+                    volumeURLs: urls.isEmpty ? [url] : urls,
+                    isSplit: true,
+                    isComplete: complete,
+                    hasEmptyVolume: hasEmpty
+                )
+            }
+        }
+
         // Single volume
         let exists = fm.fileExists(atPath: url.path)
         let size = (try? url.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0

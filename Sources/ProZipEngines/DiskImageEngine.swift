@@ -1,4 +1,5 @@
 import Foundation
+import Darwin
 import CoreText
 import ProZipShared
 import ProZipCore
@@ -688,6 +689,18 @@ public final class DiskImageEngine: ArchiveEngine, @unchecked Sendable {
             )
         }
 
+        let plannedBytes = plan.itemsToExtract.reduce(Int64(0)) { $0 + max(0, $1.entry.uncompressedSize) }
+        let progressTotalBytes = plannedBytes > 0 ? plannedBytes : Int64(plan.itemsToExtract.count)
+        let firstItemName = plan.itemsToExtract.first?.entry.name
+
+        progress(OperationProgress(
+            phase: .preparing,
+            completedBytes: 0,
+            totalBytes: progressTotalBytes,
+            currentItem: firstItemName,
+            fractionCompleted: 0.02
+        ))
+
         // Mount volume if not already mounted
         var targetMount = findMountPoint(for: url)
         if targetMount == nil {
@@ -703,15 +716,37 @@ public final class DiskImageEngine: ArchiveEngine, @unchecked Sendable {
         var publishedURLs: [URL] = []
         var skippedCount = plan.skippedEntries.count
         var skippedReasons = plan.skippedEntries.map(\.reason)
+        var completedBytes: Int64 = 0
+        var lastEmitTime: CFAbsoluteTime = 0
+        var lastFraction: Double = 0.05
+
+        func emitProgress(currentBytes: Int64, itemIndex: Int, itemName: String, force: Bool = false) {
+            let ratio: Double
+            if plannedBytes > 0 {
+                ratio = min(1.0, max(0.0, Double(currentBytes) / Double(plannedBytes)))
+            } else {
+                ratio = min(1.0, max(0.0, Double(itemIndex) / Double(max(1, plan.itemsToExtract.count))))
+            }
+            let targetFraction = 0.05 + 0.93 * ratio
+            let now = CFAbsoluteTimeGetCurrent()
+            if force || lastEmitTime == 0 || (now - lastEmitTime) >= 0.025 || (targetFraction - lastFraction) >= 0.015 {
+                lastEmitTime = now
+                lastFraction = max(lastFraction, targetFraction)
+                progress(OperationProgress(
+                    phase: .extracting,
+                    completedBytes: plannedBytes > 0 ? min(plannedBytes, currentBytes) : Int64(itemIndex),
+                    totalBytes: progressTotalBytes,
+                    currentItem: itemName,
+                    fractionCompleted: lastFraction
+                ))
+            }
+        }
+
+        emitProgress(currentBytes: 0, itemIndex: 0, itemName: firstItemName ?? url.lastPathComponent, force: true)
 
         for (idx, item) in plan.itemsToExtract.enumerated() {
             try Task.checkCancellation()
-            progress(OperationProgress(
-                phase: .extracting,
-                completedBytes: Int64(idx),
-                totalBytes: Int64(plan.itemsToExtract.count),
-                currentItem: item.entry.name
-            ))
+            emitProgress(currentBytes: completedBytes, itemIndex: idx, itemName: item.entry.name)
 
             let sourceItemURL = mountPoint.appendingPathComponent(item.entry.path)
             guard fm.fileExists(atPath: sourceItemURL.path) else {
@@ -733,28 +768,52 @@ public final class DiskImageEngine: ArchiveEngine, @unchecked Sendable {
                 continue
             }
 
+            let baseCompleted = completedBytes
+            let expectedItemBytes = max(0, item.entry.uncompressedSize)
+            let copySingleItem: (URL, URL) throws -> Void = { src, dst in
+                if item.entry.type == .file {
+                    try Self.copyRegularFileWithProgress(from: src, to: dst) { copiedInFile in
+                        emitProgress(
+                            currentBytes: baseCompleted + min(expectedItemBytes > 0 ? expectedItemBytes : copiedInFile, copiedInFile),
+                            itemIndex: idx,
+                            itemName: item.entry.name
+                        )
+                    }
+                } else {
+                    try fm.copyItem(at: src, to: dst)
+                }
+            }
+
             if fm.fileExists(atPath: destURL.path) {
                 switch item.conflictAction {
                 case .replace:
                     let replacement = destParent.appendingPathComponent(".prozip-extract-\(UUID().uuidString)")
                     defer { try? fm.removeItem(at: replacement) }
-                    try fm.copyItem(at: sourceItemURL, to: replacement)
+                    try copySingleItem(sourceItemURL, replacement)
                     _ = try fm.replaceItemAt(destURL, withItemAt: replacement, options: .usingNewMetadataOnly)
                     publishedURLs.append(destURL)
                 case .skip:
                     skippedCount += 1
                     skippedReasons.append("跳过已存在项目：\(destURL.lastPathComponent)")
                 case .keepBoth, .ask:
-                    try fm.copyItem(at: sourceItemURL, to: destURL)
+                    try copySingleItem(sourceItemURL, destURL)
                     publishedURLs.append(destURL)
                 }
             } else {
-                try fm.copyItem(at: sourceItemURL, to: destURL)
+                try copySingleItem(sourceItemURL, destURL)
                 publishedURLs.append(destURL)
             }
+
+            completedBytes += expectedItemBytes
+            emitProgress(currentBytes: completedBytes, itemIndex: idx + 1, itemName: item.entry.name)
         }
 
-        progress(OperationProgress(phase: .completed, completedBytes: Int64(publishedURLs.count), totalBytes: Int64(publishedURLs.count)))
+        progress(OperationProgress(
+            phase: .completed,
+            completedBytes: progressTotalBytes,
+            totalBytes: progressTotalBytes,
+            fractionCompleted: 1.0
+        ))
 
         return ExtractionReport(
             destinationURL: dir,
@@ -764,6 +823,68 @@ public final class DiskImageEngine: ArchiveEngine, @unchecked Sendable {
             extractedURLs: publishedURLs,
             skippedReasons: skippedReasons
         )
+    }
+
+    private final class CopyFileProgressContext {
+        let onProgress: (Int64) -> Void
+        var cancelled = false
+        init(onProgress: @escaping (Int64) -> Void) {
+            self.onProgress = onProgress
+        }
+    }
+
+    private static func copyRegularFileWithProgress(
+        from sourceURL: URL,
+        to destinationURL: URL,
+        onProgress: @escaping (Int64) -> Void
+    ) throws {
+        guard let state = copyfile_state_alloc() else {
+            try FileManager.default.copyItem(at: sourceURL, to: destinationURL)
+            return
+        }
+        defer { copyfile_state_free(state) }
+
+        let context = CopyFileProgressContext(onProgress: onProgress)
+        let unmanaged = Unmanaged.passRetained(context)
+        defer { unmanaged.release() }
+
+        let callback: copyfile_callback_t = { what, stage, state, _, _, ctx in
+            guard let ctx else { return COPYFILE_CONTINUE }
+            let box = Unmanaged<CopyFileProgressContext>.fromOpaque(ctx).takeUnretainedValue()
+            if Task.isCancelled {
+                box.cancelled = true
+                return COPYFILE_QUIT
+            }
+            if what == COPYFILE_COPY_DATA && stage == COPYFILE_PROGRESS, let state {
+                var copied: off_t = 0
+                if copyfile_state_get(state, UInt32(COPYFILE_STATE_COPIED), &copied) == 0 {
+                    box.onProgress(Int64(max(0, copied)))
+                }
+            }
+            return COPYFILE_CONTINUE
+        }
+
+        var cb = callback
+        copyfile_state_set(state, UInt32(COPYFILE_STATE_STATUS_CB), &cb)
+        copyfile_state_set(state, UInt32(COPYFILE_STATE_STATUS_CTX), unmanaged.toOpaque())
+
+        let flags = copyfile_flags_t(COPYFILE_ALL | COPYFILE_NOFOLLOW | COPYFILE_EXCL)
+        let rc = sourceURL.path.withCString { srcPath in
+            destinationURL.path.withCString { dstPath in
+                copyfile(srcPath, dstPath, state, flags)
+            }
+        }
+        if context.cancelled || Task.isCancelled {
+            try? FileManager.default.removeItem(at: destinationURL)
+            throw CancellationError()
+        }
+        if rc != 0 {
+            let err = errno
+            try? FileManager.default.removeItem(at: destinationURL)
+            throw NSError(domain: NSPOSIXErrorDomain, code: Int(err), userInfo: [
+                NSLocalizedDescriptionKey: String(cString: strerror(err))
+            ])
+        }
     }
 
     public func create(

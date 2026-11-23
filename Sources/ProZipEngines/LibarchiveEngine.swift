@@ -212,7 +212,20 @@ public struct LibarchiveEngine: ArchiveEngine {
             )
         }
 
-        progress(OperationProgress(phase: .preparing, completedBytes: 0, totalBytes: Int64(plan.itemsToExtract.count)))
+        let plannedUncompressedBytes = plan.itemsToExtract.reduce(Int64(0)) { $0 + max(0, $1.entry.uncompressedSize) }
+        let archiveFileSize = Int64(max(0, (try? url.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0))
+        let progressTotalBytes = plannedUncompressedBytes > 0
+            ? plannedUncompressedBytes
+            : (archiveFileSize > 0 ? archiveFileSize : Int64(plan.itemsToExtract.count))
+        let firstItemName = plan.itemsToExtract.first?.entry.name
+
+        progress(OperationProgress(
+            phase: .preparing,
+            completedBytes: 0,
+            totalBytes: progressTotalBytes,
+            currentItem: firstItemName,
+            fractionCompleted: 0.02
+        ))
 
         let fm = FileManager.default
         let stagingUUID = UUID().uuidString
@@ -220,10 +233,24 @@ public struct LibarchiveEngine: ArchiveEngine {
         try fm.createDirectory(at: stagingURL, withIntermediateDirectories: true)
         defer { try? fm.removeItem(at: stagingURL) }
 
-        progress(OperationProgress(phase: .extracting, completedBytes: 0, totalBytes: Int64(plan.itemsToExtract.count)))
+        progress(OperationProgress(
+            phase: .extracting,
+            completedBytes: 0,
+            totalBytes: progressTotalBytes,
+            currentItem: firstItemName,
+            fractionCompleted: 0.04
+        ))
+
+        final class LibarchiveProgressState: @unchecked Sendable {
+            let lock = NSLock()
+            var lastFraction: Double = 0.04
+            var lastItem: String?
+            var seenVerboseCount: Int = 0
+        }
+        let streamState = LibarchiveProgressState()
 
         if format.isSingleStream {
-            // Decompress single stream to staging file
+            // Decompress single stream to staging file via chunked stdin for exact byte progress
             guard let item = plan.itemsToExtract.first else {
                 throw ProZipError.invalidArchive("单文件压缩流没有可提取的内容")
             }
@@ -236,16 +263,38 @@ public struct LibarchiveEngine: ArchiveEngine {
             defer { try? output.close() }
             let result = try await ProcessCancellationController.run(
                 executableURL: Self.singleStreamBinary(for: format),
-                arguments: ["-dc", "--", url.path],
-                stdoutFile: output
+                arguments: ["-dc"],
+                stdinFileURL: url,
+                stdoutFile: output,
+                onStdinProgress: { written, total in
+                    guard total > 0 else { return }
+                    let ratio = min(1.0, max(0.0, Double(written) / Double(total)))
+                    let targetFraction = 0.04 + 0.90 * ratio
+                    let shouldEmit = streamState.lock.withLock {
+                        guard targetFraction > streamState.lastFraction + 1e-4 else { return false }
+                        streamState.lastFraction = targetFraction
+                        return true
+                    }
+                    if shouldEmit {
+                        progress(OperationProgress(
+                            phase: .extracting,
+                            completedBytes: min(total, written),
+                            totalBytes: total,
+                            currentItem: item.entry.name,
+                            fractionCompleted: targetFraction
+                        ))
+                    }
+                }
             )
             if result.exitCode != 0 {
                 throw ProZipError.corruptedArchive("无法解压压缩流：\(url.lastPathComponent)")
             }
         } else {
-            // Multi-entry extraction using --no-mac-metadata and --no-same-permissions
+            let isSequentialTarFamily = (format == .tar || format == .tarGz || format == .tarBz2 || format == .tarXz)
+            let useVerbose = plan.itemsToExtract.count <= 2000
+            let extractFlag = useVerbose ? "-xvf" : "-xf"
             var args = [
-                "-xf", url.path,
+                extractFlag, isSequentialTarFamily ? "-" : url.path,
                 "-C", stagingURL.path,
                 "--no-mac-metadata",
                 "--no-same-permissions",
@@ -257,23 +306,122 @@ public struct LibarchiveEngine: ArchiveEngine {
                 args.append(item.entry.path)
             }
 
+            let totalItems = max(1, plan.itemsToExtract.count)
+            let stagingMonitor: Task<Void, Never>?
+            if !isSequentialTarFamily && plannedUncompressedBytes > 0 && plan.itemsToExtract.count <= 2000 {
+                stagingMonitor = Task.detached(priority: .utility) {
+                    while !Task.isCancelled {
+                        try? await Task.sleep(nanoseconds: 150_000_000)
+                        guard !Task.isCancelled else { break }
+                        let stagedBytes = Self.directoryRegularFileBytes(at: stagingURL)
+                        guard stagedBytes > 0 else { continue }
+                        let ratio = min(0.98, max(0.0, Double(stagedBytes) / Double(plannedUncompressedBytes)))
+                        let targetFraction = 0.04 + 0.90 * ratio
+                        let (shouldEmit, itemName) = streamState.lock.withLock { () -> (Bool, String?) in
+                            guard targetFraction > streamState.lastFraction + 0.004 else { return (false, nil) }
+                            streamState.lastFraction = targetFraction
+                            return (true, streamState.lastItem)
+                        }
+                        if shouldEmit {
+                            progress(OperationProgress(
+                                phase: .extracting,
+                                completedBytes: min(plannedUncompressedBytes, stagedBytes),
+                                totalBytes: progressTotalBytes,
+                                currentItem: itemName,
+                                fractionCompleted: targetFraction
+                            ))
+                        }
+                    }
+                }
+            } else {
+                stagingMonitor = nil
+            }
+            defer { stagingMonitor?.cancel() }
+
+            var stderrHandler: (@Sendable (Data) -> Void)? = nil
+            if useVerbose {
+                stderrHandler = { chunk in
+                    guard let parsed = Self.parseBsdtarVerboseItems(from: chunk, prefix: "x ") else { return }
+                    let (shouldEmit, fraction, currentItem) = streamState.lock.withLock { () -> (Bool, Double, String?) in
+                        streamState.seenVerboseCount += parsed.count
+                        if let last = parsed.last {
+                            streamState.lastItem = last
+                        }
+                        if !isSequentialTarFamily && plannedUncompressedBytes == 0 {
+                            let ratio = min(0.98, Double(streamState.seenVerboseCount) / Double(totalItems))
+                            let target = 0.04 + 0.90 * ratio
+                            if target > streamState.lastFraction + 0.005 {
+                                streamState.lastFraction = target
+                                return (true, target, streamState.lastItem)
+                            }
+                        }
+                        return (false, streamState.lastFraction, streamState.lastItem)
+                    }
+                    if shouldEmit {
+                        let ratio = max(0.0, min(1.0, (fraction - 0.04) / 0.90))
+                        progress(OperationProgress(
+                            phase: .extracting,
+                            completedBytes: Int64(Double(progressTotalBytes) * ratio),
+                            totalBytes: progressTotalBytes,
+                            currentItem: currentItem,
+                            fractionCompleted: fraction
+                        ))
+                    }
+                }
+            }
+
+            var stdinProgressHandler: (@Sendable (Int64, Int64) -> Void)? = nil
+            if isSequentialTarFamily {
+                stdinProgressHandler = { written, total in
+                    guard total > 0 else { return }
+                    let ratio = min(1.0, max(0.0, Double(written) / Double(total)))
+                    let targetFraction = 0.04 + 0.90 * ratio
+                    let (shouldEmit, itemName) = streamState.lock.withLock { () -> (Bool, String?) in
+                        guard targetFraction > streamState.lastFraction + 1e-4 else { return (false, nil) }
+                        streamState.lastFraction = targetFraction
+                        return (true, streamState.lastItem)
+                    }
+                    if shouldEmit {
+                        let completed = Int64(Double(progressTotalBytes) * ratio)
+                        progress(OperationProgress(
+                            phase: .extracting,
+                            completedBytes: completed,
+                            totalBytes: progressTotalBytes,
+                            currentItem: itemName ?? firstItemName,
+                            fractionCompleted: targetFraction
+                        ))
+                    }
+                }
+            }
+
             let result = try await ProcessCancellationController.run(
                 executableURL: bin,
-                arguments: args
+                arguments: args,
+                stdinFileURL: isSequentialTarFamily ? url : nil,
+                onStderrChunk: stderrHandler,
+                onStdinProgress: stdinProgressHandler
             )
+            stagingMonitor?.cancel()
             if result.exitCode != 0 {
                 throw ProZipError.corruptedArchive("bsdtar 提取归档失败，退出码 \(result.exitCode)")
             }
         }
 
         // 2. Publish items safely to final destination
-        progress(OperationProgress(phase: .savingSafely, completedBytes: 0, totalBytes: Int64(plan.itemsToExtract.count)))
+        progress(OperationProgress(
+            phase: .savingSafely,
+            completedBytes: progressTotalBytes,
+            totalBytes: progressTotalBytes,
+            fractionCompleted: 0.94
+        ))
 
         var publishedURLs: [URL] = []
         var skippedCount = plan.skippedEntries.count
         var skippedReasons = plan.skippedEntries.map(\.reason)
+        let totalPublishCount = max(1, plan.itemsToExtract.count)
+        var lastPublishEmitTime = CFAbsoluteTimeGetCurrent()
 
-        for item in plan.itemsToExtract {
+        for (index, item) in plan.itemsToExtract.enumerated() {
             try Task.checkCancellation()
             let stagedPath = format.isSingleStream ? item.relativeOutputPath : item.entry.path
             let stagedItemURL = stagingURL.appendingPathComponent(stagedPath)
@@ -289,10 +437,7 @@ public struct LibarchiveEngine: ArchiveEngine {
             if item.entry.isDirectory {
                 try fm.createDirectory(at: destURL, withIntermediateDirectories: true)
                 publishedURLs.append(destURL)
-                continue
-            }
-
-            if fm.fileExists(atPath: destURL.path) {
+            } else if fm.fileExists(atPath: destURL.path) {
                 switch item.conflictAction {
                 case .replace:
                     _ = try fm.replaceItemAt(destURL, withItemAt: stagedItemURL, options: .usingNewMetadataOnly)
@@ -308,9 +453,26 @@ public struct LibarchiveEngine: ArchiveEngine {
                 try fm.moveItem(at: stagedItemURL, to: destURL)
                 publishedURLs.append(destURL)
             }
+
+            let now = CFAbsoluteTimeGetCurrent()
+            if index == totalPublishCount - 1 || (now - lastPublishEmitTime) >= 0.04 {
+                lastPublishEmitTime = now
+                let publishRatio = Double(index + 1) / Double(totalPublishCount)
+                progress(OperationProgress(
+                    phase: .savingSafely,
+                    completedBytes: progressTotalBytes,
+                    totalBytes: progressTotalBytes,
+                    fractionCompleted: 0.94 + 0.05 * publishRatio
+                ))
+            }
         }
 
-        progress(OperationProgress(phase: .completed, completedBytes: Int64(publishedURLs.count), totalBytes: Int64(publishedURLs.count)))
+        progress(OperationProgress(
+            phase: .completed,
+            completedBytes: progressTotalBytes,
+            totalBytes: progressTotalBytes,
+            fractionCompleted: 1.0
+        ))
 
         return ExtractionReport(
             destinationURL: dir,
@@ -345,7 +507,16 @@ public struct LibarchiveEngine: ArchiveEngine {
             throw ProZipError.invalidCreationProfile("bsdtar 引擎不支持创建格式：\(profile.format.displayName)")
         }
 
-        progress(OperationProgress(phase: .preparing, completedBytes: 0, totalBytes: 0))
+        let sourceStats = Self.estimateSourceStats(sources)
+        let progressTotalBytes = sourceStats.totalBytes > 0 ? sourceStats.totalBytes : Int64(max(1, sourceStats.fileCount))
+
+        progress(OperationProgress(
+            phase: .preparing,
+            completedBytes: 0,
+            totalBytes: progressTotalBytes,
+            currentItem: sources.first?.lastPathComponent,
+            fractionCompleted: 0.02
+        ))
 
         let fm = FileManager.default
         let stagingUUID = UUID().uuidString
@@ -355,13 +526,27 @@ public struct LibarchiveEngine: ArchiveEngine {
 
         let stagingArchiveURL = stagingDir.appendingPathComponent(url.lastPathComponent)
 
-        progress(OperationProgress(phase: .compressing, completedBytes: 0, totalBytes: 0))
+        progress(OperationProgress(
+            phase: .compressing,
+            completedBytes: 0,
+            totalBytes: progressTotalBytes,
+            currentItem: sources.first?.lastPathComponent,
+            fractionCompleted: 0.04
+        ))
+
+        final class CreateStreamState: @unchecked Sendable {
+            let lock = NSLock()
+            var lastFraction: Double = 0.04
+            var lastItem: String?
+            var seenCount: Int = 0
+        }
+        let createState = CreateStreamState()
 
         if profile.format.isSingleStream {
             guard let firstSource = sources.first else {
                 throw ProZipError.invalidCreationProfile("单文件压缩流需要至少一个源文件")
             }
-            // Use system command line compress tools for raw single streams
+            // Use system command line compress tools with chunked stdin for real-time byte progress
             let streamBin = try Self.singleStreamBinary(for: profile.format)
 
             guard fm.createFile(atPath: stagingArchiveURL.path, contents: nil, attributes: [.posixPermissions: 0o600]) else {
@@ -371,8 +556,28 @@ public struct LibarchiveEngine: ArchiveEngine {
             defer { try? output.close() }
             let result = try await ProcessCancellationController.run(
                 executableURL: streamBin,
-                arguments: ["-c", firstSource.path],
-                stdoutFile: output
+                arguments: ["-c"],
+                stdinFileURL: firstSource,
+                stdoutFile: output,
+                onStdinProgress: { written, total in
+                    guard total > 0 else { return }
+                    let ratio = min(1.0, max(0.0, Double(written) / Double(total)))
+                    let targetFraction = 0.04 + 0.91 * ratio
+                    let shouldEmit = createState.lock.withLock {
+                        guard targetFraction > createState.lastFraction + 1e-4 else { return false }
+                        createState.lastFraction = targetFraction
+                        return true
+                    }
+                    if shouldEmit {
+                        progress(OperationProgress(
+                            phase: .compressing,
+                            completedBytes: min(total, written),
+                            totalBytes: total,
+                            currentItem: firstSource.lastPathComponent,
+                            fractionCompleted: targetFraction
+                        ))
+                    }
+                }
             )
             if result.exitCode != 0 {
                 throw ProZipError.corruptedArchive("单流压缩失败，退出码 \(result.exitCode)")
@@ -382,19 +587,20 @@ public struct LibarchiveEngine: ArchiveEngine {
                 throw ProZipError.invalidCreationProfile("创建归档需要至少一个源文件")
             }
 
+            let useVerbose = sourceStats.fileCount <= 2000
             var args: [String] = []
             switch profile.format {
             case .tar:
-                args.append("-cf")
+                args.append(useVerbose ? "-cvf" : "-cf")
             case .tarGz:
-                args.append("-czf")
+                args.append(useVerbose ? "-czvf" : "-czf")
             case .tarBz2:
-                args.append("-cjf")
+                args.append(useVerbose ? "-cjvf" : "-cjf")
             case .tarXz:
                 args.append("--xz")
-                args.append("-cf")
+                args.append(useVerbose ? "-cvf" : "-cf")
             default:
-                args.append("-cf")
+                args.append(useVerbose ? "-cvf" : "-cf")
             }
 
             args.append(stagingArchiveURL.path)
@@ -415,17 +621,86 @@ public struct LibarchiveEngine: ArchiveEngine {
                 args.append(contentsOf: ["-C", s.deletingLastPathComponent().path, "./\(name)"])
             }
 
+            let totalFiles = max(1, sourceStats.fileCount)
+            let outputMonitor: Task<Void, Never>?
+            if sourceStats.totalBytes > 0 {
+                outputMonitor = Task.detached(priority: .utility) {
+                    while !Task.isCancelled {
+                        try? await Task.sleep(nanoseconds: 150_000_000)
+                        guard !Task.isCancelled else { break }
+                        let outBytes = Int64(max(0, (try? stagingArchiveURL.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0))
+                        guard outBytes > 0 else { continue }
+                        let ratio = min(0.95, max(0.0, Double(outBytes) / Double(sourceStats.totalBytes)))
+                        let targetFraction = 0.04 + 0.91 * ratio
+                        let (shouldEmit, itemName) = createState.lock.withLock { () -> (Bool, String?) in
+                            guard targetFraction > createState.lastFraction + 0.005 else { return (false, nil) }
+                            createState.lastFraction = targetFraction
+                            return (true, createState.lastItem)
+                        }
+                        if shouldEmit {
+                            progress(OperationProgress(
+                                phase: .compressing,
+                                completedBytes: min(sourceStats.totalBytes, outBytes),
+                                totalBytes: progressTotalBytes,
+                                currentItem: itemName ?? sources.first?.lastPathComponent,
+                                fractionCompleted: targetFraction
+                            ))
+                        }
+                    }
+                }
+            } else {
+                outputMonitor = nil
+            }
+            defer { outputMonitor?.cancel() }
+
+            var createStderrHandler: (@Sendable (Data) -> Void)? = nil
+            if useVerbose {
+                createStderrHandler = { chunk in
+                    guard let parsed = Self.parseBsdtarVerboseItems(from: chunk, prefix: "a ") else { return }
+                    let (shouldEmit, fraction, currentItem) = createState.lock.withLock { () -> (Bool, Double, String?) in
+                        createState.seenCount += parsed.count
+                        if let last = parsed.last {
+                            createState.lastItem = last
+                        }
+                        let ratio = min(0.95, Double(createState.seenCount) / Double(totalFiles))
+                        let target = 0.04 + 0.91 * ratio
+                        if target > createState.lastFraction + 0.005 {
+                            createState.lastFraction = target
+                            return (true, target, createState.lastItem)
+                        }
+                        return (false, createState.lastFraction, createState.lastItem)
+                    }
+                    if shouldEmit {
+                        let ratio = max(0.0, min(1.0, (fraction - 0.04) / 0.91))
+                        progress(OperationProgress(
+                            phase: .compressing,
+                            completedBytes: Int64(Double(progressTotalBytes) * ratio),
+                            totalBytes: progressTotalBytes,
+                            currentItem: currentItem,
+                            fractionCompleted: fraction
+                        ))
+                    }
+                }
+            }
+
             let result = try await ProcessCancellationController.run(
                 executableURL: bin,
-                arguments: args
+                arguments: args,
+                onStderrChunk: createStderrHandler
             )
+            outputMonitor?.cancel()
             if result.exitCode != 0 {
                 throw ProZipError.corruptedArchive("bsdtar 创建归档失败，退出码 \(result.exitCode)")
             }
         }
 
         // Publish safely
-        progress(OperationProgress(phase: .savingSafely, completedBytes: 0, totalBytes: 0))
+        progress(OperationProgress(
+            phase: .savingSafely,
+            completedBytes: progressTotalBytes,
+            totalBytes: progressTotalBytes,
+            fractionCompleted: 0.97
+        ))
 
         guard fm.fileExists(atPath: stagingArchiveURL.path) else {
             throw ProZipError.corruptedArchive("bsdtar 未生成有效的归档文件")
@@ -438,10 +713,78 @@ public struct LibarchiveEngine: ArchiveEngine {
             try fm.moveItem(at: stagingArchiveURL, to: url)
         }
 
-        progress(OperationProgress(phase: .completed, completedBytes: 1, totalBytes: 1))
+        progress(OperationProgress(
+            phase: .completed,
+            completedBytes: progressTotalBytes,
+            totalBytes: progressTotalBytes,
+            fractionCompleted: 1.0
+        ))
     }
 
     // MARK: - Helpers
+
+    private static func parseBsdtarVerboseItems(from chunk: Data, prefix: String) -> (count: Int, last: String?)? {
+        guard !chunk.isEmpty else { return nil }
+        let text = String(decoding: chunk, as: UTF8.self)
+        var count = 0
+        var lastItem: String?
+        for rawLine in text.split(whereSeparator: { $0 == "\n" || $0 == "\r" }) {
+            guard rawLine.hasPrefix(prefix) else { continue }
+            count += 1
+            var item = String(rawLine.dropFirst(prefix.count)).trimmingCharacters(in: .whitespaces)
+            if item.hasPrefix("./") {
+                item = String(item.dropFirst(2))
+            }
+            if !item.isEmpty {
+                lastItem = (item as NSString).lastPathComponent
+            }
+        }
+        return count > 0 ? (count, lastItem) : nil
+    }
+
+    private static func directoryRegularFileBytes(at root: URL) -> Int64 {
+        let fm = FileManager.default
+        guard let enumerator = fm.enumerator(
+            at: root,
+            includingPropertiesForKeys: [.isRegularFileKey, .fileSizeKey],
+            options: []
+        ) else { return 0 }
+        var total: Int64 = 0
+        while let child = enumerator.nextObject() as? URL {
+            if let vals = try? child.resourceValues(forKeys: [.isRegularFileKey, .fileSizeKey]),
+               vals.isRegularFile == true {
+                total += Int64(max(0, vals.fileSize ?? 0))
+            }
+        }
+        return total
+    }
+
+    private static func estimateSourceStats(_ sources: [URL]) -> (totalBytes: Int64, fileCount: Int) {
+        let fm = FileManager.default
+        var total: Int64 = 0
+        var count = 0
+        for root in sources {
+            let values = try? root.resourceValues(forKeys: [.isDirectoryKey, .isRegularFileKey, .fileSizeKey])
+            count += 1
+            if values?.isDirectory == true {
+                guard let enumerator = fm.enumerator(
+                    at: root,
+                    includingPropertiesForKeys: [.isRegularFileKey, .fileSizeKey],
+                    options: []
+                ) else { continue }
+                while let child = enumerator.nextObject() as? URL {
+                    count += 1
+                    if let childVals = try? child.resourceValues(forKeys: [.isRegularFileKey, .fileSizeKey]),
+                       childVals.isRegularFile == true {
+                        total += Int64(max(0, childVals.fileSize ?? 0))
+                    }
+                }
+            } else {
+                total += Int64(max(0, values?.fileSize ?? 0))
+            }
+        }
+        return (total, count)
+    }
 
     public static func stripSingleStreamExtension(from filename: String, format: ArchiveFormat) -> String {
         let lower = filename.lowercased()

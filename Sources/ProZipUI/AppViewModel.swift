@@ -1851,6 +1851,17 @@ public final class ProZipAppViewModel: ObservableObject {
         let operation = Task { [self] in
             defer { task.clearCancellation() }
             do {
+                if case .ready = session.phase {
+                    // Already indexed.
+                } else {
+                    task.update(progress: OperationProgress(
+                        phase: .checkingArchive,
+                        completedBytes: 0,
+                        totalBytes: task.totalBytes,
+                        currentItem: session.archiveName,
+                        fractionCompleted: 0.01
+                    ))
+                }
                 let entries = try await extractionEntries(for: selection, in: session, password: password)
                 try Task.checkCancellation()
                 guard session.url == archiveURL, sourceStat != nil, SourceArchiveStat.read(from: archiveURL) == sourceStat else {
@@ -1861,13 +1872,22 @@ public final class ProZipAppViewModel: ObservableObject {
                 options.filterDMGInstallerArtifacts = preferences.filtersDMGInstallerArtifacts
                 options.explicitlySelectedEntryIDs = Set(selection?.map(\.id) ?? [])
                 options.conflictResolution = conflictResolution
-                let plan = try ArchiveExtractionPolicy.buildPlan(entries: entries, archiveURL: archiveURL, destinationURL: destination, options: options)
-                if conflictResolution == .ask,
-                   let conflict = plan.itemsToExtract.first(where: {
-                       !$0.entry.isDirectory && FileManager.default.fileExists(atPath: $0.destinationURL.path)
-                   }) {
+                let capturedOptions = options
+                let conflictItem: ConflictItemInfo? = try await Task.detached(priority: .userInitiated) {
+                    let plan = try ArchiveExtractionPolicy.buildPlan(
+                        entries: entries,
+                        archiveURL: archiveURL,
+                        destinationURL: destination,
+                        options: capturedOptions
+                    )
+                    guard conflictResolution == .ask,
+                          let conflict = plan.itemsToExtract.first(where: {
+                              !$0.entry.isDirectory && FileManager.default.fileExists(atPath: $0.destinationURL.path)
+                          }) else {
+                        return nil
+                    }
                     let values = try? conflict.destinationURL.resourceValues(forKeys: [.fileSizeKey, .contentModificationDateKey])
-                    let conflictItem = ConflictItemInfo(
+                    return ConflictItemInfo(
                         fileName: conflict.destinationURL.lastPathComponent,
                         destinationPath: conflict.destinationURL.deletingLastPathComponent().path,
                         existingSize: Int64(values?.fileSize ?? 0),
@@ -1875,6 +1895,9 @@ public final class ProZipAppViewModel: ObservableObject {
                         incomingSize: conflict.entry.uncompressedSize,
                         incomingModifiedAt: conflict.entry.modifiedAt
                     )
+                }.value
+                try Task.checkCancellation()
+                if let conflictItem {
                     let owner = sessions.contains(where: { $0.id == session.id }) ? session.id : activeSessionID
                     requestConflictResolution(conflictItem, owner: owner) { [weak self] resolution in
                         guard resolution == .replace || resolution == .keepBoth else {
@@ -1893,16 +1916,20 @@ public final class ProZipAppViewModel: ObservableObject {
                     options: options
                 ) { progress in
                     if progress.phase != .completed {
-                        Task { @MainActor in task.update(progress: progress) }
+                        Task { @MainActor in
+                            guard !task.isFinished else { return }
+                            task.update(progress: progress)
+                        }
                     }
                 }
                 try Task.checkCancellation()
                 if let password { rememberPassword(password, for: session) }
                 task.outputResultURL = report.destinationURL
+                let finalTotalBytes = max(1, task.totalBytes)
                 task.update(progress: OperationProgress(
                     phase: report.failedCount == 0 ? .completed : .failed,
-                    completedBytes: task.totalBytes,
-                    totalBytes: task.totalBytes,
+                    completedBytes: finalTotalBytes,
+                    totalBytes: finalTotalBytes,
                     currentItem: report.failedCount == 0 ? "解压完成（\(report.extractedCount) 项）" : "已解压可用内容，跳过 \(report.failedCount) 个文件；源压缩包已保留。",
                     fractionCompleted: 1
                 ))

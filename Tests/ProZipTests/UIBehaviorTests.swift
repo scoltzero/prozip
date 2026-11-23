@@ -3,6 +3,7 @@ import Combine
 import UniformTypeIdentifiers
 import SwiftUI
 import XCTest
+import zlib
 import ProZipCore
 import ProZipEngines
 import ProZipShared
@@ -845,5 +846,421 @@ final class UIBehaviorTests: XCTestCase {
         try await engine.create(sources: [srcFolder], at: preserved7z, profile: preservedProfile, password: nil, progress: { _ in })
         let preservedEntries = try await engine.list(preserved7z, password: nil, progress: { _ in })
         XCTAssertTrue(preservedEntries.contains { $0.name == ".DS_Store" || $0.path.hasSuffix(".DS_Store") })
+    }
+
+    func testSevenZipProgressSnapshotParserHandlesExtractionOpenAndByteFallback() {
+        // Extraction format with `- ` item separator
+        let extractChunk = Data("\u{08}\u{08}\u{08}\u{08} 21% - movie.mkv".utf8)
+        let extractParsed = SevenZipEngine.parseDetailedProgressSnapshot(from: extractChunk)
+        XCTAssertEqual(extractParsed, .init(stage: .transfer, percent: 21, processedBytes: nil, currentItem: "movie.mkv"))
+        XCTAssertEqual(SevenZipEngine.parseProgressSnapshot(from: extractChunk)?.percent, 21)
+        XCTAssertEqual(SevenZipEngine.parseProgressSnapshot(from: extractChunk)?.currentItem, "movie.mkv")
+
+        // Extraction with file counter + `- ` separator + `+ ` inside filename
+        let countedChunk = Data("\u{08}\u{08} 85% 13 - clip + bonus.bin".utf8)
+        XCTAssertEqual(
+            SevenZipEngine.parseDetailedProgressSnapshot(from: countedChunk),
+            .init(stage: .transfer, percent: 85, processedBytes: nil, currentItem: "clip + bonus.bin")
+        )
+
+        // Extraction count-only segment (no item name)
+        let countOnlyChunk = Data("\u{08}\u{08} 60% 3700".utf8)
+        XCTAssertEqual(
+            SevenZipEngine.parseDetailedProgressSnapshot(from: countOnlyChunk),
+            .init(stage: .transfer, percent: 60, processedBytes: nil, currentItem: nil)
+        )
+
+        // Multi-volume RAR pre-transfer Open progress must be classified as .opening and ignored by parseProgressSnapshot
+        let openChunk = Data("Extracting archive: demo.part001.rar\n 98% 100 Open".utf8)
+        XCTAssertEqual(
+            SevenZipEngine.parseDetailedProgressSnapshot(from: openChunk),
+            .init(stage: .opening, percent: 98, processedBytes: nil, currentItem: nil)
+        )
+        XCTAssertNil(SevenZipEngine.parseProgressSnapshot(from: openChunk))
+
+        // A real file literally named "Open" still parses as .transfer because of `- `
+        let fileNamedOpen = Data(" 50% - Open".utf8)
+        XCTAssertEqual(
+            SevenZipEngine.parseDetailedProgressSnapshot(from: fileNamedOpen),
+            .init(stage: .transfer, percent: 50, processedBytes: nil, currentItem: "Open")
+        )
+
+        // Unknown-total byte-count fallback vs drive Scan
+        let scanChunk = Data("  0M Scan /tmp/dir".utf8)
+        XCTAssertEqual(
+            SevenZipEngine.parseDetailedProgressSnapshot(from: scanChunk),
+            .init(stage: .opening, percent: nil, processedBytes: 0, currentItem: nil)
+        )
+        let byteTransferChunk = Data(" 64M - huge_stream.bin".utf8)
+        XCTAssertEqual(
+            SevenZipEngine.parseDetailedProgressSnapshot(from: byteTransferChunk),
+            .init(stage: .transfer, percent: nil, processedBytes: 64 * 1024 * 1024, currentItem: "huge_stream.bin")
+        )
+    }
+
+    func testSplitVolumeFamilyResolvesOldStyleRarVolumes() throws {
+        let tempDir = try temporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: tempDir) }
+
+        let rar = tempDir.appendingPathComponent("archive.rar")
+        let r00 = tempDir.appendingPathComponent("archive.r00")
+        let r01 = tempDir.appendingPathComponent("archive.r01")
+        try Data("part0".utf8).write(to: rar)
+        try Data("part1".utf8).write(to: r00)
+        try Data("part2".utf8).write(to: r01)
+
+        let fromRar = SplitVolumeFamily.resolve(for: rar)
+        XCTAssertTrue(fromRar.isSplit)
+        XCTAssertTrue(fromRar.isComplete)
+        XCTAssertFalse(fromRar.hasEmptyVolume)
+        XCTAssertEqual(fromRar.primaryVolumeURL.standardizedFileURL, rar.standardizedFileURL)
+        XCTAssertEqual(fromRar.volumeURLs.map(\.lastPathComponent), ["archive.rar", "archive.r00", "archive.r01"])
+
+        let fromR01 = SplitVolumeFamily.resolve(for: r01)
+        XCTAssertTrue(fromR01.isSplit)
+        XCTAssertTrue(fromR01.isComplete)
+        XCTAssertEqual(fromR01.primaryVolumeURL.standardizedFileURL, rar.standardizedFileURL)
+
+        // Missing middle volume (.r00) must be detected as incomplete
+        try FileManager.default.removeItem(at: r00)
+        let incomplete = SplitVolumeFamily.resolve(for: r01)
+        XCTAssertTrue(incomplete.isSplit)
+        XCTAssertFalse(incomplete.isComplete)
+    }
+
+    private static func makeSplitStoredRAR4Archive(
+        in directory: URL,
+        baseName: String,
+        fileName: String,
+        payload: Data,
+        partSize: Int
+    ) throws -> [URL] {
+        func crc32Value(_ data: Data) -> UInt32 {
+            data.withUnsafeBytes { ptr in
+                guard let base = ptr.bindMemory(to: UInt8.self).baseAddress else { return 0 }
+                return UInt32(zlib.crc32(0, base, uInt(data.count)))
+            }
+        }
+
+        func appendUInt16LE(_ v: UInt16, to data: inout Data) {
+            var le = v.littleEndian
+            withUnsafeBytes(of: &le) { data.append(contentsOf: $0) }
+        }
+
+        func appendUInt32LE(_ v: UInt32, to data: inout Data) {
+            var le = v.littleEndian
+            withUnsafeBytes(of: &le) { data.append(contentsOf: $0) }
+        }
+
+        func rarBlock(type: UInt8, flags: UInt16, body: Data) -> Data {
+            var header = Data()
+            header.append(type)
+            appendUInt16LE(flags, to: &header)
+            appendUInt16LE(UInt16(7 + body.count), to: &header)
+            header.append(body)
+            let crc16 = UInt16(crc32Value(header) & 0xFFFF)
+            var out = Data()
+            appendUInt16LE(crc16, to: &out)
+            out.append(header)
+            return out
+        }
+
+        let marker = Data([0x52, 0x61, 0x72, 0x21, 0x1A, 0x07, 0x00])
+        let nameBytes = Data(fileName.utf8)
+        let fullCRC = crc32Value(payload)
+        var volumes: [Data] = []
+        var offset = 0
+        var volIndex = 0
+
+        while offset < payload.count {
+            var vol = Data()
+            vol.append(marker)
+            let mainFlags: UInt16 = 0x0001 | 0x0010 | (volIndex == 0 ? 0x0100 : 0)
+            vol.append(rarBlock(type: 0x73, flags: mainFlags, body: Data(count: 6)))
+
+            let headerBudget = 32 + nameBytes.count + 20
+            let chunkLen = min(payload.count - offset, max(1024, partSize - vol.count - headerBudget))
+            let chunk = payload.subdata(in: offset..<(offset + chunkLen))
+            let splitBefore = offset > 0
+            let splitAfter = (offset + chunkLen) < payload.count
+
+            var fileFlags: UInt16 = 0x8000
+            if splitBefore { fileFlags |= 0x0001 }
+            if splitAfter { fileFlags |= 0x0002 }
+            let partCRC = splitAfter ? crc32Value(chunk) : fullCRC
+
+            var body = Data()
+            appendUInt32LE(UInt32(chunk.count), to: &body)
+            appendUInt32LE(UInt32(payload.count), to: &body)
+            body.append(3) // Unix host OS
+            appendUInt32LE(partCRC, to: &body)
+            appendUInt32LE(0x50210000, to: &body)
+            body.append(29) // unp ver
+            body.append(0x30) // store
+            appendUInt16LE(UInt16(nameBytes.count), to: &body)
+            appendUInt32LE(0o100644, to: &body)
+            body.append(nameBytes)
+
+            vol.append(rarBlock(type: 0x74, flags: fileFlags, body: body))
+            vol.append(chunk)
+            vol.append(rarBlock(type: 0x7B, flags: splitAfter ? 0x0001 : 0x0000, body: Data()))
+
+            volumes.append(vol)
+            offset += chunkLen
+            volIndex += 1
+        }
+
+        var urls: [URL] = []
+        for (idx, volData) in volumes.enumerated() {
+            let url = directory.appendingPathComponent("\(baseName).part\(idx + 1).rar")
+            try volData.write(to: url)
+            urls.append(url)
+        }
+        return urls
+    }
+
+    func testSplitRarExtractionStreamsRealTimeProgressUpdates() async throws {
+        guard SevenZipEngine.resolveBinaryURL() != nil else { throw XCTSkip("7-Zip unavailable") }
+        let tempDir = try temporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: tempDir) }
+
+        // Build a 384 MiB split RAR4 across 8 volumes so 7-Zip extraction emits real-time -bsp1 updates.
+        let pattern = Data((0..<1024).map { UInt8($0 & 0xFF) })
+        var chunk1MiB = Data(capacity: 1024 * 1024)
+        for _ in 0..<1024 { chunk1MiB.append(pattern) }
+        var payload = Data(capacity: 384 * 1024 * 1024)
+        for _ in 0..<384 { payload.append(chunk1MiB) }
+
+        let volumes = try Self.makeSplitStoredRAR4Archive(
+            in: tempDir,
+            baseName: "bundle",
+            fileName: "video.mkv",
+            payload: payload,
+            partSize: 50 * 1024 * 1024
+        )
+        XCTAssertGreaterThanOrEqual(volumes.count, 8)
+
+        let broker = ArchiveEngineBroker()
+        let descriptor = try await broker.probe(volumes[2])
+        XCTAssertTrue(descriptor.isSplitVolume)
+        XCTAssertEqual(descriptor.format, .rar)
+        XCTAssertGreaterThanOrEqual(descriptor.totalCompressedSize, Int64(payload.count))
+
+        let entries = try await broker.list(volumes[2], password: nil)
+        XCTAssertEqual(entries.count, 1)
+        XCTAssertEqual(entries.first?.path, "video.mkv")
+
+        let destDir = tempDir.appendingPathComponent("extracted", isDirectory: true)
+        final class ProgressRecorder: @unchecked Sendable {
+            let lock = NSLock()
+            var snapshots: [OperationProgress] = []
+            func append(_ p: OperationProgress) {
+                lock.lock()
+                snapshots.append(p)
+                lock.unlock()
+            }
+        }
+        let recorder = ProgressRecorder()
+
+        let report = try await broker.extract(
+            entries,
+            from: volumes[2],
+            to: destDir,
+            password: nil,
+            options: ExtractionOptions(conflictResolution: .replace)
+        ) { progress in
+            recorder.append(progress)
+        }
+
+        XCTAssertEqual(report.extractedCount, 1)
+        let extractedFile = destDir.appendingPathComponent("video.mkv")
+        let extractedSize = (try? extractedFile.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0
+        XCTAssertEqual(extractedSize, payload.count)
+
+        let snapshots = recorder.snapshots
+        let extractingFractions = snapshots
+            .filter { $0.phase == .extracting }
+            .map(\.fractionCompleted)
+        XCTAssertTrue(
+            extractingFractions.contains { $0 > 0.06 && $0 < 0.94 },
+            "Expected real-time mid-extraction progress between 6% and 94%, got: \(extractingFractions)"
+        )
+        XCTAssertTrue(
+            snapshots.contains { $0.phase == .extracting && $0.totalBytes == Int64(payload.count) && $0.completedBytes > 0 },
+            "Expected byte-accurate extraction progress for speed/ETA calculation"
+        )
+
+        let allFractions = snapshots.map(\.fractionCompleted)
+        XCTAssertEqual(allFractions.last, 1.0)
+        for i in 1..<allFractions.count {
+            XCTAssertGreaterThanOrEqual(
+                allFractions[i] + 1e-9,
+                allFractions[i - 1],
+                "Extraction progress must be monotonically non-decreasing: \(allFractions)"
+            )
+        }
+    }
+
+    func testNativeZipSingleLargeFileExtractionStreamsMidFileProgress() async throws {
+        let tempDir = try temporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: tempDir) }
+
+        // 16 MiB moderately compressible file in a single-entry ZIP
+        let srcFile = tempDir.appendingPathComponent("dataset.bin")
+        var block = Data(capacity: 65_536)
+        for i in 0..<65_536 {
+            block.append(UInt8((i &* 31 &+ (i >> 6)) & 0xFF))
+        }
+        var payload = Data(capacity: 16 * 1024 * 1024)
+        for _ in 0..<256 { payload.append(block) }
+        try payload.write(to: srcFile)
+
+        let zipURL = tempDir.appendingPathComponent("single_large.zip")
+        let engine = NativeZipEngine()
+        try await engine.create(
+            sources: [srcFile],
+            at: zipURL,
+            profile: CreationProfile(purpose: .general, format: .zip, strength: .fast),
+            password: nil,
+            progress: { _ in }
+        )
+
+        let entries = try await engine.list(zipURL, password: nil, progress: { _ in })
+        XCTAssertEqual(entries.count, 1)
+
+        final class Recorder: @unchecked Sendable {
+            let lock = NSLock()
+            var snapshots: [OperationProgress] = []
+            func record(_ p: OperationProgress) {
+                lock.withLock { snapshots.append(p) }
+            }
+        }
+        let recorder = Recorder()
+        let outDir = tempDir.appendingPathComponent("zip_out", isDirectory: true)
+        let report = try await engine.extract(
+            entries,
+            from: zipURL,
+            to: outDir,
+            password: nil,
+            options: ExtractionOptions(conflictResolution: .replace)
+        ) { progress in
+            recorder.record(progress)
+        }
+
+        XCTAssertEqual(report.extractedCount, 1)
+        let extractedData = try Data(contentsOf: outDir.appendingPathComponent("dataset.bin"))
+        XCTAssertEqual(extractedData.count, payload.count)
+
+        let snapshots = recorder.snapshots
+        let midExtract = snapshots.filter { $0.phase == .extracting }.map(\.fractionCompleted)
+        XCTAssertTrue(
+            midExtract.contains { $0 > 0.10 && $0 < 0.90 },
+            "Expected mid-file ZIP inflate progress between 10% and 90%, got: \(midExtract)"
+        )
+        let allFractions = snapshots.map(\.fractionCompleted)
+        XCTAssertEqual(allFractions.last, 1.0)
+        for i in 1..<allFractions.count {
+            XCTAssertGreaterThanOrEqual(allFractions[i] + 1e-9, allFractions[i - 1])
+        }
+    }
+
+    func testLibarchiveTarGzAndGzipStreamRealTimeExtractionAndCreationProgress() async throws {
+        let tempDir = try temporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: tempDir) }
+
+        // 24 MiB source file (mix of pattern and incompressible bytes so tar.gz / gz take >50ms)
+        let srcFile = tempDir.appendingPathComponent("backup.bin")
+        var block = Data(count: 65_536)
+        block.withUnsafeMutableBytes { buf in
+            guard let ptr = buf.bindMemory(to: UInt8.self).baseAddress else { return }
+            var state: UInt64 = 0x9E37_79B9_7F4A_7C15
+            for i in 0..<32_768 {
+                state = state &* 6364136223846793005 &+ 1442695040888963407
+                ptr[i] = UInt8(truncatingIfNeeded: state >> 56)
+            }
+            for i in 32_768..<65_536 {
+                ptr[i] = UInt8(i & 0x3F)
+            }
+        }
+        var payload = Data(capacity: 24 * 1024 * 1024)
+        for _ in 0..<384 { payload.append(block) }
+        try payload.write(to: srcFile)
+
+        let engine = LibarchiveEngine()
+        final class Recorder: @unchecked Sendable {
+            let lock = NSLock()
+            var snapshots: [OperationProgress] = []
+            func record(_ p: OperationProgress) {
+                lock.withLock { snapshots.append(p) }
+            }
+        }
+
+        // 1. TAR.GZ creation + extraction progress
+        let tarGzURL = tempDir.appendingPathComponent("bundle.tar.gz")
+        let tarCreateRec = Recorder()
+        try await engine.create(
+            sources: [srcFile],
+            at: tarGzURL,
+            profile: CreationProfile(purpose: .general, format: .tarGz),
+            password: nil
+        ) { tarCreateRec.record($0) }
+        XCTAssertEqual(tarCreateRec.snapshots.last?.fractionCompleted, 1.0)
+
+        let tarEntries = try await engine.list(tarGzURL, password: nil, progress: { _ in })
+        let tarExtractRec = Recorder()
+        let tarOut = tempDir.appendingPathComponent("tar_out", isDirectory: true)
+        let tarReport = try await engine.extract(
+            tarEntries,
+            from: tarGzURL,
+            to: tarOut,
+            password: nil,
+            options: ExtractionOptions(conflictResolution: .replace)
+        ) { tarExtractRec.record($0) }
+        XCTAssertEqual(tarReport.extractedCount, 1)
+        XCTAssertEqual(
+            (try? tarOut.appendingPathComponent("backup.bin").resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0,
+            payload.count
+        )
+        let tarExtractMid = tarExtractRec.snapshots.filter { $0.phase == .extracting }.map(\.fractionCompleted)
+        XCTAssertTrue(
+            tarExtractMid.contains { $0 > 0.08 && $0 < 0.94 },
+            "Expected mid-extraction tar.gz progress between 8% and 94%, got: \(tarExtractMid)"
+        )
+
+        // 2. Single-stream .gz creation + extraction progress
+        let gzURL = tempDir.appendingPathComponent("backup.bin.gz")
+        let gzCreateRec = Recorder()
+        try await engine.create(
+            sources: [srcFile],
+            at: gzURL,
+            profile: CreationProfile(purpose: .general, format: .gzip),
+            password: nil
+        ) { gzCreateRec.record($0) }
+        let gzCreateMid = gzCreateRec.snapshots.filter { $0.phase == .compressing }.map(\.fractionCompleted)
+        XCTAssertTrue(
+            gzCreateMid.contains { $0 > 0.08 && $0 < 0.95 },
+            "Expected mid-compression .gz progress between 8% and 95%, got: \(gzCreateMid)"
+        )
+
+        let gzEntries = try await engine.list(gzURL, password: nil, progress: { _ in })
+        let gzExtractRec = Recorder()
+        let gzOut = tempDir.appendingPathComponent("gz_out", isDirectory: true)
+        let gzReport = try await engine.extract(
+            gzEntries,
+            from: gzURL,
+            to: gzOut,
+            password: nil,
+            options: ExtractionOptions(conflictResolution: .replace)
+        ) { gzExtractRec.record($0) }
+        XCTAssertEqual(gzReport.extractedCount, 1)
+        XCTAssertEqual(
+            (try? gzOut.appendingPathComponent("backup.bin").resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0,
+            payload.count
+        )
+        let gzExtractMid = gzExtractRec.snapshots.filter { $0.phase == .extracting }.map(\.fractionCompleted)
+        XCTAssertTrue(
+            gzExtractMid.contains { $0 > 0.08 && $0 < 0.94 },
+            "Expected mid-extraction .gz progress between 8% and 94%, got: \(gzExtractMid)"
+        )
     }
 }

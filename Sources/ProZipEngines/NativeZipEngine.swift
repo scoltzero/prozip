@@ -698,7 +698,8 @@ public struct NativeZipEngine: ArchiveEngine {
             cdMap[item.fileName.trimmingCharacters(in: CharacterSet(charactersIn: "/"))] = item
         }
 
-        let totalBytes = plan.itemsToExtract.reduce(Int64(0)) { $0 + $1.entry.uncompressedSize }
+        let totalBytes = plan.itemsToExtract.reduce(Int64(0)) { $0 + max(0, $1.entry.uncompressedSize) }
+        let progressTotalBytes = totalBytes > 0 ? totalBytes : Int64(max(1, plan.itemsToExtract.count))
         var completedBytes: Int64 = 0
         var extractedCount = 0
         var skippedCount = plan.skippedEntries.count
@@ -706,22 +707,47 @@ public struct NativeZipEngine: ArchiveEngine {
         var extractedURLs: [URL] = []
         var skippedReasons: [String] = plan.skippedEntries.map(\.reason)
         var errors: [String] = []
+        var lastExtractEmitTime: CFAbsoluteTime = 0
+        var lastExtractFraction: Double = 0.02
 
-        progress(OperationProgress(phase: .preparing, completedBytes: 0, totalBytes: totalBytes))
+        progress(OperationProgress(
+            phase: .preparing,
+            completedBytes: 0,
+            totalBytes: progressTotalBytes,
+            currentItem: plan.itemsToExtract.first?.entry.name,
+            fractionCompleted: 0.02
+        ))
 
-        for plannedItem in plan.itemsToExtract {
+        func emitExtractProgress(currentCompletedBytes: Int64, itemIndex: Int, itemName: String, force: Bool = false) {
+            let ratio: Double
+            if totalBytes > 0 {
+                ratio = min(1.0, max(0.0, Double(currentCompletedBytes) / Double(totalBytes)))
+            } else {
+                ratio = min(1.0, max(0.0, Double(itemIndex) / Double(max(1, plan.itemsToExtract.count))))
+            }
+            let targetFraction = 0.02 + 0.92 * ratio
+            let now = CFAbsoluteTimeGetCurrent()
+            if force || lastExtractEmitTime == 0 || (now - lastExtractEmitTime) >= 0.025 || (targetFraction - lastExtractFraction) >= 0.015 {
+                lastExtractEmitTime = now
+                lastExtractFraction = max(lastExtractFraction, targetFraction)
+                progress(OperationProgress(
+                    phase: .extracting,
+                    completedBytes: totalBytes > 0 ? min(totalBytes, currentCompletedBytes) : Int64(itemIndex),
+                    totalBytes: progressTotalBytes,
+                    currentItem: itemName,
+                    fractionCompleted: lastExtractFraction
+                ))
+            }
+        }
+
+        for (index, plannedItem) in plan.itemsToExtract.enumerated() {
             if Task.isCancelled {
                 throw ProZipError.cancelled
             }
 
             let entry = plannedItem.entry
             let stagedItemURL = stagingDir.appendingPathComponent(plannedItem.relativeOutputPath)
-            progress(OperationProgress(
-                phase: .extracting,
-                completedBytes: completedBytes,
-                totalBytes: totalBytes,
-                currentItem: entry.name
-            ))
+            emitExtractProgress(currentCompletedBytes: completedBytes, itemIndex: index, itemName: entry.name, force: index == 0)
 
             switch entry.type {
             case .directory:
@@ -764,12 +790,26 @@ public struct NativeZipEngine: ArchiveEngine {
                     guard let cdItem = cdMap[entry.path] else {
                         throw ProZipError.corruptedArchive("未在中央目录中找到文件数据：\(entry.path)")
                     }
-                    let data = try readAndDecompressEntry(cdItem: cdItem, fileHandle: fileHandle, password: password)
+                    let baseCompleted = completedBytes
+                    let data = try readAndDecompressEntry(
+                        cdItem: cdItem,
+                        fileHandle: fileHandle,
+                        password: password
+                    ) { inEntryBytes in
+                        emitExtractProgress(
+                            currentCompletedBytes: baseCompleted + min(entry.uncompressedSize, inEntryBytes),
+                            itemIndex: index,
+                            itemName: entry.name
+                        )
+                    }
                     let parent = stagedItemURL.deletingLastPathComponent()
                     try fileManager.createDirectory(at: parent, withIntermediateDirectories: true)
                     try data.write(to: stagedItemURL, options: .atomic)
                     extractedCount += 1
                     completedBytes += entry.uncompressedSize
+                    emitExtractProgress(currentCompletedBytes: completedBytes, itemIndex: index + 1, itemName: entry.name)
+                } catch is CancellationError {
+                    throw ProZipError.cancelled
                 } catch {
                     failedCount += 1
                     skippedCount += 1
@@ -794,10 +834,18 @@ public struct NativeZipEngine: ArchiveEngine {
         }
 
         // Publish from staging directory to destinationURL
-        progress(OperationProgress(phase: .savingSafely, completedBytes: completedBytes, totalBytes: totalBytes))
+        progress(OperationProgress(
+            phase: .savingSafely,
+            completedBytes: progressTotalBytes,
+            totalBytes: progressTotalBytes,
+            fractionCompleted: 0.94
+        ))
         try fileManager.createDirectory(at: plan.rootDestinationURL, withIntermediateDirectories: true)
 
-        for plannedItem in plan.itemsToExtract {
+        let totalPublishCount = max(1, plan.itemsToExtract.count)
+        var lastPublishEmitTime = CFAbsoluteTimeGetCurrent()
+
+        for (index, plannedItem) in plan.itemsToExtract.enumerated() {
             try Task.checkCancellation()
             let stagedItemURL = stagingDir.appendingPathComponent(plannedItem.relativeOutputPath)
             guard (try? fileManager.attributesOfItem(atPath: stagedItemURL.path)) != nil else { continue }
@@ -810,45 +858,61 @@ public struct NativeZipEngine: ArchiveEngine {
             if plannedItem.entry.isDirectory {
                 try fileManager.createDirectory(at: destURL, withIntermediateDirectories: true)
                 extractedURLs.append(destURL)
-                continue
+            } else {
+                var alreadyPublished = false
+                switch plannedItem.conflictAction {
+                case .skip:
+                    if fileManager.fileExists(atPath: destURL.path) {
+                        continue
+                    }
+                case .replace:
+                    if fileManager.fileExists(atPath: destURL.path) {
+                        _ = try fileManager.replaceItemAt(destURL, withItemAt: stagedItemURL, options: .usingNewMetadataOnly)
+                        alreadyPublished = true
+                    }
+                case .keepBoth:
+                    if fileManager.fileExists(atPath: destURL.path) {
+                        destURL = autoNumberedDestinationURL(for: destURL)
+                    }
+                case .ask:
+                    if fileManager.fileExists(atPath: destURL.path) {
+                        throw ProZipError.structureConflict("目标文件已存在，需要选择如何处理：\(destURL.path)")
+                    }
+                }
+
+                if !alreadyPublished {
+                    try fileManager.moveItem(at: stagedItemURL, to: destURL)
+                }
+
+                if options.preservePermissions && plannedItem.entry.type != .symlink {
+                    try? fileManager.setAttributes([
+                        .posixPermissions: plannedItem.entry.permissions,
+                        .modificationDate: plannedItem.entry.modifiedAt
+                    ], ofItemAtPath: destURL.path)
+                }
+
+                extractedURLs.append(destURL)
             }
 
-            var alreadyPublished = false
-            switch plannedItem.conflictAction {
-            case .skip:
-                if fileManager.fileExists(atPath: destURL.path) {
-                    continue
-                }
-            case .replace:
-                if fileManager.fileExists(atPath: destURL.path) {
-                    _ = try fileManager.replaceItemAt(destURL, withItemAt: stagedItemURL, options: .usingNewMetadataOnly)
-                    alreadyPublished = true
-                }
-            case .keepBoth:
-                if fileManager.fileExists(atPath: destURL.path) {
-                    destURL = autoNumberedDestinationURL(for: destURL)
-                }
-            case .ask:
-                if fileManager.fileExists(atPath: destURL.path) {
-                    throw ProZipError.structureConflict("目标文件已存在，需要选择如何处理：\(destURL.path)")
-                }
+            let now = CFAbsoluteTimeGetCurrent()
+            if index == totalPublishCount - 1 || (now - lastPublishEmitTime) >= 0.04 {
+                lastPublishEmitTime = now
+                let publishRatio = Double(index + 1) / Double(totalPublishCount)
+                progress(OperationProgress(
+                    phase: .savingSafely,
+                    completedBytes: progressTotalBytes,
+                    totalBytes: progressTotalBytes,
+                    fractionCompleted: 0.94 + 0.05 * publishRatio
+                ))
             }
-
-            if !alreadyPublished {
-                try fileManager.moveItem(at: stagedItemURL, to: destURL)
-            }
-
-            if options.preservePermissions && plannedItem.entry.type != .symlink {
-                try? fileManager.setAttributes([
-                    .posixPermissions: plannedItem.entry.permissions,
-                    .modificationDate: plannedItem.entry.modifiedAt
-                ], ofItemAtPath: destURL.path)
-            }
-
-            extractedURLs.append(destURL)
         }
 
-        progress(OperationProgress(phase: .completed, completedBytes: completedBytes, totalBytes: totalBytes))
+        progress(OperationProgress(
+            phase: .completed,
+            completedBytes: progressTotalBytes,
+            totalBytes: progressTotalBytes,
+            fractionCompleted: 1.0
+        ))
         return ExtractionReport(
             destinationURL: plan.rootDestinationURL,
             extractedCount: extractedCount,
@@ -1880,7 +1944,8 @@ public struct NativeZipEngine: ArchiveEngine {
     private func readAndDecompressEntry(
         cdItem: CentralDirectoryEntry,
         fileHandle: FileHandle,
-        password: String?
+        password: String?,
+        onOutputProgress: ((Int64) throws -> Void)? = nil
     ) throws -> Data {
         guard cdItem.compressedSize <= ProcessCancellationController.maxBinaryOutputBytes,
               cdItem.uncompressedSize <= ProcessCancellationController.maxBinaryOutputBytes else {
@@ -1901,8 +1966,26 @@ public struct NativeZipEngine: ArchiveEngine {
         let payloadOffset = UInt64(cdItem.localHeaderOffset + 30 + Int64(fnLen + efLen))
 
         fileHandle.seek(toFileOffset: payloadOffset)
-        var rawPayload = fileHandle.readData(ofLength: Int(cdItem.compressedSize))
-        guard rawPayload.count == Int(cdItem.compressedSize) else {
+        let compressedTotal = Int(cdItem.compressedSize)
+        var rawPayload: Data
+        if onOutputProgress != nil, compressedTotal > 512 * 1024 {
+            rawPayload = Data(capacity: compressedTotal)
+            let chunkSize = 512 * 1024
+            var remaining = compressedTotal
+            while remaining > 0 {
+                try Task.checkCancellation()
+                let piece = fileHandle.readData(ofLength: min(chunkSize, remaining))
+                guard !piece.isEmpty else { break }
+                rawPayload.append(piece)
+                remaining -= piece.count
+                if cdItem.compressionMethod == 0 {
+                    try onOutputProgress?(Int64(rawPayload.count))
+                }
+            }
+        } else {
+            rawPayload = fileHandle.readData(ofLength: compressedTotal)
+        }
+        guard rawPayload.count == compressedTotal else {
             throw ProZipError.corruptedArchive("压缩包无效或已损坏：文件数据截断 (\(cdItem.fileName))")
         }
 
@@ -1941,7 +2024,11 @@ public struct NativeZipEngine: ArchiveEngine {
         case 0:
             uncompressedData = rawPayload
         case 8:
-            uncompressedData = try Self.inflateRaw(data: rawPayload, expectedSize: cdItem.uncompressedSize)
+            uncompressedData = try Self.inflateRaw(
+                data: rawPayload,
+                expectedSize: cdItem.uncompressedSize,
+                onOutputProgress: onOutputProgress
+            )
         case 99:
             throw ProZipError.corruptedArchive("此 ZIP 的压缩方法（AES-99）需要使用兼容引擎")
         default:
@@ -2265,7 +2352,11 @@ public struct NativeZipEngine: ArchiveEngine {
         return output
     }
 
-    public static func inflateRaw(data: Data, expectedSize: Int64) throws -> Data {
+    public static func inflateRaw(
+        data: Data,
+        expectedSize: Int64,
+        onOutputProgress: ((Int64) throws -> Void)? = nil
+    ) throws -> Data {
         guard expectedSize >= 0, expectedSize <= ProcessCancellationController.maxBinaryOutputBytes else {
             throw ProZipError.outputExceedsBudget("原生 ZIP 内存预算为 512 MiB")
         }
@@ -2286,6 +2377,8 @@ public struct NativeZipEngine: ArchiveEngine {
             output.reserveCapacity(Int(expectedSize))
         }
         let chunkSize = 65_536
+        let progressStride: Int64 = 512 * 1024
+        var lastReportedBytes: Int64 = 0
         var buffer = [UInt8](repeating: 0, count: chunkSize)
 
         try data.withUnsafeBytes { rawIn in
@@ -2310,9 +2403,16 @@ public struct NativeZipEngine: ArchiveEngine {
                         output.append(outBase, count: written)
                     }
                 }
+                if let onOutputProgress, Int64(output.count) - lastReportedBytes >= progressStride {
+                    lastReportedBytes = Int64(output.count)
+                    try onOutputProgress(lastReportedBytes)
+                }
             }
             guard status == Z_STREAM_END || (status == Z_OK && stream.avail_in == 0) else {
                 throw ProZipError.corruptedArchive("Inflate 解压未正常结束 (\(status))")
+            }
+            if let onOutputProgress, Int64(output.count) > lastReportedBytes {
+                try onOutputProgress(Int64(output.count))
             }
         }
         return output

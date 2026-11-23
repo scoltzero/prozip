@@ -107,6 +107,10 @@ private final class ChildProcessLifecycle: @unchecked Sendable {
         try process.run()
     }
 
+    var isStopped: Bool {
+        lock.withLock { isCancelled }
+    }
+
     func stop() {
         lock.lock()
         defer { lock.unlock() }
@@ -152,10 +156,13 @@ public final class ProcessCancellationController: @unchecked Sendable {
         workingDirectoryURL: URL? = nil,
         environment: [String: String]? = nil,
         stdinData: Data? = nil,
+        stdinFileURL: URL? = nil,
         stdoutFile: FileHandle? = nil,
         stdoutByteLimit: Int64 = .max,
         stdoutPrefixLimit: Int64? = nil,
-        onStdoutChunk: (@Sendable (Data) -> Void)? = nil
+        onStdoutChunk: (@Sendable (Data) -> Void)? = nil,
+        onStderrChunk: (@Sendable (Data) -> Void)? = nil,
+        onStdinProgress: (@Sendable (Int64, Int64) -> Void)? = nil
     ) async throws -> ProcessResult {
         try Task.checkCancellation()
         if let stdoutPrefixLimit {
@@ -215,6 +222,7 @@ public final class ProcessCancellationController: @unchecked Sendable {
         stderrSource.setEventHandler {
             let available = stderrHandle.availableData
             guard !available.isEmpty else { stderrSource.cancel(); return }
+            onStderrChunk?(available)
             if buffer.appendStderr(available, maxTotal: maxTotalOutputBytes, maxLine: maxSingleLineBytes) != nil {
                 lifecycle.stop()
             }
@@ -235,6 +243,7 @@ public final class ProcessCancellationController: @unchecked Sendable {
                     process.terminationHandler = nil
                     stdoutSource.cancel()
                     stderrSource.cancel()
+                    try? stdinPipe.fileHandleForWriting.close()
                     if error is CancellationError {
                         continuation.resume(throwing: error)
                     } else {
@@ -244,10 +253,55 @@ public final class ProcessCancellationController: @unchecked Sendable {
                 }
 
                 // Closing stdin also unblocks helpers that finish after EOF.
-                if let input = stdinData, !input.isEmpty {
-                    try? stdinPipe.fileHandleForWriting.write(contentsOf: input)
+                if let stdinFileURL {
+                    let writeHandle = stdinPipe.fileHandleForWriting
+                    let writeFD = writeHandle.fileDescriptor
+                    _ = fcntl(writeFD, F_SETNOSIGPIPE, 1)
+                    DispatchQueue.global(qos: .userInitiated).async {
+                        defer { try? writeHandle.close() }
+                        guard let reader = try? FileHandle(forReadingFrom: stdinFileURL) else { return }
+                        defer { try? reader.close() }
+                        let totalBytes = Int64(max(0, (try? stdinFileURL.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0))
+                        let chunkSize = 262_144
+                        var totalWritten: Int64 = 0
+                        var lastEmittedBytes: Int64 = 0
+                        var lastEmitTime: CFAbsoluteTime = 0
+                        while !lifecycle.isStopped {
+                            guard let chunk = try? reader.read(upToCount: chunkSize), !chunk.isEmpty else { break }
+                            let wroteAll = chunk.withUnsafeBytes { rawBuf -> Bool in
+                                guard let base = rawBuf.baseAddress else { return true }
+                                var offset = 0
+                                while offset < chunk.count {
+                                    if lifecycle.isStopped { return false }
+                                    let n = Darwin.write(writeFD, base.advanced(by: offset), chunk.count - offset)
+                                    if n > 0 {
+                                        offset += n
+                                    } else if n < 0 && errno == EINTR {
+                                        continue
+                                    } else {
+                                        return false
+                                    }
+                                }
+                                return true
+                            }
+                            guard wroteAll else { break }
+                            totalWritten += Int64(chunk.count)
+                            let now = CFAbsoluteTimeGetCurrent()
+                            let stepReached = totalBytes > 0 && (totalWritten - lastEmittedBytes) >= max(Int64(chunkSize), totalBytes / 40)
+                            if let onStdinProgress,
+                               (lastEmitTime == 0 || (now - lastEmitTime) >= 0.025 || stepReached || totalWritten >= totalBytes) {
+                                lastEmitTime = now
+                                lastEmittedBytes = totalWritten
+                                onStdinProgress(totalWritten, totalBytes)
+                            }
+                        }
+                    }
+                } else {
+                    if let input = stdinData, !input.isEmpty {
+                        try? stdinPipe.fileHandleForWriting.write(contentsOf: input)
+                    }
+                    try? stdinPipe.fileHandleForWriting.close()
                 }
-                try? stdinPipe.fileHandleForWriting.close()
             }
 
             stdoutSource.cancel()
@@ -344,30 +398,158 @@ public struct SevenZipEngine: ArchiveEngine {
         )
     }
 
-    /// Parses `-bsp1` progress chunks emitted by 7zz / p7zip (e.g. `" 49% + big.bin"` or `"100% 1 + big.bin"`).
-    public static func parseProgressSnapshot(from chunk: Data) -> (percent: Int, currentItem: String?)? {
+    public struct SevenZipProgressSnapshot: Equatable, Sendable {
+        public enum Stage: Equatable, Sendable {
+            case opening
+            case transfer
+        }
+
+        public let stage: Stage
+        public let percent: Int?
+        public let processedBytes: Int64?
+        public let currentItem: String?
+
+        public init(stage: Stage, percent: Int?, processedBytes: Int64?, currentItem: String?) {
+            self.stage = stage
+            self.percent = percent
+            self.processedBytes = processedBytes
+            self.currentItem = currentItem
+        }
+    }
+
+    /// Parses `-bsp1` progress chunks emitted by 7zz / p7zip for both compression and extraction,
+    /// distinguishing pre-transfer volume opening (`" 98% 100 Open"`, `" 0M Scan"`) from real
+    /// transfer progress (`" 49% + big.bin"`, `" 21% - movie.mkv"`, `" 85% 13 - file.bin"`, `" 64M - huge.bin"`).
+    public static func parseDetailedProgressSnapshot(from chunk: Data) -> SevenZipProgressSnapshot? {
         guard !chunk.isEmpty else { return nil }
         let text = String(decoding: chunk, as: UTF8.self)
         let segments = text.split { $0 == "\n" || $0 == "\r" || $0 == "\u{08}" }
         for rawSegment in segments.reversed() {
             let trimmed = rawSegment.trimmingCharacters(in: .whitespaces)
-            guard !trimmed.isEmpty, let percentIndex = trimmed.firstIndex(of: "%") else { continue }
-            let prefix = trimmed[..<percentIndex]
-            guard !prefix.isEmpty, prefix.count <= 3, prefix.allSatisfy(\.isNumber),
-                  let pct = Int(prefix), (0...100).contains(pct) else {
-                continue
+            guard !trimmed.isEmpty else { continue }
+            if let snapshot = parseProgressSegment(trimmed) {
+                return snapshot
             }
-            let suffix = trimmed[trimmed.index(after: percentIndex)...]
-            var itemName: String?
-            if let plusRange = suffix.range(of: "+ ") {
-                let candidate = suffix[plusRange.upperBound...].trimmingCharacters(in: .whitespaces)
-                if !candidate.isEmpty {
-                    itemName = candidate
-                }
-            }
-            return (pct, itemName)
         }
         return nil
+    }
+
+    /// Parses `-bsp1` transfer percentage snapshots emitted by 7zz / p7zip
+    /// (e.g. `" 49% + big.bin"`, `"100% 1 + big.bin"`, `" 21% - movie.mkv"`).
+    /// Pre-transfer `"Open"` / `"Scan"` segments return `nil` so callers never mistake volume scanning for completion.
+    public static func parseProgressSnapshot(from chunk: Data) -> (percent: Int, currentItem: String?)? {
+        guard let detailed = parseDetailedProgressSnapshot(from: chunk),
+              detailed.stage == .transfer,
+              let percent = detailed.percent else {
+            return nil
+        }
+        return (percent, detailed.currentItem)
+    }
+
+    private static func parseProgressSegment(_ trimmed: String) -> SevenZipProgressSnapshot? {
+        // 1. Percentage form: "<0..100>% [count] [action [item]]"
+        if let percentIndex = trimmed.firstIndex(of: "%") {
+            let prefix = trimmed[..<percentIndex]
+            if !prefix.isEmpty, prefix.count <= 3, prefix.allSatisfy(\.isNumber),
+               let pct = Int(prefix), (0...100).contains(pct) {
+                let suffix = trimmed[trimmed.index(after: percentIndex)...]
+                if let parsed = classifyProgressSuffix(suffix) {
+                    return SevenZipProgressSnapshot(
+                        stage: parsed.stage,
+                        percent: pct,
+                        processedBytes: nil,
+                        currentItem: parsed.currentItem
+                    )
+                }
+            }
+        }
+
+        // 2. Unknown-total byte-count form: "<N>[BKMG] [count] [action [item]]"
+        var digitEnd = trimmed.startIndex
+        while digitEnd < trimmed.endIndex, trimmed[digitEnd].isASCII, trimmed[digitEnd].isNumber {
+            digitEnd = trimmed.index(after: digitEnd)
+        }
+        if digitEnd > trimmed.startIndex, digitEnd < trimmed.endIndex {
+            let unitChar = trimmed[digitEnd]
+            let multiplier: Int64?
+            switch unitChar {
+            case "B": multiplier = 1
+            case "K": multiplier = 1024
+            case "M": multiplier = 1024 * 1024
+            case "G": multiplier = 1024 * 1024 * 1024
+            default: multiplier = nil
+            }
+            if let multiplier,
+               let value = Int64(trimmed[..<digitEnd]), value >= 0 {
+                let afterUnit = trimmed.index(after: digitEnd)
+                if afterUnit == trimmed.endIndex || trimmed[afterUnit].isWhitespace {
+                    let suffix = trimmed[afterUnit...]
+                    if let parsed = classifyProgressSuffix(suffix) {
+                        let (bytes, overflow) = value.multipliedReportingOverflow(by: multiplier)
+                        return SevenZipProgressSnapshot(
+                            stage: parsed.stage,
+                            percent: nil,
+                            processedBytes: overflow ? Int64.max : bytes,
+                            currentItem: parsed.currentItem
+                        )
+                    }
+                }
+            }
+        }
+
+        return nil
+    }
+
+    private static func classifyProgressSuffix(_ rawSuffix: Substring) -> (stage: SevenZipProgressSnapshot.Stage, currentItem: String?)? {
+        var rest = rawSuffix.drop(while: { $0.isWhitespace })
+        if rest.isEmpty {
+            return (.transfer, nil)
+        }
+
+        // Skip optional file / volume count token (e.g. "13 - file.bin", "100 Open", "3700").
+        var countEnd = rest.startIndex
+        while countEnd < rest.endIndex, rest[countEnd].isASCII, rest[countEnd].isNumber {
+            countEnd = rest.index(after: countEnd)
+        }
+        if countEnd > rest.startIndex, countEnd == rest.endIndex || rest[countEnd].isWhitespace {
+            rest = rest[countEnd...].drop(while: { $0.isWhitespace })
+            if rest.isEmpty {
+                return (.transfer, nil)
+            }
+        }
+
+        if rest == "Open" || rest.hasPrefix("Open ") || rest == "Scan" || rest.hasPrefix("Scan ") {
+            return (.opening, nil)
+        }
+
+        for marker in ["+ ", "- ", "U ", "= ", "T "] {
+            if rest.hasPrefix(marker) {
+                let candidate = rest.dropFirst(marker.count).trimmingCharacters(in: .whitespaces)
+                return (.transfer, candidate.isEmpty ? nil : candidate)
+            }
+        }
+        if rest == "+" || rest == "-" || rest == "U" || rest == "=" || rest == "T" {
+            return (.transfer, nil)
+        }
+
+        return nil
+    }
+
+    private static func directoryRegularFileBytes(at root: URL) -> Int64 {
+        let fm = FileManager.default
+        guard let enumerator = fm.enumerator(
+            at: root,
+            includingPropertiesForKeys: [.isRegularFileKey, .fileSizeKey],
+            options: []
+        ) else { return 0 }
+        var total: Int64 = 0
+        while let child = enumerator.nextObject() as? URL {
+            if let vals = try? child.resourceValues(forKeys: [.isRegularFileKey, .fileSizeKey]),
+               vals.isRegularFile == true {
+                total += Int64(max(0, vals.fileSize ?? 0))
+            }
+        }
+        return total
     }
 
     private static func estimateSourceBytes(_ sources: [URL]) -> Int64 {
@@ -452,7 +634,9 @@ public struct SevenZipEngine: ArchiveEngine {
         }
 
         let format = ArchiveFormat.detect(from: url)
-        let fileSize = (try? targetURL.resourceValues(forKeys: [.fileSizeKey]).fileSize).map(Int64.init) ?? 0
+        let fileSize = family.volumeURLs.reduce(Int64(0)) { sum, volumeURL in
+            sum + Int64(max(0, (try? volumeURL.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0))
+        }
 
         if isEncryptedHeader {
             return ArchiveDescriptor(
@@ -650,64 +834,219 @@ public struct SevenZipEngine: ArchiveEngine {
             )
         }
 
-        progress(OperationProgress(phase: .preparing, completedBytes: 0, totalBytes: Int64(plan.itemsToExtract.count)))
+        let plannedUncompressedBytes = plan.itemsToExtract.reduce(Int64(0)) { $0 + max(0, $1.entry.uncompressedSize) }
+        let progressTotalBytes = plannedUncompressedBytes > 0 ? plannedUncompressedBytes : Int64(plan.itemsToExtract.count)
+        let firstItemName = plan.itemsToExtract.first?.entry.name
 
-        // 2. Setup private staging directory
+        progress(OperationProgress(
+            phase: .preparing,
+            completedBytes: 0,
+            totalBytes: progressTotalBytes,
+            currentItem: firstItemName,
+            fractionCompleted: 0.02
+        ))
+
+        // 2. Setup private staging directory and external UTF-8 entry listfile
         let fm = FileManager.default
         let stagingUUID = UUID().uuidString
-        let stagingURL = dir.deletingLastPathComponent().appendingPathComponent(".prozip-extract-staging-\(stagingUUID)", isDirectory: true)
+        let stagingParent = dir.deletingLastPathComponent()
+        let stagingURL = stagingParent.appendingPathComponent(".prozip-extract-staging-\(stagingUUID)", isDirectory: true)
+        let listFileURL = stagingParent.appendingPathComponent(".prozip-extract-list-\(stagingUUID).txt")
         try fm.createDirectory(at: stagingURL, withIntermediateDirectories: true)
 
         defer {
+            try? fm.removeItem(at: listFileURL)
             try? fm.removeItem(at: stagingURL)
         }
 
-        // 3. Extract items to staging directory
+        // 3. Extract items to staging directory with real-time -bsp1 progress streaming
         let hasPwd = (password != nil && !(password!.isEmpty))
-        var extraArgs = ["-o\(stagingURL.path)", "-y"]
+        let entryPathsContent = plan.itemsToExtract.map(\.entry.path).joined(separator: "\n")
+        try entryPathsContent.write(to: listFileURL, atomically: true, encoding: .utf8)
+
+        var extraArgs = ["-o\(stagingURL.path)", "-y", "-bsp1", "-scsUTF-8", "-i@\(listFileURL.path)"]
         if !hasPwd {
             extraArgs.append("-p__ARCZIP_NO_PASSWORD__")
         }
-
-        // Write entries list to a UTF-8 temporary file to avoid command-line argument length overflow
-        let listFileURL = stagingURL.appendingPathComponent("listfile.txt")
-        let entryPathsContent = plan.itemsToExtract.map(\.entry.path).joined(separator: "\n")
-        try entryPathsContent.write(to: listFileURL, atomically: true, encoding: .utf8)
 
         var args = ["x"]
         args.append(contentsOf: extraArgs)
         args.append("--")
         args.append(url.path)
-        args.append("@\(listFileURL.path)")
 
         let stdinData = hasPwd ? "\(password!)\n".data(using: .utf8) : nil
 
-        progress(OperationProgress(phase: .extracting, completedBytes: 0, totalBytes: Int64(plan.itemsToExtract.count)))
+        progress(OperationProgress(
+            phase: .extracting,
+            completedBytes: 0,
+            totalBytes: progressTotalBytes,
+            currentItem: firstItemName,
+            fractionCompleted: 0.05
+        ))
+
+        final class ExtractStreamProgressState: @unchecked Sendable {
+            let lock = NSLock()
+            var lastEmitTime: CFAbsoluteTime = 0
+            var lastTransferTime: CFAbsoluteTime = CFAbsoluteTimeGetCurrent()
+            var lastFraction: Double = 0.05
+            var lastOpenPercent: Int = -1
+            var lastItem: String?
+            var hasSeenTransferProgress = false
+        }
+        let streamState = ExtractStreamProgressState()
+
+        // Fallback disk monitor: stays idle while 7-Zip streams -bsp1 progress, and only polls
+        // staged output bytes if stdout progress is silent for >= 0.75s (e.g. exotic split/solid streams).
+        let fallbackMonitor: Task<Void, Never>?
+        if plannedUncompressedBytes > 0 && plan.itemsToExtract.count <= 2000 {
+            fallbackMonitor = Task.detached(priority: .utility) {
+                while !Task.isCancelled {
+                    try? await Task.sleep(nanoseconds: 400_000_000)
+                    guard !Task.isCancelled else { break }
+
+                    let now = CFAbsoluteTimeGetCurrent()
+                    let isSilent = streamState.lock.withLock {
+                        (now - streamState.lastTransferTime) >= 0.75
+                    }
+                    guard isSilent else { continue }
+
+                    let stagedBytes = Self.directoryRegularFileBytes(at: stagingURL)
+                    guard stagedBytes > 0 else { continue }
+                    let ratio = min(0.98, max(0.0, Double(stagedBytes) / Double(plannedUncompressedBytes)))
+                    let targetFraction = 0.05 + 0.89 * ratio
+
+                    let shouldSend = streamState.lock.withLock {
+                        guard targetFraction > streamState.lastFraction + 0.004 else { return false }
+                        streamState.lastFraction = targetFraction
+                        streamState.lastEmitTime = now
+                        streamState.hasSeenTransferProgress = true
+                        return true
+                    }
+
+                    if shouldSend {
+                        progress(OperationProgress(
+                            phase: .extracting,
+                            completedBytes: min(plannedUncompressedBytes, stagedBytes),
+                            totalBytes: progressTotalBytes,
+                            currentItem: nil,
+                            fractionCompleted: targetFraction
+                        ))
+                    }
+                }
+            }
+        } else {
+            fallbackMonitor = nil
+        }
+        defer { fallbackMonitor?.cancel() }
 
         let result = try await ProcessCancellationController.run(
             executableURL: bin,
             arguments: args,
-            stdinData: stdinData
+            stdinData: stdinData,
+            onStdoutChunk: { chunk in
+                guard let snapshot = Self.parseDetailedProgressSnapshot(from: chunk) else { return }
+                let now = CFAbsoluteTimeGetCurrent()
+
+                switch snapshot.stage {
+                case .opening:
+                    guard let pct = snapshot.percent else { return }
+                    var shouldSend = false
+                    let openFraction = 0.02 + 0.03 * (Double(pct) / 100.0)
+                    streamState.lock.lock()
+                    if !streamState.hasSeenTransferProgress,
+                       pct > streamState.lastOpenPercent,
+                       (streamState.lastEmitTime == 0 || (now - streamState.lastEmitTime) >= 0.05 || pct == 100) {
+                        streamState.lastOpenPercent = pct
+                        streamState.lastEmitTime = now
+                        shouldSend = true
+                    }
+                    streamState.lock.unlock()
+                    if shouldSend {
+                        progress(OperationProgress(
+                            phase: .checkingArchive,
+                            completedBytes: 0,
+                            totalBytes: progressTotalBytes,
+                            currentItem: url.lastPathComponent,
+                            fractionCompleted: openFraction
+                        ))
+                    }
+
+                case .transfer:
+                    let ratio: Double
+                    if let pct = snapshot.percent {
+                        ratio = Double(pct) / 100.0
+                    } else if let processed = snapshot.processedBytes, plannedUncompressedBytes > 0 {
+                        ratio = min(0.99, max(0.0, Double(processed) / Double(plannedUncompressedBytes)))
+                    } else {
+                        return
+                    }
+
+                    let targetFraction = 0.05 + 0.89 * ratio
+                    var shouldSend = false
+                    var effectiveFraction = targetFraction
+                    streamState.lock.lock()
+                    streamState.hasSeenTransferProgress = true
+                    streamState.lastTransferTime = now
+                    let fractionAdvanced = targetFraction > streamState.lastFraction + 1e-4
+                    let itemChanged = snapshot.currentItem != nil && snapshot.currentItem != streamState.lastItem
+                    let throttlePassed = streamState.lastEmitTime == 0 ||
+                        (now - streamState.lastEmitTime) >= 0.025 ||
+                        (targetFraction - streamState.lastFraction) >= 0.015 ||
+                        ratio >= 1.0
+                    if (fractionAdvanced || (itemChanged && (now - streamState.lastEmitTime) >= 0.05)) && throttlePassed {
+                        if targetFraction > streamState.lastFraction {
+                            streamState.lastFraction = targetFraction
+                        }
+                        effectiveFraction = streamState.lastFraction
+                        if let item = snapshot.currentItem {
+                            streamState.lastItem = item
+                        }
+                        streamState.lastEmitTime = now
+                        shouldSend = true
+                    }
+                    streamState.lock.unlock()
+
+                    guard shouldSend else { return }
+                    let clampedRatio = max(0.0, min(1.0, (effectiveFraction - 0.05) / 0.89))
+                    let completed = Int64(Double(progressTotalBytes) * clampedRatio)
+                    progress(OperationProgress(
+                        phase: .extracting,
+                        completedBytes: completed,
+                        totalBytes: progressTotalBytes,
+                        currentItem: snapshot.currentItem,
+                        fractionCompleted: effectiveFraction
+                    ))
+                }
+            }
         )
+        fallbackMonitor?.cancel()
 
         let combined = result.combinedOutputString
         if result.exitCode == 1 {
             throw ProZipError.corruptedArchive("7-Zip 解压时报告了警告，未接受可能不完整的结果")
         } else if result.exitCode != 0 {
-            if combined.contains("wrong password") || combined.contains("encrypted") {
+            let lowerCombined = combined.lowercased()
+            if lowerCombined.contains("wrong password") || lowerCombined.contains("encrypted") {
                 throw ProZipError.wrongPassword("密码错误：\(url.lastPathComponent)")
             }
             throw ProZipError.corruptedArchive("7-Zip 提取失败，退出码 \(result.exitCode)")
         }
 
         // 4. Publish validated files from staging to target destination according to plan
-        progress(OperationProgress(phase: .savingSafely, completedBytes: 0, totalBytes: Int64(plan.itemsToExtract.count)))
+        progress(OperationProgress(
+            phase: .savingSafely,
+            completedBytes: progressTotalBytes,
+            totalBytes: progressTotalBytes,
+            fractionCompleted: 0.94
+        ))
 
         var publishedURLs: [URL] = []
         var skippedCount = plan.skippedEntries.count
         var skippedReasons = plan.skippedEntries.map(\.reason)
+        let totalItemsToPublish = max(1, plan.itemsToExtract.count)
+        var lastPublishEmitTime = CFAbsoluteTimeGetCurrent()
 
-        for item in plan.itemsToExtract {
+        for (index, item) in plan.itemsToExtract.enumerated() {
             try Task.checkCancellation()
             let stagedItemURL = stagingURL.appendingPathComponent(item.entry.path)
             guard (try? fm.attributesOfItem(atPath: stagedItemURL.path)) != nil else {
@@ -724,10 +1063,7 @@ public struct SevenZipEngine: ArchiveEngine {
             if item.entry.isDirectory {
                 try fm.createDirectory(at: destURL, withIntermediateDirectories: true)
                 publishedURLs.append(destURL)
-                continue
-            }
-
-            if fm.fileExists(atPath: destURL.path) {
+            } else if fm.fileExists(atPath: destURL.path) {
                 switch item.conflictAction {
                 case .replace:
                     _ = try fm.replaceItemAt(destURL, withItemAt: stagedItemURL, options: .usingNewMetadataOnly)
@@ -744,9 +1080,26 @@ public struct SevenZipEngine: ArchiveEngine {
                 try fm.moveItem(at: stagedItemURL, to: destURL)
                 publishedURLs.append(destURL)
             }
+
+            let now = CFAbsoluteTimeGetCurrent()
+            if index == totalItemsToPublish - 1 || (now - lastPublishEmitTime) >= 0.04 {
+                lastPublishEmitTime = now
+                let publishRatio = Double(index + 1) / Double(totalItemsToPublish)
+                progress(OperationProgress(
+                    phase: .savingSafely,
+                    completedBytes: progressTotalBytes,
+                    totalBytes: progressTotalBytes,
+                    fractionCompleted: 0.94 + 0.05 * publishRatio
+                ))
+            }
         }
 
-        progress(OperationProgress(phase: .completed, completedBytes: Int64(publishedURLs.count), totalBytes: Int64(publishedURLs.count)))
+        progress(OperationProgress(
+            phase: .completed,
+            completedBytes: progressTotalBytes,
+            totalBytes: progressTotalBytes,
+            fractionCompleted: 1.0
+        ))
 
         return ExtractionReport(
             destinationURL: dir,
