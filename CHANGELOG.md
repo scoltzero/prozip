@@ -8,6 +8,38 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [0.1.5] - 2026-11-23
+
+### 🇨🇳 中文
+
+#### 新增 (Added)
+- **应用内一键更新（下载、校验并自动重启）**：
+  - 在检查更新弹窗中新增「立即更新」能力，无需跳转浏览器手动下载镜像。
+  - 直接在应用内流式下载 GitHub Release 中的 `.zip` 安装包并实时显示下载进度，自动校验 `SHA256SUMS.txt` 哈希与 `CFBundleIdentifier`，通过系统 `ditto` 解压并原子替换当前 `ProZip.app`（失败自动回滚备份，目录无写权限时拉起系统授权弹窗）后自动重启新版。
+
+#### 修复与优化 (Fixed & Changed)
+- **菜单栏黑白模板图标与弹窗贴边间距修复**：
+  - 将状态栏图标改为基于品牌矢量路径绘制的 macOS 黑白模板图标（`isTemplate = true`），去除绿色底色，仅保留主体 **P** 与 33% 透明度折影，自动适配浅色/深色模式及 Retina 分辨率。
+  - 收紧菜单栏文件盒面板顶部内边距并锚定菜单栏下沿，消除弹窗与菜单栏之间的多余空隙，同步对齐设置页外观预览。
+- **全格式与分卷 RAR 实时解压进度**：修复分卷 RAR 及其他归档格式解压时进度条更新不及时的问题，实现全格式实时流式进度上报。
+
+---
+
+### 🌐 English
+
+#### Added
+- **In-App Self-Update (Download, Verify & Relaunch)**:
+  - Added one-click **Update Now** inside the Check for Updates dialog so users no longer need to manually download and drag-install from the browser.
+  - Streams the GitHub Release `.zip` with live progress, verifies `SHA256SUMS.txt` via `CryptoKit` and validates `CFBundleIdentifier`, extracts via `/usr/bin/ditto`, atomically swaps `ProZip.app` (with rollback on failure and admin prompt when needed), and relaunches automatically.
+
+#### Fixed & Changed
+- **Monochrome Template Menu Bar Icon & Shelf Alignment**:
+  - Replaced the colored menu bar icon with a resolution-independent macOS template icon (`isTemplate = true`) featuring only the brand **P** and its 33% opacity shadow, adapting automatically to Light and Dark Mode.
+  - Tightened the menu bar shelf panel top inset and anchored it to the menu bar bottom edge to eliminate the excessive gap, keeping the Settings preview aligned.
+- **Real-Time Extraction Progress**: Streamed live extraction progress across split RAR and all supported archive formats.
+
+---
+
 ## [0.1.4] - 2026-11-21
 
 ### 🇨🇳 中文

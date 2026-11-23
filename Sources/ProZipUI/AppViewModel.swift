@@ -935,7 +935,7 @@ public final class ProZipAppViewModel: ObservableObject {
                 NSApp.terminate(nil)
             } catch is CancellationError {
                 self.updatePhase = .updateAvailable(
-                    currentVersion: (Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String) ?? "0.1.4",
+                    currentVersion: (Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String) ?? "0.1.5",
                     latestVersion: latestVersion,
                     release: release,
                     downloadURL: self.preferredUpdateDownloadURL
