@@ -1660,19 +1660,9 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
     private func setupShelfStatusItem() {
         let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
         if let button = item.button {
-            if let path = Bundle.main.path(forResource: "AppIcon-Preview", ofType: "png"),
-               let source = NSImage(contentsOfFile: path) {
-                let logo = NSImage(size: NSSize(width: 18, height: 18), flipped: false) { rect in
-                    source.draw(in: rect)
-                    return true
-                }
-                logo.isTemplate = false
-                logo.accessibilityDescription = "ProZip 文件盒"
-                button.image = logo
-            } else {
-                button.image = NSImage(systemSymbolName: "tray.full", accessibilityDescription: "ProZip 文件盒")
-                button.image?.isTemplate = true
-            }
+            let logo = ProZipIconRenderer.makeStatusBarTemplateIcon(size: 18)
+            logo.accessibilityDescription = "ProZip 文件盒"
+            button.image = logo
             button.target = self
             button.action = #selector(toggleShelfPanel(_:))
             button.sendAction(on: [.leftMouseUp, .rightMouseUp])
@@ -1787,10 +1777,12 @@ final class ProZipAppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate
         if let button = shelfStatusItem?.button, let buttonWindow = button.window {
             let rect = buttonWindow.convertToScreen(button.convert(button.bounds, to: nil))
             var x = rect.midX - 351
+            var topY = rect.minY
             if let screen = buttonWindow.screen ?? NSScreen.main {
                 x = min(max(x, screen.visibleFrame.minX + 8), screen.visibleFrame.maxX - 529)
+                topY = min(topY, screen.visibleFrame.maxY)
             }
-            panel.setFrameOrigin(NSPoint(x: x, y: rect.minY - 497 + 2))
+            panel.setFrameOrigin(NSPoint(x: x, y: topY - 497))
         }
         panel.makeKeyAndOrderFront(nil)
         resetShelfIdleTimer()

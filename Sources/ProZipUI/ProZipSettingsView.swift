@@ -2099,7 +2099,7 @@ public struct ShelfSettingsPane: View {
     public var body: some View {
         VStack(alignment: .leading, spacing: 18) {
             MenuBarShelfView(model: previewModel, isInteractive: false)
-                .offset(x: -221, y: -25)
+                .offset(x: -221, y: -6)
                 .frame(width: 260, height: 267, alignment: .topLeading)
                 .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
                 .allowsHitTesting(false)

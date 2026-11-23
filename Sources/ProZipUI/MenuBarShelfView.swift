@@ -50,7 +50,7 @@ public struct MenuBarShelfView: View {
                         isHoveringActionBridge = hovering
                         updateActionHover()
                     }
-                    .offset(x: 166, y: 242)
+                    .offset(x: 166, y: 223)
             }
 
             Group {
@@ -75,7 +75,7 @@ public struct MenuBarShelfView: View {
             }
             .frame(width: 260, height: 267)
             .shadow(color: .black.opacity(0.14), radius: 14, y: 6)
-            .offset(x: 221, y: 25)
+            .offset(x: 221, y: 6)
 
             if !model.collectedFiles.isEmpty {
                 arcActionButton(index: 0, title: "放入工作区", icon: "macwindow") { moveStagedFilesToWorkspace() }
@@ -941,7 +941,7 @@ private struct ArcActionButton: View {
         .opacity(isExpanded ? 1 : 0)
         .offset(
             x: 238 + (isExpanded ? CGFloat(cos(geometry.angle)) * geometry.radius : 0),
-            y: 245 + (isExpanded ? CGFloat(sin(geometry.angle)) * geometry.radius : 0)
+            y: 226 + (isExpanded ? CGFloat(sin(geometry.angle)) * geometry.radius : 0)
         )
         .allowsHitTesting(isExpanded)
         .animation(

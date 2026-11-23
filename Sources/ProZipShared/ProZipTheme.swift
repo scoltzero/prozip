@@ -453,6 +453,114 @@ public enum ProZipIconRenderer {
         let img = makeAppIconImage(size: 512)
         NSApplication.shared.applicationIconImage = img
     }
+
+    /// Resolution-independent monochrome template icon for the macOS menu bar status item.
+    /// Keeps only the brand "P" silhouette and its lower-right folded shadow (no green squircle background),
+    /// letting AppKit automatically adapt foreground color for Light Mode, Dark Mode, and highlight states.
+    public static func makeStatusBarTemplateIcon(size: CGFloat = 18) -> NSImage {
+        let image = NSImage(size: NSSize(width: size, height: size), flipped: true) { rect in
+            guard let ctx = NSGraphicsContext.current?.cgContext else { return false }
+            let w = rect.width
+            let h = rect.height
+            let scale: CGFloat = 1.08
+
+            ctx.saveGState()
+            ctx.translateBy(x: rect.minX + w * 0.5, y: rect.minY + h * 0.5)
+            ctx.scaleBy(x: scale, y: scale)
+            ctx.translateBy(x: -w * 0.5, y: -h * 0.49)
+
+            // 1. Folded shadow behind the lower-right bowl of 'P'
+            let foldShadow = CGMutablePath()
+            foldShadow.move(to: CGPoint(x: w * 0.34, y: h * 0.52))
+            foldShadow.addCurve(
+                to: CGPoint(x: w * 0.78, y: h * 0.36),
+                control1: CGPoint(x: w * 0.54, y: h * 0.52),
+                control2: CGPoint(x: w * 0.78, y: h * 0.48)
+            )
+            foldShadow.addCurve(
+                to: CGPoint(x: w * 0.82, y: h * 0.62),
+                control1: CGPoint(x: w * 0.84, y: h * 0.44),
+                control2: CGPoint(x: w * 0.86, y: h * 0.55)
+            )
+            foldShadow.addCurve(
+                to: CGPoint(x: w * 0.46, y: h * 0.86),
+                control1: CGPoint(x: w * 0.76, y: h * 0.74),
+                control2: CGPoint(x: w * 0.60, y: h * 0.86)
+            )
+            foldShadow.addCurve(
+                to: CGPoint(x: w * 0.34, y: h * 0.68),
+                control1: CGPoint(x: w * 0.38, y: h * 0.86),
+                control2: CGPoint(x: w * 0.34, y: h * 0.78)
+            )
+            foldShadow.closeSubpath()
+
+            // 2. Main "P" arch silhouette
+            let pOuter = CGMutablePath()
+            pOuter.move(to: CGPoint(x: w * 0.16, y: h * 0.80))
+            pOuter.addLine(to: CGPoint(x: w * 0.16, y: h * 0.34))
+            pOuter.addCurve(
+                to: CGPoint(x: w * 0.48, y: h * 0.10),
+                control1: CGPoint(x: w * 0.16, y: h * 0.16),
+                control2: CGPoint(x: w * 0.28, y: h * 0.10)
+            )
+            pOuter.addCurve(
+                to: CGPoint(x: w * 0.84, y: h * 0.36),
+                control1: CGPoint(x: w * 0.70, y: h * 0.10),
+                control2: CGPoint(x: w * 0.84, y: h * 0.20)
+            )
+            pOuter.addCurve(
+                to: CGPoint(x: w * 0.48, y: h * 0.60),
+                control1: CGPoint(x: w * 0.84, y: h * 0.51),
+                control2: CGPoint(x: w * 0.70, y: h * 0.60)
+            )
+            pOuter.addLine(to: CGPoint(x: w * 0.38, y: h * 0.60))
+            pOuter.addLine(to: CGPoint(x: w * 0.38, y: h * 0.44))
+            pOuter.addLine(to: CGPoint(x: w * 0.47, y: h * 0.44))
+            pOuter.addCurve(
+                to: CGPoint(x: w * 0.63, y: h * 0.35),
+                control1: CGPoint(x: w * 0.57, y: h * 0.44),
+                control2: CGPoint(x: w * 0.63, y: h * 0.40)
+            )
+            pOuter.addCurve(
+                to: CGPoint(x: w * 0.47, y: h * 0.26),
+                control1: CGPoint(x: w * 0.63, y: h * 0.29),
+                control2: CGPoint(x: w * 0.57, y: h * 0.26)
+            )
+            pOuter.addCurve(
+                to: CGPoint(x: w * 0.37, y: h * 0.36),
+                control1: CGPoint(x: w * 0.40, y: h * 0.26),
+                control2: CGPoint(x: w * 0.37, y: h * 0.30)
+            )
+            pOuter.addLine(to: CGPoint(x: w * 0.37, y: h * 0.80))
+            pOuter.addCurve(
+                to: CGPoint(x: w * 0.16, y: h * 0.80),
+                control1: CGPoint(x: w * 0.37, y: h * 0.90),
+                control2: CGPoint(x: w * 0.16, y: h * 0.90)
+            )
+            pOuter.closeSubpath()
+
+            // Render shadow at reduced alpha with P punched out so edges stay crisp
+            ctx.beginTransparencyLayer(auxiliaryInfo: nil)
+            ctx.addPath(foldShadow)
+            ctx.setFillColor(NSColor.black.withAlphaComponent(0.33).cgColor)
+            ctx.fillPath()
+            ctx.setBlendMode(.clear)
+            ctx.addPath(pOuter)
+            ctx.fillPath()
+            ctx.endTransparencyLayer()
+
+            // Render solid foreground P
+            ctx.setBlendMode(.normal)
+            ctx.addPath(pOuter)
+            ctx.setFillColor(NSColor.black.cgColor)
+            ctx.fillPath()
+
+            ctx.restoreGState()
+            return true
+        }
+        image.isTemplate = true
+        return image
+    }
 }
 
 // MARK: - Custom 5-Stop Yellow-Green Compression Strength Slider (matching compression.png)
