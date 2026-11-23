@@ -1221,6 +1221,22 @@ public struct CheckForUpdatesDialogView: View {
                                 .foregroundStyle(.secondary)
                                 .fixedSize(horizontal: false, vertical: true)
 
+                        case .downloading(let latestVersion, let progress):
+                            Text("正在下载 ProZip \(latestVersion)…")
+                                .font(.system(size: 15, weight: .bold))
+                            Text("已完成 \(Int((progress * 100).rounded()))%，下载完成后将自动校验并重启安装。")
+                                .font(.system(size: 12))
+                                .foregroundStyle(.secondary)
+                                .fixedSize(horizontal: false, vertical: true)
+
+                        case .installing(let latestVersion):
+                            Text("正在安装 ProZip \(latestVersion)…")
+                                .font(.system(size: 15, weight: .bold))
+                            Text("校验完成，正在替换应用并自动重启…")
+                                .font(.system(size: 12))
+                                .foregroundStyle(.secondary)
+                                .fixedSize(horizontal: false, vertical: true)
+
                         case .upToDate(let ver):
                             Text("ProZip \(ver) 已是最新版本")
                                 .font(.system(size: 15, weight: .bold))
@@ -1241,6 +1257,14 @@ public struct CheckForUpdatesDialogView: View {
                 }
 
                 if appViewModel.updatePhase == .checking || appViewModel.isUpdateChecking {
+                    ProgressView()
+                        .progressViewStyle(.linear)
+                        .tint(ProZipTheme.accent)
+                } else if case .downloading(_, let progress) = appViewModel.updatePhase {
+                    ProgressView(value: progress, total: 1.0)
+                        .progressViewStyle(.linear)
+                        .tint(ProZipTheme.accent)
+                } else if case .installing = appViewModel.updatePhase {
                     ProgressView()
                         .progressViewStyle(.linear)
                         .tint(ProZipTheme.accent)
@@ -1299,13 +1323,28 @@ public struct CheckForUpdatesDialogView: View {
                             dismiss()
                         }
 
-                        ArcZipDialogButton("前往下载 ↗", role: .primary, size: .regular) {
-                            if let target = downloadURL ?? URL(string: release.htmlUrl) {
-                                NSWorkspace.shared.open(target)
+                        if AppUpdateService.zipAsset(in: release) != nil {
+                            ArcZipDialogButton("立即更新", role: .primary, size: .regular) {
+                                appViewModel.installAvailableUpdate(release: release)
                             }
-                            dismiss()
+                            .keyboardShortcut(.defaultAction)
+                        } else {
+                            ArcZipDialogButton("前往下载 ↗", role: .primary, size: .regular) {
+                                if let target = downloadURL ?? URL(string: release.htmlUrl) {
+                                    NSWorkspace.shared.open(target)
+                                }
+                                dismiss()
+                            }
+                            .keyboardShortcut(.defaultAction)
                         }
-                        .keyboardShortcut(.defaultAction)
+
+                    case .downloading:
+                        ArcZipDialogButton("取消", role: .secondary, size: .regular) {
+                            appViewModel.cancelUpdateDownload()
+                        }
+
+                    case .installing:
+                        EmptyView()
 
                     case .upToDate:
                         ArcZipDialogButton("重新检查", role: .secondary, size: .regular) {

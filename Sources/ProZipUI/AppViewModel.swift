@@ -864,6 +864,8 @@ public final class ProZipAppViewModel: ObservableObject {
         case checking
         case upToDate(currentVersion: String)
         case updateAvailable(currentVersion: String, latestVersion: String, release: GitHubReleaseInfo, downloadURL: URL?)
+        case downloading(latestVersion: String, progress: Double)
+        case installing(latestVersion: String)
         case failed(errorDescription: String)
     }
 
@@ -871,11 +873,14 @@ public final class ProZipAppViewModel: ObservableObject {
     @Published public var latestAvailableRelease: GitHubReleaseInfo?
     @Published public var preferredUpdateDownloadURL: URL?
     @Published public var isUpdateChecking: Bool = false
+    private var updateInstallTask: Task<Void, Never>?
 
     public func checkForUpdates(userInitiated: Bool = true) {
         if userInitiated {
             isCheckForUpdatesPresented = true
         }
+        updateInstallTask?.cancel()
+        updateInstallTask = nil
         updatePhase = .checking
         isUpdateChecking = true
 
@@ -905,6 +910,46 @@ public final class ProZipAppViewModel: ObservableObject {
                 self.updatePhase = .failed(errorDescription: description)
             }
         }
+    }
+
+    public func installAvailableUpdate(release: GitHubReleaseInfo) {
+        let latestVersion = release.tagName
+        updateInstallTask?.cancel()
+        updatePhase = .downloading(latestVersion: latestVersion, progress: 0)
+
+        updateInstallTask = Task { @MainActor [weak self] in
+            guard let self else { return }
+            do {
+                let stagedAppURL = try await AppUpdateService.shared.downloadAndStageUpdate(release: release) { [weak self] progress in
+                    Task { @MainActor [weak self] in
+                        guard let self else { return }
+                        if case .downloading(let ver, _) = self.updatePhase {
+                            self.updatePhase = .downloading(latestVersion: ver, progress: progress)
+                        }
+                    }
+                }
+                try Task.checkCancellation()
+                self.updatePhase = .installing(latestVersion: latestVersion)
+                try AppUpdateService.shared.installStagedUpdateAndRelaunch(stagedAppURL: stagedAppURL)
+                try? await Task.sleep(nanoseconds: 250_000_000)
+                NSApp.terminate(nil)
+            } catch is CancellationError {
+                self.updatePhase = .updateAvailable(
+                    currentVersion: (Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String) ?? "0.1.4",
+                    latestVersion: latestVersion,
+                    release: release,
+                    downloadURL: self.preferredUpdateDownloadURL
+                )
+            } catch {
+                let description = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+                self.updatePhase = .failed(errorDescription: description)
+            }
+        }
+    }
+
+    public func cancelUpdateDownload() {
+        updateInstallTask?.cancel()
+        updateInstallTask = nil
     }
 
     public func checkAutoUpdatesOnLaunchIfNeeded() {
